@@ -22,7 +22,7 @@ Using the SYSTEM.SOL provided in this repo can be dangerous, as almost all the o
 
 Upon the first launch, you will see GS-CARD calculating hyper-threads:
 
-![Loading screen](1.gif)
+![Loading screen](https://github.com/johnsnowdies/gs-card/blob/574a5a96de226de081c2c8692de4733a60df5b44/docs/logo.png)
 
 The next screen will show the galaxy map provided in the SYSTEM.SOL file:
 
