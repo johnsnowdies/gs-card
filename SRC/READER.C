@@ -4,36 +4,13 @@
 #include "structs.h"
 #include "reader.h"
 
-int getFileSize(char *filename)
+/* loadSolarFile: читает system.sol, парсит "x;y;z" строки,
+ * выделяет память под *list, возвращает количество систем */
+int loadSolarFile(SYSTEM **list)
 {
 	FILE * fp;
-	char c;
-	int counter = 0;
-
-	if ((fp = fopen(filename, "r")) == NULL)
-	{
-		printf("ERROR: NO FILE\n");
-		exit(1);
-	}
-
-	while ( (c = fgetc(fp)) != EOF)
-	{
-		if (c == '\n'){
-			counter++;
-		}
-	}
-
-	fclose(fp);
-
-	return counter;
-}
-
-void loadSolarFile(SYSTEM *list)
-{
-	FILE * fp;
-	char c[100];
-	int ptrSolar;
-	int counter = 0;
+	char buf[100];
+	int count = 0, counter = 0;
 
 	if ((fp = fopen("system.sol", "r")) == NULL)
 	{
@@ -41,9 +18,24 @@ void loadSolarFile(SYSTEM *list)
 		exit(1);
 	}
 
-	while (fgets(c, sizeof c, fp) != NULL)
+	/* первый проход: подсчёт строк */
+	while (fgets(buf, sizeof buf, fp) != NULL)
+		count++;
+
+	/* выделяем память */
+	*list = (SYSTEM*) calloc(count, sizeof(SYSTEM));
+	if (*list == NULL)
 	{
-		int len = strlen(c);
+		printf("ERROR: Cant allocate memory for %d systems\n", count);
+		exit(1);
+	}
+
+	/* второй проход: парсинг */
+	fseek(fp, 0L, SEEK_SET);
+
+	while (fgets(buf, sizeof buf, fp) != NULL)
+	{
+		int len = strlen(buf);
 		int delimiter_pos = 0;
 		int i,valueCnt = 0;
 
@@ -53,7 +45,7 @@ void loadSolarFile(SYSTEM *list)
 
 		for(i=0; i < len; i++)
 		{
-		  if(c[i] == DELIMITER_CHAR)
+		  if(buf[i] == DELIMITER_CHAR)
 		  {
 			delimiter_pos = i;
 			valueCnt++;
@@ -62,33 +54,32 @@ void loadSolarFile(SYSTEM *list)
 
 		  if (valueCnt == 0)
 		  {
-			str_x[i] = c[i];
+			str_x[i] = buf[i];
 		  }
 
 		  if (valueCnt == 1)
 		  {
 			if(i < (len-1))
-				str_y[i-(delimiter_pos+1)] = c[i];
+				str_y[i-(delimiter_pos+1)] = buf[i];
 		  }
 
 		  if (valueCnt == 2)
 		  {
 			if(i < (len-1))
-				str_z[i-(delimiter_pos+1)] = c[i];
+				str_z[i-(delimiter_pos+1)] = buf[i];
 		  }
 
 		}
 
-		list[counter].x = atoi(str_x);
-		list[counter].y = atoi(str_y);
-		list[counter].z = atoi(str_z);
+		(*list)[counter].x = atoi(str_x);
+		(*list)[counter].y = atoi(str_y);
+		(*list)[counter].z = atoi(str_z);
 
 		counter++;
 	}
 
-
 	fclose(fp);
-
+	return counter;
 }
 
 void saveFile(int ptrSize, SYSTEM *ptrList)
@@ -108,7 +99,7 @@ void saveFile(int ptrSize, SYSTEM *ptrList)
 		limit = 1000/25;
 
 		x = ptrList[i].x;
-		y = ptrList[x].y;
+		y = ptrList[i].y;		/* было ptrList[x].y — баг (координата как индекс) */
 
 		if (x <= 500 && y <=500 && x >= -500 && y >= -500) limit = 1400/20;
 		if (x <= 400 && y <=400 && x >= -400 && y >= -400) limit = 1400/16;
@@ -125,4 +116,4 @@ void saveFile(int ptrSize, SYSTEM *ptrList)
 
 	getch();
 	fclose(fp);
-}
+}

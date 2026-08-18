@@ -54,3 +54,11 @@ clean:
 	@rm -f "$(SCRIPT_DIR)/BUILD/LOGO.BMP"
 	@rm -f "$(SCRIPT_DIR)/BUILD/SYSTEM.SOL"
 	@echo "Done."
+
+fix:
+	@echo "Converting sources to DOS format (CRLF)..."
+	@for f in $(SCRIPT_DIR)/SRC/*.C $(SCRIPT_DIR)/SRC/*.H; do \
+		sed -i 's/\r//g' "$$f"; \
+		sed -i 's/$$/\r/' "$$f"; \
+	done
+	@echo "Done."

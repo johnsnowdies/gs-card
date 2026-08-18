@@ -16,18 +16,11 @@ int currentPoint;
 
 int main()
 {
-	char c = '';
+	int c = 0;
 	int i, isCoord = 1, isHyper=0, mode=1;		/* 1 = 2D, 2= 3D */
 
-	ptrSize = getFileSize("system.sol");
+	ptrSize = loadSolarFile(&ptrList);
 
-	if ( (ptrList = (SYSTEM*) calloc(ptrSize,sizeof(SYSTEM))) == NULL)
-	{
-		printf("MAIN: Cant allocate memory!");
-		exit(1);
-	}
-
-	loadSolarFile(ptrList);
 	init();
 
 	splash();
@@ -168,5 +161,3 @@ int main()
 	closegraph();
 	return(0);
 }
-
-

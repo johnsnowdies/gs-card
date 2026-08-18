@@ -76,12 +76,12 @@ REM Clean up old files
 if exist GSCARD.EXE del GSCARD.EXE
 if exist GSCARD.MAP del GSCARD.MAP
 
-tlink @GS-LINK.RSP >> %BLD%\build.log
+tlink @GS-LINK.RSP >> build.log
 if errorlevel 1 goto err
 
 REM ---------- copy runtime assets to BUILD ----------
-echo.                                         >> %BLD%\build.log
-echo Copying assets...                        >> %BLD%\build.log
+echo.                                         >> build.log
+echo Copying assets...                        >> build.log
 if not exist BGI mkdir BGI
 copy ..\%ASST%\BGI\*.BGI BGI\ > nul
 copy ..\%ASST%\BGI\*.CHR BGI\ > nul
@@ -89,34 +89,34 @@ copy ..\%ASST%\LOGO.BMP . > nul
 copy ..\%ASST%\SYSTEM.SOL . > nul
 
 REM ---------- cleanup intermediate files ----------
-echo Cleaning intermediates...                >> %BLD%\build.log
+echo Cleaning intermediates...                >> build.log
 del *.obj
 del *.rsp
 del *.map
 
-echo.                                         >> %BLD%\build.log
-echo ======================================== >> %BLD%\build.log
-echo    SUCCESS! GSCARD.EXE created!          >> %BLD%\build.log
-echo ======================================== >> %BLD%\build.log
-echo.                                         >> %BLD%\build.log
+echo.                                         >> build.log
+echo ======================================== >> build.log
+echo    SUCCESS! GSCARD.EXE created!          >> build.log
+echo ======================================== >> build.log
+echo.                                         >> build.log
 
 echo.
 echo === Build log (build.log) ===
 echo.
-type ..\BUILD\build.log
+type build.log
 echo.
 goto end
 
 :err
-echo.                                         >> %BLD%\build.log
-echo ======================================== >> %BLD%\build.log
-echo    COMPILATION FAILED!                   >> %BLD%\build.log
-echo ======================================== >> %BLD%\build.log
-echo.                                         >> %BLD%\build.log
+echo.                                         >> build.log
+echo ======================================== >> build.log
+echo    COMPILATION FAILED!                   >> build.log
+echo ======================================== >> build.log
+echo.                                         >> build.log
 echo.
 echo === Build log (build.log) ===
 echo.
-type ..\BUILD\build.log
+type build.log
 echo.
 echo Compilation failed — check BUILD\build.log above.
 pause

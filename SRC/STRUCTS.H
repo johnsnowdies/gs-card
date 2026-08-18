@@ -38,4 +38,4 @@ WAYPOINT {
 	int way[30];
 	int size;
 };
-
+

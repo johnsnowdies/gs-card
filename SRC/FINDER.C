@@ -73,7 +73,7 @@ int GetWay(int ptrSize, SYSTEM *ptrList, WAYPOINT *wp)
 
 int RestorePath(int ptrSize, SYSTEM *ptrList, WAYPOINT *wp, int start, int end, int reverse)
 {
-	int i,j,k,c,cnt=1,nbCnt,prev;
+	int i,j,k,c,cnt=1,prev;
 	int min;
 	SYSTEM b,a;
 	min=S;
@@ -147,7 +147,7 @@ int RestorePath(int ptrSize, SYSTEM *ptrList, WAYPOINT *wp, int start, int end, 
 
 void RunWave(int ptrSize, SYSTEM *ptrList, int c, int end)
 {
-	int i,j,k;
+	int i,k;
 	SYSTEM m;
 
 	ptrList[c].rate = S;
@@ -185,12 +185,12 @@ void RunWave(int ptrSize, SYSTEM *ptrList, int c, int end)
 
 void CalculateHyperThreads(int ptrSize, SYSTEM *ptrList)
 {
-	int i=0,j=0,k=0,cnt=0,n,m,e;
+	int i=0,j=0,k=0,cnt=0;
 	int error = 0;
 	int buffer[15];
-	double dx,dy,dz,S;
+	double dx,dy,dz,distSq;
 
-	SYSTEM a,b,c,d;
+	SYSTEM a,b;
 
 	for (i = 0; i < ptrSize; i++)
 	{
@@ -198,7 +198,9 @@ void CalculateHyperThreads(int ptrSize, SYSTEM *ptrList)
 		a = ptrList[i];
 		a.threadSize = 0;
 
-		progressWnd("GSCARD","Processing hyper-threads calculation",i,ptrSize);
+		/* throttle progress bar: обновляем каждый N/50 или хотя бы раз */
+		if (i % max(1, ptrSize/50) == 0 || i == ptrSize-1)
+			progressWnd("GSCARD","Processing hyper-threads calculation",i,ptrSize);
 
 		for (j = 0; j < ptrSize; j++)
 		{
@@ -210,26 +212,15 @@ void CalculateHyperThreads(int ptrSize, SYSTEM *ptrList)
 			error = 0;
 
 			dx = (double)(a.x - b.x);
-			if(dx!=0)
-				dx = pow(dx,2.0);
-
 			dy = (double)(a.y - b.y);
-
-			if(dy!=0)
-				dy = pow(dy,2.0);
-
 			dz = (double)(a.z - b.z);
 
-			if(dz!=0)
-			   dz = pow(dz,2.0);
+			/* pow(x,2.0) заменён на x*x — в ~50-100x быстрее */
+			distSq = dx*dx + dy*dy + dz*dz;
 
-			S = dx + dy + dz;
-			S = sqrt(S);
-
-			if (S > 130)
-			{
+			/* сравниваем квадраты, чтобы не вызывать sqrt */
+			if (distSq > 130.0 * 130.0)
 				error = 1;
-			}
 
 			if (!error && cnt < 15){
 				buffer[cnt] = j;
@@ -247,7 +238,8 @@ void CalculateHyperThreads(int ptrSize, SYSTEM *ptrList)
 				exit(1);
 			}
 
-			for (k=0; k < 15; k++){
+			/* БАГФИКС: было k < 15 (buffer overflow при cnt < 15) */
+			for (k=0; k < cnt; k++){
 				ptrList[i].threads[k].value = buffer[k];
 				ptrList[i].threads[k].cost = 0;
 			}
@@ -285,7 +277,8 @@ void CalculateThreadCosts(int ptrSize, SYSTEM *ptrList, int topCost)
 	{
 		a = ptrList[j];
 
-		progressWnd("GSCARD",wndLabel,j,ptrSize);
+		if (j % max(1, ptrSize/50) == 0 || j == ptrSize-1)
+			progressWnd("GSCARD",wndLabel,j,ptrSize);
 
 		/* All threads for 'a' */
 		for (i = 0; i < a.threadSize; i++)
@@ -403,7 +396,8 @@ void CalculateThreadCosts(int ptrSize, SYSTEM *ptrList, int topCost)
 		int newSize=0;
 		a = ptrList[j];
 
-		progressWnd("GSCARD","Reallocating memory",j,ptrSize);
+		if (j % max(1, ptrSize/50) == 0 || j == ptrSize-1)
+			progressWnd("GSCARD","Reallocating memory",j,ptrSize);
 
 		for (i = 0; i < a.threadSize; i++)
 		{
@@ -442,4 +436,4 @@ void CalculateThreadCosts(int ptrSize, SYSTEM *ptrList, int topCost)
 
 		ptrList[j] = a;
 	}
-}
+}

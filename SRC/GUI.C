@@ -98,6 +98,7 @@ POINT p(float x, float y, float z)
 void draw3dwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *wp)
 {
 	int i,j,k;
+	int drawThreads;
 
 	POINT A1,A2,A3,A4,A5,A6,A7,A8,A9;
 
@@ -105,6 +106,9 @@ void draw3dwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *w
 
 	xdens=(xmax-xmin)/WND_WIDTH;
 	ydens=(ymax-ymin)/WND_HEIGHT;
+
+
+	drawThreads = isHyper;
 
 	if (isCoord == 1){
 		setcolor(15);
@@ -139,7 +143,7 @@ void draw3dwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *w
 		p(solar[i].x, solar[i].y, solar[i].z);
 		putpixel(A1.x,A1.y,POINT_COLOR);
 
-		if (solar[i].threadSize !=0 && isHyper)
+		if (solar[i].threadSize !=0 && drawThreads)
 			{
 
 				setlinestyle(1,0,1);
@@ -157,7 +161,6 @@ void draw3dwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *w
 			settextstyle(SMALL_FONT,HORIZ_DIR,4);
 			sprintf(c,"SA.%d(%d)",i,solar[i].threadSize);
 			outtextxy(A1.x, A1.y + 5,c);
-			/*settextstyle(DEFAULT_FONT,HORIZ_DIR,1);*/
 		}
 	}
 
@@ -188,13 +191,16 @@ void draw3dwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *w
 
 void draw2dwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *wp)
 {
-	int i,j,hashValue,hb;
-	char *hashKey;
+	int i,j;
+	int drawThreads;
 
 	SYSTEM buf,a,b;
 
 	xdens=(xmax-xmin)/WND_WIDTH;
 	ydens=(ymax-ymin)/WND_HEIGHT;
+
+
+	drawThreads = isHyper;
 
 	if (isCoord == 1){
 		setcolor(15);
@@ -215,7 +221,7 @@ void draw2dwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *w
 		p(solar[i].x, solar[i].y, solar[i].z);
 		putpixel(ex(solar[i].x+offsetX),ey(solar[i].y+offsetY),POINT_COLOR);
 
-        if (solar[i].threadSize!=0 && isHyper)
+        if (solar[i].threadSize!=0 && drawThreads)
 			{
 
 				for (j = 0; j < solar[i].threadSize; j++)
@@ -273,13 +279,16 @@ void draw2dwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *w
 
 void drawyzwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *wp)
 {
-	int i,j,hashValue,hb;
-	char *hashKey;
+	int i,j;
+	int drawThreads;
 
 	SYSTEM buf,a,b;
 
 	xdens=(xmax-xmin)/WND_WIDTH;
 	ydens=(ymax-ymin)/WND_HEIGHT;
+
+
+	drawThreads = isHyper;
 
 	if (isCoord == 1){
 		setcolor(15);
@@ -299,7 +308,7 @@ void drawyzwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *w
 		p(solar[i].x, solar[i].y, solar[i].z);
 		putpixel(ex(solar[i].x+offsetX),ey(-1 * (solar[i].z+offsetZ)),POINT_COLOR);
 
-        if (solar[i].threadSize!=0 && isHyper)
+        if (solar[i].threadSize!=0 && drawThreads)
 			{
 
 				for (j = 0; j < solar[i].threadSize; j++)
@@ -582,12 +591,13 @@ void gotoSystem(int ptrSize, SYSTEM *solar)
 		getch();
 	}
 
-	free(input);
+	/* questionWnd теперь использует static буфер — free() не нужен */
 }
 
 char* questionWnd(char *header, char *text)
 {
-	char inputbuf[MAX_INPUT_LEN]="",c='';
+	static char inputbuf[MAX_INPUT_LEN] = "";
+	int c = 0;
 	int input_pos=0,the_end=0;
 
 	drawWnd(160,180,320,100);
@@ -656,7 +666,7 @@ void systemInfoWnd(char *header)
 	drawWnd(20,20,430, 400);
 	setcolor(15);
 	settextstyle(SMALL_FONT,HORIZ_DIR,6);
-	outtextxy(40,40,"�ਢ�� ��⮪, � 㬥� � ���᪨� ��!");
+	outtextxy(40,40,"ਢ ⮪,  㬥  ᪨ !");
 }
 
 void progressWnd(char *header, char *text, int current, int total)
@@ -774,4 +784,3 @@ void pathWnd(WAYPOINT *wp,int currentPoint,SYSTEM *ptrList)
 
 
 }
-
