@@ -32,9 +32,6 @@ int ex(float x)
 
 	xs = (int) ((x-xmin)/xdens);
 
-	if (xs >= WND_WIDTH)
-		xs = WND_WIDTH;
-
 	return xs;
 }
 
@@ -58,9 +55,6 @@ POINT p(float x, float y, float z)
 
 	res.x = (int)(WND_WIDTH/2 + (x - a)/xdens);
 	res.y = (int)(WND_HEIGHT/2 + (b/ydens) - (z/ydens) );
-
-	if(res.x >= WND_WIDTH)
-		res.x = WND_WIDTH;
 
 	if (z <= 0)
 		POINT_COLOR = 7;
@@ -97,10 +91,10 @@ POINT p(float x, float y, float z)
 
 void draw3dwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *wp)
 {
-	int i,j,k;
+	int i,j;
 	int drawThreads;
 
-	POINT A1,A2,A3,A4,A5,A6,A7,A8,A9;
+	POINT A1,A8,A9;
 
 	SYSTEM buf,a,b;
 
@@ -111,29 +105,34 @@ void draw3dwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *w
 	drawThreads = isHyper;
 
 	if (isCoord == 1){
-		setcolor(15);
-
+		/* Full-screen axis lines (grid), zoom-independent */
 		A1 = p(0.0 +offsetX,0.0+offsetY,0.0+offsetZ);
-		A2 = p(0.0 +offsetX,ymax+offsetY,0.0+offsetZ);
-		A3 = p(xmax+offsetX,0.0+offsetY,0.0+offsetZ);
 
-		A4 = p(xmin+offsetX,0.0+offsetY,0.0+offsetZ);
-		A5 = p(0.0+offsetX,ymin+offsetY,0.0+offsetZ);
-		A6 = p(0.0+offsetX,0.0+offsetY,zmin+offsetZ);
-
-		A7 = p(0.0+offsetX,0.0+offsetY,zmax+offsetZ);
-
-		/* POSITIVE LINES */
-		line(A1.x,A1.y,A2.x,A2.y);
-		line(A1.x,A1.y,A3.x,A3.y);
-		line(A1.x,A1.y,A7.x,A7.y);
-
-		/* NEGATIVE LINES */
+		/* X axis — horizontal through origin, full width */
+		setcolor(15);
+		line(A1.x, A1.y, WND_WIDTH, A1.y);
 		setlinestyle(1,0,1);
-		line (A1.x,A1.y,A4.x,A4.y);
-		line (A1.x,A1.y,A5.x,A5.y);
-		line (A1.x,A1.y,A6.x,A6.y);
+		line(0, A1.y, A1.x, A1.y);
 
+		/* Z axis — vertical through origin, full height */
+		setcolor(15);
+		setlinestyle(0,0,1);
+		line(A1.x, A1.y, A1.x, 0);
+		setlinestyle(1,0,1);
+		line(A1.x, WND_HEIGHT, A1.x, A1.y);
+
+		/* Y axis — diagonal, extend to screen edges via far endpoints */
+		{
+			float farY = (xmax - xmin) * 10.0;
+			POINT yPos, yNeg;
+			setcolor(15);
+			setlinestyle(0,0,1);
+			yPos = p(0.0+offsetX, farY+offsetY, 0.0+offsetZ);
+			line(A1.x, A1.y, yPos.x, yPos.y);
+			setlinestyle(1,0,1);
+			yNeg = p(0.0+offsetX, -farY+offsetY, 0.0+offsetZ);
+			line(A1.x, A1.y, yNeg.x, yNeg.y);
+		}
 	}
 
 	for (i = 0; i< ptrSize; i++)
@@ -203,16 +202,20 @@ void draw2dwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *w
 	drawThreads = isHyper;
 
 	if (isCoord == 1){
+		/* Full-screen axis lines, zoom-independent */
+		int x0 = ex(0+offsetX);
+		int y0 = ey(0+offsetY);
+
 		setcolor(15);
+		setlinestyle(0,0,1);
+		/* X axis — full width at y0 */
+		line(x0, y0, WND_WIDTH, y0);
+		/* Y axis — full height at x0 */
+		line(x0, y0, x0, 0);
 
-		/* POSITIVE LINES */
-		line (ex(0+offsetX),ey(0+offsetY),ex(xmax+offsetX),ey(0+offsetY));
-		line (ex(0+offsetX),ey(0+offsetY),ex(0+offsetX),ey(ymax+offsetY));
-
-		/* NEGATIVE LINES */
 		setlinestyle(1,0,1);
-		line (ex(xmin+offsetX),ey(0+offsetY),ex(0+offsetX),ey(0+offsetY));
-		line (ex(0+offsetX),ey(ymin+offsetY),ex(0+offsetX),ey(0+offsetY));
+		line(0, y0, x0, y0);
+		line(x0, WND_HEIGHT, x0, y0);
 	}
 
 	for (i = 0; i < ptrSize; i++)
@@ -291,16 +294,20 @@ void drawyzwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *w
 	drawThreads = isHyper;
 
 	if (isCoord == 1){
+		/* Full-screen axis lines, zoom-independent */
+		int y0 = ey(-1*(0+offsetZ));
+		int x0 = ex(0+offsetX);
+
 		setcolor(15);
+		setlinestyle(0,0,1);
+		/* Horizontal (Y) axis — full width at Z=0 */
+		line(x0, y0, WND_WIDTH, y0);
+		/* Vertical (Z) axis — full height at Y=0 */
+		line(x0, y0, x0, 0);
 
-		/* POSITIVE LINES */
-		line (ex(0+offsetX),ey(-1*(0+offsetZ)),ex(xmax+offsetX),ey(-1*(0+offsetZ)));
-		line (ex(0+offsetX),ey(-1*(0+offsetZ)),ex(0+offsetX),ey(-1*(zmax+offsetZ)));
-
-		/* NEGATIVE LINES */
 		setlinestyle(1,0,1);
-		line (ex(xmin+offsetX),ey(-1*(0+offsetZ)),ex(0+offsetX),ey(-1*(0+offsetZ)));
-		line (ex(0+offsetX),ey(-1*(zmin+offsetZ)),ex(0+offsetX),ey(-1*(0+offsetZ)));
+		line(0, y0, x0, y0);
+		line(x0, WND_HEIGHT, x0, y0);
 	}
 
 	for (i = 0; i < ptrSize; i++){
@@ -513,33 +520,27 @@ void init()
 
 void draw(int ptrSize, SYSTEM *ptrList, int mode, int isCoord,int isHyper, WAYPOINT *way, int currentPoint)
 {
+	if (way->size)
+		WND_WIDTH = 470;
+	else
+		WND_WIDTH = 639;
+
 	clearWnd();
 
-	if (way->size){
-
-		WND_WIDTH = 470;
-		pathWnd(way,currentPoint,ptrList);
-	}
-	else{
-		WND_WIDTH = 639;
-		clearWnd();
-	}
-
-
 	if (mode == 1)
-	{
 		draw2dwnd(ptrSize,ptrList,isCoord,isHyper,way);
-	}
 
 	if (mode == 3)
-	{
 		drawyzwnd(ptrSize,ptrList,isCoord,isHyper,way);
-	}
 
 	if (mode == 2)
-	{
 		draw3dwnd(ptrSize,ptrList,isCoord,isHyper,way);
-	}
+
+	if (way->size)
+		pathWnd(way,currentPoint,ptrList);
+
+	/* Status line + memory indicator — drawn LAST */
+	statusLine();
 }
 
 void moveScreenTo(SYSTEM *solar, int value)
@@ -756,6 +757,8 @@ void pathWnd(WAYPOINT *wp,int currentPoint,SYSTEM *ptrList)
 {
 	int i,j,oy,yStep = 15;
 	char buf[30];
+
+	pathListFlag = 0;
 
 	oy = 25 + wp->size*yStep;
 	drawPathWnd(wp,oy);
