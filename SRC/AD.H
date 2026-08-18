@@ -6,6 +6,4 @@ void adLegals();
 void adUpgrade();
 void adPipboy();
 void adFleet();
-void adLoading();
-
-
+void adLoading();

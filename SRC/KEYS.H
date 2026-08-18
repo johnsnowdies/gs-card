@@ -16,5 +16,4 @@
 #define PDWN 0x51
 
 #define KEY_D 0x64
-#define KEY_D_UPPER 0x44
-
+#define KEY_D_UPPER 0x44
