@@ -22,6 +22,7 @@ OBJECT {
 	int y;
 	int z;
 	int r;
+	int type;
 };
 
 POINT {
@@ -38,4 +39,4 @@ WAYPOINT {
 	int way[30];
 	int size;
 };
-
+

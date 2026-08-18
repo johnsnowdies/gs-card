@@ -7,6 +7,16 @@
 #include "ad.h"
 #include "finder.h"
 
+/* objects */
+#include "objects.h"
+extern OBJECT *objList;
+extern int objSize;
+
+/* game flags */
+extern int render_danger_objects;
+extern int show_danger_hyperthreads;
+extern int show_danger_path_parts;
+
 #define MAX_INPUT_LEN 30
 #define MAX_VALUE 1400
 #define MIN_VALUE -1400
@@ -89,10 +99,64 @@ POINT p(float x, float y, float z)
 	return res;
 }
 
+/* drawObjects: renders gas clouds, black holes, nebulae in all 3 modes */
+void drawObjects(int mode)
+{
+	int i;
+	int color, inner;
+
+	if (!objSize || !objList || !render_danger_objects) return;
+
+	for (i = 0; i < objSize; i++)
+	{
+		int cx, cy, rx, ry;
+		int r = objList[i].r;
+
+		switch (objList[i].type) {
+			case OBJ_GASCLOUD:  color = 5;  inner = 13; break;
+			case OBJ_BLACKHOLE: color = 4;  inner = 0;  break;
+			case OBJ_NEBULA:    color = 9;  inner = 11; break;
+			default:            color = 5;  inner = 13; break;
+		}
+
+		if (mode == 1) {
+			cx = ex(objList[i].x + offsetX);
+			cy = ey(objList[i].y + offsetY);
+		} else if (mode == 2) {
+			POINT c = p(objList[i].x + offsetX,
+					objList[i].y + offsetY,
+					objList[i].z + offsetZ);
+			cx = c.x;
+			cy = c.y;
+		} else {
+			cx = ex(objList[i].x + offsetX);
+			cy = ey(-1 * (objList[i].z + offsetZ));
+		}
+
+		rx = (int)(r / xdens);
+		ry = (int)(r / ydens);
+		if (rx < 2) rx = 2;
+		if (ry < 2) ry = 2;
+
+		/* outer glow */
+		setcolor(color);
+		setfillstyle(SOLID_FILL, color);
+		fillellipse(cx, cy, rx, ry);
+
+		/* inner core — volumetric look */
+		if (rx > 3 && ry > 3) {
+			setcolor(inner);
+			setfillstyle(SOLID_FILL, inner);
+			fillellipse(cx, cy, rx*2/3, ry*2/3);
+		}
+	}
+}
+
 void draw3dwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *wp)
 {
 	int i,j;
 	int drawThreads;
+	int o;
 
 	POINT A1,A8,A9;
 
@@ -151,6 +215,23 @@ void draw3dwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *w
 					A8 = p(buf.x + offsetX, buf.y +offsetY, buf.z + offsetZ);
 					if (solar[i].threads[j].cost < 30)
 						line (A1.x,A1.y,A8.x,A8.y);
+					/* unsafe thread via object intersection */
+					if (show_danger_hyperthreads && objSize) {
+						int o;
+						for (o = 0; o < objSize; o++) {
+							if (sphereLineIntersect(
+								solar[i].x, solar[i].y, solar[i].z,
+								buf.x, buf.y, buf.z,
+								objList[o].x, objList[o].y, objList[o].z,
+								objList[o].r)) {
+								setcolor(4);
+								setlinestyle(0,0,1);
+								line(A1.x,A1.y,A8.x,A8.y);
+								setlinestyle(1,0,1);
+								break;
+							}
+						}
+					}
 				}
 			}
 
@@ -182,7 +263,29 @@ void draw3dwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *w
 		}
 	}
 
+	/* Redraw dangerous path segments in red */
+	if (show_danger_path_parts && objSize && wp->size) {
+		for (i = 1; i < wp->size; i++) {
+			int a_idx = wp->way[i-1];
+			int b_idx = wp->way[i];
+			for (o = 0; o < objSize; o++) {
+				if (sphereLineIntersect(
+					solar[a_idx].x, solar[a_idx].y, solar[a_idx].z,
+					solar[b_idx].x, solar[b_idx].y, solar[b_idx].z,
+					objList[o].x, objList[o].y, objList[o].z,
+					objList[o].r)) {
+					A8 = p(solar[a_idx].x + offsetX, solar[a_idx].y + offsetY, solar[a_idx].z + offsetZ);
+					A9 = p(solar[b_idx].x + offsetX, solar[b_idx].y + offsetY, solar[b_idx].z + offsetZ);
+					setcolor(4);
+					setlinestyle(0,0,1);
+					line(A8.x, A8.y, A9.x, A9.y);
+					break;
+				}
+			}
+		}
+	}
 	setcolor(4);
+	drawObjects(2);
 	setlinestyle(0,0,1);
 	rectangle(0,0,WND_WIDTH,WND_HEIGHT);
 	statusLine();
@@ -192,6 +295,7 @@ void draw2dwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *w
 {
 	int i,j;
 	int drawThreads;
+	int o;
 
 	SYSTEM buf,a,b;
 
@@ -239,6 +343,28 @@ void draw2dwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *w
 						line (ex(solar[i].x + offsetX), ey(solar[i].y + offsetY),
 							ex(buf.x + offsetX),ey(buf.y + offsetY));
 							}
+
+					/* unsafe thread (intersects object) — red */
+					/* unsafe thread via object intersection */
+					if (show_danger_hyperthreads && objSize) {
+						int o;
+						for (o = 0; o < objSize; o++) {
+							if (sphereLineIntersect(
+								solar[i].x, solar[i].y, solar[i].z,
+								solar[solar[i].threads[j].value].x,
+								solar[solar[i].threads[j].value].y,
+								solar[solar[i].threads[j].value].z,
+								objList[o].x, objList[o].y, objList[o].z,
+								objList[o].r)) {
+								setcolor(4);
+								line(ex(solar[i].x + offsetX), ey(solar[i].y + offsetY),
+									ex(solar[solar[i].threads[j].value].x + offsetX),
+									ey(solar[solar[i].threads[j].value].y + offsetY));
+								setcolor(15);
+								break;
+							}
+						}
+					}
 				}
 			}
 
@@ -272,8 +398,28 @@ void draw2dwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *w
 		  setcolor(15);
 		}
 	}
+	/* Redraw dangerous path segments in red */
+	if (show_danger_path_parts && objSize && wp->size) {
+		for (i = 1; i < wp->size; i++) {
+			int a_idx = wp->way[i-1];
+			int b_idx = wp->way[i];
+			for (o = 0; o < objSize; o++) {
+				if (sphereLineIntersect(
+					solar[a_idx].x, solar[a_idx].y, solar[a_idx].z,
+					solar[b_idx].x, solar[b_idx].y, solar[b_idx].z,
+					objList[o].x, objList[o].y, objList[o].z,
+					objList[o].r)) {
+					setcolor(4);
+					line(ex(solar[a_idx].x + offsetX), ey(solar[a_idx].y + offsetY),
+						ex(solar[b_idx].x + offsetX), ey(solar[b_idx].y + offsetY));
+					break;
+				}
+			}
+		}
+	}
 
 	setlinestyle(0,0,1);
+	drawObjects(1);
 
 	setcolor(4);
 	rectangle(0,0,WND_WIDTH,WND_HEIGHT);
@@ -284,6 +430,7 @@ void drawyzwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *w
 {
 	int i,j;
 	int drawThreads;
+	int o;
 
 	SYSTEM buf,a,b;
 
@@ -330,6 +477,25 @@ void drawyzwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *w
 						line (ex(solar[i].x + offsetX), ey(-1 * (solar[i].z + offsetZ)),
 							ex(buf.x + offsetX),ey(-1 * (buf.z + offsetZ)));
 							}
+
+					/* unsafe thread (intersects object) — red */
+					/* unsafe thread via object intersection */
+					if (show_danger_hyperthreads && objSize) {
+						int o;
+						for (o = 0; o < objSize; o++) {
+							if (sphereLineIntersect(
+								solar[i].x, solar[i].y, solar[i].z,
+								buf.x, buf.y, buf.z,
+								objList[o].x, objList[o].y, objList[o].z,
+								objList[o].r)) {
+								setcolor(4);
+								line(ex(solar[i].x + offsetX), ey(-1 * (solar[i].z + offsetZ)),
+									ex(buf.x + offsetX),ey(-1 * (buf.z + offsetZ)));
+								setcolor(15);
+								break;
+							}
+						}
+					}
 				}
 			}
 
@@ -363,8 +529,28 @@ void drawyzwnd(int ptrSize, SYSTEM *solar, int isCoord, int isHyper, WAYPOINT *w
 		  setcolor(15);
 		}
 	}
+	/* Redraw dangerous path segments in red */
+	if (show_danger_path_parts && objSize && wp->size) {
+		for (i = 1; i < wp->size; i++) {
+			int a_idx = wp->way[i-1];
+			int b_idx = wp->way[i];
+			for (o = 0; o < objSize; o++) {
+				if (sphereLineIntersect(
+					solar[a_idx].x, solar[a_idx].y, solar[a_idx].z,
+					solar[b_idx].x, solar[b_idx].y, solar[b_idx].z,
+					objList[o].x, objList[o].y, objList[o].z,
+					objList[o].r)) {
+					setcolor(4);
+					line(ex(solar[a_idx].x + offsetX), ey(-1 * (solar[a_idx].z + offsetZ)),
+						ex(solar[b_idx].x + offsetX), ey(-1 * (solar[b_idx].z + offsetZ)));
+					break;
+				}
+			}
+		}
+	}
 
 	setlinestyle(0,0,1);
+	drawObjects(3);
 
 	setcolor(4);
 	rectangle(0,0,WND_WIDTH,WND_HEIGHT);
@@ -756,7 +942,8 @@ void drawPathWnd(WAYPOINT *wp,int oy)
 void pathWnd(WAYPOINT *wp,int currentPoint,SYSTEM *ptrList)
 {
 	int i,j,oy,yStep = 15;
-	char buf[30];
+	int o;
+	char buf[50];
 
 	pathListFlag = 0;
 
@@ -781,7 +968,24 @@ void pathWnd(WAYPOINT *wp,int currentPoint,SYSTEM *ptrList)
             bar(WND_WIDTH,25+i*yStep,639,25+i*yStep+15);
 		}
 
-		sprintf(buf,"#%d: SA%d [%d;%d;%d]",i+1,wp->way[i],ptrList[i].x,ptrList[i].y,ptrList[i].z);
+		sprintf(buf,"#%d: SA%d",i+1,wp->way[i]);
+
+		/* check if the segment leading TO this waypoint is dangerous */
+		if (i > 0 && show_danger_path_parts && objSize) {
+			int prev = wp->way[i-1];
+			int cur = wp->way[i];
+			for (o = 0; o < objSize; o++) {
+				if (sphereLineIntersect(
+					ptrList[prev].x, ptrList[prev].y, ptrList[prev].z,
+					ptrList[cur].x, ptrList[cur].y, ptrList[cur].z,
+					objList[o].x, objList[o].y, objList[o].z,
+					objList[o].r)) {
+					sprintf(buf,"#%d: SA%d [DANGER]",i+1,wp->way[i]);
+					break;
+				}
+			}
+		}
+
 		outtextxy(WND_WIDTH+5,25+i*yStep,buf);
 	}
 

@@ -5,14 +5,22 @@
 #include "keys.h"
 #include "reader.h"
 #include "structs.h"
+#include "objects.h"
 #include "finder.h"
 #include "ad.h"
 
 SYSTEM *ptrList;
+OBJECT *objList;
+int objSize;
 WAYPOINT wp;
 
 int ptrSize;
 int currentPoint;
+
+/* game flags — default off */
+int render_danger_objects = 0;
+int show_danger_hyperthreads = 0;
+int show_danger_path_parts = 0;
 
 int main()
 {
@@ -27,6 +35,7 @@ int main()
 	adLoading();
 
 	CalculateHyperThreads(ptrSize,ptrList);
+	objSize = loadObjects(&objList);
 
 	wp.size = 0;
 	currentPoint = -1;
@@ -154,10 +163,19 @@ int main()
 			}
 		}
 
+		/* CHEAT: D — показать опасные объекты, нити, маршрут */
+		if (KEY_D == c || KEY_D_UPPER == c){
+			render_danger_objects = 1;
+			show_danger_hyperthreads = 1;
+			show_danger_path_parts = 1;
+			draw(ptrSize,ptrList,mode,isCoord,isHyper,&wp,currentPoint);
+		}
+
 
 	}
 
 	free(ptrList);
+	if (objList) free(objList);
 	closegraph();
 	return(0);
 }

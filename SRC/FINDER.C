@@ -2,8 +2,13 @@
 #include <alloc.h>
 #include <limits.h>
 #include "structs.h"
+#include "objects.h"
 #include "finder.h"
 #include "ad.h"
+
+/* object globals for thread safety checks */
+extern OBJECT *objList;
+extern int objSize;
 
 int S;
 unsigned char gotEnd;
@@ -240,7 +245,8 @@ void CalculateHyperThreads(int ptrSize, SYSTEM *ptrList)
 
 			/* БАГФИКС: было k < 15 (buffer overflow при cnt < 15) */
 			for (k=0; k < cnt; k++){
-				ptrList[i].threads[k].value = buffer[k];
+				int val = buffer[k];
+				ptrList[i].threads[k].value = val;
 				ptrList[i].threads[k].cost = 0;
 			}
 		}else{
@@ -436,4 +442,4 @@ void CalculateThreadCosts(int ptrSize, SYSTEM *ptrList, int topCost)
 
 		ptrList[j] = a;
 	}
-}
+}

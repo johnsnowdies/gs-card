@@ -51,9 +51,11 @@ echo Compiling SPLASH.C...                    >> %BLD%\build.log
 tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\SPLASH.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
-echo.                                         >> %BLD%\build.log
+echo Compiling OBJECTS.C...                    >> %BLD%\build.log
+tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\OBJECTS.C >> %BLD%\build.log
+if errorlevel 1 goto err
 
-REM ---------- link via TLINK with response file ----------
+echo.                                         >> %BLD%\build.log
 echo Linking GSCARD.EXE...                    >> %BLD%\build.log
 
 REM TLINK response file format:
@@ -68,7 +70,8 @@ echo GUI.OBJ+                                >> %BLD%\GS-LINK.RSP
 echo READER.OBJ+                             >> %BLD%\GS-LINK.RSP
 echo FINDER.OBJ+                             >> %BLD%\GS-LINK.RSP
 echo AD.OBJ+                                 >> %BLD%\GS-LINK.RSP
-echo SPLASH.OBJ, GSCARD.EXE, GSCARD.MAP, %LIB%\EMU.LIB %LIB%\MATHS.LIB %LIB%\GRAPHICS.LIB %LIB%\CS.LIB >> %BLD%\GS-LINK.RSP
+echo SPLASH.OBJ+                                 >> %BLD%\GS-LINK.RSP
+echo OBJECTS.OBJ, GSCARD.EXE, GSCARD.MAP, %LIB%\EMU.LIB %LIB%\MATHS.LIB %LIB%\GRAPHICS.LIB %LIB%\CS.LIB >> %BLD%\GS-LINK.RSP
 
 cd %BLD%
 
@@ -87,6 +90,7 @@ copy ..\%ASST%\BGI\*.BGI BGI\ > nul
 copy ..\%ASST%\BGI\*.CHR BGI\ > nul
 copy ..\%ASST%\LOGO.BMP . > nul
 copy ..\%ASST%\SYSTEM.SOL . > nul
+copy ..\%ASST%\OBJECTS.SOL . > nul
 
 REM ---------- cleanup intermediate files ----------
 echo Cleaning intermediates...                >> build.log
