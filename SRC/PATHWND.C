@@ -17,6 +17,7 @@
  * Extern game globals (defined in card.c)
  * ---------------------------------------------------------------- */
 extern struct object* objList;
+extern struct game_state gs;
 extern int      objSize;
 extern int      show_danger_path_parts;
 
@@ -66,7 +67,7 @@ static void drawPathWnd(struct waypoint* wp, int oy)
 void pathWnd(struct waypoint* wp, int currentPoint,
              struct system_solar* ptrList)
 {
-    int i, j, oy, yStep = 15;
+    int i, j, oy, yStep = 15, jump_possible = 0;
     int o;
     char buf[50];
 
@@ -79,6 +80,10 @@ void pathWnd(struct waypoint* wp, int currentPoint,
 
     setcolor(15);
     settextstyle(SMALL_FONT, HORIZ_DIR, 4);
+
+    if (gs.current_system == wp->way[0]){
+        jump_possible = 1;
+    }
 
     for (i = 0, j = (wp->size - 1); i < wp->size; i++, j--) {
         if (i == currentPoint) {
@@ -93,7 +98,14 @@ void pathWnd(struct waypoint* wp, int currentPoint,
                 639, 46 + i * yStep + 15);
         }
 
-        sprintf(buf, "#%d: SA%d", i + 1, wp->way[i]);
+        if (wp->way[i] == gs.current_system){
+            sprintf(buf, "#%d: SA%d << CURRENT", i + 1, wp->way[i]);    
+        }
+        else if (i == 1 && jump_possible){
+            sprintf(buf, "#%d: SA%d << NEXT JUMP", i + 1, wp->way[i]);    
+        } else {
+            sprintf(buf, "#%d: SA%d", i + 1, wp->way[i]);    
+        }
 
         /* Mark dangerous segments */
         if (i > 0 && show_danger_path_parts && objSize) {
@@ -113,4 +125,4 @@ void pathWnd(struct waypoint* wp, int currentPoint,
 
         outtextxy(WND_WIDTH + 5, 46 + i * yStep, buf);
     }
-}
+}

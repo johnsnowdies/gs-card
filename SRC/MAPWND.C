@@ -15,6 +15,7 @@
 #include "gui.h"
 #include "pathwnd.h"
 #include "ad.h"
+#include "reader.h"
 
 /* ----------------------------------------------------------------
  * Screen / viewport layout -- defined here, declared extern in gui.h
@@ -52,6 +53,8 @@ extern int      show_danger_path_parts;
 extern int      dirty_path;
 extern int      dirty_topbar;
 extern int      dirty_bottombar;
+
+extern char* sectors[9];
 
 /* ----------------------------------------------------------------
  * Clipping helpers (safe_*) -- clip against map_wnd

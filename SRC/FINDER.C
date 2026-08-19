@@ -11,6 +11,7 @@
 /* object globals for thread safety checks */
 extern OBJECT* objList;
 extern int objSize;
+extern struct game_state gs;
 
 int S;
 unsigned char gotEnd;
@@ -31,6 +32,7 @@ int min(int a, int b) {
 
 int GetWay(int ptrSize, SYSTEM* ptrList, WAYPOINT* wp) {
   char* input;
+  char* current[5];
   int start, end, i, status;
 
   for (i = 0; i < ptrSize; i++) {
@@ -42,7 +44,8 @@ int GetWay(int ptrSize, SYSTEM* ptrList, WAYPOINT* wp) {
 
   S = 1;
   gotEnd = 0;
-  input = (char*)questionWnd("GSCARD", "Enter START system:", NULL);
+  sprintf(current, "%d", gs.current_system);
+  input = (char*)questionWnd("GSCARD", "Enter START system:", current);
   start = atoi(input);
 
   input = (char*)questionWnd("GSCARD", "Enter END system:", NULL);

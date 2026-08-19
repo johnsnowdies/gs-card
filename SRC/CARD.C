@@ -74,11 +74,11 @@ static void new_game(char *name)
     if (gs.current_system < 0) gs.current_system = 0;
     if (gs.current_system >= ptrSize) gs.current_system = 0;
 
-    gs.ship_type         = 1;
-    gs.tonnage           = 100;
+    gs.ship_type         = 0;
+    gs.tonnage           = 50;
     gs.current_cargo     = 0;
     gs.cargo_value       = 0;
-    gs.hyper_class       = 1;
+    gs.hyper_class       = 0;
     gs.smuggler_bay      = 0;
     gs.reputation        = 0;
     gs.missions_completed = 0;

@@ -3,6 +3,9 @@
 #define WAYPOINT struct waypoint
 #define THREAD struct thread
 #define OBJECT struct object
+#define NPC struct npc
+#define QUEST struct quest
+#define GAMESTATE struct game_state
 
 SYSTEM {
   /* POSITIONING */
@@ -17,7 +20,7 @@ SYSTEM {
   unsigned char visited;
 
   /* GAME DATA */
-  unsigned int fraction;
+  unsigned int faction;
   unsigned int is_shipyard;
   unsigned int is_gas_station;
   unsigned int sector;
@@ -46,7 +49,19 @@ WAYPOINT {
   int size;
 };
 
-#define GAMESTATE struct game_state
+NPC {
+  char name[100];
+  int faction;
+  int portrait;
+};
+
+QUEST {
+  char name[100];
+  int reward;
+  int penalty;
+  int type;
+  NPC* giver;
+};
 
 GAMESTATE {
   char captain_name[100];
@@ -61,4 +76,29 @@ GAMESTATE {
   int reputation;
   int missions_completed;
   int fuel;
+  QUEST* quest;
 };
+
+
+
+#define SHIP_ALMIGHTY 0
+#define SHIP_BETSY 1
+#define SHIP_IMPERIAL 2
+#define SHIP_GAE_BULG 3
+#define SHIP_NOVA 4
+#define SHIP_BULK_CARRIER 5
+
+#define SHIP_COUNT         6
+
+extern char* ship_names[];
+extern int   ship_tonnages[];
+
+#define HYPER_I   0
+#define HYPER_II  1
+#define HYPER_III 2
+#define HYPER_UMBRELLA  3
+
+#define HYPER_COUNT 4
+
+extern char* hyper_names[];
+extern int   hyper_fuel[];
