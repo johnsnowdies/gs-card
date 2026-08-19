@@ -290,10 +290,12 @@ void draw3dwnd(int ptrSize, SYSTEM* solar, int isCoord, int isHyper,
         /* unsafe thread via object intersection */
         if (show_danger_hyperthreads && objSize) {
           int o;
+
           for (o = 0; o < objSize; o++) {
             if (sphereLineIntersect(solar[i].x, solar[i].y, solar[i].z, buf.x,
                                     buf.y, buf.z, objList[o].x, objList[o].y,
                                     objList[o].z, objList[o].r)) {
+
               setcolor(4);
               setlinestyle(0, 0, 1);
               safe_line(A1.x, A1.y, A8.x, A8.y);

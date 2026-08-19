@@ -60,7 +60,17 @@ int main() {
 
   init();
 
+  /*
+  SPLASH SCREEN
+  */
   splash();
+
+  /*
+  MAIN MENU LOOP
+
+  determinate - new game or load (USER.SAV)
+  */
+
   adLoading();
 
   CalculateHyperThreads(ptrSize, ptrList);
@@ -77,6 +87,11 @@ int main() {
 
   draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
 
+  
+
+  /*
+  MAP MODE LOOP
+  */
   while (c != ESC) {
     c = getch();
 
@@ -206,4 +221,4 @@ int main() {
   closegraph();
   return (0);
 }
-
+

@@ -15,6 +15,12 @@ SYSTEM {
   unsigned char threadSize;
   int rate;
   unsigned char visited;
+
+  /* GAME DATA */
+  unsigned int fraction;
+  unsigned int is_shipyard;
+  unsigned int is_gas_station;
+  unsigned int sector;
 };
 
 OBJECT {
@@ -55,4 +61,4 @@ GAMESTATE {
   int reputation;
   int missions_completed;
   int fuel;
-};
+};
