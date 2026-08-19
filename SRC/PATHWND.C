@@ -35,19 +35,19 @@ static void drawPathWnd(struct waypoint* wp, int oy)
 
     setfillstyle(SOLID_FILL, BLACK);
     setcolor(15);
-    bar(WND_WIDTH + 1, 21, 639, WND_HEIGHT + 20);
+    bar(WND_WIDTH + 1, 21, 638, WND_HEIGHT-1);
 
     /* Title bar */
     setfillstyle(SOLID_FILL, RED);
     setcolor(0);
-    bar(WND_WIDTH + 1, 21, 639, 41);
+    bar(WND_WIDTH + 1, 21, 638, 41);
     settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
     outtextxy(WND_WIDTH + 5, 26, "PATH");
 
     /* Separator + hint */
     setcolor(4);
     setlinestyle(1, 0, 1);
-    line(WND_WIDTH + 1, oy, 639, oy);
+    line(WND_WIDTH + 1, oy, 638, oy);
 
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
     outtextxy(WND_WIDTH + 5, oy + 5, "PgUp/PgDn");
@@ -59,6 +59,7 @@ static void drawPathWnd(struct waypoint* wp, int oy)
         adQuindett();
         pathListFlag = 1;
     }
+
 }
 
 /* ----------------------------------------------------------------
@@ -90,12 +91,12 @@ void pathWnd(struct waypoint* wp, int currentPoint,
             setcolor(0);
             setfillstyle(SOLID_FILL, RED);
             bar(WND_WIDTH + 1, 46 + i * yStep,
-                639, 46 + i * yStep + 15);
+                638, 46 + i * yStep + 15);
         } else {
             setcolor(15);
             setfillstyle(SOLID_FILL, BLACK);
             bar(WND_WIDTH + 1, 46 + i * yStep,
-                639, 46 + i * yStep + 15);
+                638, 46 + i * yStep + 15);
         }
 
         if (wp->way[i] == gs.current_system){

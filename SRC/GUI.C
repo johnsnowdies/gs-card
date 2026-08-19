@@ -54,13 +54,22 @@ void init()
     settextstyle(SMALL_FONT, HORIZ_DIR, 4);
 }
 
+int count_digits_loop(long n) {
+    int count = 0;
+    if (n == 0) return 1;
+    if (n < 0) n = -n;
+
+    while (n) { ++count; n /= 10; }
+    return count;
+}
+
 /* ----------------------------------------------------------------
  * topStatusLine -- system name, faction, balance
  * ---------------------------------------------------------------- */
 void topStatusLine()
 {
     int xpos = BAR_LEFT;
-    char buf[50] = "";
+    char buf[100] = "";
 
     setfillstyle(SOLID_FILL, BLACK);
     bar(0, 0, WND_WIDTH, TOPBAR_H - 1);
@@ -74,20 +83,23 @@ void topStatusLine()
     setcolor(TEXT_COLOR);
     outtextxy(xpos, 2, "-MODE");
 
-    /* Centre: current system */
-    xpos = WND_WIDTH / 2 - 60;
-    if (xpos < 80) xpos = 80;
-    sprintf(buf, "SA.%d (%d)", gs.current_system,
-            ptrList[gs.current_system].threadSize);
-    setcolor(TEXT_COLOR);
-    outtextxy(xpos, 2, buf);
+    xpos += 50;
+    
+    setcolor(BAR_COLOR);
+    outtextxy(xpos, 2, "INFO:");
 
-    /* Right: name + balance */
-    xpos = WND_WIDTH - 160;
-    if (xpos < 300) xpos = 300;
-    sprintf(buf, "%s $$ %ld", gs.captain_name, gs.balance);
+    xpos += 40;
+    sprintf(buf, "SA.%d (%d) | Balance: %ld$$ | Fuel: %d%% | Cargo: %d/%d = %ld$$", gs.current_system, 
+        ptrList[gs.current_system].threadSize,
+        gs.balance,
+        gs.fuel,
+        gs.current_cargo,
+        gs.tonnage,
+        gs.cargo_value);
+    
     setcolor(TEXT_COLOR);
     outtextxy(xpos, 2, buf);
+  
 }
 
 /* ----------------------------------------------------------------

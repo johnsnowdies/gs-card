@@ -54,11 +54,15 @@ void drawPlayerStatus()
     char* current_system[50];
     char* sector[50];
 
-    sprintf(captain_name, "Captain: %s", gs.captain_name);
-    sprintf(ship_name, "Spacevessel: %s - Cargo: %d / %d - Cargo Value: %d $$", ship_names[gs.ship_type], gs.current_cargo, gs.tonnage, gs.cargo_value);
-    sprintf(hyper_class, "Engine: %s - Fuel: %d%%", hyper_names[gs.hyper_class], gs.fuel);
+    sprintf(captain_name, "Software registered for: %s", gs.captain_name);
+    sprintf(ship_name, "Spacevessel: %s", ship_names[gs.ship_type]);
+    sprintf(hyper_class, "Engine: %s", hyper_names[gs.hyper_class]);
     sprintf(current_system, "Current system: SA.%d", gs.current_system);
     sprintf(sector, "Sector %s", sectors[ptrList[gs.current_system].sector]);
+
+    setcolor(4);
+    setlinestyle(0, 0, 1);
+    rectangle(0, 21, 639, WND_HEIGHT);
 
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
     setcolor(15);

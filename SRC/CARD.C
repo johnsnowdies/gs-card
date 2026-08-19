@@ -69,7 +69,7 @@ static void new_game(char *name)
     int i;
 
     strcpy(gs.captain_name, name);
-    gs.balance            = 1000;
+    gs.balance            = 100;
     gs.current_system     = rand() % ptrSize;
     if (gs.current_system < 0) gs.current_system = 0;
     if (gs.current_system >= ptrSize) gs.current_system = 0;
@@ -258,7 +258,14 @@ int main()
             }
 
             if (ESC == c){
-                SIG_TERM = 1;
+                if (wp.size){
+                    wp.size = 0;
+                    draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                }
+                else{
+                    SIG_TERM = 1;    
+                }
+                
             }
 
             break;
@@ -339,6 +346,8 @@ int main()
 
         case SCR_STATUS:
             if (TAB == c){
+                if (wp.size > 0)
+                    dirty_path = 1;
                 cur_screen = SCR_MAP;
                 draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
             }

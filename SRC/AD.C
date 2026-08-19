@@ -9,13 +9,13 @@
 
 void adQuindett() {
   setcolor(4);
-  rectangle(471, 300, 639, 479);
+  rectangle(471, 300, 639, 459);
 
   setfillstyle(BKSLASH_FILL, RED);
   bar(471, 300, 639, 325);
 
   setfillstyle(SOLID_FILL, RED);
-  bar(472, 326, 638, 453);
+  bar(472, 326, 638, 459);
 
   setcolor(0);
   settextstyle(SMALL_FONT, HORIZ_DIR, 5);
@@ -49,7 +49,7 @@ void adQuindett() {
   outtextxy(510, 425, "\"I WANT TO QUINDETT!\"");
 
   setfillstyle(SOLID_FILL, BLACK);
-  bar(471, 453, 639, 479);
+  bar(471, 453, 639, 459);
   /*
   settextstyle(SMALL_FONT,HORIZ_DIR,4);
   outtextxy(478,433,"GS:1:234:QA");
@@ -60,6 +60,7 @@ void adHypersoft() {
   /* HYPERSOFT LOGO */
 
   setcolor(4);
+  setlinestyle(0, 0, 1);
 
   setfillstyle(SOLID_FILL, BLACK);
   bar(20, 40, 70, 100);
