@@ -1,5 +1,6 @@
 #define ESC 0x1b
 #define ENTER 0x0D
+#define TAB 0x09
 #define F1 0x3b
 #define F2 0x3c
 #define F3 0x3d

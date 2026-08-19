@@ -24,6 +24,8 @@
 #include "mapwnd.h"
 #include "nav.h"
 #include "pathwnd.h"
+#include "mmwnd.h"
+#include "statwnd.h"
 
 /* ----------------------------------------------------------------
  * Game globals
@@ -139,7 +141,9 @@ int main()
     /* Splash screen */
     splash();
 
+    /* Show ads */
     adLoading();
+    
     /* Draw Main Menu */
     mainMenuWnd(mm_select);
 
@@ -248,6 +252,11 @@ int main()
                 draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
             }
 
+            if (TAB == c){
+                cur_screen = SCR_STATUS;
+                statusWnd();
+            }
+
             if (ESC == c){
                 SIG_TERM = 1;
             }
@@ -326,7 +335,16 @@ int main()
                 }
             }
 
-        break;        
+        break;
+
+        case SCR_STATUS:
+            if (TAB == c){
+                cur_screen = SCR_MAP;
+                draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+            }
+
+
+        break;
         } /* switch (cur_screen) */
     }
 
