@@ -49,37 +49,6 @@ int loadSolarFile(SYSTEM** list) {
   return counter;
 }
 
-void saveFile(int ptrSize, SYSTEM* ptrList) {
-  FILE* fp;
-  int i, limit;
-  long x, y, z, dz;
-
-  if ((fp = fopen("new.sol", "w")) == NULL) {
-    printf("IO ERROR");
-    exit(1);
-  }
-
-  for (i = 0; i < ptrSize; i++) {
-    limit = 1000 / 25;
-
-    x = ptrList[i].x;
-    y = ptrList[i].y;
-
-    if (x <= 500 && y <= 500 && x >= -500 && y >= -500) limit = 1400 / 20;
-    if (x <= 400 && y <= 400 && x >= -400 && y >= -400) limit = 1400 / 16;
-    if (x <= 300 && y <= 300 && x >= -300 && y >= -300) limit = 1400 / 12;
-    if (x <= 200 && y <= 200 && x >= -200 && y >= -200) limit = 1400 / 8;
-    if (x <= 100 && y <= 100 && x >= -100 && y >= -100) limit = 1400 / 6;
-
-    z = rand() % (limit + 1 + limit) - limit;
-
-    fprintf(fp, "%ld;%ld;%ld\n", ptrList[i].x, ptrList[i].y, z);
-    ptrList[i].y = z;
-  }
-
-  getch();
-  fclose(fp);
-}
 
 int load_game(GAMESTATE* state) {
   FILE* fp;

@@ -900,13 +900,6 @@ void warningWnd(char* header, char* text) {
   setcolor(15);
 }
 
-void systemInfoWnd(char* header) {
-  drawWnd(20, 20, 430, 400);
-  setcolor(15);
-  settextstyle(SMALL_FONT, HORIZ_DIR, 6);
-  outtextxy(40, 40, "? ?,  ?  ? !");
-}
-
 void progressWnd(char* header, char* text, int current, int total) {
   float di;
   float x;

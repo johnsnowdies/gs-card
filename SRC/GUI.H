@@ -30,4 +30,4 @@ void pathWnd(WAYPOINT* wp, int currentPoint, SYSTEM* ptrList);
 char* questionWnd(char* header, char* text);
 void warningWnd(char* header, char* text);
 void progressWnd(char* header, char* text, int current, int total);
-void drawWnd(int x, int y, int width, int height);
+void drawWnd(int x, int y, int width, int height);
