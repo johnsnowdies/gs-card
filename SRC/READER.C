@@ -50,11 +50,11 @@ int loadSolarFile(SYSTEM** list) {
 }
 
 
-int load_game(GAMESTATE* state) {
+int load_game(GAMESTATE* state, char* filename) {
   FILE* fp;
   char buf[256];
 
-  if ((fp = fopen("USER.SAV", "r")) == NULL)
+  if ((fp = fopen(filename, "r")) == NULL)
     return 0;
 
   if (fgets(buf, sizeof buf, fp) == NULL) {

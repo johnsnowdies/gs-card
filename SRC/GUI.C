@@ -180,15 +180,25 @@ void warningWnd(char* header, char* text)
  *
  * Returns a pointer to a static buffer (valid until next call).
  * ---------------------------------------------------------------- */
-char* questionWnd(char* header, char* text)
+char* questionWnd(char* header, char* text, char* defaultValue)
 {
-#define Q_INPUT_LEN 30
     static char inputbuf[Q_INPUT_LEN];
-    int c = 0, input_pos = 0, the_end = 0;
+    int i = 0, c = 0, input_pos = 0, the_end = 0;
     int wx = (WND_WIDTH - WND_W) / 2;
     int wy = WND_DEFAULT_Y;
 
-    inputbuf[0] = '\0';
+    if (defaultValue != NULL && defaultValue[0] != '\0')
+    {
+        for (i = 0; i < Q_INPUT_LEN - 1 && defaultValue[i] != '\0'; i++)
+        {
+            inputbuf[i] = defaultValue[i];
+        }
+        inputbuf[i] = '\0';
+    }
+    else
+    {
+        inputbuf[0] = '\0';
+    }
 
     drawWnd(wx, wy, WND_W, WND_H);
 
@@ -273,4 +283,4 @@ void progressWnd(char* header, char* text, int current, int total)
     outtextxy(400, 185, memMsg);
 
     setcolor(0);
-}
+}

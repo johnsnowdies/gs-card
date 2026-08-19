@@ -1,4 +1,5 @@
 #define ESC 0x1b
+#define ENTER 0x0D
 #define F1 0x3b
 #define F2 0x3c
 #define F3 0x3d
@@ -16,4 +17,4 @@
 #define PDWN 0x51
 
 #define KEY_D 0x64
-#define KEY_D_UPPER 0x44
+#define KEY_D_UPPER 0x44

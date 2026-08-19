@@ -67,6 +67,11 @@ echo Compiling PATHWND.C...                     >> %BLD%\build.log
 tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\PATHWND.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
+echo Compiling MMWND.C...                     >> %BLD%\build.log
+tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\MMWND.C >> %BLD%\build.log
+if errorlevel 1 goto err
+
+
 echo.                                         >> %BLD%\build.log
 echo Linking GSCARD.EXE...                    >> %BLD%\build.log
 
@@ -86,6 +91,7 @@ echo SPLASH.OBJ+                                 >> %BLD%\GS-LINK.RSP
 echo OBJECTS.OBJ+                                >> %BLD%\GS-LINK.RSP
 echo MAPWND.OBJ+                                 >> %BLD%\GS-LINK.RSP
 echo NAV.OBJ+                                    >> %BLD%\GS-LINK.RSP
+echo MMWND.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo PATHWND.OBJ, GSCARD.EXE, GSCARD.MAP, %LIB%\EMU.LIB %LIB%\MATHS.LIB %LIB%\GRAPHICS.LIB %LIB%\CS.LIB >> %BLD%\GS-LINK.RSP
 
 cd %BLD%

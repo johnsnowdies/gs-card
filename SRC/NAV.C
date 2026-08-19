@@ -96,7 +96,7 @@ void gotoSystem(int ptrSize, struct system_solar* solar)
     int value;
     int error = 0;
 
-    input = questionWnd("GSCARD", "Insert system COORD");
+    input = questionWnd("GSCARD", "Insert system COORD", NULL);
     value = atoi(input);
 
     if (value != 0) {
@@ -113,4 +113,4 @@ void gotoSystem(int ptrSize, struct system_solar* solar)
         warningWnd("ERROR", "Wrong value!");
         getch();
     }
-}
+}

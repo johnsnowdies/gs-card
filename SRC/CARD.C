@@ -47,21 +47,26 @@ int dirty_bottombar            = 1;
 /* Game state */
 struct game_state gs;
 
+/* Exit signal */
+int SIG_TERM = 0;
+
 /* ----------------------------------------------------------------
  * Screen enumeration -- add new screens here
  * ---------------------------------------------------------------- */
 enum GameScreen {
-    SCR_MAP
+    SCR_MAP,
+    SCR_MAIN_MENU,
+    SCR_STATUS
 };
 
 /* ----------------------------------------------------------------
  * new_game -- initialise game state
  * ---------------------------------------------------------------- */
-static void new_game()
+static void new_game(char *name)
 {
     int i;
 
-    strcpy(gs.captain_name, "Player");
+    strcpy(gs.captain_name, name);
     gs.balance            = 1000;
     gs.current_system     = rand() % ptrSize;
     if (gs.current_system < 0) gs.current_system = 0;
@@ -76,7 +81,43 @@ static void new_game()
     gs.reputation        = 0;
     gs.missions_completed = 0;
     gs.fuel              = 100;
+
+    /* Load ads, calculate hyper-threads, load objects */
+    CalculateHyperThreads(ptrSize, ptrList);
+    objSize = loadObjects(&objList);
+
+    moveScreenTo(ptrList, gs.current_system);
+
+    wp.size = 0;
+    currentPoint = -1;
+
+    save_game(&gs);
 }
+
+/* ----------------------------------------------------------------
+ * load_game -- initialise game state from file
+ * ---------------------------------------------------------------- */
+static int load_save(char *filename)
+{
+    int result = 0;
+    result = load_game(&gs, filename);
+
+    if (result == 1)
+    {
+        /* Load ads, calculate hyper-threads, load objects */
+        CalculateHyperThreads(ptrSize, ptrList);
+        objSize = loadObjects(&objList);
+
+        moveScreenTo(ptrList, gs.current_system);
+
+        wp.size = 0;
+        currentPoint = -1;
+    }
+
+
+    return result;
+}
+
 
 /* ----------------------------------------------------------------
  * main
@@ -84,8 +125,12 @@ static void new_game()
 int main()
 {
     int c = 0;
+    int mm_select = 0;
     int isCoord = 1, isHyper = 0, mode = 1;  /* 1 = 2D, 2 = 3D, 3 = YZ */
-    enum GameScreen cur_screen = SCR_MAP;
+    enum GameScreen cur_screen = SCR_MAIN_MENU;
+    
+    /* New game Player name*/
+    char* nameInput;
 
     ptrSize = loadSolarFile(&ptrList);
 
@@ -94,25 +139,15 @@ int main()
     /* Splash screen */
     splash();
 
-    /* Load ads, calculate hyper-threads, load objects */
     adLoading();
-    CalculateHyperThreads(ptrSize, ptrList);
-    objSize = loadObjects(&objList);
+    /* Draw Main Menu */
+    mainMenuWnd(mm_select);
 
-    new_game();
-    moveScreenTo(ptrList, gs.current_system);
-
-    wp.size = 0;
-    currentPoint = -1;
-
-    getch();
-
-    draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
 
     /* ----------------------------------------------------------------
      * Main event loop
      * ---------------------------------------------------------------- */
-    while (c != ESC) {
+    while (!SIG_TERM) {
         c = getch();
 
         switch (cur_screen) {
@@ -212,12 +247,86 @@ int main()
                 show_danger_path_parts   = 1;
                 draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
             }
+
+            if (ESC == c){
+                SIG_TERM = 1;
+            }
+
             break;
 
         /* ============================================================
-         * Future screens: add case branches here
+         * SCR_MAIN_MENU -- game main menu after load
          * ============================================================ */
+        case SCR_MAIN_MENU:
+            /* Init new game */
+            if (mm_select == 0 && ENTER == c)
+            {
+                nameInput = questionWnd("New game", "Enter captain name:", NULL);
 
+                if (nameInput != NULL && nameInput[0] != '\0') 
+                {
+                    new_game(nameInput);
+                    cur_screen = SCR_MAP;
+                    draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                } else {
+                    warningWnd("ERROR", "Wrong value!");
+                    getch();
+                    mainMenuWnd(mm_select);
+                }
+            }
+
+            /* Load game */
+            if (mm_select == 1 && ENTER == c)
+            {
+                nameInput = questionWnd("Load game", "Enter save file name", "USER.SAV");
+
+                if (nameInput != NULL && nameInput[0] != '\0') 
+                {
+                    if(load_save(nameInput) == 1)
+                    {
+                        cur_screen = SCR_MAP;
+                        draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                    }
+                    else
+                    {
+                        warningWnd("ERROR", "File not found");
+                        getch();
+                        mainMenuWnd(mm_select);
+                    }
+                } else {
+                    warningWnd("ERROR", "Wrong value!");
+                    getch();
+                    mainMenuWnd(mm_select);
+                }
+
+                
+            }
+            
+
+            /* Exit to DOS */
+            if (mm_select == 2 && ENTER == c)
+            {
+                SIG_TERM = 1;
+            }
+
+            /* UP */
+            if (UP == c){
+                if (mm_select > 0)
+                {
+                    mm_select--;
+                    mainMenuWnd(mm_select);
+                }
+            }
+
+            if (DWN == c){
+                if (mm_select < 2)
+                {
+                    mm_select++;
+                    mainMenuWnd(mm_select);
+                }
+            }
+
+        break;        
         } /* switch (cur_screen) */
     }
 

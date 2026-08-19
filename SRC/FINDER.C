@@ -42,10 +42,10 @@ int GetWay(int ptrSize, SYSTEM* ptrList, WAYPOINT* wp) {
 
   S = 1;
   gotEnd = 0;
-  input = (char*)questionWnd("GSCARD", "Enter START system:");
+  input = (char*)questionWnd("GSCARD", "Enter START system:", NULL);
   start = atoi(input);
 
-  input = (char*)questionWnd("GSCARD", "Enter END system:");
+  input = (char*)questionWnd("GSCARD", "Enter END system:", NULL);
   end = atoi(input);
 
   if (start > 0 && end > 0 && start < ptrSize && end < ptrSize) {
