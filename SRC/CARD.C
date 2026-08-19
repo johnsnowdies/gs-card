@@ -128,6 +128,7 @@ int main()
 {
     int c = 0;
     int mm_select = 0;
+    char* buf[50];
     int isCoord = 1, isHyper = 0, mode = 1;  /* 1 = 2D, 2 = 3D, 3 = YZ */
     enum GameScreen cur_screen = SCR_MAIN_MENU;
     
@@ -255,6 +256,27 @@ int main()
             if (TAB == c){
                 cur_screen = SCR_STATUS;
                 statusWnd();
+            }
+
+            if (ENTER == c){
+                if (wp.size > 1 && wp.way[0] == gs.current_system){
+                    sprintf(buf, "Ready to jump from SA.%d to SA.%d ?", wp.way[0], wp.way[1]);
+                    if (boolWnd("JUMP INITIATED", buf)) {
+                        gs.current_system = wp.way[1];
+                        gs.fuel -= hyper_fuel[gs.hyper_class];
+                        sprintf(buf, "Welcome to SA.%d", wp.way[1]);
+                        wp.size = 0;
+                        dirty_topbar = 1;
+                        draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);    
+                        warningWnd("JUMP RESULT", buf);
+                        getch();
+                        draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+
+                    }
+                    else{
+                        draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);    
+                    }
+                }
             }
 
             if (ESC == c){

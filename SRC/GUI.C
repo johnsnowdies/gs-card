@@ -187,6 +187,77 @@ void warningWnd(char* header, char* text)
     setcolor(TEXT_COLOR);
 }
 
+int boolWnd(char* header, char* text)
+{
+    int wx = (WND_WIDTH - WND_W) / 2;
+    int wy = WND_DEFAULT_Y;
+    int selected = 0;         
+    int ch, ext;
+
+    int btnW = 50, btnH = 20, gap = 10;
+    int btnY = wy + WND_H - btnH - 10;           
+    int total = 2 * btnW + gap;
+    int btnX1 = wx + (WND_W - total) / 2;        
+    int btnX2 = btnX1 + btnW + gap;   
+
+    setlinestyle(0, 0, 1);          
+
+    while (1) {
+        drawWnd(wx, wy, WND_W, WND_H);
+
+        setcolor(0);                             
+        outtextxy(wx + 2, wy + 5, header);
+        setcolor(BAR_COLOR);                
+        outtextxy(wx + 2, wy + 20, text);
+        setcolor(TEXT_COLOR);
+
+        if (selected == 0) {
+            setfillstyle(SOLID_FILL, RED);
+            setcolor(RED);
+            bar(btnX1, btnY, btnX1 + btnW, btnY + btnH);
+            rectangle(btnX1, btnY, btnX1 + btnW, btnY + btnH);
+            setcolor(BLACK);
+            outtextxy(btnX1 + (btnW - textwidth("YES")) / 2,
+                      btnY + (btnH - textheight("YES")) / 2, "YES");
+        } else {
+            
+            setcolor(RED);
+            rectangle(btnX1, btnY, btnX1 + btnW, btnY + btnH);
+            setcolor(RED);
+            outtextxy(btnX1 + (btnW - textwidth("YES")) / 2,
+                      btnY + (btnH - textheight("YES")) / 2, "YES");
+        }
+
+        if (selected == 1) {
+            setfillstyle(SOLID_FILL, RED);
+            setcolor(RED);
+            bar(btnX2, btnY, btnX2 + btnW, btnY + btnH);
+            rectangle(btnX2, btnY, btnX2 + btnW, btnY + btnH);
+            setcolor(BLACK);
+            outtextxy(btnX2 + (btnW - textwidth("NO")) / 2,
+                      btnY + (btnH - textheight("NO")) / 2, "NO");
+        } else {
+            setcolor(RED);
+            rectangle(btnX2, btnY, btnX2 + btnW, btnY + btnH);
+            setcolor(RED);
+            outtextxy(btnX2 + (btnW - textwidth("NO")) / 2,
+                      btnY + (btnH - textheight("NO")) / 2, "NO");
+        }
+
+        ch = getch();
+        if (ch == 0) {             
+            ext = getch();
+            if (ext == LFT) {
+                if (selected == 1) selected = 0;  
+            } else if (ext == RHT) {
+                if (selected == 0) selected = 1; 
+            }
+        } else if (ch == ENTER) {
+            return (selected == 0) ? 1 : 0;     
+        }
+    }
+}
+
 /* ----------------------------------------------------------------
  * questionWnd -- text input dialog
  *
