@@ -5,6 +5,7 @@
 #include "structs.h"
 #include "objects.h"
 #include "finder.h"
+#include "gui.h"
 #include "ad.h"
 
 /* object globals for thread safety checks */
@@ -392,4 +393,4 @@ void CalculateThreadCosts(int ptrSize, SYSTEM* ptrList, int topCost) {
     ptrList[j] = a;
   }
 }
-
+

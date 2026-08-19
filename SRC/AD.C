@@ -73,13 +73,13 @@ void adHypersoft() {
 
 void adUpgrade() {
   /* UPGRADE NAG */
-  rectangle(150, 20, 540, 80);
+  rectangle(150, 21, 540, 80);
 
   setcolor(0);
 
   settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
   setfillstyle(SOLID_FILL, RED);
-  bar(405, 20, 540, 80);
+  bar(405, 21, 540, 80);
   outtextxy(410, 25, "CARD");
   outtextxy(410, 45, "OUTDATED");
 

@@ -3,4 +3,7 @@ gui
 reader
 finder
 ad
-splash
+splash
+mapwnd
+nav
+pathwnd
