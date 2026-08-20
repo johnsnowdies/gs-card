@@ -1,10 +1,12 @@
 #include <graphics.h>
 #include <stdio.h>
 
-#include "structs.h"
-#include "objects.h"
-#include "gui.h"
-#include "reader.h"
+#include "data\structs.h"
+#include "data\reader.h"
+
+#include "math\objects.h"
+
+#include "ui\gui.h"
 
 /* ----------------------------------------------------------------
  * Layout constants

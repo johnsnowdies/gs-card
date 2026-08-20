@@ -7,11 +7,13 @@
 #include <graphics.h>
 #include <stdio.h>
 
-#include "structs.h"
-#include "pathwnd.h"
-#include "objects.h"
-#include "gui.h"
-#include "ad.h"
+#include "data\structs.h"
+
+#include "math\objects.h"
+
+#include "ui\gui.h"
+#include "ui\ad.h"
+#include "ui\map\pathwnd.h"
 
 /* ----------------------------------------------------------------
  * Extern game globals (defined in card.c)

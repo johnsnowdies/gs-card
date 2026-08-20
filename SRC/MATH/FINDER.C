@@ -2,11 +2,13 @@
 #include <limits.h>
 #include <math.h>
 
-#include "structs.h"
-#include "objects.h"
-#include "finder.h"
-#include "gui.h"
-#include "ad.h"
+#include "data\structs.h"
+
+#include "math\objects.h"
+#include "math\finder.h"
+
+#include "ui\gui.h"
+#include "ui\ad.h"
 
 /* object globals for thread safety checks */
 extern OBJECT* objList;

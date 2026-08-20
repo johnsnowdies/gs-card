@@ -10,9 +10,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "structs.h"
-#include "gui.h"
-#include "keys.h"
+#include "data\structs.h"
+#include "data\keys.h"
+
+#include "ui\gui.h"
 
 /* ----------------------------------------------------------------
  * Layout constants

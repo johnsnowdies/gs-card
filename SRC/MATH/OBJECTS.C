@@ -2,8 +2,9 @@
 #include <math.h>
 #include <stdio.h>
 
-#include "structs.h"
-#include "objects.h"
+#include "data\structs.h"
+
+#include "math\objects.h"
 
 int loadObjects(OBJECT** list) {
   FILE* fp;

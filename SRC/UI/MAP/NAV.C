@@ -9,9 +9,10 @@
 #include <alloc.h>
 #include <stdio.h>
 
-#include "structs.h"
-#include "nav.h"
-#include "gui.h"
+#include "data\structs.h"
+
+#include "ui\gui.h"
+#include "ui\map\nav.h"
 
 /* ----------------------------------------------------------------
  * Extern viewport globals (defined in mapwnd.c)

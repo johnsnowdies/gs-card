@@ -9,13 +9,14 @@
 #include <alloc.h>
 #include <graphics.h>
 
-#include "structs.h"
-#include "mapwnd.h"
-#include "objects.h"
-#include "gui.h"
-#include "pathwnd.h"
-#include "ad.h"
-#include "reader.h"
+#include "data\structs.h"
+
+#include "math\objects.h"
+
+#include "ui\gui.h"
+#include "ui\ad.h"
+#include "ui\map\mapwnd.h"
+#include "ui\map\pathwnd.h"
 
 /* ----------------------------------------------------------------
  * Screen / viewport layout -- defined here, declared extern in gui.h

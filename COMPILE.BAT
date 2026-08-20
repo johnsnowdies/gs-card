@@ -31,48 +31,48 @@ echo Compiling CARD.C...                      >> %BLD%\build.log
 tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CARD.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
-echo Compiling GUI.C...                       >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\GUI.C >> %BLD%\build.log
+echo Compiling UI\GUI.C...                       >> %BLD%\build.log
+tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\GUI.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
-echo Compiling READER.C...                    >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\READER.C >> %BLD%\build.log
+echo Compiling DATA\READER.C...                    >> %BLD%\build.log
+tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\DATA\READER.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
-echo Compiling FINDER.C...                    >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\FINDER.C >> %BLD%\build.log
+echo Compiling MATH\FINDER.C...                    >> %BLD%\build.log
+tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\MATH\FINDER.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
-echo Compiling AD.C...                        >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\AD.C >> %BLD%\build.log
+echo Compiling UI\AD.C...                        >> %BLD%\build.log
+tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\AD.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
-echo Compiling SPLASH.C...                    >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\SPLASH.C >> %BLD%\build.log
+echo Compiling UI\SPLASH.C...                    >> %BLD%\build.log
+tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\SPLASH.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
-echo Compiling OBJECTS.C...                    >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\OBJECTS.C >> %BLD%\build.log
+echo Compiling MATH\OBJECTS.C...                    >> %BLD%\build.log
+tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\MATH\OBJECTS.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
-echo Compiling MAPWND.C...                      >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\MAPWND.C >> %BLD%\build.log
+echo Compiling UI\MAP\MAPWND.C...                      >> %BLD%\build.log
+tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MAP\MAPWND.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
-echo Compiling NAV.C...                         >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\NAV.C >> %BLD%\build.log
+echo Compiling UI\MAP\NAV.C...                         >> %BLD%\build.log
+tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MAP\NAV.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
-echo Compiling PATHWND.C...                     >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\PATHWND.C >> %BLD%\build.log
+echo Compiling UI\MAP\PATHWND.C...                     >> %BLD%\build.log
+tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MAP\PATHWND.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
-echo Compiling MMWND.C...                     >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\MMWND.C >> %BLD%\build.log
+echo Compiling UI\MMWND.C...                     >> %BLD%\build.log
+tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MMWND.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
-echo Compiling STATWND.C...                     >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\STATWND.C >> %BLD%\build.log
+echo Compiling UI\STATWND.C...                     >> %BLD%\build.log
+tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\STATWND.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 

@@ -14,18 +14,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "structs.h"
-#include "keys.h"
-#include "reader.h"
-#include "objects.h"
-#include "finder.h"
-#include "ad.h"
-#include "gui.h"
-#include "mapwnd.h"
-#include "nav.h"
-#include "pathwnd.h"
-#include "mmwnd.h"
-#include "statwnd.h"
+#include "data\keys.h"
+#include "data\structs.h"
+#include "data\tables.h"
+#include "data\reader.h"
+
+#include "math\objects.h"
+#include "math\finder.h"
+
+#include "ui\ad.h"
+#include "ui\splash.h"
+#include "ui\gui.h"
+#include "ui\mmwnd.h"
+#include "ui\statwnd.h"
+#include "ui\map\mapwnd.h"
+#include "ui\map\pathwnd.h"
+#include "ui\map\nav.h"
 
 /* ----------------------------------------------------------------
  * Game globals

@@ -1,9 +1,10 @@
 #include <graphics.h>
 #include <stdio.h>
 
-#include "structs.h"
-#include "gui.h"
-#include "reader.h"
+#include "data\structs.h"
+#include "data\reader.h"
+
+#include "ui\gui.h"
 
 /* ----------------------------------------------------------------
  * Screen / viewport layout -- defined here, declared extern in gui.h
@@ -27,24 +28,6 @@ static struct status_wnd {
     int x1, y1, x2, y2;
 } status_wnd = { 0, 21, 639, 460 };
 
-
-/*
-    strcpy(gs.captain_name, name);
-    gs.balance            = 1000;
-    gs.current_system     = rand() % ptrSize;
-    if (gs.current_system < 0) gs.current_system = 0;
-    if (gs.current_system >= ptrSize) gs.current_system = 0;
-
-    gs.ship_type         = 0;
-    gs.tonnage           = 50;
-    gs.current_cargo     = 0;
-    gs.cargo_value       = 0;
-    gs.hyper_class       = 0;
-    gs.smuggler_bay      = 0;
-    gs.reputation        = 0;
-    gs.missions_completed = 0;
-    gs.fuel              = 100;
-*/
 
 void drawPlayerStatus()
 {
@@ -77,7 +60,6 @@ void drawPlayerStatus()
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
     outtextxy(status_wnd.x1 + 10, status_wnd.y1 + 120, factions[ptrList[gs.current_system].faction]);
     outtextxy(status_wnd.x1 + 10, status_wnd.y1 + 140, sector);
-
 }
 
 void statusWnd()

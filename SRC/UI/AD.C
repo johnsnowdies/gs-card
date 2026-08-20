@@ -1,11 +1,6 @@
-#include <alloc.h>
 #include <graphics.h>
 
-#include "structs.h"
-#include "gui.h"
-#include "reader.h"
-#include "keys.h"
-#include "ad.h"
+#include "ui\ad.h"
 
 void adQuindett() {
   setcolor(4);
