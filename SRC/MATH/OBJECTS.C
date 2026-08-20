@@ -6,60 +6,6 @@
 
 #include "math\objects.h"
 
-int loadObjects(OBJECT** list) {
-  FILE* fp;
-  char buf[100];
-  int count = 0, counter = 0;
-
-  if ((fp = fopen("objects.sol", "r")) == NULL)
-    return 0; /* no objects -- not an error */
-
-  /* first pass: count lines */
-  while (fgets(buf, sizeof buf, fp) != NULL) count++;
-
-  if (count == 0) {
-    fclose(fp);
-    return 0;
-  }
-
-  *list = (OBJECT*)calloc(count, sizeof(OBJECT));
-  if (*list == NULL) {
-    fclose(fp);
-    return 0;
-  }
-
-  /* second pass: parse */
-  fseek(fp, 0L, SEEK_SET);
-  while (fgets(buf, sizeof buf, fp) != NULL) {
-    int v[5] = {0, 0, 0, 0, 0};
-    int vi = 0, i, j = 0;
-    char num[10] = "";
-
-    for (i = 0; buf[i] != '\0' && buf[i] != '\n' && buf[i] != '\r' && vi < 5;
-         i++) {
-      if (buf[i] == ';') {
-        v[vi++] = atoi(num);
-        j = 0;
-        num[0] = '\0';
-      } else {
-        num[j++] = buf[i];
-        num[j] = '\0';
-      }
-    }
-    if (vi < 4) continue; /* malformed line */
-    if (j > 0) v[vi] = atoi(num);
-
-    (*list)[counter].x = v[0];
-    (*list)[counter].y = v[1];
-    (*list)[counter].z = v[2];
-    (*list)[counter].r = v[3];
-    (*list)[counter].type = (vi >= 4) ? v[4] : 0;
-    counter++;
-  }
-
-  fclose(fp);
-  return counter;
-}
 
 /* sphereLineIntersect: returns 1 if line segment A-B passes within
  * distance r of point C (sphere intersection) */

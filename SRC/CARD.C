@@ -139,6 +139,8 @@ int main()
     /* New game Player name*/
     char* nameInput;
 
+    srand((unsigned)time(NULL));
+
     ptrSize = loadSolarFile(&ptrList);
 
     init();
