@@ -7,9 +7,16 @@
 #include "core\objects.h"
 
 #include "ui\gui.h"
+#include "ui\menuwnd.h"
 
-const char *ITEMS[3] = {
+const char* MAIN_MENU_ITEMS[3] = {
     "New Game",
+    "Load",
+    "Exit to DOS"
+};
+
+const char* GAME_MENU_ITEMS[3] = {
+    "Save Game",
     "Load",
     "Exit to DOS"
 };
@@ -29,11 +36,16 @@ static void drawgui_menu_wnd()
     setcolor(TEXT_COLOR);
 }
 
-void gui_menu_wnd(int currentPos)
+void gui_menu_wnd(int currentPos, int mode)
 {
     int i = 0;
     int wx = (MAP_WND_WIDTH - WND_W) / 2;
     int wy = WND_DEFAULT_Y + 25;
+    const char **ITEMS;
+    if (mode == MAIN_MENU)
+        ITEMS = MAIN_MENU_ITEMS;
+    else
+        ITEMS = GAME_MENU_ITEMS;
 
     drawgui_menu_wnd();
 

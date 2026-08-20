@@ -63,6 +63,7 @@ int SIG_TERM = 0;
 enum game_screen {
     SCR_MAP,
     SCR_MAIN_MENU,
+    SCR_GAME_MENU,
     SCR_STATUS
 };
 
@@ -91,14 +92,29 @@ char* data_factions[FACTIONS_COUNT] = {
     "Serpent and Star Union", "Ireland-Mermaidian Confederation", "Sentinel Coalition Peacemakers", "Pirates"
 };
 
+int data_factions_colors[FACTIONS_COUNT] = {
+    2, 14, 9, 4
+};
+
 char* data_sectors[SECTORS_COUNT] = {
     "Dhat", "Medinat", "Ghabkar", "Buraq", "Ben Vara", "Killoch Vairan", "Cuchulainn", "Danter", "Coalsack"
 };
 
+void game_mark_visited(GAMESTATE *gs, int system) {
+    if (system < 0 || system >= sol_size || !gs->visited) return;
+    gs->visited[system >> 3] |= (1 << (system & 7));
+}
+
+int game_is_visited(GAMESTATE *gs, int system) {
+    if (system < 0 || system >= sol_size || !gs->visited) return 0;
+    return (gs->visited[system >> 3] >> (system & 7)) & 1;
+}
+
+
 /* ----------------------------------------------------------------
  * new_game -- initialise game state
  * ---------------------------------------------------------------- */
-static void new_game(char *name)
+static void new_game(char *name, int sol_size)
 {
     int i;
 
@@ -118,16 +134,24 @@ static void new_game(char *name)
     gs.missions_completed = 0;
     gs.fuel              = 100;
 
+    gs.visited_bytes = (sol_size + 7) / 8;
+    gs.visited = (unsigned char*)malloc(gs.visited_bytes);
+    if (gs.visited) {
+        memset(gs.visited, 0, gs.visited_bytes);
+    }
+
     /* Load ads, calculate hyper-threads, load objects */
     core_finder_calc_hyper_threads(sol_size, sol_list);
     obj_size = loadObjects(&obj_list);
 
     gui_map_nav_move_screen_to(sol_list, gs.current_system);
 
+    game_mark_visited(&gs, gs.current_system);
+
     wp.size = 0;
     current_point = -1;
 
-    save_game(&gs);
+    save_game(&gs, "USER.SAV");
 }
 
 /* ----------------------------------------------------------------
@@ -155,6 +179,8 @@ static int load_save(char *filename)
 }
 
 
+
+
 /* ----------------------------------------------------------------
  * main
  * ---------------------------------------------------------------- */
@@ -165,6 +191,7 @@ int main()
     char* buf[50];
     int isCoord = 1, isHyper = 0, mode = 1;  /* 1 = 2D, 2 = 3D, 3 = YZ */
     enum game_screen cur_screen = SCR_MAIN_MENU;
+    enum game_screen prev_screen = SCR_MAP;
     
     /* New game Player name*/
     char* nameInput;
@@ -182,7 +209,7 @@ int main()
     gui_ad_loading();
     
     /* Draw Main Menu */
-    gui_menu_wnd(mm_select);
+    gui_menu_wnd(mm_select, MAIN_MENU);
 
 
     /* ----------------------------------------------------------------
@@ -299,6 +326,7 @@ int main()
                     sprintf(buf, "Ready to jump from SA.%d to SA.%d ?", wp.way[0], wp.way[1]);
                     if (gui_bool_wnd("JUMP INITIATED", buf)) {
                         gs.current_system = wp.way[1];
+                        game_mark_visited(&gs, gs.current_system);
                         gs.fuel -= data_hyper_fuel[gs.hyper_class];
                         sprintf(buf, "Welcome to SA.%d", wp.way[1]);
                         wp.size = 0;
@@ -321,12 +349,106 @@ int main()
                     gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
                 }
                 else{
-                    SIG_TERM = 1;    
+                    prev_screen = cur_screen;
+                    cur_screen = SCR_GAME_MENU;
+                    mm_select = 0;
+                    gui_menu_wnd(mm_select, GAME_MENU);
                 }
-                
             }
 
             break;
+        /* ============================================================
+         * SCR_GAME_MENU -- game menu on ESC
+         * ============================================================ */
+        case SCR_GAME_MENU:
+            if (ESC == c){
+                mm_select = 0;
+                cur_screen = prev_screen;
+                if (cur_screen == SCR_MAP)
+                    gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                if (cur_screen == SCR_STATUS)
+                    gui_status_wnd();
+            }
+            /* Save game */
+            if (mm_select == 0 && ENTER == c) {
+                nameInput = gui_input_wnd("Save game", "Enter save file name", "USER.SAV");
+
+                if (nameInput != NULL && nameInput[0] != '\0') 
+                {
+                    if(save_game(&gs, nameInput) == 1)
+                    {
+                        cur_screen = prev_screen;
+                        gui_warning_wnd("SUCCESS", "Game saved!");
+                        getch();
+                        if (cur_screen == SCR_MAP)
+                            gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+
+                        if (cur_screen == SCR_STATUS)
+                            gui_status_wnd();
+                    }
+                    else
+                    {
+                        gui_warning_wnd("ERROR", "Save Error");
+                        getch();
+                        gui_menu_wnd(mm_select, GAME_MENU);
+                    }
+                } else {
+                    gui_warning_wnd("ERROR", "Wrong value!");
+                    getch();
+                    gui_menu_wnd(mm_select, GAME_MENU);
+                }
+
+            }
+
+             /* Load game */
+            if (mm_select == 1 && ENTER == c)
+            {
+                nameInput = gui_input_wnd("Load game", "Enter save file name", "USER.SAV");
+
+                if (nameInput != NULL && nameInput[0] != '\0') 
+                {
+                    if(load_game(&gs, nameInput) == 1)
+                    {
+                        cur_screen = SCR_MAP;
+                        dirty_topbar = 1;
+                        gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                    }
+                    else
+                    {
+                        gui_warning_wnd("ERROR", "File not found");
+                        getch();
+                        gui_menu_wnd(mm_select, GAME_MENU);
+                    }
+                } else {
+                    gui_warning_wnd("ERROR", "Wrong value!");
+                    getch();
+                    gui_menu_wnd(mm_select, GAME_MENU);
+                }
+            }
+
+            /* Exit to DOS */
+            if (mm_select == 2 && ENTER == c)
+            {
+                SIG_TERM = 1;
+            }
+
+            /* UP */
+            if (UP == c){
+                if (mm_select > 0)
+                {
+                    mm_select--;
+                    gui_menu_wnd(mm_select, GAME_MENU);
+                }
+            }
+
+            if (DWN == c){
+                if (mm_select < 2)
+                {
+                    mm_select++;
+                    gui_menu_wnd(mm_select, GAME_MENU);
+                }
+            }
+        break;
 
         /* ============================================================
          * SCR_MAIN_MENU -- game main menu after load
@@ -339,13 +461,13 @@ int main()
 
                 if (nameInput != NULL && nameInput[0] != '\0') 
                 {
-                    new_game(nameInput);
+                    new_game(nameInput, sol_size);
                     cur_screen = SCR_MAP;
                     gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
                 } else {
                     gui_warning_wnd("ERROR", "Wrong value!");
                     getch();
-                    gui_menu_wnd(mm_select);
+                    gui_menu_wnd(mm_select, MAIN_MENU);
                 }
             }
 
@@ -365,15 +487,13 @@ int main()
                     {
                         gui_warning_wnd("ERROR", "File not found");
                         getch();
-                        gui_menu_wnd(mm_select);
+                        gui_menu_wnd(mm_select, MAIN_MENU);
                     }
                 } else {
                     gui_warning_wnd("ERROR", "Wrong value!");
                     getch();
-                    gui_menu_wnd(mm_select);
+                    gui_menu_wnd(mm_select, MAIN_MENU);
                 }
-
-                
             }
             
 
@@ -388,7 +508,7 @@ int main()
                 if (mm_select > 0)
                 {
                     mm_select--;
-                    gui_menu_wnd(mm_select);
+                    gui_menu_wnd(mm_select, MAIN_MENU);
                 }
             }
 
@@ -396,7 +516,7 @@ int main()
                 if (mm_select < 2)
                 {
                     mm_select++;
-                    gui_menu_wnd(mm_select);
+                    gui_menu_wnd(mm_select, MAIN_MENU);
                 }
             }
 
@@ -408,6 +528,13 @@ int main()
                     dirty_path = 1;
                 cur_screen = SCR_MAP;
                 gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+            }
+
+            if (ESC == c){
+                prev_screen = cur_screen;
+                cur_screen = SCR_GAME_MENU;
+                mm_select = 0;
+                gui_menu_wnd(mm_select, GAME_MENU);
             }
 
 

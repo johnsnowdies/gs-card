@@ -17,8 +17,8 @@
 /* ----------------------------------------------------------------
  * Extern game globals (defined in card.c)
  * ---------------------------------------------------------------- */
-extern struct object* obj_list;
-extern struct game_state gs;
+extern struct   object* obj_list;
+extern struct   game_state gs;
 extern int      obj_size;
 extern int      show_danger_path_parts;
 

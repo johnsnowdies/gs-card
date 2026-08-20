@@ -94,4 +94,6 @@ GAMESTATE {
   int missions_completed;
   int fuel;
   QUEST* quest;
+  unsigned char *visited;
+  int visited_bytes;
 };

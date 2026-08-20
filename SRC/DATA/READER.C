@@ -132,138 +132,113 @@ static void copy_str(char* dest, const char* src, size_t size) {
     }
 }
 
-int load_game(GAMESTATE* state, char* filename) {
+int load_game(GAMESTATE* state, char* filename)
+{
     FILE* fp;
-    char buf[512];
-    char* token;
     int has_quest;
+    unsigned char* tmp_visited;
 
-    if ((fp = fopen(filename, "r")) == NULL)
+    if ((fp = fopen(filename, "rb")) == NULL)
         return 0;
-
-    if (fgets(buf, sizeof(buf), fp) == NULL) {
-        fclose(fp);
-        return 0;
-    }
 
     free_quest(state);
 
-    token = strtok(buf, ";");
+    fread(state->captain_name, sizeof(char), 100, fp);
+    fread(&state->balance, sizeof(long), 1, fp);
+    fread(&state->current_system, sizeof(int), 1, fp);
+    fread(&state->ship_type, sizeof(int), 1, fp);
+    fread(&state->tonnage, sizeof(int), 1, fp);
+    fread(&state->current_cargo, sizeof(int), 1, fp);
+    fread(&state->cargo_value, sizeof(long), 1, fp);
+    fread(&state->hyper_class, sizeof(int), 1, fp);
+    fread(&state->smuggler_bay, sizeof(int), 1, fp);
+    fread(&state->reputation, sizeof(int), 1, fp);
+    fread(&state->missions_completed, sizeof(int), 1, fp);
+    fread(&state->fuel, sizeof(int), 1, fp);
 
-    if (!token) goto error;
-    copy_str(state->captain_name, token, sizeof(state->captain_name));
-
-    if (!(token = strtok(NULL, ";"))) goto error;
-    state->balance = parse_long(token);
-
-    if (!(token = strtok(NULL, ";"))) goto error;
-    state->current_system = parse_int(token);
-
-    if (!(token = strtok(NULL, ";"))) goto error;
-    state->ship_type = parse_int(token);
-
-    if (!(token = strtok(NULL, ";"))) goto error;
-    state->tonnage = parse_int(token);
-
-    if (!(token = strtok(NULL, ";"))) goto error;
-    state->current_cargo = parse_int(token);
-
-    if (!(token = strtok(NULL, ";"))) goto error;
-    state->cargo_value = parse_long(token);
-
-    if (!(token = strtok(NULL, ";"))) goto error;
-    state->hyper_class = parse_int(token);
-
-    if (!(token = strtok(NULL, ";"))) goto error;
-    state->smuggler_bay = parse_int(token);
-
-    if (!(token = strtok(NULL, ";"))) goto error;
-    state->reputation = parse_int(token);
-
-    if (!(token = strtok(NULL, ";"))) goto error;
-    state->missions_completed = parse_int(token);
-
-    if (!(token = strtok(NULL, ";"))) goto error;
-    state->fuel = parse_int(token);
-
-    if (!(token = strtok(NULL, ";"))) goto error;
-    has_quest = parse_int(token);
+    fread(&has_quest, sizeof(int), 1, fp);
 
     if (has_quest) {
-        state->quest = malloc(sizeof(QUEST));
-        if (!state->quest) goto error;
-        state->quest->giver = malloc(sizeof(NPC));
+        state->quest = (QUEST*)malloc(sizeof(QUEST));
+        if (!state->quest) {
+            fclose(fp);
+            return 0;
+        }
+        state->quest->giver = (NPC*)malloc(sizeof(NPC));
         if (!state->quest->giver) {
             free(state->quest);
             state->quest = NULL;
-            goto error;
+            fclose(fp);
+            return 0;
         }
 
-        if (!(token = strtok(NULL, ";"))) goto error;
-        copy_str(state->quest->name, token, sizeof(state->quest->name));
+        fread(state->quest->name, sizeof(char), 100, fp);
+        fread(&state->quest->reward, sizeof(int), 1, fp);
+        fread(&state->quest->penalty, sizeof(int), 1, fp);
+        fread(&state->quest->type, sizeof(int), 1, fp);
 
-        if (!(token = strtok(NULL, ";"))) goto error;
-        state->quest->reward = parse_int(token);
-
-        if (!(token = strtok(NULL, ";"))) goto error;
-        state->quest->penalty = parse_int(token);
-
-        if (!(token = strtok(NULL, ";"))) goto error;
-        state->quest->type = parse_int(token);
-
-        if (!(token = strtok(NULL, ";"))) goto error;
-        copy_str(state->quest->giver->name, token, sizeof(state->quest->giver->name));
-
-        if (!(token = strtok(NULL, ";"))) goto error;
-        state->quest->giver->faction = parse_int(token);
-
-        if (!(token = strtok(NULL, ";"))) goto error;
-        state->quest->giver->portrait = parse_int(token);
+        fread(state->quest->giver->name, sizeof(char), 100, fp);
+        fread(&state->quest->giver->faction, sizeof(int), 1, fp);
+        fread(&state->quest->giver->portrait, sizeof(int), 1, fp);
     } else {
         state->quest = NULL;
     }
 
+    fread(&state->visited_bytes, sizeof(int), 1, fp);
+
+    if (state->visited_bytes > 0) {
+        state->visited = (unsigned char*)malloc(state->visited_bytes);
+        if (!state->visited) {
+            fclose(fp);
+            return 0;
+        }
+        fread(state->visited, sizeof(unsigned char), state->visited_bytes, fp);
+    } else {
+        state->visited = NULL;
+    }
+
     fclose(fp);
     return 1;
-
-error:
-    free_quest(state);
-    fclose(fp);
-    return 0;
 }
 
-int save_game(GAMESTATE* state) {
+int save_game(GAMESTATE* state, char* filename)
+{
     FILE* fp;
+    int has_quest;
 
-    if ((fp = fopen("USER.SAV", "w")) == NULL)
+    if ((fp = fopen(filename, "wb")) == NULL)
         return 0;
 
-    fprintf(fp, "%s;%ld;%d;%d;%d;%d;%ld;%d;%d;%d;%d;%d",
-        state->captain_name,
-        state->balance,
-        state->current_system,
-        state->ship_type,
-        state->tonnage,
-        state->current_cargo,
-        state->cargo_value,
-        state->hyper_class,
-        state->smuggler_bay,
-        state->reputation,
-        state->missions_completed,
-        state->fuel);
+    fwrite(state->captain_name, sizeof(char), 100, fp);
+    fwrite(&state->balance, sizeof(long), 1, fp);
+    fwrite(&state->current_system, sizeof(int), 1, fp);
+    fwrite(&state->ship_type, sizeof(int), 1, fp);
+    fwrite(&state->tonnage, sizeof(int), 1, fp);
+    fwrite(&state->current_cargo, sizeof(int), 1, fp);
+    fwrite(&state->cargo_value, sizeof(long), 1, fp);
+    fwrite(&state->hyper_class, sizeof(int), 1, fp);
+    fwrite(&state->smuggler_bay, sizeof(int), 1, fp);
+    fwrite(&state->reputation, sizeof(int), 1, fp);
+    fwrite(&state->missions_completed, sizeof(int), 1, fp);
+    fwrite(&state->fuel, sizeof(int), 1, fp);
 
-    if (state->quest) {
-        fprintf(fp, ";%d;%s;%d;%d;%d;%s;%d;%d\n",
-            1,
-            state->quest->name,
-            state->quest->reward,
-            state->quest->penalty,
-            state->quest->type,
-            state->quest->giver->name,
-            state->quest->giver->faction,
-            state->quest->giver->portrait);
-    } else {
-        fprintf(fp, ";0\n");
+    has_quest = (state->quest != NULL) ? 1 : 0;
+    fwrite(&has_quest, sizeof(int), 1, fp);
+
+    if (has_quest) {
+        fwrite(state->quest->name, sizeof(char), 100, fp);
+        fwrite(&state->quest->reward, sizeof(int), 1, fp);
+        fwrite(&state->quest->penalty, sizeof(int), 1, fp);
+        fwrite(&state->quest->type, sizeof(int), 1, fp);
+
+        fwrite(state->quest->giver->name, sizeof(char), 100, fp);
+        fwrite(&state->quest->giver->faction, sizeof(int), 1, fp);
+        fwrite(&state->quest->giver->portrait, sizeof(int), 1, fp);
+    }
+
+    fwrite(&state->visited_bytes, sizeof(int), 1, fp);
+    if (state->visited_bytes > 0 && state->visited != NULL) {
+        fwrite(state->visited, sizeof(unsigned char), state->visited_bytes, fp);
     }
 
     fclose(fp);
