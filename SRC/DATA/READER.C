@@ -7,6 +7,78 @@
 #include "data\structs.h"
 #include "data\reader.h"
 
+int load_bounds(BOUND_LINE** list)
+{
+    FILE* f;
+    char buf[256];
+    int count = 0;
+    BOUND_LINE* arr = NULL;
+
+    f = fopen("BOUNDS.SOL", "r");
+    if (!f)
+        return 0;
+
+    while (fgets(buf, sizeof(buf), f)) {
+        char *p, *q;
+        int x1, y1, x2, y2, i;
+        BOUND_LINE* tmp;
+        BOUND_LINE line;
+        POINT *p1, *p2;
+
+        for (p = buf; *p == ' ' || *p == '\t'; p++) ;
+        if (*p == '\0' || *p == '\n' || *p == '#')
+            continue;
+
+        q = strchr(p, ';');
+        if (!q)
+            continue;
+
+        *q = '\0';
+        if (sscanf(p, "%d,%d", &x1, &y1) != 2)
+            continue;
+        if (sscanf(q + 1, "%d,%d", &x2, &y2) != 2)
+            continue;
+
+        p1 = (POINT*)malloc(sizeof(POINT));
+        p2 = (POINT*)malloc(sizeof(POINT));
+        if (!p1 || !p2) {
+            free(p1); free(p2);
+            for (i = 0; i < count; i++) {
+                free(arr[i].a);
+                free(arr[i].b);
+            }
+            free(arr);
+            fclose(f);
+            return 0;
+        }
+
+        p1->x = x1; p1->y = y1;
+        p2->x = x2; p2->y = y2;
+
+        line.a = p1;
+        line.b = p2;
+
+        tmp = (BOUND_LINE*)realloc(arr, (count + 1) * sizeof(BOUND_LINE));
+        if (!tmp) {
+            free(p1); free(p2);
+            for (i = 0; i < count; i++) {
+                free(arr[i].a);
+                free(arr[i].b);
+            }
+            free(arr);
+            fclose(f);
+            return 0;
+        }
+        arr = tmp;
+        arr[count] = line;
+        count++;
+    }
+
+    fclose(f);
+    *list = arr;
+    return count;
+}
+
 int loadObjects(OBJECT** list) {
   FILE* fp;
   char buf[100];

@@ -33,18 +33,22 @@
 /* ----------------------------------------------------------------
  * Game globals
  * ---------------------------------------------------------------- */
-SYSTEM* sol_list;
-int sol_size;
+SYSTEM*     sol_list;
+int         sol_size;
 
-struct object*       obj_list;
-int    obj_size;
+OBJECT*     obj_list;
+int         obj_size;
 
-struct waypoint     wp;
+BOUND_LINE* bnd_list;
+int         bnd_size;
+
+WAYPOINT wp;
 
 int current_point;
 
 /* Render flags */
 int render_danger_objects      = 0;
+int render_bounds              = 0;
 int show_danger_hyperthreads   = 0;
 int show_danger_path_parts     = 0;
 int dirty_path                 = 0;
@@ -89,7 +93,7 @@ int data_hyper_fuel[HYPER_COUNT] = {
 };
 
 char* data_factions[FACTIONS_COUNT] = {
-    "Serpent and Star Union", "Ireland-Mermaidian Confederation", "Sentinel Coalition Peacemakers", "Pirates"
+    "Crescent and Star Union", "Ireland-Mermaidian Confederation", "Sentinel Coalition Peacemakers", "Pirates"
 };
 
 int data_factions_colors[FACTIONS_COUNT] = {
@@ -199,6 +203,7 @@ int main()
     srand((unsigned)time(NULL));
 
     sol_size = loadSolarFile(&sol_list);
+    bnd_size = load_bounds(&bnd_list);
 
     gui_init();
 
@@ -309,10 +314,16 @@ int main()
                 }
             }
 
-            if (KEY_D == c || KEY_D_UPPER == c) {
-                render_danger_objects    = 1;
-                show_danger_hyperthreads = 1;
-                show_danger_path_parts   = 1;
+            if (KEY_D == c) {
+                render_danger_objects    = render_danger_objects == 1 ? 0 : 1;
+                show_danger_hyperthreads = show_danger_hyperthreads == 1 ? 0 : 1;
+                show_danger_path_parts   = show_danger_path_parts == 1 ? 0 : 1;
+                
+                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+            }
+
+            if (KEY_P == c ){
+                render_bounds = render_bounds == 1 ? 0 : 1;
                 gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
             }
 

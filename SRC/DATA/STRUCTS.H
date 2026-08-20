@@ -6,6 +6,7 @@
 #define NPC struct npc
 #define QUEST struct quest
 #define GAMESTATE struct game_state
+#define BOUND_LINE struct bound_line
 
 #define SHIP_ALMIGHTY       0
 #define SHIP_BETSY          1
@@ -54,6 +55,11 @@ OBJECT {
 POINT {
   int x;
   int y;
+};
+
+BOUND_LINE {
+    POINT* a;
+    POINT* b;
 };
 
 THREAD {

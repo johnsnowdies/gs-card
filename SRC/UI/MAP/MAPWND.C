@@ -49,17 +49,18 @@ static int POINT_COLOR = 0;
 extern struct object* obj_list;
 extern int      obj_size;
 extern int      render_danger_objects;
+extern int      render_bounds;
 extern int      show_danger_hyperthreads;
 extern int      show_danger_path_parts;
 extern int      dirty_path;
 extern int      dirty_topbar;
 extern int      dirty_bottombar;
 extern struct game_state gs;
+extern struct bound_line* bnd_list;
+extern int bnd_size;
 
 extern char* data_factions[FACTIONS_COUNT];
-
 extern char* data_sectors[SECTORS_COUNT];
-
 extern data_factions_colors[FACTIONS_COUNT];
 
 /* ----------------------------------------------------------------
@@ -211,6 +212,25 @@ static void drawObjects(int mode)
     }
 }
 
+static void draw_bounds()
+{
+    int i;
+    if (!bnd_size || !bnd_list || !render_bounds) return;
+
+    setlinestyle(1, 0, 1);
+    setcolor(6);
+
+    for (i = 0; i < bnd_size; i++) {
+        int x1 = ex(bnd_list[i].a->x + offsetX);
+        int y1 = ey(bnd_list[i].a->y + offsetY);
+        int x2 = ex(bnd_list[i].b->x + offsetX);
+        int y2 = ey(bnd_list[i].b->y + offsetY);
+        safe_line(x1, y1, x2, y2);
+    }
+
+    setlinestyle(0, 0, 1);
+}
+
 /* ----------------------------------------------------------------
  * draw2dwnd -- XY projection (top-down)
  * ---------------------------------------------------------------- */
@@ -281,8 +301,8 @@ static void draw2dwnd(int sol_size, struct system_solar* solar,
 
             if (game_is_visited(&gs, i)){
                 if (solar[i].is_shipyard){
-                    setcolor(3);
-                    sprintf(c, "SA.%d(%d) [S]", i, solar[i].threadSize);
+                    setcolor(data_factions_colors[solar[i].faction]);
+                    sprintf(c, "SA.%d(%d) [S][F]", i, solar[i].threadSize);
                 } else if (solar[i].is_gas_station){
                     setcolor(1);
                     sprintf(c, "SA.%d(%d) [F]", i, solar[i].threadSize);
@@ -296,13 +316,111 @@ static void draw2dwnd(int sol_size, struct system_solar* solar,
             }
 
             /** CAPITALS **/
-            if (solar[i].is_shipyard && solar[i].is_gas_station){
+            if (solar[i].is_shipyard && solar[i].is_gas_station && render_bounds){
                     setcolor(data_factions_colors[solar[i].faction]);
-                    sprintf(c, "SA.%d(%d) - %s", i, solar[i].threadSize, data_sectors[solar[i].sector]);
+                    settextstyle(SMALL_FONT, HORIZ_DIR, 4);
+                    
+
+                    /* Manual politic map aligment*/
+                    /* "Dhat", "Medinat", "Ghabkar", "Buraq", "Ben Vara", "Killoch Vairan", "Cuchulainn", "Danter", "Coalsack" */
+                    switch(solar[i].sector){
+                        case 0:
+                            /* Dhat */
+                            safe_outtextxy(
+                                ex(solar[i].x + offsetX) + 30,
+                                ey(solar[i].y + offsetY) + 5 - 30, 
+                                data_sectors[solar[i].sector]);
+
+                            settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 2);
+                            safe_outtextxy(
+                                ex(solar[i].x + offsetX) - 50,
+                                ey(solar[i].y + offsetY) + 5 - 100, 
+                                data_factions[0]);
+
+                        break;
+
+                        case 1:
+                            /* Medinat */
+                            safe_outtextxy(
+                                ex(solar[i].x + offsetX) - 20,
+                                ey(solar[i].y + offsetY) + 5 - 24, 
+                                data_sectors[solar[i].sector]);
+                        break;
+
+                        case 2:
+                            /* Ghabkar */
+                            safe_outtextxy(
+                                ex(solar[i].x + offsetX) - 60,
+                                ey(solar[i].y + offsetY) + 5 - 20, 
+                                data_sectors[solar[i].sector]);
+                        break;
+
+                        case 3:
+                            /* Buraq */
+                            safe_outtextxy(
+                                ex(solar[i].x + offsetX) + 27,
+                                ey(solar[i].y + offsetY) + 5 - 50, 
+                                data_sectors[solar[i].sector]);
+                        break;
+
+                        case 4:
+                            /* Ben Vara */
+                            safe_outtextxy(
+                                ex(solar[i].x + offsetX),
+                                ey(solar[i].y + offsetY)  + 5, 
+                                data_sectors[solar[i].sector]);
+                        break;
+
+                        case 5:
+                            /* Killoch Vairan */
+                            safe_outtextxy(
+                                ex(solar[i].x + offsetX),
+                                ey(solar[i].y + offsetY) + 5 + 25, 
+                                data_sectors[solar[i].sector]);
+
+                            settextstyle(GOTHIC_FONT, HORIZ_DIR, 2);
+                            safe_outtextxy(
+                                ex(solar[i].x + offsetX) + 5 - 100,
+                                ey(solar[i].y + offsetY) + 5 + 120, 
+                                data_factions[1]);
+                        break;
+
+                        case 6:
+                            /* Cuchulainn */
+                            safe_outtextxy(
+                                ex(solar[i].x + offsetX) - 115,
+                                ey(solar[i].y + offsetY) + 5 + 40, 
+                                data_sectors[solar[i].sector]);
+                        break;
+
+                        case 7:
+                            /* Danter */
+                            safe_outtextxy(
+                                ex(solar[i].x + offsetX),
+                                ey(solar[i].y + offsetY)  + 5 - 27, 
+                                data_sectors[solar[i].sector]);
+                        break;
+
+                        case 8:
+                            /* Coalsack */
+                            safe_outtextxy(
+                                ex(solar[i].x + offsetX) - 16,
+                                ey(solar[i].y + offsetY) + 5 - 13, 
+                                data_sectors[solar[i].sector]);
+                        break;
+
+
+
+
+                    }
+            }else{
+                sprintf(c, "SA.%d(%d)", i, solar[i].threadSize);
+                settextstyle(SMALL_FONT, HORIZ_DIR, 4);
+                safe_outtextxy(ex(solar[i].x + offsetX),
+                ey(solar[i].y + offsetY) + 5, c);
             }
-            settextstyle(SMALL_FONT, HORIZ_DIR, 4);
-            safe_outtextxy(ex(solar[i].x + offsetX),
-                           ey(solar[i].y + offsetY) + 5, c);
+
+           
         }
     }
 
@@ -336,6 +454,7 @@ static void draw2dwnd(int sol_size, struct system_solar* solar,
 
     setlinestyle(0, 0, 1);
     drawObjects(1);
+    draw_bounds();
 
     setcolor(4);
     rectangle(0, 21, MAP_WND_WIDTH, MAP_WND_HEIGHT);
@@ -429,7 +548,7 @@ static void draw3dwnd(int sol_size, struct system_solar* solar,
             if (game_is_visited(&gs, i)){
                 if (solar[i].is_shipyard){
                     setcolor(3);
-                    sprintf(c, "SA.%d(%d) [S]", i, solar[i].threadSize);
+                    sprintf(c, "SA.%d(%d) [S][F]", i, solar[i].threadSize);
                 } else if (solar[i].is_gas_station){
                     setcolor(1);
                     sprintf(c, "SA.%d(%d) [F]", i, solar[i].threadSize);
@@ -442,11 +561,6 @@ static void draw3dwnd(int sol_size, struct system_solar* solar,
                 sprintf(c, "SA.%d(%d)", i, solar[i].threadSize);
             }
 
-            /** CAPITALS **/
-            if (solar[i].is_shipyard && solar[i].is_gas_station){
-                    setcolor(data_factions_colors[solar[i].faction]);
-                    sprintf(c, "SA.%d(%d) - %s", i, solar[i].threadSize, data_sectors[solar[i].sector]);
-            }
 
             safe_outtextxy(A1.x, A1.y + 5, c);
         }
@@ -569,7 +683,7 @@ static void drawyzwnd(int sol_size, struct system_solar* solar,
             if (game_is_visited(&gs, i)){
                 if (solar[i].is_shipyard){
                     setcolor(3);
-                    sprintf(c, "SA.%d(%d) [S]", i, solar[i].threadSize);
+                    sprintf(c, "SA.%d(%d) [S][F]", i, solar[i].threadSize);
                 } else if (solar[i].is_gas_station){
                     setcolor(1);
                     sprintf(c, "SA.%d(%d) [F]", i, solar[i].threadSize);
@@ -580,12 +694,6 @@ static void drawyzwnd(int sol_size, struct system_solar* solar,
             } else {
                 setcolor(8);
                 sprintf(c, "SA.%d(%d)", i, solar[i].threadSize);
-            }
-
-            /** CAPITALS **/
-            if (solar[i].is_shipyard && solar[i].is_gas_station){
-                    setcolor(data_factions_colors[solar[i].faction]);
-                    sprintf(c, "SA.%d(%d) - %s", i, solar[i].threadSize, data_sectors[solar[i].sector]);
             }
 
             settextstyle(SMALL_FONT, VERT_DIR, 4);
@@ -716,4 +824,9 @@ void gui_map_wnd_clear()
 {
     setfillstyle(SOLID_FILL, BLACK);
     bar(1, 21, MAP_WND_WIDTH - 1, MAP_WND_HEIGHT - 1);
+
+    /*
+    setcolor(15);
+    rectangle(0,20,MAP_WND_WIDTH, MAP_WND_HEIGHT);
+    */
 }

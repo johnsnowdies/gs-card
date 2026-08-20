@@ -19,3 +19,6 @@
 
 #define KEY_D 0x64
 #define KEY_D_UPPER 0x44
+
+#define KEY_P     0x70
+#define KEY_P_UPPER 0x50
