@@ -20,8 +20,12 @@ extern struct system_solar* sol_list;
 extern int      render_danger_objects;
 extern int      show_danger_hyperthreads;
 extern int      show_danger_path_parts;
-extern char* factions[4];
-extern char* sectors[9];
+
+extern char* data_factions[FACTIONS_COUNT];
+extern char* data_sectors[SECTORS_COUNT];
+extern char* data_ship_names[SHIP_COUNT];
+extern int   data_ship_tonnages[SHIP_COUNT];
+extern char* data_hyper_names[HYPER_COUNT];
 
 /* Viewport bounds for clipping (status window only) */
 static struct status_wnd {
@@ -38,10 +42,10 @@ void draw_player_status()
     char* sector[50];
 
     sprintf(captain_name, "Software registered for: %s", gs.captain_name);
-    sprintf(ship_name, "Spacevessel: %s", ship_names[gs.ship_type]);
-    sprintf(hyper_class, "Engine: %s", hyper_names[gs.hyper_class]);
+    sprintf(ship_name, "Spacevessel: %s", data_ship_names[gs.ship_type]);
+    sprintf(hyper_class, "Engine: %s", data_hyper_names[gs.hyper_class]);
     sprintf(current_system, "Current system: SA.%d", gs.current_system);
-    sprintf(sector, "Sector %s", sectors[sol_list[gs.current_system].sector]);
+    sprintf(sector, "Sector %s", data_sectors[sol_list[gs.current_system].sector]);
 
     setcolor(4);
     setlinestyle(0, 0, 1);
@@ -58,7 +62,7 @@ void draw_player_status()
 
     outtextxy(status_wnd.x1 + 10, status_wnd.y1 + 100, current_system);
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-    outtextxy(status_wnd.x1 + 10, status_wnd.y1 + 120, factions[sol_list[gs.current_system].faction]);
+    outtextxy(status_wnd.x1 + 10, status_wnd.y1 + 120, data_factions[sol_list[gs.current_system].faction]);
     outtextxy(status_wnd.x1 + 10, status_wnd.y1 + 140, sector);
 }
 

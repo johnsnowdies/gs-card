@@ -5,6 +5,10 @@
 /* ----------------------------------------------------------------
  * Layout constants
  * ---------------------------------------------------------------- */
+
+#define SCREEN_W      640
+#define SCREEN_H      480
+
 #define WND_W         320    /* default window width  */
 #define WND_H         100    /* default window height */
 #define WND_TITLE_H   16     /* title bar height      */

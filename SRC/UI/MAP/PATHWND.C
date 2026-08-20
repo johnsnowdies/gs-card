@@ -8,7 +8,6 @@
 #include <stdio.h>
 
 #include "data\structs.h"
-
 #include "core\objects.h"
 
 #include "ui\gui.h"

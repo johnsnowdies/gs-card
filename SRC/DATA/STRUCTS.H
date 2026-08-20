@@ -7,6 +7,23 @@
 #define QUEST struct quest
 #define GAMESTATE struct game_state
 
+#define SHIP_ALMIGHTY       0
+#define SHIP_BETSY          1
+#define SHIP_IMPERIAL       2
+#define SHIP_GAE_BULG       3
+#define SHIP_NOVA           4
+#define SHIP_BULK_CARRIER   5
+
+#define HYPER_I         0
+#define HYPER_II        1
+#define HYPER_III       2
+#define HYPER_UMBRELLA  3
+
+#define SHIP_COUNT     6
+#define HYPER_COUNT    4
+#define FACTIONS_COUNT 4
+#define SECTORS_COUNT  9
+
 SYSTEM {
   /* POSITIONING */
   int x;
@@ -78,27 +95,3 @@ GAMESTATE {
   int fuel;
   QUEST* quest;
 };
-
-
-
-#define SHIP_ALMIGHTY 0
-#define SHIP_BETSY 1
-#define SHIP_IMPERIAL 2
-#define SHIP_GAE_BULG 3
-#define SHIP_NOVA 4
-#define SHIP_BULK_CARRIER 5
-
-#define SHIP_COUNT         6
-
-extern char* ship_names[];
-extern int   ship_tonnages[];
-
-#define HYPER_I   0
-#define HYPER_II  1
-#define HYPER_III 2
-#define HYPER_UMBRELLA  3
-
-#define HYPER_COUNT 4
-
-extern char* hyper_names[];
-extern int   hyper_fuel[];

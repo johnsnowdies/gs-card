@@ -16,7 +16,6 @@
 
 #include "data\keys.h"
 #include "data\structs.h"
-#include "data\tables.h"
 #include "data\reader.h"
 
 #include "core\objects.h"
@@ -34,7 +33,7 @@
 /* ----------------------------------------------------------------
  * Game globals
  * ---------------------------------------------------------------- */
-struct system_solar* sol_list;
+SYSTEM* sol_list;
 int sol_size;
 
 struct object*       obj_list;
@@ -65,6 +64,35 @@ enum game_screen {
     SCR_MAP,
     SCR_MAIN_MENU,
     SCR_STATUS
+};
+
+/* ----------------------------------------------------------------
+ * Game Data Structures
+ * ---------------------------------------------------------------- */
+char* data_ship_names[SHIP_COUNT] = {
+    "Almighty's Boat", "Betsy Boat", "Old Imperial Trade Ship",
+    "Gae Bulg Ship", "Nova Trade Carrier", "Bulk Carrier" 
+};
+
+int data_ship_tonnages[SHIP_COUNT] = {
+    50, 80, 100, 150, 200, 400
+};
+
+char* data_hyper_names[HYPER_COUNT] = {
+    "Hyper Engine Mark I", "Hyper Engine Mark II", 
+    "Hyper Engine Mark III", "Hyper Engine [UMBRELLA]"
+};
+
+int data_hyper_fuel[HYPER_COUNT] = {
+    10, 8, 5, 2
+};
+
+char* data_factions[FACTIONS_COUNT] = {
+    "Serpent and Star Union", "Ireland-Mermaidian Confederation", "Sentinel Coalition Peacemakers", "Pirates"
+};
+
+char* data_sectors[SECTORS_COUNT] = {
+    "Dhat", "Medinat", "Ghabkar", "Buraq", "Ben Vara", "Killoch Vairan", "Cuchulainn", "Danter", "Coalsack"
 };
 
 /* ----------------------------------------------------------------
@@ -271,7 +299,7 @@ int main()
                     sprintf(buf, "Ready to jump from SA.%d to SA.%d ?", wp.way[0], wp.way[1]);
                     if (gui_bool_wnd("JUMP INITIATED", buf)) {
                         gs.current_system = wp.way[1];
-                        gs.fuel -= hyper_fuel[gs.hyper_class];
+                        gs.fuel -= data_hyper_fuel[gs.hyper_class];
                         sprintf(buf, "Welcome to SA.%d", wp.way[1]);
                         wp.size = 0;
                         dirty_topbar = 1;
