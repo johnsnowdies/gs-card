@@ -1,7 +1,7 @@
 /* pathwnd.c -- path side-panel window
  *
- * Private: drawPathWnd(), pathListFlag
- * Public:  pathWnd()
+ * Private: drawgui_map_path_wnd(), pathListFlag
+ * Public:  gui_map_path_wnd()
  */
 
 #include <graphics.h>
@@ -9,7 +9,7 @@
 
 #include "data\structs.h"
 
-#include "math\objects.h"
+#include "core\objects.h"
 
 #include "ui\gui.h"
 #include "ui\ad.h"
@@ -18,9 +18,9 @@
 /* ----------------------------------------------------------------
  * Extern game globals (defined in card.c)
  * ---------------------------------------------------------------- */
-extern struct object* objList;
+extern struct object* obj_list;
 extern struct game_state gs;
-extern int      objSize;
+extern int      obj_size;
 extern int      show_danger_path_parts;
 
 /* ----------------------------------------------------------------
@@ -31,34 +31,34 @@ static int pathListFlag = 0;
 /* ----------------------------------------------------------------
  * Private: drawPathWnd -- background frame of the path panel
  * ---------------------------------------------------------------- */
-static void drawPathWnd(struct waypoint* wp, int oy)
+static void drawgui_map_path_wnd(struct waypoint* wp, int oy)
 {
-    extern int WND_WIDTH, WND_HEIGHT;
+    extern int MAP_WND_WIDTH, MAP_WND_HEIGHT;
 
     setfillstyle(SOLID_FILL, BLACK);
     setcolor(15);
-    bar(WND_WIDTH + 1, 21, 638, WND_HEIGHT-1);
+    bar(MAP_WND_WIDTH + 1, 21, 638, MAP_WND_HEIGHT-1);
 
     /* Title bar */
     setfillstyle(SOLID_FILL, RED);
     setcolor(0);
-    bar(WND_WIDTH + 1, 21, 638, 41);
+    bar(MAP_WND_WIDTH + 1, 21, 638, 41);
     settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
-    outtextxy(WND_WIDTH + 5, 26, "PATH");
+    outtextxy(MAP_WND_WIDTH + 5, 26, "PATH");
 
     /* Separator + hint */
     setcolor(4);
     setlinestyle(1, 0, 1);
-    line(WND_WIDTH + 1, oy, 638, oy);
+    line(MAP_WND_WIDTH + 1, oy, 638, oy);
 
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-    outtextxy(WND_WIDTH + 5, oy + 5, "PgUp/PgDn");
+    outtextxy(MAP_WND_WIDTH + 5, oy + 5, "PgUp/PgDn");
     setcolor(15);
-    outtextxy(WND_WIDTH + 80, oy + 5, "-SELECT");
+    outtextxy(MAP_WND_WIDTH + 80, oy + 5, "-SELECT");
 
     /* Embedded ad (one-shot per path) */
     if (wp->size < 15 && !pathListFlag) {
-        adQuindett();
+        gui_ad_quindett();
         pathListFlag = 1;
     }
 
@@ -67,19 +67,19 @@ static void drawPathWnd(struct waypoint* wp, int oy)
 /* ----------------------------------------------------------------
  * Public: pathWnd -- draw the path waypoint list
  * ---------------------------------------------------------------- */
-void pathWnd(struct waypoint* wp, int currentPoint,
-             struct system_solar* ptrList)
+void gui_map_path_wnd(struct waypoint* wp, int current_point,
+             struct system_solar* sol_list)
 {
     int i, j, oy, yStep = 15, jump_possible = 0;
     int o;
     char buf[50];
 
-    extern int WND_WIDTH, WND_HEIGHT;
+    extern int MAP_WND_WIDTH, MAP_WND_HEIGHT;
 
     pathListFlag = 0;
 
     oy = 46 + wp->size * yStep;
-    drawPathWnd(wp, oy);
+    drawgui_map_path_wnd(wp, oy);
 
     setcolor(15);
     settextstyle(SMALL_FONT, HORIZ_DIR, 4);
@@ -89,15 +89,15 @@ void pathWnd(struct waypoint* wp, int currentPoint,
     }
 
     for (i = 0, j = (wp->size - 1); i < wp->size; i++, j--) {
-        if (i == currentPoint) {
+        if (i == current_point) {
             setcolor(0);
             setfillstyle(SOLID_FILL, RED);
-            bar(WND_WIDTH + 1, 46 + i * yStep,
+            bar(MAP_WND_WIDTH + 1, 46 + i * yStep,
                 638, 46 + i * yStep + 15);
         } else {
             setcolor(15);
             setfillstyle(SOLID_FILL, BLACK);
-            bar(WND_WIDTH + 1, 46 + i * yStep,
+            bar(MAP_WND_WIDTH + 1, 46 + i * yStep,
                 638, 46 + i * yStep + 15);
         }
 
@@ -111,21 +111,21 @@ void pathWnd(struct waypoint* wp, int currentPoint,
         }
 
         /* Mark dangerous segments */
-        if (i > 0 && show_danger_path_parts && objSize) {
+        if (i > 0 && show_danger_path_parts && obj_size) {
             int prev = wp->way[i - 1];
             int cur  = wp->way[i];
-            for (o = 0; o < objSize; o++) {
-                if (sphereLineIntersect(
-                        ptrList[prev].x, ptrList[prev].y, ptrList[prev].z,
-                        ptrList[cur].x,  ptrList[cur].y,  ptrList[cur].z,
-                        objList[o].x,  objList[o].y,  objList[o].z,
-                        objList[o].r)) {
+            for (o = 0; o < obj_size; o++) {
+                if (core_objects_sphere_line_intersect(
+                        sol_list[prev].x, sol_list[prev].y, sol_list[prev].z,
+                        sol_list[cur].x,  sol_list[cur].y,  sol_list[cur].z,
+                        obj_list[o].x,  obj_list[o].y,  obj_list[o].z,
+                        obj_list[o].r)) {
                     sprintf(buf, "#%d: SA%d [DANGER]", i + 1, wp->way[i]);
                     break;
                 }
             }
         }
 
-        outtextxy(WND_WIDTH + 5, 46 + i * yStep, buf);
+        outtextxy(MAP_WND_WIDTH + 5, 46 + i * yStep, buf);
     }
 }

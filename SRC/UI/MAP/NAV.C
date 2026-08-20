@@ -6,7 +6,6 @@
  * Public API declared in nav.h.
  */
 
-#include <alloc.h>
 #include <stdio.h>
 
 #include "data\structs.h"
@@ -17,7 +16,7 @@
 /* ----------------------------------------------------------------
  * Extern viewport globals (defined in mapwnd.c)
  * ---------------------------------------------------------------- */
-extern int  WND_WIDTH, WND_HEIGHT;
+extern int  MAP_WND_WIDTH, MAP_WND_HEIGHT;
 extern int  offsetX, offsetY, offsetZ;
 extern float xmin, xmax, ymin, ymax, zmin, zmax;
 extern float xdens, ydens;
@@ -28,7 +27,7 @@ extern float xdens, ydens;
 #define MAX_VALUE 1400
 #define MIN_VALUE -1400
 
-void scaleMinus()
+void gui_map_nav_scale_minus()
 {
     if (xmax < MAX_VALUE * 3 && xmin > MIN_VALUE * 3) {
         xmax = xmax + MAX_VALUE / 10;
@@ -39,12 +38,12 @@ void scaleMinus()
         ymin = ymin - MAX_VALUE / 10;
         zmin = zmin - MAX_VALUE / 10;
     } else {
-        warningWnd("ERROR", "Minimal scale rate reached!");
+        gui_warning_wnd("ERROR", "Minimal scale rate reached!");
         getch();
     }
 }
 
-void scalePlus()
+void gui_map_nav_scale_plus()
 {
     if (xmax > MAX_VALUE / 10 && xmin < MIN_VALUE / 10) {
         xmax = xmax - MAX_VALUE / 10;
@@ -55,7 +54,7 @@ void scalePlus()
         ymin = ymin + MAX_VALUE / 10;
         zmin = zmin + MAX_VALUE / 10;
     } else {
-        warningWnd("ERROR", "Maximal scale rate reached!");
+        gui_warning_wnd("ERROR", "Maximal scale rate reached!");
         getch();
     }
 }
@@ -63,17 +62,17 @@ void scalePlus()
 /* ----------------------------------------------------------------
  * Offset
  * ---------------------------------------------------------------- */
-void offsetXplus()  { offsetX += xmax / 10; }
-void offsetXminus() { offsetX -= xmax / 10; }
-void offsetYplus()  { offsetY += ymax / 10; }
-void offsetYminus() { offsetY -= ymax / 10; }
-void offsetZplus()  { offsetZ += zmax / 10; }
-void offsetZminus() { offsetZ -= zmax / 10; }
+void gui_map_nav_offset_x_plus()  { offsetX += xmax / 10; }
+void gui_map_nav_offset_x_minus() { offsetX -= xmax / 10; }
+void gui_map_nav_offset_y_plus()  { offsetY += ymax / 10; }
+void gui_map_nav_offset_y_minus() { offsetY -= ymax / 10; }
+void gui_map_nav_offset_z_plus()  { offsetZ += zmax / 10; }
+void gui_map_nav_offset_z_minus() { offsetZ -= zmax / 10; }
 
 /* ----------------------------------------------------------------
  * moveScreenTo -- centre view on a system
  * ---------------------------------------------------------------- */
-void moveScreenTo(struct system_solar* solar, int value)
+void gui_map_nav_move_screen_to(struct system_solar* solar, int value)
 {
     offsetX = -1 * solar[value].x;
     offsetY = -1 * solar[value].y;
@@ -91,27 +90,27 @@ void moveScreenTo(struct system_solar* solar, int value)
 /* ----------------------------------------------------------------
  * gotoSystem -- prompt for system number, then jump
  * ---------------------------------------------------------------- */
-void gotoSystem(int ptrSize, struct system_solar* solar)
+void gui_map_nav_goto_system(int sol_size, struct system_solar* solar)
 {
     char* input;
     int value;
     int error = 0;
 
-    input = questionWnd("GSCARD", "Insert system COORD", NULL);
+    input = gui_input_wnd("GSCARD", "Insert system COORD", NULL);
     value = atoi(input);
 
     if (value != 0) {
-        if (value > ptrSize || value < 1) {
+        if (value > sol_size || value < 1) {
             error = 1;
         } else {
-            moveScreenTo(solar, value);
+            gui_map_nav_move_screen_to(solar, value);
         }
     } else {
         error = 1;
     }
 
     if (error) {
-        warningWnd("ERROR", "Wrong value!");
+        gui_warning_wnd("ERROR", "Wrong value!");
         getch();
     }
 }

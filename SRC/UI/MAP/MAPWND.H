@@ -1,8 +1,8 @@
 /* mapwnd.h -- map window rendering API */
-/* Only draw() and clearWnd() are public.  All coordinate helpers
+/* Only gui_map_wnd_draw() and gui_map_wnd_clear() are public.  All coordinate helpers
    and projection functions are static inside mapwnd.c. */
 
-void draw(int ptrSize, struct system_solar* ptrList, int mode,
-          int isCoord, int isHyper, struct waypoint* way, int currentPoint);
+void gui_map_wnd_draw(int sol_size, struct system_solar* sol_list, int mode,
+          int isCoord, int isHyper, struct waypoint* way, int current_point);
 
-void clearWnd(void);
+void gui_map_wnd_clear(void);

@@ -1,4 +1,4 @@
 /* pathwnd.h -- path side-panel window API */
 
-void pathWnd(struct waypoint* wp, int currentPoint,
-             struct system_solar* ptrList);
+void gui_map_path_wnd(struct waypoint* wp, int current_point,
+             struct system_solar* sol_list);

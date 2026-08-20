@@ -3,13 +3,12 @@
 #include <stdio.h>
 
 #include "data\structs.h"
-
-#include "math\objects.h"
+#include "core\objects.h"
 
 
 /* sphereLineIntersect: returns 1 if line segment A-B passes within
  * distance r of point C (sphere intersection) */
-int sphereLineIntersect(int ax, int ay, int az, int bx, int by, int bz, int cx,
+int core_objects_sphere_line_intersect(int ax, int ay, int az, int bx, int by, int bz, int cx,
                         int cy, int cz, int r) {
   double dx, dy, dz; /* B - A */
   double wx, wy, wz; /* C - A */

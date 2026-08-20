@@ -1,12 +1,12 @@
 /* nav.h -- navigation controller API */
 
-void scaleMinus(void);
-void scalePlus(void);
-void offsetXplus(void);
-void offsetXminus(void);
-void offsetYplus(void);
-void offsetYminus(void);
-void offsetZplus(void);
-void offsetZminus(void);
-void moveScreenTo(struct system_solar* solar, int value);
-void gotoSystem(int ptrSize, struct system_solar* solar);
+void gui_map_nav_scale_minus(void);
+void gui_map_nav_scale_plus(void);
+void gui_map_nav_offset_x_plus(void);
+void gui_map_nav_offset_x_minus(void);
+void gui_map_nav_offset_y_plus(void);
+void gui_map_nav_offset_y_minus(void);
+void gui_map_nav_offset_z_plus(void);
+void gui_map_nav_offset_z_minus(void);
+void gui_map_nav_move_screen_to(struct system_solar* solar, int value);
+void gui_map_nav_goto_system(int sol_size, struct system_solar* solar);

@@ -3,7 +3,7 @@
  * Private (static): safe_putpixel, safe_line, safe_outtextxy, safe_circle,
  *   p(), ex(), ey(), drawObjects, draw2dwnd, draw3dwnd, drawyzwnd, POINT_COLOR
  *
- * Public: draw(), clearWnd()
+ * Public: gui_map_wnd_draw(), gui_map_wnd_clear()
  */
 
 #include <alloc.h>
@@ -11,7 +11,7 @@
 
 #include "data\structs.h"
 
-#include "math\objects.h"
+#include "core\objects.h"
 
 #include "ui\gui.h"
 #include "ui\ad.h"
@@ -21,8 +21,8 @@
 /* ----------------------------------------------------------------
  * Screen / viewport layout -- defined here, declared extern in gui.h
  * ---------------------------------------------------------------- */
-int WND_WIDTH  = 639;   /* may shrink to 470 when path panel is open */
-int WND_HEIGHT = 460;
+int MAP_WND_WIDTH  = 639;   /* may shrink to 470 when path panel is open */
+int MAP_WND_HEIGHT = 460;
 
 /* Viewport bounds for clipping (map window only) */
 static struct map_wnd {
@@ -46,8 +46,8 @@ static int POINT_COLOR = 0;
 /* ----------------------------------------------------------------
  * Extern game globals (defined in card.c)
  * ---------------------------------------------------------------- */
-extern struct object* objList;
-extern int      objSize;
+extern struct object* obj_list;
+extern int      obj_size;
 extern int      render_danger_objects;
 extern int      show_danger_hyperthreads;
 extern int      show_danger_path_parts;
@@ -144,8 +144,8 @@ static struct point p(float x, float y, float z)
     float a = y / 2.0F;
     struct point res;
 
-    res.x = (int)(WND_WIDTH  / 2 + (x - a) / xdens);
-    res.y = (int)(WND_HEIGHT / 2 + (b / ydens) - (z / ydens));
+    res.x = (int)(MAP_WND_WIDTH  / 2 + (x - a) / xdens);
+    res.y = (int)(MAP_WND_HEIGHT / 2 + (b / ydens) - (z / ydens));
 
     /* Depth-colouring */
     if      (z <= -200) POINT_COLOR = 1;
@@ -170,13 +170,13 @@ static void drawObjects(int mode)
 {
     int i, color, inner;
 
-    if (!objSize || !objList || !render_danger_objects) return;
+    if (!obj_size || !obj_list || !render_danger_objects) return;
 
-    for (i = 0; i < objSize; i++) {
+    for (i = 0; i < obj_size; i++) {
         int cx, cy, rx, ry;
-        int r = objList[i].r;
+        int r = obj_list[i].r;
 
-        switch (objList[i].type) {
+        switch (obj_list[i].type) {
             case OBJ_GASCLOUD:  color = 5;  inner = 13; break;
             case OBJ_BLACKHOLE: color = 4;  inner = 0;  break;
             case OBJ_NEBULA:    color = 9;  inner = 11; break;
@@ -184,16 +184,16 @@ static void drawObjects(int mode)
         }
 
         if (mode == 1) {
-            cx = ex(objList[i].x + offsetX);
-            cy = ey(objList[i].y + offsetY);
+            cx = ex(obj_list[i].x + offsetX);
+            cy = ey(obj_list[i].y + offsetY);
         } else if (mode == 2) {
-            struct point c = p(objList[i].x + offsetX,
-                               objList[i].y + offsetY,
-                               objList[i].z + offsetZ);
+            struct point c = p(obj_list[i].x + offsetX,
+                               obj_list[i].y + offsetY,
+                               obj_list[i].z + offsetZ);
             cx = c.x;  cy = c.y;
         } else {
-            cx = ex(objList[i].x + offsetX);
-            cy = ey(-1 * (objList[i].z + offsetZ));
+            cx = ex(obj_list[i].x + offsetX);
+            cy = ey(-1 * (obj_list[i].z + offsetZ));
         }
 
         rx = (int)(r / xdens);  if (rx < 2) rx = 2;
@@ -209,15 +209,15 @@ static void drawObjects(int mode)
 /* ----------------------------------------------------------------
  * draw2dwnd -- XY projection (top-down)
  * ---------------------------------------------------------------- */
-static void draw2dwnd(int ptrSize, struct system_solar* solar,
+static void draw2dwnd(int sol_size, struct system_solar* solar,
                       int isCoord, int isHyper, struct waypoint* wp)
 {
     int i, j, o;
     struct system_solar buf, a, b;
     int drawThreads = isHyper;
 
-    xdens = (xmax - xmin) / WND_WIDTH;
-    ydens = (ymax - ymin) / WND_HEIGHT;
+    xdens = (xmax - xmin) / MAP_WND_WIDTH;
+    ydens = (ymax - ymin) / MAP_WND_HEIGHT;
 
     if (isCoord) {
         int x0 = ex(0 + offsetX);
@@ -225,15 +225,15 @@ static void draw2dwnd(int ptrSize, struct system_solar* solar,
 
         setcolor(15);
         setlinestyle(0, 0, 1);
-        safe_line(x0, y0, WND_WIDTH, y0);
+        safe_line(x0, y0, MAP_WND_WIDTH, y0);
         safe_line(x0, y0, x0, 0);
 
         setlinestyle(1, 0, 1);
         safe_line(0, y0, x0, y0);
-        safe_line(x0, WND_HEIGHT, x0, y0);
+        safe_line(x0, MAP_WND_HEIGHT, x0, y0);
     }
 
-    for (i = 0; i < ptrSize; i++) {
+    for (i = 0; i < sol_size; i++) {
         p(solar[i].x, solar[i].y, solar[i].z);
         safe_putpixel(ex(solar[i].x + offsetX), ey(solar[i].y + offsetY),
                       POINT_COLOR);
@@ -249,13 +249,13 @@ static void draw2dwnd(int ptrSize, struct system_solar* solar,
                           ex(buf.x + offsetX), ey(buf.y + offsetY));
 
                 /* unsafe thread */
-                if (show_danger_hyperthreads && objSize) {
-                    for (o = 0; o < objSize; o++) {
-                        if (sphereLineIntersect(
+                if (show_danger_hyperthreads && obj_size) {
+                    for (o = 0; o < obj_size; o++) {
+                        if (core_objects_sphere_line_intersect(
                                 solar[i].x, solar[i].y, solar[i].z,
                                 buf.x, buf.y, buf.z,
-                                objList[o].x, objList[o].y,
-                                objList[o].z, objList[o].r)) {
+                                obj_list[o].x, obj_list[o].y,
+                                obj_list[o].z, obj_list[o].r)) {
                             setcolor(4);
                             setlinestyle(0, 0, 1);
                             safe_line(ex(solar[i].x + offsetX), ey(solar[i].y + offsetY),
@@ -270,8 +270,8 @@ static void draw2dwnd(int ptrSize, struct system_solar* solar,
 
         /* System label */
         if (xmax <= MAX_VALUE / 10 &&
-            ex(solar[i].x + offsetX) < (WND_WIDTH - 80) &&
-            ey(solar[i].y + offsetY) < (WND_HEIGHT - 15)) {
+            ex(solar[i].x + offsetX) < (MAP_WND_WIDTH - 80) &&
+            ey(solar[i].y + offsetY) < (MAP_WND_HEIGHT - 15)) {
             char c[50] = "";
             sprintf(c, "SA.%d(%d)", i, solar[i].threadSize);
             setcolor(15);
@@ -292,14 +292,14 @@ static void draw2dwnd(int ptrSize, struct system_solar* solar,
     }
 
     /* Dangerous path segments */
-    if (show_danger_path_parts && objSize && wp->size) {
+    if (show_danger_path_parts && obj_size && wp->size) {
         for (i = 1; i < wp->size; i++) {
             int a_idx = wp->way[i - 1];
             int b_idx = wp->way[i];
-            for (o = 0; o < objSize; o++) {
-                if (sphereLineIntersect(solar[a_idx].x, solar[a_idx].y, solar[a_idx].z,
+            for (o = 0; o < obj_size; o++) {
+                if (core_objects_sphere_line_intersect(solar[a_idx].x, solar[a_idx].y, solar[a_idx].z,
                                         solar[b_idx].x, solar[b_idx].y, solar[b_idx].z,
-                                        objList[o].x, objList[o].y, objList[o].z, objList[o].r)) {
+                                        obj_list[o].x, obj_list[o].y, obj_list[o].z, obj_list[o].r)) {
                     setcolor(4);
                     safe_line(ex(solar[a_idx].x + offsetX), ey(solar[a_idx].y + offsetY),
                               ex(solar[b_idx].x + offsetX), ey(solar[b_idx].y + offsetY));
@@ -313,29 +313,29 @@ static void draw2dwnd(int ptrSize, struct system_solar* solar,
     drawObjects(1);
 
     setcolor(4);
-    rectangle(0, 21, WND_WIDTH, WND_HEIGHT);
-    adHypersoft();
+    rectangle(0, 21, MAP_WND_WIDTH, MAP_WND_HEIGHT);
+    gui_ad_hypersoft();
 }
 
 /* ----------------------------------------------------------------
  * draw3dwnd -- Isometric (XYZ) projection
  * ---------------------------------------------------------------- */
-static void draw3dwnd(int ptrSize, struct system_solar* solar,
+static void draw3dwnd(int sol_size, struct system_solar* solar,
                       int isCoord, int isHyper, struct waypoint* wp)
 {
     int i, j, o;
     struct system_solar buf, a, b;
     int drawThreads = isHyper;
 
-    xdens = (xmax - xmin) / WND_WIDTH;
-    ydens = (ymax - ymin) / WND_HEIGHT;
+    xdens = (xmax - xmin) / MAP_WND_WIDTH;
+    ydens = (ymax - ymin) / MAP_WND_HEIGHT;
 
     if (isCoord) {
         struct point A1 = p(0.0F + offsetX, 0.0F + offsetY, 0.0F + offsetZ);
 
         /* X axis */
         setcolor(15); setlinestyle(0, 0, 1);
-        safe_line(A1.x, A1.y, WND_WIDTH, A1.y);
+        safe_line(A1.x, A1.y, MAP_WND_WIDTH, A1.y);
         setlinestyle(1, 0, 1);
         safe_line(0, A1.y, A1.x, A1.y);
 
@@ -343,7 +343,7 @@ static void draw3dwnd(int ptrSize, struct system_solar* solar,
         setcolor(15); setlinestyle(0, 0, 1);
         safe_line(A1.x, A1.y, A1.x, 0);
         setlinestyle(1, 0, 1);
-        safe_line(A1.x, WND_HEIGHT, A1.x, A1.y);
+        safe_line(A1.x, MAP_WND_HEIGHT, A1.x, A1.y);
 
         /* Y axis (diagonal) */
         {
@@ -358,7 +358,7 @@ static void draw3dwnd(int ptrSize, struct system_solar* solar,
         }
     }
 
-    for (i = 0; i < ptrSize; i++) {
+    for (i = 0; i < sol_size; i++) {
         struct point A1 = p(solar[i].x + offsetX, solar[i].y + offsetY,
                             solar[i].z + offsetZ);
         p(solar[i].x, solar[i].y, solar[i].z);
@@ -375,14 +375,14 @@ static void draw3dwnd(int ptrSize, struct system_solar* solar,
                         safe_line(A1.x, A1.y, A8.x, A8.y);
 
                     /* unsafe thread */
-                    if (show_danger_hyperthreads && objSize) {
+                    if (show_danger_hyperthreads && obj_size) {
                         int o;
-                        for (o = 0; o < objSize; o++) {
-                            if (sphereLineIntersect(
+                        for (o = 0; o < obj_size; o++) {
+                            if (core_objects_sphere_line_intersect(
                                     solar[i].x, solar[i].y, solar[i].z,
                                     buf.x, buf.y, buf.z,
-                                    objList[o].x, objList[o].y,
-                                    objList[o].z, objList[o].r)) {
+                                    obj_list[o].x, obj_list[o].y,
+                                    obj_list[o].z, obj_list[o].r)) {
                                 setcolor(4);
                                 setlinestyle(0, 0, 1);
                                 safe_line(A1.x, A1.y, A8.x, A8.y);
@@ -396,7 +396,7 @@ static void draw3dwnd(int ptrSize, struct system_solar* solar,
         }
 
         if (xmax <= MAX_VALUE / 10 &&
-            A1.x < (WND_WIDTH - 80) && A1.y < (WND_HEIGHT - 20)) {
+            A1.x < (MAP_WND_WIDTH - 80) && A1.y < (MAP_WND_HEIGHT - 20)) {
             char c[50] = "";
             setcolor(15);
             settextstyle(SMALL_FONT, HORIZ_DIR, 4);
@@ -419,14 +419,14 @@ static void draw3dwnd(int ptrSize, struct system_solar* solar,
     }
 
     /* Dangerous path segments */
-    if (show_danger_path_parts && objSize && wp->size) {
+    if (show_danger_path_parts && obj_size && wp->size) {
         for (i = 1; i < wp->size; i++) {
             int a_idx = wp->way[i - 1];
             int b_idx = wp->way[i];
-            for (o = 0; o < objSize; o++) {
-                if (sphereLineIntersect(solar[a_idx].x, solar[a_idx].y, solar[a_idx].z,
+            for (o = 0; o < obj_size; o++) {
+                if (core_objects_sphere_line_intersect(solar[a_idx].x, solar[a_idx].y, solar[a_idx].z,
                                         solar[b_idx].x, solar[b_idx].y, solar[b_idx].z,
-                                        objList[o].x, objList[o].y, objList[o].z, objList[o].r)) {
+                                        obj_list[o].x, obj_list[o].y, obj_list[o].z, obj_list[o].r)) {
                     struct point A8 = p(solar[a_idx].x + offsetX, solar[a_idx].y + offsetY,
                                         solar[a_idx].z + offsetZ);
                     struct point A9 = p(solar[b_idx].x + offsetX, solar[b_idx].y + offsetY,
@@ -443,22 +443,22 @@ static void draw3dwnd(int ptrSize, struct system_solar* solar,
     drawObjects(2);
     setlinestyle(0, 0, 1);
     setcolor(4);
-    rectangle(0, 21, WND_WIDTH, WND_HEIGHT);
-    adHypersoft();
+    rectangle(0, 21, MAP_WND_WIDTH, MAP_WND_HEIGHT);
+    gui_ad_hypersoft();
 }
 
 /* ----------------------------------------------------------------
  * drawyzwnd -- YZ (side) projection
  * ---------------------------------------------------------------- */
-static void drawyzwnd(int ptrSize, struct system_solar* solar,
+static void drawyzwnd(int sol_size, struct system_solar* solar,
                       int isCoord, int isHyper, struct waypoint* wp)
 {
     int i, j, o;
     struct system_solar buf, a, b;
     int drawThreads = isHyper;
 
-    xdens = (xmax - xmin) / WND_WIDTH;
-    ydens = (ymax - ymin) / WND_HEIGHT;
+    xdens = (xmax - xmin) / MAP_WND_WIDTH;
+    ydens = (ymax - ymin) / MAP_WND_HEIGHT;
 
     if (isCoord) {
         int y0 = ey(-1 * (0 + offsetZ));
@@ -466,15 +466,15 @@ static void drawyzwnd(int ptrSize, struct system_solar* solar,
 
         setcolor(15);
         setlinestyle(0, 0, 1);
-        safe_line(x0, y0, WND_WIDTH, y0);
+        safe_line(x0, y0, MAP_WND_WIDTH, y0);
         safe_line(x0, y0, x0, 0);
 
         setlinestyle(1, 0, 1);
         safe_line(0, y0, x0, y0);
-        safe_line(x0, WND_HEIGHT, x0, y0);
+        safe_line(x0, MAP_WND_HEIGHT, x0, y0);
     }
 
-    for (i = 0; i < ptrSize; i++) {
+    for (i = 0; i < sol_size; i++) {
         p(solar[i].x, solar[i].y, solar[i].z);
         safe_putpixel(ex(solar[i].x + offsetX),
                       ey(-1 * (solar[i].z + offsetZ)), POINT_COLOR);
@@ -492,14 +492,14 @@ static void drawyzwnd(int ptrSize, struct system_solar* solar,
                           ey(-1 * (buf.z + offsetZ)));
 
                 /* unsafe thread */
-                if (show_danger_hyperthreads && objSize) {
+                if (show_danger_hyperthreads && obj_size) {
                     int o;
-                    for (o = 0; o < objSize; o++) {
-                        if (sphereLineIntersect(
+                    for (o = 0; o < obj_size; o++) {
+                        if (core_objects_sphere_line_intersect(
                                 solar[i].x, solar[i].y, solar[i].z,
                                 buf.x, buf.y, buf.z,
-                                objList[o].x, objList[o].y,
-                                objList[o].z, objList[o].r)) {
+                                obj_list[o].x, obj_list[o].y,
+                                obj_list[o].z, obj_list[o].r)) {
                             setcolor(4);
                             setlinestyle(0, 0, 1);
                             safe_line(ex(solar[i].x + offsetX),
@@ -515,8 +515,8 @@ static void drawyzwnd(int ptrSize, struct system_solar* solar,
         }
 
         if (xmax <= MAX_VALUE / 10 &&
-            ex(solar[i].x + offsetX) < (WND_WIDTH - 80) &&
-            ey(solar[i].y + offsetY) < (WND_HEIGHT - 100)) {
+            ex(solar[i].x + offsetX) < (MAP_WND_WIDTH - 80) &&
+            ey(solar[i].y + offsetY) < (MAP_WND_HEIGHT - 100)) {
             char c[50] = "";
             sprintf(c, "SA.%d(%d)", i, solar[i].threadSize);
             setcolor(15);
@@ -537,14 +537,14 @@ static void drawyzwnd(int ptrSize, struct system_solar* solar,
     }
 
     /* Dangerous path segments */
-    if (show_danger_path_parts && objSize && wp->size) {
+    if (show_danger_path_parts && obj_size && wp->size) {
         for (i = 1; i < wp->size; i++) {
             int a_idx = wp->way[i - 1];
             int b_idx = wp->way[i];
-            for (o = 0; o < objSize; o++) {
-                if (sphereLineIntersect(solar[a_idx].x, solar[a_idx].y, solar[a_idx].z,
+            for (o = 0; o < obj_size; o++) {
+                if (core_objects_sphere_line_intersect(solar[a_idx].x, solar[a_idx].y, solar[a_idx].z,
                                         solar[b_idx].x, solar[b_idx].y, solar[b_idx].z,
-                                        objList[o].x, objList[o].y, objList[o].z, objList[o].r)) {
+                                        obj_list[o].x, obj_list[o].y, obj_list[o].z, obj_list[o].r)) {
                     setcolor(4);
                     safe_line(ex(solar[a_idx].x + offsetX),
                               ey(-1 * (solar[a_idx].z + offsetZ)),
@@ -559,44 +559,93 @@ static void drawyzwnd(int ptrSize, struct system_solar* solar,
     setlinestyle(0, 0, 1);
     drawObjects(3);
     setcolor(4);
-    rectangle(0, 21, WND_WIDTH, WND_HEIGHT);
-    adHypersoft();
+    rectangle(0, 21, MAP_WND_WIDTH, MAP_WND_HEIGHT);
+    gui_ad_hypersoft();
 }
 
 /* ----------------------------------------------------------------
- * Public: draw() -- main frame dispatcher
+ * map_bottom_status_line -- bottom shortcut bar + memory usage
  * ---------------------------------------------------------------- */
-void draw(int ptrSize, struct system_solar* ptrList, int mode,
-          int isCoord, int isHyper, struct waypoint* way, int currentPoint)
+void map_bottom_status_line()
+{
+    unsigned int USED_MEM, FREE_MEM, TOTAL_MEM = 65535;
+    int xpos = BAR_LEFT;
+    char memMsg[50] = "";
+
+    settextstyle(SMALL_FONT, HORIZ_DIR, 5);
+    FREE_MEM = coreleft();
+    USED_MEM = TOTAL_MEM - FREE_MEM;
+    sprintf(memMsg, "%u/%u", USED_MEM, TOTAL_MEM);
+
+    setfillstyle(SOLID_FILL, BLACK);
+    bar(0, STATUSBAR_Y, MAP_WND_WIDTH, STATUSBAR_Y + STATUSBAR_H - 1);
+
+    /* Shortcut labels */
+    setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F1"); xpos += 13;
+    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "-VIEW"); xpos += 45;
+
+    setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F2");
+    setcolor(TEXT_COLOR); xpos += 15;
+    outtextxy(xpos, STATUSBAR_Y + 2, "-AXIS"); xpos += 45;
+
+    setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F3/F4"); xpos += 40;
+    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "-ZOOM"); xpos += 45;
+
+    setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F5"); xpos += 15;
+    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "-GOTO"); xpos += 45;
+
+    setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F6"); xpos += 15;
+    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "-THREADS"); xpos += 70;
+
+    setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F7"); xpos += 15;
+    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "-RUN"); xpos += 40;
+
+    /* Separator */
+    xpos = 470;
+    setcolor(BAR_COLOR);
+    line(xpos, STATUSBAR_Y - 1, xpos, STATUSBAR_Y + STATUSBAR_H - 1);
+
+    /* Memory */
+    setcolor(BAR_COLOR);
+    outtextxy(xpos + 5, STATUSBAR_Y + 2, "MEM:");
+    setcolor(TEXT_COLOR);
+    outtextxy(xpos + 35, STATUSBAR_Y + 2, memMsg);
+}
+
+/* ----------------------------------------------------------------
+ * Public: gui_map_wnd_draw() -- main frame dispatcher
+ * ---------------------------------------------------------------- */
+void gui_map_wnd_draw(int sol_size, struct system_solar* sol_list, int mode,
+          int isCoord, int isHyper, struct waypoint* way, int current_point)
 {
     /* Shrink main view when path panel is open */
     if (way->size)
-        WND_WIDTH = 470;
+        MAP_WND_WIDTH = 470;
     else
-        WND_WIDTH = 639;
+        MAP_WND_WIDTH = 639;
 
-    map_wnd.x2 = WND_WIDTH;
+    map_wnd.x2 = MAP_WND_WIDTH;
 
-    clearWnd();
+    gui_map_wnd_clear();
 
-    if (mode == 1) draw2dwnd(ptrSize, ptrList, isCoord, isHyper, way);
-    if (mode == 2) draw3dwnd(ptrSize, ptrList, isCoord, isHyper, way);
-    if (mode == 3) drawyzwnd(ptrSize, ptrList, isCoord, isHyper, way);
+    if (mode == 1) draw2dwnd(sol_size, sol_list, isCoord, isHyper, way);
+    if (mode == 2) draw3dwnd(sol_size, sol_list, isCoord, isHyper, way);
+    if (mode == 3) drawyzwnd(sol_size, sol_list, isCoord, isHyper, way);
 
-    if (way->size && dirty_path) pathWnd(way, currentPoint, ptrList);
+    if (way->size && dirty_path) gui_map_path_wnd(way, current_point, sol_list);
     dirty_path = 0;
 
-    if (dirty_topbar) topStatusLine();
-    if (dirty_bottombar) statusLine();
+    if (dirty_topbar) gui_top_status_line();
+    if (dirty_bottombar) map_bottom_status_line();
     dirty_topbar = 0;
     dirty_bottombar = 0;
 }
 
 /* ----------------------------------------------------------------
- * Public: clearWnd() -- fill map area with black
+ * Public: gui_map_wnd_clear() -- fill map area with black
  * ---------------------------------------------------------------- */
-void clearWnd()
+void gui_map_wnd_clear()
 {
     setfillstyle(SOLID_FILL, BLACK);
-    bar(1, 21, WND_WIDTH - 1, WND_HEIGHT - 1);
+    bar(1, 21, MAP_WND_WIDTH - 1, MAP_WND_HEIGHT - 1);
 }

@@ -19,13 +19,13 @@
 #include "data\tables.h"
 #include "data\reader.h"
 
-#include "math\objects.h"
-#include "math\finder.h"
+#include "core\objects.h"
+#include "core\finder.h"
 
 #include "ui\ad.h"
 #include "ui\splash.h"
 #include "ui\gui.h"
-#include "ui\mmwnd.h"
+#include "ui\menuwnd.h"
 #include "ui\statwnd.h"
 #include "ui\map\mapwnd.h"
 #include "ui\map\pathwnd.h"
@@ -34,13 +34,15 @@
 /* ----------------------------------------------------------------
  * Game globals
  * ---------------------------------------------------------------- */
-struct system_solar* ptrList;
-struct object*       objList;
-int    objSize;
+struct system_solar* sol_list;
+int sol_size;
+
+struct object*       obj_list;
+int    obj_size;
+
 struct waypoint     wp;
 
-int ptrSize;
-int currentPoint;
+int current_point;
 
 /* Render flags */
 int render_danger_objects      = 0;
@@ -59,7 +61,7 @@ int SIG_TERM = 0;
 /* ----------------------------------------------------------------
  * Screen enumeration -- add new screens here
  * ---------------------------------------------------------------- */
-enum GameScreen {
+enum game_screen {
     SCR_MAP,
     SCR_MAIN_MENU,
     SCR_STATUS
@@ -74,9 +76,9 @@ static void new_game(char *name)
 
     strcpy(gs.captain_name, name);
     gs.balance            = 100;
-    gs.current_system     = rand() % ptrSize;
+    gs.current_system     = rand() % sol_size;
     if (gs.current_system < 0) gs.current_system = 0;
-    if (gs.current_system >= ptrSize) gs.current_system = 0;
+    if (gs.current_system >= sol_size) gs.current_system = 0;
 
     gs.ship_type         = 0;
     gs.tonnage           = 50;
@@ -89,13 +91,13 @@ static void new_game(char *name)
     gs.fuel              = 100;
 
     /* Load ads, calculate hyper-threads, load objects */
-    CalculateHyperThreads(ptrSize, ptrList);
-    objSize = loadObjects(&objList);
+    core_finder_calc_hyper_threads(sol_size, sol_list);
+    obj_size = loadObjects(&obj_list);
 
-    moveScreenTo(ptrList, gs.current_system);
+    gui_map_nav_move_screen_to(sol_list, gs.current_system);
 
     wp.size = 0;
-    currentPoint = -1;
+    current_point = -1;
 
     save_game(&gs);
 }
@@ -111,13 +113,13 @@ static int load_save(char *filename)
     if (result == 1)
     {
         /* Load ads, calculate hyper-threads, load objects */
-        CalculateHyperThreads(ptrSize, ptrList);
-        objSize = loadObjects(&objList);
+        core_finder_calc_hyper_threads(sol_size, sol_list);
+        obj_size = loadObjects(&obj_list);
 
-        moveScreenTo(ptrList, gs.current_system);
+        gui_map_nav_move_screen_to(sol_list, gs.current_system);
 
         wp.size = 0;
-        currentPoint = -1;
+        current_point = -1;
     }
 
 
@@ -134,25 +136,25 @@ int main()
     int mm_select = 0;
     char* buf[50];
     int isCoord = 1, isHyper = 0, mode = 1;  /* 1 = 2D, 2 = 3D, 3 = YZ */
-    enum GameScreen cur_screen = SCR_MAIN_MENU;
+    enum game_screen cur_screen = SCR_MAIN_MENU;
     
     /* New game Player name*/
     char* nameInput;
 
     srand((unsigned)time(NULL));
 
-    ptrSize = loadSolarFile(&ptrList);
+    sol_size = loadSolarFile(&sol_list);
 
-    init();
+    gui_init();
 
     /* Splash screen */
-    splash();
+    gui_splash();
 
     /* Show ads */
-    adLoading();
+    gui_ad_loading();
     
     /* Draw Main Menu */
-    mainMenuWnd(mm_select);
+    gui_menu_wnd(mm_select);
 
 
     /* ----------------------------------------------------------------
@@ -169,86 +171,86 @@ int main()
         case SCR_MAP:
             if (F1 == c) {
                 mode = (mode < 3) ? mode + 1 : 1;
-                draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
             }
 
             if (F2 == c) {
                 isCoord = !isCoord;
-                draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
             }
 
             if (F4 == c) {
-                scalePlus();
-                draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                gui_map_nav_scale_plus();
+                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
             }
 
             if (F3 == c) {
-                scaleMinus();
-                draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                gui_map_nav_scale_minus();
+                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
             }
 
             if (F5 == c) {
-                gotoSystem(ptrSize, ptrList);
-                draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                gui_map_nav_goto_system(sol_size, sol_list);
+                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
             }
 
             if (F6 == c) {
                 isHyper = !isHyper;
-                draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
             }
 
             if (F7 == c) {
-                currentPoint = -1;
-                GetWay(ptrSize, ptrList, &wp);
+                current_point = -1;
+                core_finder_get_way(sol_size, sol_list, &wp);
                 dirty_path = 1;
-                draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
             }
 
             if (LFT == c) {
-                offsetXplus();
-                draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                gui_map_nav_offset_x_plus();
+                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
             }
 
             if (RHT == c) {
-                offsetXminus();
-                draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                gui_map_nav_offset_x_minus();
+                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
             }
 
             if (UP == c) {
-                if (mode == 3 || mode == 2) offsetZminus();
-                if (mode == 1 || mode == 2) offsetYplus();
-                draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                if (mode == 3 || mode == 2) gui_map_nav_offset_z_minus();
+                if (mode == 1 || mode == 2) gui_map_nav_offset_y_plus();
+                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
             }
 
             if (DWN == c) {
-                if (mode == 3 || mode == 2) offsetZplus();
-                if (mode == 1 || mode == 2) offsetYminus();
-                draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                if (mode == 3 || mode == 2) gui_map_nav_offset_z_plus();
+                if (mode == 1 || mode == 2) gui_map_nav_offset_y_minus();
+                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
             }
 
             if (PUP == c) {
                 if (wp.size) {
-                    if (currentPoint == -1 || currentPoint == 0)
-                        currentPoint = (wp.size - 1);
+                    if (current_point == -1 || current_point == 0)
+                        current_point = (wp.size - 1);
                     else
-                        currentPoint--;
+                        current_point--;
 
-                    moveScreenTo(ptrList, wp.way[currentPoint]);
+                    gui_map_nav_move_screen_to(sol_list, wp.way[current_point]);
                     dirty_path = 1;
-                    draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                    gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
                 }
             }
 
             if (PDWN == c) {
                 if (wp.size) {
-                    if (currentPoint == -1 || currentPoint == (wp.size - 1))
-                        currentPoint = 0;
+                    if (current_point == -1 || current_point == (wp.size - 1))
+                        current_point = 0;
                     else
-                        currentPoint++;
+                        current_point++;
 
-                    moveScreenTo(ptrList, wp.way[currentPoint]);
+                    gui_map_nav_move_screen_to(sol_list, wp.way[current_point]);
                     dirty_path = 1;
-                    draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                    gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
                 }
             }
 
@@ -256,31 +258,31 @@ int main()
                 render_danger_objects    = 1;
                 show_danger_hyperthreads = 1;
                 show_danger_path_parts   = 1;
-                draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
             }
 
             if (TAB == c){
                 cur_screen = SCR_STATUS;
-                statusWnd();
+                gui_status_wnd();
             }
 
             if (ENTER == c){
                 if (wp.size > 1 && wp.way[0] == gs.current_system){
                     sprintf(buf, "Ready to jump from SA.%d to SA.%d ?", wp.way[0], wp.way[1]);
-                    if (boolWnd("JUMP INITIATED", buf)) {
+                    if (gui_bool_wnd("JUMP INITIATED", buf)) {
                         gs.current_system = wp.way[1];
                         gs.fuel -= hyper_fuel[gs.hyper_class];
                         sprintf(buf, "Welcome to SA.%d", wp.way[1]);
                         wp.size = 0;
                         dirty_topbar = 1;
-                        draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);    
-                        warningWnd("JUMP RESULT", buf);
+                        gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);    
+                        gui_warning_wnd("JUMP RESULT", buf);
                         getch();
-                        draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                        gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
 
                     }
                     else{
-                        draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);    
+                        gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);    
                     }
                 }
             }
@@ -288,7 +290,7 @@ int main()
             if (ESC == c){
                 if (wp.size){
                     wp.size = 0;
-                    draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                    gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
                 }
                 else{
                     SIG_TERM = 1;    
@@ -305,42 +307,42 @@ int main()
             /* Init new game */
             if (mm_select == 0 && ENTER == c)
             {
-                nameInput = questionWnd("New game", "Enter captain name:", NULL);
+                nameInput = gui_input_wnd("New game", "Enter captain name:", NULL);
 
                 if (nameInput != NULL && nameInput[0] != '\0') 
                 {
                     new_game(nameInput);
                     cur_screen = SCR_MAP;
-                    draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                    gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
                 } else {
-                    warningWnd("ERROR", "Wrong value!");
+                    gui_warning_wnd("ERROR", "Wrong value!");
                     getch();
-                    mainMenuWnd(mm_select);
+                    gui_menu_wnd(mm_select);
                 }
             }
 
             /* Load game */
             if (mm_select == 1 && ENTER == c)
             {
-                nameInput = questionWnd("Load game", "Enter save file name", "USER.SAV");
+                nameInput = gui_input_wnd("Load game", "Enter save file name", "USER.SAV");
 
                 if (nameInput != NULL && nameInput[0] != '\0') 
                 {
                     if(load_save(nameInput) == 1)
                     {
                         cur_screen = SCR_MAP;
-                        draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                        gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
                     }
                     else
                     {
-                        warningWnd("ERROR", "File not found");
+                        gui_warning_wnd("ERROR", "File not found");
                         getch();
-                        mainMenuWnd(mm_select);
+                        gui_menu_wnd(mm_select);
                     }
                 } else {
-                    warningWnd("ERROR", "Wrong value!");
+                    gui_warning_wnd("ERROR", "Wrong value!");
                     getch();
-                    mainMenuWnd(mm_select);
+                    gui_menu_wnd(mm_select);
                 }
 
                 
@@ -358,7 +360,7 @@ int main()
                 if (mm_select > 0)
                 {
                     mm_select--;
-                    mainMenuWnd(mm_select);
+                    gui_menu_wnd(mm_select);
                 }
             }
 
@@ -366,7 +368,7 @@ int main()
                 if (mm_select < 2)
                 {
                     mm_select++;
-                    mainMenuWnd(mm_select);
+                    gui_menu_wnd(mm_select);
                 }
             }
 
@@ -377,7 +379,7 @@ int main()
                 if (wp.size > 0)
                     dirty_path = 1;
                 cur_screen = SCR_MAP;
-                draw(ptrSize, ptrList, mode, isCoord, isHyper, &wp, currentPoint);
+                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
             }
 
 
@@ -386,8 +388,8 @@ int main()
     }
 
     /* Cleanup */
-    free(ptrList);
-    if (objList) free(objList);
+    free(sol_list);
+    if (obj_list) free(obj_list);
     closegraph();
     return 0;
 }

@@ -16,7 +16,7 @@ int STATUS_WND_HEIGHT = 460;
  * Extern game globals (defined in card.c)
  * ---------------------------------------------------------------- */
 extern struct game_state gs;
-extern struct system_solar* ptrList;
+extern struct system_solar* sol_list;
 extern int      render_danger_objects;
 extern int      show_danger_hyperthreads;
 extern int      show_danger_path_parts;
@@ -29,7 +29,7 @@ static struct status_wnd {
 } status_wnd = { 0, 21, 639, 460 };
 
 
-void drawPlayerStatus()
+void draw_player_status()
 {
     char* captain_name[100];
     char* ship_name[100];
@@ -41,11 +41,11 @@ void drawPlayerStatus()
     sprintf(ship_name, "Spacevessel: %s", ship_names[gs.ship_type]);
     sprintf(hyper_class, "Engine: %s", hyper_names[gs.hyper_class]);
     sprintf(current_system, "Current system: SA.%d", gs.current_system);
-    sprintf(sector, "Sector %s", sectors[ptrList[gs.current_system].sector]);
+    sprintf(sector, "Sector %s", sectors[sol_list[gs.current_system].sector]);
 
     setcolor(4);
     setlinestyle(0, 0, 1);
-    rectangle(0, 21, 639, WND_HEIGHT);
+    rectangle(0, 21, 639, MAP_WND_HEIGHT);
 
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
     setcolor(15);
@@ -58,17 +58,17 @@ void drawPlayerStatus()
 
     outtextxy(status_wnd.x1 + 10, status_wnd.y1 + 100, current_system);
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-    outtextxy(status_wnd.x1 + 10, status_wnd.y1 + 120, factions[ptrList[gs.current_system].faction]);
+    outtextxy(status_wnd.x1 + 10, status_wnd.y1 + 120, factions[sol_list[gs.current_system].faction]);
     outtextxy(status_wnd.x1 + 10, status_wnd.y1 + 140, sector);
 }
 
-void statusWnd()
+void gui_status_wnd()
 {
     setfillstyle(SOLID_FILL, BLACK);
     bar(1, 22, STATUS_WND_WIDTH - 1, STATUS_WND_HEIGHT - 1);
 
-    adHypersoft();
-    drawPlayerStatus();
+    gui_ad_hypersoft();
+    draw_player_status();
 
-    topStatusLine();
+    gui_top_status_line();
 }

@@ -4,15 +4,15 @@
 
 #include "data\structs.h"
 
-#include "math\objects.h"
-#include "math\finder.h"
+#include "core\objects.h"
+#include "core\finder.h"
 
 #include "ui\gui.h"
 #include "ui\ad.h"
 
 /* object globals for thread safety checks */
-extern OBJECT* objList;
-extern int objSize;
+extern OBJECT* obj_list;
+extern int obj_size;
 extern struct game_state gs;
 
 int S;
@@ -32,14 +32,14 @@ int min(int a, int b) {
     return b;
 }
 
-int GetWay(int ptrSize, SYSTEM* ptrList, WAYPOINT* wp) {
+int core_finder_get_way(int sol_size, SYSTEM* sol_list, WAYPOINT* wp) {
   char* input;
   char* current[5];
   int start, end, i, status;
 
-  for (i = 0; i < ptrSize; i++) {
-    ptrList[i].rate = 0;
-    ptrList[i].visited = 0;
+  for (i = 0; i < sol_size; i++) {
+    sol_list[i].rate = 0;
+    sol_list[i].visited = 0;
   }
 
   wp->size = 0;
@@ -47,21 +47,21 @@ int GetWay(int ptrSize, SYSTEM* ptrList, WAYPOINT* wp) {
   S = 1;
   gotEnd = 0;
   sprintf(current, "%d", gs.current_system);
-  input = (char*)questionWnd("GSCARD", "Enter START system:", current);
+  input = (char*)gui_input_wnd("GSCARD", "Enter START system:", current);
   start = atoi(input);
 
-  input = (char*)questionWnd("GSCARD", "Enter END system:", NULL);
+  input = (char*)gui_input_wnd("GSCARD", "Enter END system:", NULL);
   end = atoi(input);
 
-  if (start > 0 && end > 0 && start < ptrSize && end < ptrSize) {
+  if (start > 0 && end > 0 && start < sol_size && end < sol_size) {
     /* DIRECT DIRECTION*/
-    RunWave(ptrSize, ptrList, start, end);
+    core_finder_run_wave(sol_size, sol_list, start, end);
     if (gotEnd) {
-      status = RestorePath(ptrSize, ptrList, wp, start, end, 1);
+      status = core_finder_restore_path(sol_size, sol_list, wp, start, end, 1);
     }
 
     if (!gotEnd || !status) {
-      warningWnd("GSCARD", "No way!");
+      gui_warning_wnd("GSCARD", "No way!");
       getch();
       return 0;
     }
@@ -69,14 +69,14 @@ int GetWay(int ptrSize, SYSTEM* ptrList, WAYPOINT* wp) {
     return 1;
 
   } else {
-    warningWnd("GSCARD", "Wrong systems!");
+    gui_warning_wnd("GSCARD", "Wrong systems!");
     getch();
   }
 
   return 0;
 }
 
-int RestorePath(int ptrSize, SYSTEM* ptrList, WAYPOINT* wp, int start, int end,
+int core_finder_restore_path(int sol_size, SYSTEM* sol_list, WAYPOINT* wp, int start, int end,
                 int reverse) {
   int i, j, k, c, cnt = 1, prev;
   int min;
@@ -93,26 +93,26 @@ int RestorePath(int ptrSize, SYSTEM* ptrList, WAYPOINT* wp, int start, int end,
 
   while (c != start && cnt < 20) {
     prev = c;
-    a = ptrList[c];
+    a = sol_list[c];
 
-    if (ptrList[c].threadSize) {
-      for (i = 0; i < ptrList[c].threadSize; i++) {
-        k = ptrList[c].threads[i].value;
+    if (sol_list[c].threadSize) {
+      for (i = 0; i < sol_list[c].threadSize; i++) {
+        k = sol_list[c].threads[i].value;
 
-        if (k > ptrSize || k < 0) {
+        if (k > sol_size || k < 0) {
           printf("RP: Thread endpoint system out of index\n");
-          printf("Thread size=%d\n", ptrList[k].threadSize);
+          printf("Thread size=%d\n", sol_list[k].threadSize);
           printf("Thread index=%d\n", i);
           printf("item=%d\n", k);
           exit(1);
         }
 
-        b = ptrList[k];
+        b = sol_list[k];
 
         if (b.rate < min && b.rate != 0) {
           c = k;
           wp->way[cnt] = k;
-          min = ptrList[k].rate;
+          min = sol_list[k].rate;
         }
       }
     }
@@ -143,33 +143,33 @@ int RestorePath(int ptrSize, SYSTEM* ptrList, WAYPOINT* wp, int start, int end,
   return 1;
 }
 
-void RunWave(int ptrSize, SYSTEM* ptrList, int c, int end) {
+void core_finder_run_wave(int sol_size, SYSTEM* sol_list, int c, int end) {
   int i, k;
   SYSTEM m;
 
-  ptrList[c].rate = S;
-  ptrList[c].visited = 1;
+  sol_list[c].rate = S;
+  sol_list[c].visited = 1;
   S++;
 
   if (S > 900) {
     return;
   }
 
-  for (i = 0; i < ptrList[c].threadSize; i++) {
-    k = ptrList[c].threads[i].value;
-    m = ptrList[k];
+  for (i = 0; i < sol_list[c].threadSize; i++) {
+    k = sol_list[c].threads[i].value;
+    m = sol_list[k];
 
     if (m.rate == 0) {
       m.rate = S;
     }
   }
 
-  for (i = 0; i < ptrList[c].threadSize; i++) {
-    k = ptrList[c].threads[i].value;
-    m = ptrList[k];
+  for (i = 0; i < sol_list[c].threadSize; i++) {
+    k = sol_list[c].threads[i].value;
+    m = sol_list[k];
 
     if (k != end && m.visited == 0) {
-      RunWave(ptrSize, ptrList, k, end);
+      core_finder_run_wave(sol_size, sol_list, k, end);
     }
 
     if (k == end) {
@@ -178,7 +178,7 @@ void RunWave(int ptrSize, SYSTEM* ptrList, int c, int end) {
   }
 }
 
-void CalculateHyperThreads(int ptrSize, SYSTEM* ptrList) {
+void core_finder_calc_hyper_threads(int sol_size, SYSTEM* sol_list) {
   int i = 0, j = 0, k = 0, cnt = 0;
   int error = 0;
   int buffer[15];
@@ -186,19 +186,19 @@ void CalculateHyperThreads(int ptrSize, SYSTEM* ptrList) {
 
   SYSTEM a, b;
 
-  for (i = 0; i < ptrSize; i++) {
+  for (i = 0; i < sol_size; i++) {
     cnt = 0;
-    a = ptrList[i];
+    a = sol_list[i];
     a.threadSize = 0;
 
     /* throttle progress bar: ????????? ?????? N/50 ??? ???? ?? ??? */
-    if (i % max(1, ptrSize / 50) == 0 || i == ptrSize - 1)
-      progressWnd("GSCARD", "Processing hyper-threads calculation", i, ptrSize);
+    if (i % max(1, sol_size / 50) == 0 || i == sol_size - 1)
+      gui_progress_wnd("GSCARD", "Processing hyper-threads calculation", i, sol_size);
 
-    for (j = 0; j < ptrSize; j++) {
+    for (j = 0; j < sol_size; j++) {
       if (j == i) continue;
 
-      b = ptrList[j];
+      b = sol_list[j];
       error = 0;
 
       dx = (double)(a.x - b.x);
@@ -218,9 +218,9 @@ void CalculateHyperThreads(int ptrSize, SYSTEM* ptrList) {
     }
 
     if (cnt) {
-      ptrList[i].threadSize = cnt;
+      sol_list[i].threadSize = cnt;
 
-      if ((ptrList[i].threads = (THREAD*)calloc(cnt, sizeof(THREAD))) == NULL) {
+      if ((sol_list[i].threads = (THREAD*)calloc(cnt, sizeof(THREAD))) == NULL) {
         printf("HT: Memory allocation error!");
         exit(1);
       }
@@ -228,50 +228,50 @@ void CalculateHyperThreads(int ptrSize, SYSTEM* ptrList) {
       /* ???????: ???? k < 15 (buffer overflow ??? cnt < 15) */
       for (k = 0; k < cnt; k++) {
         int val = buffer[k];
-        ptrList[i].threads[k].value = val;
-        ptrList[i].threads[k].cost = 0;
+        sol_list[i].threads[k].value = val;
+        sol_list[i].threads[k].cost = 0;
       }
     } else {
-      ptrList[i].threadSize = 0;
+      sol_list[i].threadSize = 0;
     }
   }
   /*
-          ClearThreadCosts(ptrSize, ptrList);
-          CalculateThreadCosts(ptrSize, ptrList, 10);*/
+          core_finder_clear_threads_costs(sol_size, sol_list);
+          core_finder_calc_threads_costs(sol_size, sol_list, 10);*/
 }
 
-void ClearThreadCosts(int ptrSize, SYSTEM* ptrList) {
+void core_finder_clear_threads_costs(int sol_size, SYSTEM* sol_list) {
   int i, k;
 
-  for (i = 0; i < ptrSize; i++) {
-    for (k = 0; k < ptrList[i].threadSize; k++) {
-      ptrList[i].threads[k].cost = 0;
+  for (i = 0; i < sol_size; i++) {
+    for (k = 0; k < sol_list[i].threadSize; k++) {
+      sol_list[i].threads[k].cost = 0;
     }
   }
 }
 
-void CalculateThreadCosts(int ptrSize, SYSTEM* ptrList, int topCost) {
+void core_finder_calc_threads_costs(int sol_size, SYSTEM* sol_list, int topCost) {
   int i, j, n, m, k, e;
   SYSTEM a, b, c, d;
   char wndLabel[50] = "";
 
   sprintf(wndLabel, "Processing hyper-threads crossing: %d", topCost);
 
-  for (j = 0; j < ptrSize; j++) {
-    a = ptrList[j];
+  for (j = 0; j < sol_size; j++) {
+    a = sol_list[j];
 
-    if (j % max(1, ptrSize / 50) == 0 || j == ptrSize - 1)
-      progressWnd("GSCARD", wndLabel, j, ptrSize);
+    if (j % max(1, sol_size / 50) == 0 || j == sol_size - 1)
+      gui_progress_wnd("GSCARD", wndLabel, j, sol_size);
 
     /* All threads for 'a' */
     for (i = 0; i < a.threadSize; i++) {
       k = a.threads[i].value;
-      b = ptrList[k];
+      b = sol_list[k];
 
       /* a -> b */
 
-      for (n = 0; n < ptrSize; n++) {
-        c = ptrList[n];
+      for (n = 0; n < sol_size; n++) {
+        c = sol_list[n];
 
         /* All threads for 'c' */
         for (m = 0; m < c.threadSize; m++) {
@@ -279,7 +279,7 @@ void CalculateThreadCosts(int ptrSize, SYSTEM* ptrList, int topCost) {
           int cross;
 
           e = c.threads[m].value;
-          d = ptrList[e];
+          d = sol_list[e];
 
           p[0][0] = (b.x - a.x);
           p[0][1] = (b.y - a.y);
@@ -336,12 +336,12 @@ void CalculateThreadCosts(int ptrSize, SYSTEM* ptrList, int topCost) {
                 int iq;
 
                 a.threads[i].cost++;
-                ptrList[j] = a;
+                sol_list[j] = a;
 
                 for (iq = 0; iq < c.threadSize; iq++) {
                   if (c.threads[iq].value == e && c.threads[iq].cost == 0) {
                     c.threads[iq].cost--;
-                    ptrList[n] = c;
+                    sol_list[n] = c;
                   }
                 }
 
@@ -358,12 +358,12 @@ void CalculateThreadCosts(int ptrSize, SYSTEM* ptrList, int topCost) {
     }
   }
 
-  for (j = 0; j < ptrSize; j++) {
+  for (j = 0; j < sol_size; j++) {
     int newSize = 0;
-    a = ptrList[j];
+    a = sol_list[j];
 
-    if (j % max(1, ptrSize / 50) == 0 || j == ptrSize - 1)
-      progressWnd("GSCARD", "Reallocating memory", j, ptrSize);
+    if (j % max(1, sol_size / 50) == 0 || j == sol_size - 1)
+      gui_progress_wnd("GSCARD", "Reallocating memory", j, sol_size);
 
     for (i = 0; i < a.threadSize; i++) {
       if (a.threads[i].cost < topCost) {
@@ -395,7 +395,7 @@ void CalculateThreadCosts(int ptrSize, SYSTEM* ptrList, int topCost) {
       a.threadSize = newSize;
     }
 
-    ptrList[j] = a;
+    sol_list[j] = a;
   }
 }
 

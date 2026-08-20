@@ -8,7 +8,7 @@
 
 #include "ui\gui.h"
 
-void splash() {
+void gui_splash() {
   FILE* fp = NULL;
 
   int x, y, c;
@@ -56,6 +56,7 @@ void splash() {
   settextstyle(SMALL_FONT, HORIZ_DIR, 8);
   outtextxy(10, 10, "HYPERSOFT ILTD");
   getch();
+  
   closegraph();
-  init();
+  gui_init();
 }

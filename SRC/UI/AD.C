@@ -2,7 +2,7 @@
 
 #include "ui\ad.h"
 
-void adQuindett() {
+void gui_ad_quindett() {
   setcolor(4);
   rectangle(471, 300, 639, 459);
 
@@ -51,7 +51,7 @@ void adQuindett() {
   */
 }
 
-void adHypersoft() {
+void gui_ad_hypersoft() {
   /* HYPERSOFT LOGO */
 
   setcolor(4);
@@ -67,7 +67,7 @@ void adHypersoft() {
   outtextxy(25, 88, "SOFT TM");
 }
 
-void adUpgrade() {
+void gui_ad_upgrade() {
   /* UPGRADE NAG */
   rectangle(150, 21, 540, 80);
 
@@ -91,7 +91,7 @@ void adUpgrade() {
       "Hypersoft ILTD takes no responsibility for usaging outdated GSCARDs. ");
 }
 
-void adLegion() {
+void gui_ad_legion() {
   /* legion */
 
   setcolor(0);
@@ -112,7 +112,7 @@ void adLegion() {
   setlinestyle(0, 0, 1);
 }
 
-void adPipboy() {
+void gui_ad_pipboy() {
   /* PIPBOY */
 
   setcolor(0);
@@ -143,7 +143,7 @@ void adPipboy() {
   outtextxy(430, 430, "GS:14:24-PB");
 }
 
-void adFleet() {
+void gui_ad_fleet() {
   /* TRADE FLEET */
   setcolor(4);
   rectangle(220, 315, 415, 388);
@@ -154,7 +154,7 @@ void adFleet() {
   outtextxy(225, 365, "CONTACT: GS:1:15:SF-HR");
 }
 
-void adLegals() {
+void gui_ad_legals() {
   /* LEGALS */
   setcolor(4);
   rectangle(220, 392, 415, 470);
@@ -169,11 +169,11 @@ void adLegals() {
   outtextxy(225, 460, "          34M315 Terra, Washington DC");
 }
 
-void adLoading() {
-  adHypersoft();
-  adUpgrade();
-  adLegion();
-  adPipboy();
-  adLegals();
-  adFleet();
+void gui_ad_loading() {
+  gui_ad_hypersoft();
+  gui_ad_upgrade();
+  gui_ad_legion();
+  gui_ad_pipboy();
+  gui_ad_legals();
+  gui_ad_fleet();
 }

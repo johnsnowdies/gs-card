@@ -4,20 +4,9 @@
 #include "data\structs.h"
 #include "data\reader.h"
 
-#include "math\objects.h"
+#include "core\objects.h"
 
 #include "ui\gui.h"
-
-/* ----------------------------------------------------------------
- * Layout constants
- * ---------------------------------------------------------------- */
-#define WND_W         320    /* default window width  */
-#define WND_H         100    /* default window height */
-#define WND_DEFAULT_Y 180    /* default window Y      */
-
-#define BAR_COLOR      4     /* highlight colour    */
-#define TEXT_COLOR    15     /* normal text colour  */
-
 
 const char *ITEMS[3] = {
     "New Game",
@@ -25,12 +14,12 @@ const char *ITEMS[3] = {
     "Exit to DOS"
 };
 
-static void drawMainMenuWnd()
+static void drawgui_menu_wnd()
 {
-    int wx = (WND_WIDTH - WND_W) / 2;
+    int wx = (MAP_WND_WIDTH - WND_W) / 2;
     int wy = WND_DEFAULT_Y;
 
-    drawWnd(wx, wy, WND_W, WND_H);
+    gui_draw_generic_wnd(wx, wy, WND_W, WND_H);
 
     setcolor(0);
     outtextxy(wx + 2, wy + 5, "GS-CARD v1.5");
@@ -40,13 +29,13 @@ static void drawMainMenuWnd()
     setcolor(TEXT_COLOR);
 }
 
-void mainMenuWnd(int currentPos)
+void gui_menu_wnd(int currentPos)
 {
     int i = 0;
-    int wx = (WND_WIDTH - WND_W) / 2;
+    int wx = (MAP_WND_WIDTH - WND_W) / 2;
     int wy = WND_DEFAULT_Y + 25;
 
-    drawMainMenuWnd();
+    drawgui_menu_wnd();
 
     setcolor(4);
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);

@@ -1,9 +1,8 @@
-void adQuindett();
-void adHypersoft();
-void adLegion();
-void adUpgrade();
-void adLegals();
-void adUpgrade();
-void adPipboy();
-void adFleet();
-void adLoading();
+void gui_ad_quindett();
+void gui_ad_hypersoft();
+void gui_ad_legion();
+void gui_ad_upgrade();
+void gui_ad_legals();
+void gui_ad_pipboy();
+void gui_ad_fleet();
+void gui_ad_loading();

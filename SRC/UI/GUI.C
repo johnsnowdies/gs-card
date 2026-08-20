@@ -15,32 +15,17 @@
 
 #include "ui\gui.h"
 
-/* ----------------------------------------------------------------
- * Layout constants
- * ---------------------------------------------------------------- */
-#define WND_W         320    /* default window width  */
-#define WND_H         100    /* default window height */
-#define WND_TITLE_H   16     /* title bar height      */
-#define WND_DEFAULT_Y 180    /* default window Y      */
-
-#define TOPBAR_H      20     /* top status bar height  */
-#define STATUSBAR_H   20     /* bottom status bar height */
-#define STATUSBAR_Y   461    /* bottom bar Y = WND_HEIGHT + 1 */
-
-#define BAR_LEFT       2     /* left margin in bars */
-#define BAR_COLOR      4     /* highlight colour    */
-#define TEXT_COLOR    15     /* normal text colour  */
 
 /* ----------------------------------------------------------------
  * Extern game globals (defined in card.c)
  * ---------------------------------------------------------------- */
 extern struct game_state   gs;
-extern struct system_solar* ptrList;
+extern struct system_solar* sol_list;
 
 /* ----------------------------------------------------------------
  * init -- BGI graphics init
  * ---------------------------------------------------------------- */
-void init()
+void gui_init()
 {
     int gd = DETECT, gm, result;
     char* msg;
@@ -65,15 +50,15 @@ int count_digits_loop(long n) {
 }
 
 /* ----------------------------------------------------------------
- * topStatusLine -- system name, faction, balance
+ * gui_top_status_line -- system name, faction, balance
  * ---------------------------------------------------------------- */
-void topStatusLine()
+void gui_top_status_line()
 {
     int xpos = BAR_LEFT;
     char buf[100] = "";
 
     setfillstyle(SOLID_FILL, BLACK);
-    bar(0, 0, WND_WIDTH, TOPBAR_H - 1);
+    bar(0, 0, MAP_WND_WIDTH, TOPBAR_H - 1);
 
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
 
@@ -91,7 +76,7 @@ void topStatusLine()
 
     xpos += 40;
     sprintf(buf, "SA.%d (%d) | Balance: %ld$$ | Fuel: %d%% | Cargo: %d/%d = %ld$$", gs.current_system, 
-        ptrList[gs.current_system].threadSize,
+        sol_list[gs.current_system].threadSize,
         gs.balance,
         gs.fuel,
         gs.current_cargo,
@@ -103,59 +88,11 @@ void topStatusLine()
   
 }
 
-/* ----------------------------------------------------------------
- * statusLine -- bottom shortcut bar + memory usage
- * ---------------------------------------------------------------- */
-void statusLine()
-{
-    unsigned int USED_MEM, FREE_MEM, TOTAL_MEM = 65535;
-    int xpos = BAR_LEFT;
-    char memMsg[50] = "";
-
-    settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-    FREE_MEM = coreleft();
-    USED_MEM = TOTAL_MEM - FREE_MEM;
-    sprintf(memMsg, "%u/%u", USED_MEM, TOTAL_MEM);
-
-    setfillstyle(SOLID_FILL, BLACK);
-    bar(0, STATUSBAR_Y, WND_WIDTH, STATUSBAR_Y + STATUSBAR_H - 1);
-
-    /* Shortcut labels */
-    setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F1"); xpos += 13;
-    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "-VIEW"); xpos += 45;
-
-    setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F2");
-    setcolor(TEXT_COLOR); xpos += 15;
-    outtextxy(xpos, STATUSBAR_Y + 2, "-AXIS"); xpos += 45;
-
-    setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F3/F4"); xpos += 40;
-    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "-ZOOM"); xpos += 45;
-
-    setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F5"); xpos += 15;
-    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "-GOTO"); xpos += 45;
-
-    setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F6"); xpos += 15;
-    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "-THREADS"); xpos += 70;
-
-    setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F7"); xpos += 15;
-    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "-RUN"); xpos += 40;
-
-    /* Separator */
-    xpos = 470;
-    setcolor(BAR_COLOR);
-    line(xpos, STATUSBAR_Y - 1, xpos, STATUSBAR_Y + STATUSBAR_H - 1);
-
-    /* Memory */
-    setcolor(BAR_COLOR);
-    outtextxy(xpos + 5, STATUSBAR_Y + 2, "MEM:");
-    setcolor(TEXT_COLOR);
-    outtextxy(xpos + 35, STATUSBAR_Y + 2, memMsg);
-}
 
 /* ----------------------------------------------------------------
  * drawWnd -- generic window frame
  * ---------------------------------------------------------------- */
-void drawWnd(int x, int y, int width, int height)
+void gui_draw_generic_wnd(int x, int y, int width, int height)
 {
     setfillstyle(SOLID_FILL, BLACK);
     setcolor(BAR_COLOR);
@@ -174,12 +111,12 @@ void drawWnd(int x, int y, int width, int height)
 /* ----------------------------------------------------------------
  * warningWnd -- simple centred warning dialog
  * ---------------------------------------------------------------- */
-void warningWnd(char* header, char* text)
+void gui_warning_wnd(char* header, char* text)
 {
-    int wx = (WND_WIDTH - WND_W) / 2;
+    int wx = (MAP_WND_WIDTH - WND_W) / 2;
     int wy = WND_DEFAULT_Y;
 
-    drawWnd(wx, wy, WND_W, WND_H);
+    gui_draw_generic_wnd(wx, wy, WND_W, WND_H);
 
     setcolor(0);
     outtextxy(wx + 2, wy + 5, header);
@@ -188,9 +125,9 @@ void warningWnd(char* header, char* text)
     setcolor(TEXT_COLOR);
 }
 
-int boolWnd(char* header, char* text)
+int gui_bool_wnd(char* header, char* text)
 {
-    int wx = (WND_WIDTH - WND_W) / 2;
+    int wx = (MAP_WND_WIDTH - WND_W) / 2;
     int wy = WND_DEFAULT_Y;
     int selected = 0;         
     int ch, ext;
@@ -204,7 +141,7 @@ int boolWnd(char* header, char* text)
     setlinestyle(0, 0, 1);          
 
     while (1) {
-        drawWnd(wx, wy, WND_W, WND_H);
+        gui_draw_generic_wnd(wx, wy, WND_W, WND_H);
 
         setcolor(0);                             
         outtextxy(wx + 2, wy + 5, header);
@@ -264,11 +201,11 @@ int boolWnd(char* header, char* text)
  *
  * Returns a pointer to a static buffer (valid until next call).
  * ---------------------------------------------------------------- */
-char* questionWnd(char* header, char* text, char* defaultValue)
+char* gui_input_wnd(char* header, char* text, char* defaultValue)
 {
     static char inputbuf[Q_INPUT_LEN];
     int i = 0, c = 0, input_pos = 0, the_end = 0;
-    int wx = (WND_WIDTH - WND_W) / 2;
+    int wx = (MAP_WND_WIDTH - WND_W) / 2;
     int wy = WND_DEFAULT_Y;
 
     if (defaultValue != NULL && defaultValue[0] != '\0')
@@ -284,7 +221,7 @@ char* questionWnd(char* header, char* text, char* defaultValue)
         inputbuf[0] = '\0';
     }
 
-    drawWnd(wx, wy, WND_W, WND_H);
+    gui_draw_generic_wnd(wx, wy, WND_W, WND_H);
 
     setcolor(0);
     outtextxy(wx + 2, wy + 5, header);
@@ -333,7 +270,7 @@ char* questionWnd(char* header, char* text, char* defaultValue)
 /* ----------------------------------------------------------------
  * progressWnd -- progress bar dialog
  * ---------------------------------------------------------------- */
-void progressWnd(char* header, char* text, int current, int total)
+void gui_progress_wnd(char* header, char* text, int current, int total)
 {
     float di, x;
     unsigned int MEM;
@@ -348,8 +285,8 @@ void progressWnd(char* header, char* text, int current, int total)
     x = 280.0F * di + 180.0F;
 
     if (current == 0) {
-        int wx = (WND_WIDTH - WND_W) / 2;
-        drawWnd(wx, WND_DEFAULT_Y, WND_W, WND_H);
+        int wx = (MAP_WND_WIDTH - WND_W) / 2;
+        gui_draw_generic_wnd(wx, WND_DEFAULT_Y, WND_W, WND_H);
 
         setcolor(0);
         outtextxy(wx + 2, WND_DEFAULT_Y + 5, header);

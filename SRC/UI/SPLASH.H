@@ -1,1 +1,1 @@
-void splash(void);
+void gui_splash(void);
