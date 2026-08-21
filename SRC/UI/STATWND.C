@@ -6,6 +6,8 @@
 
 #include "ui\gui.h"
 
+#include "ui\locale.h"
+
 /* ----------------------------------------------------------------
  * Screen / viewport layout -- defined here, declared extern in gui.h
  * ---------------------------------------------------------------- */
@@ -41,11 +43,11 @@ void draw_player_status()
     char current_system[50];
     char sector[50];
 
-    sprintf(captain_name, "Software registered for: %s", gs.captain_name);
-    sprintf(ship_name, "Spacevessel: %s", data_ship_names[gs.ship_type]);
-    sprintf(hyper_class, "Engine: %s", data_hyper_names[gs.hyper_class]);
-    sprintf(current_system, "Current system: SA.%d", gs.current_system);
-    sprintf(sector, "Sector %s", data_sectors[sol_list[gs.current_system].sector]);
+    sprintf(captain_name, "%s: %s",LC_STATUS_WND_CAPTAIN, gs.captain_name);
+    sprintf(ship_name, "%s: %s",LC_STATUS_WND_SHIP, data_ship_names[gs.ship_type]);
+    sprintf(hyper_class, "%s: %s",LC_STATUS_WND_HYPER, data_hyper_names[gs.hyper_class]);
+    sprintf(current_system, "%s: SA.%d",LC_STATUS_WND_SYSTEM, gs.current_system);
+    sprintf(sector, "%s: %s", LC_STATUS_WND_SECTOR, data_sectors[sol_list[gs.current_system].sector]);
 
     setcolor(4);
     setlinestyle(0, 0, 1);

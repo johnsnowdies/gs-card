@@ -14,6 +14,8 @@
 #include "ui\ad.h"
 #include "ui\map\pathwnd.h"
 
+#include "ui\locale.h"
+
 /* ----------------------------------------------------------------
  * Extern game globals (defined in card.c)
  * ---------------------------------------------------------------- */
@@ -43,7 +45,7 @@ static void drawgui_map_path_wnd(struct waypoint* wp, int oy)
     setcolor(0);
     bar(MAP_WND_WIDTH + 1, 21, 638, 41);
     settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
-    outtextxy(MAP_WND_WIDTH + 5, 26, "PATH");
+    outtextxy(MAP_WND_WIDTH + 5, 26, LC_PATH_WND_HEAD);
 
     /* Separator + hint */
     setcolor(4);
@@ -53,7 +55,7 @@ static void drawgui_map_path_wnd(struct waypoint* wp, int oy)
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
     outtextxy(MAP_WND_WIDTH + 5, oy + 5, "PgUp/PgDn");
     setcolor(15);
-    outtextxy(MAP_WND_WIDTH + 80, oy + 5, "-SELECT");
+    outtextxy(MAP_WND_WIDTH + 80, oy + 5, LC_PATH_WND_SELECT);
 
     /* Embedded ad (one-shot per path) */
     if (wp->size < 15 && !pathListFlag) {
@@ -101,10 +103,10 @@ void gui_map_path_wnd(struct waypoint* wp, int current_point,
         }
 
         if (wp->way[i] == gs.current_system){
-            sprintf(buf, "#%d: SA%d << CURRENT", i + 1, wp->way[i]);    
+            sprintf(buf, "#%d: SA%d %s", i + 1, wp->way[i], LC_PATH_WND_CURRENT);    
         }
         else if (i == 1 && jump_possible){
-            sprintf(buf, "#%d: SA%d << NEXT JUMP", i + 1, wp->way[i]);    
+            sprintf(buf, "#%d: SA%d %s", i + 1, wp->way[i], LC_PATH_WND_NEXT_JUMP);    
         } else {
             sprintf(buf, "#%d: SA%d", i + 1, wp->way[i]);    
         }
@@ -119,7 +121,7 @@ void gui_map_path_wnd(struct waypoint* wp, int current_point,
                         sol_list[cur].x,  sol_list[cur].y,  sol_list[cur].z,
                         obj_list[o].x,  obj_list[o].y,  obj_list[o].z,
                         obj_list[o].r)) {
-                    sprintf(buf, "#%d: SA%d [DANGER]", i + 1, wp->way[i]);
+                    sprintf(buf, "#%d: SA%d [%s]", i + 1, wp->way[i], LC_PATH_WND_DANGER);
                     break;
                 }
             }

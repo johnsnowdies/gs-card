@@ -30,6 +30,8 @@
 #include "ui\map\pathwnd.h"
 #include "ui\map\nav.h"
 
+#include "ui\locale.h"
+
 const int DEBUG = 1;
 
 /* ----------------------------------------------------------------
@@ -77,8 +79,12 @@ enum game_screen {
  * Game Data Structures
  * ---------------------------------------------------------------- */
 char* data_ship_names[SHIP_COUNT] = {
-    "Almighty's Boat", "Betsy Boat", "Old Imperial Trade Ship",
-    "Gae Bulg Ship", "Nova Trade Carrier", "Bulk Carrier" 
+    LC_GAME_SHIP_1,
+    LC_GAME_SHIP_2,
+    LC_GAME_SHIP_3,
+    LC_GAME_SHIP_4,
+    LC_GAME_SHIP_5,
+    LC_GAME_SHIP_6
 };
 
 int data_ship_tonnages[SHIP_COUNT] = {
@@ -86,8 +92,10 @@ int data_ship_tonnages[SHIP_COUNT] = {
 };
 
 char* data_hyper_names[HYPER_COUNT] = {
-    "Hyper Engine Mark I", "Hyper Engine Mark II", 
-    "Hyper Engine Mark III", "Hyper Engine [UMBRELLA]"
+    LC_GAME_ENGINE_1,
+    LC_GAME_ENGINE_2,
+    LC_GAME_ENGINE_3,
+    LC_GAME_ENGINE_4
 };
 
 int data_hyper_fuel[HYPER_COUNT] = {
@@ -95,7 +103,10 @@ int data_hyper_fuel[HYPER_COUNT] = {
 };
 
 char* data_factions[FACTIONS_COUNT] = {
-    "Crescent and Star Union", "Ireland-Mermaidian Confederation", "Sentinel Coalition Peacemakers", "Pirates"
+    LC_GAME_FACTION_1,
+    LC_GAME_FACTION_2,
+    LC_GAME_FACTION_3,
+    LC_GAME_FACTION_4
 };
 
 int data_factions_colors[FACTIONS_COUNT] = {
@@ -103,7 +114,15 @@ int data_factions_colors[FACTIONS_COUNT] = {
 };
 
 char* data_sectors[SECTORS_COUNT] = {
-    "Dhat", "Medinat", "Ghabkar", "Buraq", "Ben Vara", "Killoch Vairan", "Cuchulainn", "Danter", "Coalsack"
+    LC_GAME_SECTOR_1,
+    LC_GAME_SECTOR_2,
+    LC_GAME_SECTOR_3,
+    LC_GAME_SECTOR_4,
+    LC_GAME_SECTOR_5,
+    LC_GAME_SECTOR_6,
+    LC_GAME_SECTOR_7,
+    LC_GAME_SECTOR_8,
+    LC_GAME_SECTOR_9
 };
 
 void game_mark_visited(GAMESTATE *gs, int system) {
@@ -336,21 +355,23 @@ int main()
 
             if (ENTER == c){
                 if (wp.size > 1 && wp.way[0] == gs.current_system){
-                    sprintf(buf, "Ready to jump from SA.%d to SA.%d ?", wp.way[0], wp.way[1]);
-                    if (gui_bool_wnd("JUMP INITIATED", buf)) {
+                    sprintf(buf, LC_CARD_READY_TO_JUMP, wp.way[0], wp.way[1]);
+                    
+                    if (gui_bool_wnd(LC_CARD_JUMP_WND_HEAD, buf)) {
                         gs.current_system = wp.way[1];
                         game_mark_visited(&gs, gs.current_system);
                         gs.fuel -= data_hyper_fuel[gs.hyper_class];
-                        sprintf(buf, "Welcome to SA.%d", wp.way[1]);
+                        sprintf(buf, LC_CARD_JUMP_RESULT_TEXT, wp.way[1]);
                         wp.size = 0;
                         dirty_topbar = 1;
                         gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);    
-                        gui_warning_wnd("JUMP RESULT", buf);
+                        gui_warning_wnd(LC_CARD_JUMP_RESULT_HEAD, buf);
                         getch();
                         gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
-
                     }
                     else{
+                        wp.size = 0;
+                        dirty_topbar = 1;                  
                         gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);    
                     }
                 }
@@ -384,14 +405,14 @@ int main()
             }
             /* Save game */
             if (mm_select == 0 && ENTER == c) {
-                nameInput = gui_input_wnd("Save game", "Enter save file name", "USER.SAV");
+                nameInput = gui_input_wnd(LC_CARD_MENU_SAVE_WND_HEAD, LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
 
                 if (nameInput != NULL && nameInput[0] != '\0') 
                 {
                     if(save_game(&gs, nameInput) == 1)
                     {
                         cur_screen = prev_screen;
-                        gui_warning_wnd("SUCCESS", "Game saved!");
+                        gui_warning_wnd(LC_GEN_SUCCESS_HEAD, LC_CARD_MENU_SAVE_SUCCESS);
                         getch();
                         if (cur_screen == SCR_MAP)
                             gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
@@ -401,12 +422,12 @@ int main()
                     }
                     else
                     {
-                        gui_warning_wnd("ERROR", "Save Error");
+                        gui_warning_wnd(LC_GEN_ERROR_HEAD, LC_CARD_MENU_SAVE_ERROR);
                         getch();
                         gui_menu_wnd(mm_select, GAME_MENU);
                     }
                 } else {
-                    gui_warning_wnd("ERROR", "Wrong value!");
+                    gui_warning_wnd(LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE);
                     getch();
                     gui_menu_wnd(mm_select, GAME_MENU);
                 }
@@ -416,7 +437,7 @@ int main()
              /* Load game */
             if (mm_select == 1 && ENTER == c)
             {
-                nameInput = gui_input_wnd("Load game", "Enter save file name", "USER.SAV");
+                nameInput = gui_input_wnd(LC_CARD_MENU_LOAD_WND_HEAD, LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
 
                 if (nameInput != NULL && nameInput[0] != '\0') 
                 {
@@ -428,12 +449,12 @@ int main()
                     }
                     else
                     {
-                        gui_warning_wnd("ERROR", "File not found");
+                        gui_warning_wnd(LC_GEN_ERROR_HEAD, LC_CARD_MENU_LOAD_ERROR);
                         getch();
                         gui_menu_wnd(mm_select, GAME_MENU);
                     }
                 } else {
-                    gui_warning_wnd("ERROR", "Wrong value!");
+                    gui_warning_wnd(LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE);
                     getch();
                     gui_menu_wnd(mm_select, GAME_MENU);
                 }
@@ -470,7 +491,7 @@ int main()
             /* Init new game */
             if (mm_select == 0 && ENTER == c)
             {
-                nameInput = gui_input_wnd("New game", "Enter captain name:", NULL);
+                nameInput = gui_input_wnd(LC_CARD_MENU_NEW_WND_HEAD, LC_CARD_MENU_NEW_WND_TEXT, NULL);
 
                 if (nameInput != NULL && nameInput[0] != '\0') 
                 {
@@ -478,7 +499,7 @@ int main()
                     cur_screen = SCR_MAP;
                     gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
                 } else {
-                    gui_warning_wnd("ERROR", "Wrong value!");
+                    gui_warning_wnd(LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE);
                     getch();
                     gui_menu_wnd(mm_select, MAIN_MENU);
                 }
@@ -487,7 +508,7 @@ int main()
             /* Load game */
             if (mm_select == 1 && ENTER == c)
             {
-                nameInput = gui_input_wnd("Load game", "Enter save file name", "USER.SAV");
+                nameInput = gui_input_wnd(LC_CARD_MENU_LOAD_WND_HEAD, LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
 
                 if (nameInput != NULL && nameInput[0] != '\0') 
                 {
@@ -498,12 +519,12 @@ int main()
                     }
                     else
                     {
-                        gui_warning_wnd("ERROR", "File not found");
+                         gui_warning_wnd(LC_GEN_ERROR_HEAD, LC_CARD_MENU_LOAD_ERROR);
                         getch();
                         gui_menu_wnd(mm_select, MAIN_MENU);
                     }
                 } else {
-                    gui_warning_wnd("ERROR", "Wrong value!");
+                    gui_warning_wnd(LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE);
                     getch();
                     gui_menu_wnd(mm_select, MAIN_MENU);
                 }
@@ -532,9 +553,11 @@ int main()
                     gui_menu_wnd(mm_select, MAIN_MENU);
                 }
             }
-
         break;
 
+        /* ============================================================
+         * SCR_STATUS -- status screen
+         * ============================================================ */
         case SCR_STATUS:
             if (TAB == c){
                 if (wp.size > 0)
@@ -549,8 +572,6 @@ int main()
                 mm_select = 0;
                 gui_menu_wnd(mm_select, GAME_MENU);
             }
-
-
         break;
         } /* switch (cur_screen) */
     }

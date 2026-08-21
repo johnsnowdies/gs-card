@@ -12,6 +12,7 @@
 
 #include "ui\gui.h"
 #include "ui\map\nav.h"
+#include "ui\locale.h"
 
 /* ----------------------------------------------------------------
  * Extern viewport globals (defined in mapwnd.c)
@@ -38,7 +39,7 @@ void gui_map_nav_scale_minus()
         ymin = ymin - MAX_VALUE / 10;
         zmin = zmin - MAX_VALUE / 10;
     } else {
-        gui_warning_wnd("ERROR", "Minimal scale rate reached!");
+        gui_warning_wnd(LC_GEN_ERROR_HEAD, LC_NAV_ERROR_1);
         getch();
     }
 }
@@ -54,7 +55,7 @@ void gui_map_nav_scale_plus()
         ymin = ymin + MAX_VALUE / 10;
         zmin = zmin + MAX_VALUE / 10;
     } else {
-        gui_warning_wnd("ERROR", "Maximal scale rate reached!");
+        gui_warning_wnd(LC_GEN_ERROR_HEAD, LC_NAV_ERROR_2);
         getch();
     }
 }
@@ -96,7 +97,7 @@ void gui_map_nav_goto_system(int sol_size, struct system_solar* solar)
     int value;
     int error = 0;
 
-    input = gui_input_wnd("GSCARD", "Insert system COORD", NULL);
+    input = gui_input_wnd(LC_NAV_NORMAL_HEAD, LC_NAV_INPUT_COORD, NULL);
     value = atoi(input);
 
     if (value != 0) {
@@ -110,7 +111,9 @@ void gui_map_nav_goto_system(int sol_size, struct system_solar* solar)
     }
 
     if (error) {
-        gui_warning_wnd("ERROR", "Wrong value!");
+        gui_warning_wnd(LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE);
         getch();
     }
 }
+
+

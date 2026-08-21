@@ -78,6 +78,142 @@
 /* gui_input_wnd */
 #define LC_GUI_INPUT_TEXT "Нажмите [ENTER] gля поgтвежgения [ESC] gля отмены"
 
+/* ----------------------------------------------------------------
+ * MENUWND.C
+ * ---------------------------------------------------------------- */
+
+#define LC_MENU_NEW_GAME "Новая игра"
+#define LC_MENU_LOAD "Загрузить"
+#define LC_MENU_SAVE "Сохранить"
+#define LC_MENU_EXIT "Выхоg в DOS"
+
+/* ----------------------------------------------------------------
+ * STATWND.C
+ * ---------------------------------------------------------------- */
+
+/* draw_player_status */
+#define LC_STATUS_WND_CAPTAIN "ПО зарегистрировано на имя"
+#define LC_STATUS_WND_SHIP "Корабль"
+#define LC_STATUS_WND_HYPER "Двигатель"
+#define LC_STATUS_WND_SYSTEM "Система"
+#define LC_STATUS_WND_SECTOR "Сектор"
+
+/* ----------------------------------------------------------------
+ * MAPWND.C
+ * ---------------------------------------------------------------- */
+
+/* map_bottom_status_line */
+
+#define LC_MAP_STATUS_VIEW "-ВИД"
+#define LC_MAP_STATUS_AXIS "-ОСЬ"
+#define LC_MAP_STATUS_ZOOM "-ЗУМ"
+#define LC_MAP_STATUS_GOTO "-ПЕР"
+#define LC_MAP_STATUS_THREADS "-Г.НИТИ"
+#define LC_MAP_STATUS_RUN "-ПРЫЖОК"
+
+#define LC_MAP_STATUS_MEM "ОЗУ:"
+
+
+/* ----------------------------------------------------------------
+ * NAV.C
+ * ---------------------------------------------------------------- */
+
+#define LC_NAV_ERROR_1 "Достигнут минимальный зум!"
+#define LC_NAV_ERROR_2 "Достигнут максимальный зум!"
+
+#define LC_NAV_NORMAL_HEAD "ПЕРЕХОД К СИСТЕМЕ (ПРОСМОТР)"
+#define LC_NAV_INPUT_COORD "Ввеgите ИНДЕКС системы:"
+
+/* ----------------------------------------------------------------
+ * PATHWND.C
+ * ---------------------------------------------------------------- */
+#define LC_PATH_WND_HEAD "МАРШРУТ"
+#define LC_PATH_WND_SELECT "-ВЫБОР"
+#define LC_PATH_WND_CURRENT "<< СЕЙЧАС"
+#define LC_PATH_WND_NEXT_JUMP "<< ПРЫЖОК"
+#define LC_PATH_WND_DANGER "ОПАСНО"
+
+/* ----------------------------------------------------------------
+ * FINDER.C
+ * ---------------------------------------------------------------- */
+
+#define LC_FINDER_LOAD_CALC "Преgварительный рассчет гипер-нитей: "
+#define LC_FINDER_REALOC "Освобождение памяти"
+
+#define LC_FINDER_START_TEXT_1 "Ввеgите ИНДЕКС НАЧАЛЬНОЙ системы"
+#define LC_FINDER_START_TEXT_2 "Нажмите [ENTER] для старта из текущей"
+
+#define LC_FINDER_END_TEXT "Ввеgите ИНДЕКС системы НАЗНАЧЕНИЯ"
+
+#define LC_FINDER_ERROR_NOWAY "Маршрут не возможен"
+
+/* ----------------------------------------------------------------
+ * CARD.C
+ * ---------------------------------------------------------------- */
+
+/* F7 > ENTER */
+#define LC_CARD_READY_TO_JUMP "ПОДТВЕРДИТЕ ПРЫЖОК ИЗ SA.%d В SA.%d"
+#define LC_CARD_JUMP_WND_HEAD "ПОДТВЕРДИТЕ ПРЫЖОК"
+
+#define LC_CARD_JUMP_RESULT_HEAD "РЕЗУЛЬТАТ ПРЫЖКА"
+#define LC_CARD_JUMP_RESULT_TEXT "Добро пожаловать в SA.%d"
+
+/* MENU WINDOWS */
+#define LC_CARD_MENU_NEW_WND_HEAD "НОВАЯ ИГРА"
+#define LC_CARD_MENU_SAVE_WND_HEAD "СОХРАНИТЬ ИГРУ"
+#define LC_CARD_MENU_LOAD_WND_HEAD "ЗАГРУЗИТЬ ИГРУ"
+
+#define LC_CARD_MENU_SAVE_WND_TEXT "Ввеgите имя файла"
+#define LC_CARD_MENU_NEW_WND_TEXT "Ввеgите имя капитана:"
+#define LC_CARD_MENU_SAVE_SUCCESS "Игра сохранена!"
+#define LC_CARD_MENU_SAVE_ERROR "Ошибка сохранения!"
+#define LC_CARD_MENU_LOAD_ERROR "Файл не найgен"
+
+/* ----------------------------------------------------------------
+ * GAME DATA LOCALIZATION
+ * ---------------------------------------------------------------- */
+
+/* SHIP NAMES */
+#define LC_GAME_SHIP_1 "Лоgка Всемогущего"
+#define LC_GAME_SHIP_2 "Бэтси"
+#define LC_GAME_SHIP_3 "Старый Имперскй торговый корабль"
+#define LC_GAME_SHIP_4 "Га-Болг"
+#define LC_GAME_SHIP_5 "Торговый Корабль НОВА"
+#define LC_GAME_SHIP_6 "Большой Тягач" 
+
+/* HYPER ENGINES */
+#define LC_GAME_ENGINE_1 "Гипер gвигатель Mark I"
+#define LC_GAME_ENGINE_2 "Гипер gвигатель Mark II"
+#define LC_GAME_ENGINE_3 "Гипер gвигатель Mark III"
+#define LC_GAME_ENGINE_4 "Гипер gвигатель [UMBRELLA]"
+
+/* FACTIONS */
+#define LC_GAME_FACTION_1 "Союз Луны и Звезgы"
+#define LC_GAME_FACTION_2 "Ирланgо-Русалочья Конфеgерация"
+#define LC_GAME_FACTION_3 "Миротворцы Стражей"
+#define LC_GAME_FACTION_4 "Пираты"
+
+/* SECTORS */
+#define LC_GAME_SECTOR_1 "Жат"
+#define LC_GAME_SECTOR_2 "Меgинат"
+#define LC_GAME_SECTOR_3 "Габкар"
+#define LC_GAME_SECTOR_4 "Бурак"
+#define LC_GAME_SECTOR_5 "Бенg Вара"
+#define LC_GAME_SECTOR_6 "Килох Вайра"
+#define LC_GAME_SECTOR_7 "Кухулин"
+#define LC_GAME_SECTOR_8 "Дантер"
+#define LC_GAME_SECTOR_9 "Угольный Мешок"
+
+
+/* ----------------------------------------------------------------
+ * COMMON VALUES
+ * ---------------------------------------------------------------- */
+
+#define LC_GEN_TITLE_GSCARD "GSCARD 1.5"
+#define LC_GEN_ERROR_INCORRECT_VALUE "Некорректное значение!"
+#define LC_GEN_ERROR_HEAD "ОШИБКА"
+#define LC_GEN_SUCCESS_HEAD "УСПЕХ"
+
 #else
 
 /* ENGLISH SECTION */
@@ -158,4 +294,144 @@
 
 /* gui_input_wnd */
 #define LC_GUI_INPUT_TEXT "Press [ENTER] to confirm [ESC] to abort"
+
+/* ----------------------------------------------------------------
+ * MENUWND.C
+ * ---------------------------------------------------------------- */
+
+#define LC_MENU_NEW_GAME "New Game"
+#define LC_MENU_LOAD "Load Game"
+#define LC_MENU_SAVE "Save Game"
+#define LC_MENU_EXIT "Exit to DOS"
+
+
+/* ----------------------------------------------------------------
+ * STATWND.C
+ * ---------------------------------------------------------------- */
+
+/* draw_player_status */
+#define LC_STATUS_WND_CAPTAIN "Software registered for"
+#define LC_STATUS_WND_SHIP "Spacevessel"
+#define LC_STATUS_WND_HYPER "Engine"
+#define LC_STATUS_WND_SYSTEM "Current system"
+#define LC_STATUS_WND_SECTOR "Sector"
+
+/* ----------------------------------------------------------------
+ * MAPWND.C
+ * ---------------------------------------------------------------- */
+
+/* map_bottom_status_line */
+
+#define LC_MAP_STATUS_VIEW "-VIEW"
+#define LC_MAP_STATUS_AXIS "-AXIS"
+#define LC_MAP_STATUS_ZOOM "-ZOOM"
+#define LC_MAP_STATUS_GOTO "-GOTO"
+#define LC_MAP_STATUS_THREADS "-THREADS"
+#define LC_MAP_STATUS_RUN "-RUN"
+
+#define LC_MAP_STATUS_MEM "MEM:"
+
+/* ----------------------------------------------------------------
+ * NAV.C
+ * ---------------------------------------------------------------- */
+
+#define LC_NAV_ERROR_1 "Minimal scale rate reached!"
+#define LC_NAV_ERROR_2 "Maximal scale rate reached!"
+
+
+#define LC_NAV_NORMAL_HEAD "GOTO SYSTEM (VIEW)"
+#define LC_NAV_INPUT_COORD "Input system's INDEX"
+
+/* ----------------------------------------------------------------
+ * PATHWND.C
+ * ---------------------------------------------------------------- */
+#define LC_PATH_WND_HEAD "PATH"
+#define LC_PATH_WND_SELECT "-SELECT"
+#define LC_PATH_WND_CURRENT "<< CURRENT"
+#define LC_PATH_WND_NEXT_JUMP "<< NEXT JUMP"
+#define LC_PATH_WND_DANGER "DANGER"
+
+/* ----------------------------------------------------------------
+ * FINDER.C
+ * ---------------------------------------------------------------- */
+
+#define LC_FINDER_LOAD_CALC "Processing hyper-threads crossing:"
+#define LC_FINDER_REALOC "Reallocating memory"
+
+#define LC_FINDER_START_TEXT_1 "Input START system's INDEX"
+#define LC_FINDER_START_TEXT_2 " Press [ENTER] to use current"
+#define LC_FINDER_END_TEXT "Input DESTINATION system's INDEX."
+
+#define LC_FINDER_ERROR_NOWAY "No possible path found"
+
+/* ----------------------------------------------------------------
+ * CARD.C
+ * ---------------------------------------------------------------- */
+
+/* F7 > ENTER */
+#define LC_CARD_READY_TO_JUMP "CONFIRM JUMP FROM SA.%d TO SA.%d"
+#define LC_CARD_JUMP_WND_HEAD "JUMP CONFIRMATION"
+
+#define LC_CARD_JUMP_RESULT_HEAD "JUMP RESULT"
+#define LC_CARD_JUMP_RESULT_TEXT "Welcome to SA.%d"
+
+/* MENU WINDOWS */
+#define LC_CARD_MENU_NEW_WND_HEAD "NEW GAME"
+#define LC_CARD_MENU_SAVE_WND_HEAD "SAVE GAME"
+#define LC_CARD_MENU_LOAD_WND_HEAD "LOAD GAME"
+
+#define LC_CARD_MENU_SAVE_WND_TEXT "Input save file name"
+#define LC_CARD_MENU_NEW_WND_TEXT "Enter captain's name:"
+#define LC_CARD_MENU_SAVE_SUCCESS "Game saved!"
+#define LC_CARD_MENU_SAVE_ERROR "Save Error"
+#define LC_CARD_MENU_LOAD_ERROR "File not found"
+
+
+/* ----------------------------------------------------------------
+ * GAME DATA LOCALIZATION
+ * ---------------------------------------------------------------- */
+
+/* SHIP NAMES */
+#define LC_GAME_SHIP_1 "Almighty's Boat"
+#define LC_GAME_SHIP_2 "Betsy Boat"
+#define LC_GAME_SHIP_3 "Old Imperial Trade Ship"
+#define LC_GAME_SHIP_4 "Gae Bulg Ship"
+#define LC_GAME_SHIP_5 "Nova Trade Carrier"
+#define LC_GAME_SHIP_6 "Bulk Carrier" 
+
+/* HYPER ENGINES */
+#define LC_GAME_ENGINE_1 "Hyper Engine Mark I"
+#define LC_GAME_ENGINE_2 "Hyper Engine Mark II"
+#define LC_GAME_ENGINE_3 "Hyper Engine Mark III"
+#define LC_GAME_ENGINE_4 "Hyper Engine [UMBRELLA]"
+
+/* FACTIONS */
+#define LC_GAME_FACTION_1 "Crescent and Star Union"
+#define LC_GAME_FACTION_2 "Ireland-Mermaidian Confederation"
+#define LC_GAME_FACTION_3 "Sentinel Coalition Peacemakers"
+#define LC_GAME_FACTION_4 "Pirates"
+
+/* SECTORS */
+#define LC_GAME_SECTOR_1 "Dhat"
+#define LC_GAME_SECTOR_2 "Medinat"
+#define LC_GAME_SECTOR_3 "Ghabkar"
+#define LC_GAME_SECTOR_4 "Buraq"
+#define LC_GAME_SECTOR_5 "Ben Vara"
+#define LC_GAME_SECTOR_6 "Killoch Vairan"
+#define LC_GAME_SECTOR_7 "Cuchulainn"
+#define LC_GAME_SECTOR_8 "Danter"
+#define LC_GAME_SECTOR_9 "Coalsack"
+
+
+
+/* ----------------------------------------------------------------
+ * COMMON VALUES
+ * ---------------------------------------------------------------- */
+
+#define LC_GEN_TITLE_GSCARD "GSCARD 1.5"
+#define LC_GEN_ERROR_INCORRECT_VALUE "Incorrect value!"
+#define LC_GEN_ERROR_HEAD "ERROR"
+#define LC_GEN_SUCCESS_HEAD "SUCCESS"
+
 #endif
+

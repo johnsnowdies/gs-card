@@ -9,16 +9,18 @@
 #include "ui\gui.h"
 #include "ui\menuwnd.h"
 
+#include "ui\locale.h"
+
 char* MAIN_MENU_ITEMS[3] = {
-    "New Game",
-    "Load",
-    "Exit to DOS"
+    LC_MENU_NEW_GAME,
+    LC_MENU_LOAD,
+    LC_MENU_EXIT
 };
 
 char* GAME_MENU_ITEMS[3] = {
-    "Save Game",
-    "Load",
-    "Exit to DOS"
+    LC_MENU_SAVE,
+    LC_MENU_LOAD,
+    LC_MENU_EXIT
 };
 
 static void drawgui_menu_wnd()

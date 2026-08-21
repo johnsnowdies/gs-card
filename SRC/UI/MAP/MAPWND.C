@@ -18,6 +18,8 @@
 #include "ui\map\mapwnd.h"
 #include "ui\map\pathwnd.h"
 
+#include "ui\locale.h"
+
 /* ----------------------------------------------------------------
  * Screen / viewport layout -- defined here, declared extern in gui.h
  * ---------------------------------------------------------------- */
@@ -753,23 +755,23 @@ void map_bottom_status_line()
 
     /* Shortcut labels */
     setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F1"); xpos += 13;
-    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "-VIEW"); xpos += 45;
+    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, LC_MAP_STATUS_VIEW); xpos += 45;
 
     setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F2");
     setcolor(TEXT_COLOR); xpos += 15;
-    outtextxy(xpos, STATUSBAR_Y + 2, "-AXIS"); xpos += 45;
+    outtextxy(xpos, STATUSBAR_Y + 2, LC_MAP_STATUS_AXIS); xpos += 45;
 
     setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F3/F4"); xpos += 40;
-    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "-ZOOM"); xpos += 45;
+    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, LC_MAP_STATUS_ZOOM); xpos += 45;
 
     setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F5"); xpos += 15;
-    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "-GOTO"); xpos += 45;
+    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, LC_MAP_STATUS_GOTO); xpos += 45;
 
     setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F6"); xpos += 15;
-    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "-THREADS"); xpos += 70;
+    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, LC_MAP_STATUS_THREADS); xpos += 70;
 
     setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F7"); xpos += 15;
-    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "-RUN"); xpos += 40;
+    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, LC_MAP_STATUS_RUN); xpos += 40;
 
     /* Separator */
     xpos = 470;
@@ -778,7 +780,7 @@ void map_bottom_status_line()
 
     /* Memory */
     setcolor(BAR_COLOR);
-    outtextxy(xpos + 5, STATUSBAR_Y + 2, "MEM:");
+    outtextxy(xpos + 5, STATUSBAR_Y + 2, LC_MAP_STATUS_MEM);
     setcolor(TEXT_COLOR);
     outtextxy(xpos + 35, STATUSBAR_Y + 2, memMsg);
 }
@@ -819,9 +821,4 @@ void gui_map_wnd_clear()
 {
     setfillstyle(SOLID_FILL, BLACK);
     bar(1, 21, MAP_WND_WIDTH - 1, MAP_WND_HEIGHT - 1);
-
-    /*
-    setcolor(15);
-    rectangle(0,20,MAP_WND_WIDTH, MAP_WND_HEIGHT);
-    */
 }
