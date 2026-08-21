@@ -11,6 +11,7 @@
 #include "ui\ad.h"
 
 /* object globals for thread safety checks */
+extern const int DEBUG;
 extern OBJECT* obj_list;
 extern int obj_size;
 extern struct game_state gs;
@@ -379,7 +380,8 @@ void core_finder_calc_hyper_threads(int sol_size, SYSTEM* sol_list) {
       sol_list[i].threadSize = 0;
     }
   }
-  
-          core_finder_clear_threads_costs(sol_size, sol_list);
-          core_finder_calc_threads_costs(sol_size, sol_list, 1);
+  if (!DEBUG) {
+    core_finder_clear_threads_costs(sol_size, sol_list);
+    core_finder_calc_threads_costs(sol_size, sol_list, 1);
+    }
 }

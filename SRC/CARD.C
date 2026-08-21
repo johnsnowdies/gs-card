@@ -30,6 +30,8 @@
 #include "ui\map\pathwnd.h"
 #include "ui\map\nav.h"
 
+const int DEBUG = 1;
+
 /* ----------------------------------------------------------------
  * Game globals
  * ---------------------------------------------------------------- */
@@ -208,7 +210,7 @@ int main()
     gui_init();
 
     /* Splash screen */
-    gui_splash();
+    if (!DEBUG) gui_splash();
 
     /* Show ads */
     gui_ad_loading();

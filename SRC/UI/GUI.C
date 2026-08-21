@@ -15,6 +15,8 @@
 
 #include "ui\gui.h"
 
+#include "ui\locale.h"
+
 
 /* ----------------------------------------------------------------
  * Extern game globals (defined in card.c)
@@ -67,21 +69,20 @@ void gui_top_status_line()
     outtextxy(xpos, 2, "TAB");
     xpos += 25;
     setcolor(TEXT_COLOR);
-    outtextxy(xpos, 2, "-MODE");
+    outtextxy(xpos, 2, LC_GUI_STATUS_MODE);
 
-    xpos += 50;
+    xpos += 55;
     
     setcolor(BAR_COLOR);
-    outtextxy(xpos, 2, "INFO:");
+    outtextxy(xpos, 2, LC_GUI_STATUS_INFO);
 
     xpos += 40;
-    sprintf(buf, "SA.%d (%d) | Balance: %ld$$ | Fuel: %d%% | Cargo: %d/%d = %ld$$", gs.current_system, 
+    sprintf(buf, "SA.%d (%d) | %s: %ld$$ | %s: %d%% | %s: %d/%d = %ld$$",
+        gs.current_system,
         sol_list[gs.current_system].threadSize,
-        gs.balance,
-        gs.fuel,
-        gs.current_cargo,
-        gs.tonnage,
-        gs.cargo_value);
+        LC_GUI_STATUS_BALANCE, gs.balance,
+        LC_GUI_STATUS_FUEL, gs.fuel,
+        LC_GUI_STATUS_CARGO, gs.current_cargo, gs.tonnage, gs.cargo_value);
     
     setcolor(TEXT_COLOR);
     outtextxy(xpos, 2, buf);
@@ -155,15 +156,15 @@ int gui_bool_wnd(char* header, char* text)
             bar(btnX1, btnY, btnX1 + btnW, btnY + btnH);
             rectangle(btnX1, btnY, btnX1 + btnW, btnY + btnH);
             setcolor(BLACK);
-            outtextxy(btnX1 + (btnW - textwidth("YES")) / 2,
-                      btnY + (btnH - textheight("YES")) / 2, "YES");
+            outtextxy(btnX1 + (btnW - textwidth(LC_GUI_BOOL_YES)) / 2,
+                      btnY + (btnH - textheight(LC_GUI_BOOL_YES)) / 2, LC_GUI_BOOL_YES);
         } else {
             
             setcolor(RED);
             rectangle(btnX1, btnY, btnX1 + btnW, btnY + btnH);
             setcolor(RED);
-            outtextxy(btnX1 + (btnW - textwidth("YES")) / 2,
-                      btnY + (btnH - textheight("YES")) / 2, "YES");
+            outtextxy(btnX1 + (btnW - textwidth(LC_GUI_BOOL_YES)) / 2,
+                      btnY + (btnH - textheight(LC_GUI_BOOL_YES)) / 2, LC_GUI_BOOL_YES);
         }
 
         if (selected == 1) {
@@ -172,14 +173,14 @@ int gui_bool_wnd(char* header, char* text)
             bar(btnX2, btnY, btnX2 + btnW, btnY + btnH);
             rectangle(btnX2, btnY, btnX2 + btnW, btnY + btnH);
             setcolor(BLACK);
-            outtextxy(btnX2 + (btnW - textwidth("NO")) / 2,
-                      btnY + (btnH - textheight("NO")) / 2, "NO");
+            outtextxy(btnX2 + (btnW - textwidth(LC_GUI_BOOL_NO)) / 2,
+                      btnY + (btnH - textheight(LC_GUI_BOOL_NO)) / 2, LC_GUI_BOOL_NO);
         } else {
             setcolor(RED);
             rectangle(btnX2, btnY, btnX2 + btnW, btnY + btnH);
             setcolor(RED);
-            outtextxy(btnX2 + (btnW - textwidth("NO")) / 2,
-                      btnY + (btnH - textheight("NO")) / 2, "NO");
+            outtextxy(btnX2 + (btnW - textwidth(LC_GUI_BOOL_NO)) / 2,
+                      btnY + (btnH - textheight(LC_GUI_BOOL_NO)) / 2, LC_GUI_BOOL_NO);
         }
 
         ch = getch();
@@ -227,7 +228,7 @@ char* gui_input_wnd(char* header, char* text, char* defaultValue)
     outtextxy(wx + 2, wy + 5, header);
     setcolor(BAR_COLOR);
     outtextxy(wx + 2, wy + 20, text);
-    outtextxy(wx + 2, wy + 88, "Press [ENTER] to confirm [ESC] to abort");
+    outtextxy(wx + 2, wy + 88, LC_GUI_INPUT_TEXT);
 
     moveto(wx + 5, wy + 40);
     setcolor(TEXT_COLOR);
@@ -304,4 +305,4 @@ void gui_progress_wnd(char* header, char* text, int current, int total)
     outtextxy(400, 185, memMsg);
 
     setcolor(0);
-}
+}

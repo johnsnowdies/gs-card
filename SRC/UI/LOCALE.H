@@ -1,7 +1,9 @@
 /* ui/locale.h */
 #ifdef LANGUAGE_RU
 
-/* AD.C CONSTANTS */
+/* ----------------------------------------------------------------
+ * AD.c
+ * ---------------------------------------------------------------- */
 
 /* gui_ad_quindett */
 #define LC_AD_QUINDETT_HEADER "Стань солgатом..."
@@ -57,11 +59,33 @@
 #define LC_AD_LEGALS_TEXT_6 "gизассемблирование и взлом этого ПО запрещены"
 #define LC_AD_LEGALS_TEXT_7 "          34M315 Terra, Washington DC"
 
+/* ----------------------------------------------------------------
+ * GUI.C
+ * ---------------------------------------------------------------- */
+
+/* gui_top_status_line */
+#define LC_GUI_STATUS_MODE "-ЭКРАН"
+#define LC_GUI_STATUS_INFO "ИНФО:"
+
+#define LC_GUI_STATUS_BALANCE "Баланс"
+#define LC_GUI_STATUS_FUEL "Топливо"
+#define LC_GUI_STATUS_CARGO "Груз"
+
+/* gui_bool_wnd */
+#define LC_GUI_BOOL_YES "ДА"
+#define LC_GUI_BOOL_NO "НЕТ"
+
+/* gui_input_wnd */
+#define LC_GUI_INPUT_TEXT "Нажмите [ENTER] gля поgтвежgения [ESC] gля отмены"
+
 #else
 
 /* ENGLISH SECTION */
 
-/* AD.C CONSTANTS */
+/* ----------------------------------------------------------------
+ * AD.C
+ * ---------------------------------------------------------------- */
+
 /* gui_ad_quindett*/
 #define LC_AD_QUINDETT_HEADER "Become a soldier of..."
 #define LC_AD_QUINDETT_BIG "Fortune!" 
@@ -116,4 +140,22 @@
 #define LC_AD_LEGALS_TEXT_6 "disassembling and hacking this software disallowed"
 #define LC_AD_LEGALS_TEXT_7 "          34M315 Terra, Washington DC"
 
+/* ----------------------------------------------------------------
+ * GUI.C
+ * ---------------------------------------------------------------- */
+
+/* gui_top_status_line */
+#define LC_GUI_STATUS_MODE "-MODE"
+#define LC_GUI_STATUS_INFO "INFO:"
+
+#define LC_GUI_STATUS_BALANCE "Balance"
+#define LC_GUI_STATUS_FUEL "Fuel"
+#define LC_GUI_STATUS_CARGO "Cargo"
+
+/* gui_bool_wnd */
+#define LC_GUI_BOOL_YES "YES"
+#define LC_GUI_BOOL_NO "NO"
+
+/* gui_input_wnd */
+#define LC_GUI_INPUT_TEXT "Press [ENTER] to confirm [ESC] to abort"
 #endif
