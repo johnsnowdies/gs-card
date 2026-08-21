@@ -24,6 +24,7 @@ build:
 	@dosbox -conf "$(DOSBOX_CONF_RUNTIME)"
 	@rm -f "$(DOSBOX_CONF_RUNTIME)"
 	@echo "Done."
+	@cat BUILD/BUILD.LOG
 
 run:
 	@echo "========================================"

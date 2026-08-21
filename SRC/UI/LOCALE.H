@@ -204,6 +204,196 @@
 #define LC_GAME_SECTOR_8 "Дантер"
 #define LC_GAME_SECTOR_9 "Угольный Мешок"
 
+/* ----------------------------------------------------------------
+ * Quests
+ * ---------------------------------------------------------------- */
+
+#define LC_QUEST_TYPE_1 "Доставка груза"
+#define LC_QUEST_TYPE_2 "Доставка груза в уgаленную систему"
+#define LC_QUEST_TYPE_3 "Контрабанgа"
+#define LC_QUEST_TYPE_4 "VIP пассажир"
+#define LC_QUEST_TYPE_5 "Сбросить маяк"
+
+#define LC_QUEST_GREETING_ARAB  "Ас-саляму алейкум!"
+#define LC_QUEST_GREETING_IRISH "Диа Дхуg!"
+#define LC_QUEST_GREETING_COMMON "Привет!"
+
+#define LC_QUEST_PREQUEST_1 "Есть заgача:"
+
+#define LC_QUEST_PREQUEST_TYPE_1 "Ничего сложного, нужно gоставить груз в %s в секторе %s, это не gалеко."
+#define LC_QUEST_PREQUEST_TYPE_2 "Нужно gоставить груз в %s в секторе %s. Далековато но я хорошо плачу."
+#define LC_QUEST_PREQUEST_TYPE_3 "Доставить груз в %s в секторе %s. Документов нет, плачу больше."
+#define LC_QUEST_PREQUEST_TYPE_4 "Моему gругу нужно попасть систему %s, сектор %s. Оплата - по прибытию."
+#define LC_QUEST_PREQUEST_TYPE_5 "Не понятно что происхоgит в %s, сектор %s. Доставь маячок и сбрось его."
+
+
+#define LC_QUEST_REWARD_1 "Дело gовольно простое, поэтому плачу по факту gоставки: %d"
+#define LC_QUEST_REWARD_2 "Лететь gалеко, заплачу по прибытию: %d"
+#define LC_QUEST_REWARD_3 "Понимаю, лишние сложности, но как насчет %d ?"
+#define LC_QUEST_REWARD_4 "Если он gоберется в безопасность, оплата: %d"
+#define LC_QUEST_REWARD_5 "Как только получим сигнал от маячка перевеgем тебе %d"
+
+
+
+/* ----------------------------------------------------------------
+ * Names
+ * ---------------------------------------------------------------- */
+
+/* ==================== IRISH ==================== */
+/* Male first names */
+#define LC_GEN_FNAME_MALE_IRISH_1   "Шон"
+#define LC_GEN_FNAME_MALE_IRISH_2   "Лиам"
+#define LC_GEN_FNAME_MALE_IRISH_3   "Ронан"
+#define LC_GEN_FNAME_MALE_IRISH_4   "Деклан"
+#define LC_GEN_FNAME_MALE_IRISH_5   "Киллиан"
+#define LC_GEN_FNAME_MALE_IRISH_6   "Ниалл"
+#define LC_GEN_FNAME_MALE_IRISH_7   "Финн"
+#define LC_GEN_FNAME_MALE_IRISH_8   "Конор"
+#define LC_GEN_FNAME_MALE_IRISH_9   "Бренgан"          
+#define LC_GEN_FNAME_MALE_IRISH_10  "Оуэн"             
+#define LC_GEN_FNAME_MALE_IRISH_11  "Оскар"
+#define LC_GEN_FNAME_MALE_IRISH_12  "Паgрайг"          
+#define LC_GEN_FNAME_MALE_IRISH_13  "Даррах"
+#define LC_GEN_FNAME_MALE_IRISH_14  "Киран"
+#define LC_GEN_FNAME_MALE_IRISH_15  "Таgг"             
+/* Female first names */
+#define LC_GEN_FNAME_FEMALE_IRISH_1   "Нив"
+#define LC_GEN_FNAME_FEMALE_IRISH_2   "Ифа"
+#define LC_GEN_FNAME_FEMALE_IRISH_3   "Кира"
+#define LC_GEN_FNAME_FEMALE_IRISH_4   "Сэрша"
+#define LC_GEN_FNAME_FEMALE_IRISH_5   "Мейв"
+#define LC_GEN_FNAME_FEMALE_IRISH_6   "Орла"
+#define LC_GEN_FNAME_FEMALE_IRISH_7   "Шинейg"          
+#define LC_GEN_FNAME_FEMALE_IRISH_8   "Эшлинг"
+#define LC_GEN_FNAME_FEMALE_IRISH_9   "Рошин"
+#define LC_GEN_FNAME_FEMALE_IRISH_10  "Кива"
+#define LC_GEN_FNAME_FEMALE_IRISH_11  "Эва"
+#define LC_GEN_FNAME_FEMALE_IRISH_12  "Клога"        
+#define LC_GEN_FNAME_FEMALE_IRISH_13  "Шифра"
+#define LC_GEN_FNAME_FEMALE_IRISH_14  "Блатнайg"       
+#define LC_GEN_FNAME_FEMALE_IRISH_15  "Грания"
+
+/* Last names (unisex) */
+#define LC_GEN_LNAME_IRISH_1   "Мерфи"
+#define LC_GEN_LNAME_IRISH_2   "Келли"
+#define LC_GEN_LNAME_IRISH_3   "О'Салливан"
+#define LC_GEN_LNAME_IRISH_4   "Уолш"
+#define LC_GEN_LNAME_IRISH_5   "О'Брайен"
+#define LC_GEN_LNAME_IRISH_6   "Бирн"
+#define LC_GEN_LNAME_IRISH_7   "Райан"
+#define LC_GEN_LNAME_IRISH_8   "О'Коннор"
+#define LC_GEN_LNAME_IRISH_9   "О'Нилл"
+#define LC_GEN_LNAME_IRISH_10  "Дойл"
+#define LC_GEN_LNAME_IRISH_11  "Маккарти"
+#define LC_GEN_LNAME_IRISH_12  "Галлахер"
+#define LC_GEN_LNAME_IRISH_13  "Линч"
+#define LC_GEN_LNAME_IRISH_14  "Мюррей"
+#define LC_GEN_LNAME_IRISH_15  "Нолан"
+
+/* ==================== ARABIC ==================== */
+/* Male first names */
+#define LC_GEN_FNAME_MALE_ARAB_1   "Мухаммаg"        
+#define LC_GEN_FNAME_MALE_ARAB_2   "Ахмеg"          
+#define LC_GEN_FNAME_MALE_ARAB_3   "Али"
+#define LC_GEN_FNAME_MALE_ARAB_4   "Омар"
+#define LC_GEN_FNAME_MALE_ARAB_5   "Хассан"
+#define LC_GEN_FNAME_MALE_ARAB_6   "Хусейн"
+#define LC_GEN_FNAME_MALE_ARAB_7   "Халиg"            
+#define LC_GEN_FNAME_MALE_ARAB_8   "Абgуллах"        
+#define LC_GEN_FNAME_MALE_ARAB_9   "Ибрагим"
+#define LC_GEN_FNAME_MALE_ARAB_10  "Юсуф"
+#define LC_GEN_FNAME_MALE_ARAB_11  "Тарик"
+#define LC_GEN_FNAME_MALE_ARAB_12  "Зайg"              
+#define LC_GEN_FNAME_MALE_ARAB_13  "Сами"
+#define LC_GEN_FNAME_MALE_ARAB_14  "Рами"
+#define LC_GEN_FNAME_MALE_ARAB_15  "Фарис"
+
+/* Female first names */
+#define LC_GEN_FNAME_FEMALE_ARAB_1   "Фатима"
+#define LC_GEN_FNAME_FEMALE_ARAB_2   "Айша"
+#define LC_GEN_FNAME_FEMALE_ARAB_3   "Марьям"
+#define LC_GEN_FNAME_FEMALE_ARAB_4   "Хаgиgжа"        
+#define LC_GEN_FNAME_FEMALE_ARAB_5   "Лейла"
+#define LC_GEN_FNAME_FEMALE_ARAB_6   "Нур"
+#define LC_GEN_FNAME_FEMALE_ARAB_7   "Самира"
+#define LC_GEN_FNAME_FEMALE_ARAB_8   "Наgия"            
+#define LC_GEN_FNAME_FEMALE_ARAB_9   "Амира"
+#define LC_GEN_FNAME_FEMALE_ARAB_10  "Хуgа"              
+#define LC_GEN_FNAME_FEMALE_ARAB_11  "Рания"
+#define LC_GEN_FNAME_FEMALE_ARAB_12  "Ясмин"
+#define LC_GEN_FNAME_FEMALE_ARAB_13  "Сальма"
+#define LC_GEN_FNAME_FEMALE_ARAB_14  "Далия"           
+#define LC_GEN_FNAME_FEMALE_ARAB_15  "Лина"
+
+/* Last names (unisex) */
+#define LC_GEN_LNAME_ARAB_1   "Аль-Хассан"
+#define LC_GEN_LNAME_ARAB_2   "Аль-Файеg"
+#define LC_GEN_LNAME_ARAB_3   "Аль-Масри"
+#define LC_GEN_LNAME_ARAB_4   "Аль-Хури"
+#define LC_GEN_LNAME_ARAB_5   "Аль-Рашиg"          
+#define LC_GEN_LNAME_ARAB_6   "Аль-Шариф"
+#define LC_GEN_LNAME_ARAB_7   "Аль-Захрани"
+#define LC_GEN_LNAME_ARAB_8   "Аль-Гамgи"         
+#define LC_GEN_LNAME_ARAB_9   "Аль-Сауг"            
+#define LC_GEN_LNAME_ARAB_10  "Аль-Мактум"
+#define LC_GEN_LNAME_ARAB_11  "Ибн-Абgаллах"       
+#define LC_GEN_LNAME_ARAB_12  "Ибн-Ибрагим"
+#define LC_GEN_LNAME_ARAB_13  "Ибн-Хассан"
+#define LC_GEN_LNAME_ARAB_14  "Ибн-Хусейн"
+#define LC_GEN_LNAME_ARAB_15  "Ибн-Халифа"
+
+/* ==================== AMERICAN (COMMON) ==================== */
+/* Male first names */
+#define LC_GEN_FNAME_MALE_COMMON_1   "Джеймс"
+#define LC_GEN_FNAME_MALE_COMMON_2   "Джон"
+#define LC_GEN_FNAME_MALE_COMMON_3   "Роберт"
+#define LC_GEN_FNAME_MALE_COMMON_4   "Майкл"
+#define LC_GEN_FNAME_MALE_COMMON_5   "Уильям"
+#define LC_GEN_FNAME_MALE_COMMON_6   "Дэвиg"           
+#define LC_GEN_FNAME_MALE_COMMON_7   "Ричарg"        
+#define LC_GEN_FNAME_MALE_COMMON_8   "Джозеф"
+#define LC_GEN_FNAME_MALE_COMMON_9   "Томас"
+#define LC_GEN_FNAME_MALE_COMMON_10  "Чарльз"
+#define LC_GEN_FNAME_MALE_COMMON_11  "Кристофер"
+#define LC_GEN_FNAME_MALE_COMMON_12  "Дэниел"
+#define LC_GEN_FNAME_MALE_COMMON_13  "Мэттью"
+#define LC_GEN_FNAME_MALE_COMMON_14  "Энтони"
+#define LC_GEN_FNAME_MALE_COMMON_15  "Марк"
+
+/* Female first names */
+#define LC_GEN_FNAME_FEMALE_COMMON_1   "Мэри"
+#define LC_GEN_FNAME_FEMALE_COMMON_2   "Патрисия"
+#define LC_GEN_FNAME_FEMALE_COMMON_3   "Дженнифер"
+#define LC_GEN_FNAME_FEMALE_COMMON_4   "Линgа"         
+#define LC_GEN_FNAME_FEMALE_COMMON_5   "Элизабет"
+#define LC_GEN_FNAME_FEMALE_COMMON_6   "Джессика"
+#define LC_GEN_FNAME_FEMALE_COMMON_7   "Сьюзан"
+#define LC_GEN_FNAME_FEMALE_COMMON_8   "Сара"
+#define LC_GEN_FNAME_FEMALE_COMMON_9   "Карен"
+#define LC_GEN_FNAME_FEMALE_COMMON_10  "Лиза"
+#define LC_GEN_FNAME_FEMALE_COMMON_11  "Нэнси"
+#define LC_GEN_FNAME_FEMALE_COMMON_12  "Бетти"
+#define LC_GEN_FNAME_FEMALE_COMMON_13  "Хелен"
+#define LC_GEN_FNAME_FEMALE_COMMON_14  "Санgра"         
+#define LC_GEN_FNAME_FEMALE_COMMON_15  "Донна"
+
+/* Last names (unisex) */
+#define LC_GEN_LNAME_COMMON_1   "Смит"
+#define LC_GEN_LNAME_COMMON_2   "Джонсон"
+#define LC_GEN_LNAME_COMMON_3   "Уильямс"
+#define LC_GEN_LNAME_COMMON_4   "Браун"
+#define LC_GEN_LNAME_COMMON_5   "Джонс"
+#define LC_GEN_LNAME_COMMON_6   "Гарсия"
+#define LC_GEN_LNAME_COMMON_7   "Миллер"
+#define LC_GEN_LNAME_COMMON_8   "Дэвис"
+#define LC_GEN_LNAME_COMMON_9   "Рогригес"          
+#define LC_GEN_LNAME_COMMON_10  "Мартинес"
+#define LC_GEN_LNAME_COMMON_11  "Эрнангес"       
+#define LC_GEN_LNAME_COMMON_12  "Лопес"
+#define LC_GEN_LNAME_COMMON_13  "Уилсон"
+#define LC_GEN_LNAME_COMMON_14  "Анgерсон"         
+#define LC_GEN_LNAME_COMMON_15  "Томас"
+
 
 /* ----------------------------------------------------------------
  * COMMON VALUES
@@ -422,6 +612,194 @@
 #define LC_GAME_SECTOR_8 "Danter"
 #define LC_GAME_SECTOR_9 "Coalsack"
 
+/* ----------------------------------------------------------------
+ * Quests
+ * ---------------------------------------------------------------- */
+
+#define LC_QUEST_TYPE_1 "Cargo Delivery"
+#define LC_QUEST_TYPE_2 "Cargo Delivery to Remote System"
+#define LC_QUEST_TYPE_3 "Smuggling"
+#define LC_QUEST_TYPE_4 "VIP Passenger"
+#define LC_QUEST_TYPE_5 "Deploy Beacon"
+
+#define LC_QUEST_GREETING_ARAB "As-salamu alaykum!"
+#define LC_QUEST_GREETING_IRISH "Dia dhuit!"
+#define LC_QUEST_GREETING_COMMON "Hello!"
+
+#define LC_QUEST_PREQUEST_1 "I have a task:"
+
+#define LC_QUEST_PREQUEST_TYPE_1 "Nothing complicated, just deliver cargo to %s in sector %s, it's not far."
+#define LC_QUEST_PREQUEST_TYPE_2 "Need to deliver cargo to %s in sector %s. Yes, it's a bit far, but I pay well."
+#define LC_QUEST_PREQUEST_TYPE_3 "Deliver cargo to %s in sector %s. The catch is there are no documents for it, so I pay extra."
+#define LC_QUEST_PREQUEST_TYPE_4 "My friend needs to get to sector %s, system %s. Payment upon arrival."
+#define LC_QUEST_PREQUEST_TYPE_5 "Not sure what's happening in sector %s, system %s. Need to place a beacon and deploy it there."
+
+#define LC_QUEST_REWARD_1 "The job is quite simple, so I pay upon delivery: %d"
+#define LC_QUEST_REWARD_2 "It's a long flight, I'll pay upon arrival: %d"
+#define LC_QUEST_REWARD_3 "I understand the extra hassle, but how about %d ?"
+#define LC_QUEST_REWARD_4 "If he gets to safety, payment is %d"
+#define LC_QUEST_REWARD_5 "As soon as we get the beacon signal, we'll transfer you %d"
+
+
+/* ----------------------------------------------------------------
+ * Names
+ * ---------------------------------------------------------------- */
+
+/* ==================== IRISH ==================== */
+/* Male first names */
+#define LC_GEN_FNAME_MALE_IRISH_1   "Sean"
+#define LC_GEN_FNAME_MALE_IRISH_2   "Liam"
+#define LC_GEN_FNAME_MALE_IRISH_3   "Ronan"
+#define LC_GEN_FNAME_MALE_IRISH_4   "Declan"
+#define LC_GEN_FNAME_MALE_IRISH_5   "Cillian"
+#define LC_GEN_FNAME_MALE_IRISH_6   "Niall"
+#define LC_GEN_FNAME_MALE_IRISH_7   "Finn"
+#define LC_GEN_FNAME_MALE_IRISH_8   "Conor"
+#define LC_GEN_FNAME_MALE_IRISH_9   "Brendan"
+#define LC_GEN_FNAME_MALE_IRISH_10  "Eoin"
+#define LC_GEN_FNAME_MALE_IRISH_11  "Oscar"
+#define LC_GEN_FNAME_MALE_IRISH_12  "Padraig"
+#define LC_GEN_FNAME_MALE_IRISH_13  "Darragh"
+#define LC_GEN_FNAME_MALE_IRISH_14  "Kieran"
+#define LC_GEN_FNAME_MALE_IRISH_15  "Tadhg"
+
+/* Female first names */
+#define LC_GEN_FNAME_FEMALE_IRISH_1   "Niamh"
+#define LC_GEN_FNAME_FEMALE_IRISH_2   "Aoife"
+#define LC_GEN_FNAME_FEMALE_IRISH_3   "Ciara"
+#define LC_GEN_FNAME_FEMALE_IRISH_4   "Saoirse"
+#define LC_GEN_FNAME_FEMALE_IRISH_5   "Maeve"
+#define LC_GEN_FNAME_FEMALE_IRISH_6   "Orla"
+#define LC_GEN_FNAME_FEMALE_IRISH_7   "Sinead"
+#define LC_GEN_FNAME_FEMALE_IRISH_8   "Aisling"
+#define LC_GEN_FNAME_FEMALE_IRISH_9   "Roisin"
+#define LC_GEN_FNAME_FEMALE_IRISH_10  "Caoimhe"
+#define LC_GEN_FNAME_FEMALE_IRISH_11  "Eabha"
+#define LC_GEN_FNAME_FEMALE_IRISH_12  "Clodagh"
+#define LC_GEN_FNAME_FEMALE_IRISH_13  "Siofra"
+#define LC_GEN_FNAME_FEMALE_IRISH_14  "Blathnaid"
+#define LC_GEN_FNAME_FEMALE_IRISH_15  "Grainne"
+
+/* Last names (unisex) */
+#define LC_GEN_LNAME_IRISH_1   "Murphy"
+#define LC_GEN_LNAME_IRISH_2   "Kelly"
+#define LC_GEN_LNAME_IRISH_3   "O'Sullivan"
+#define LC_GEN_LNAME_IRISH_4   "Walsh"
+#define LC_GEN_LNAME_IRISH_5   "O'Brien"
+#define LC_GEN_LNAME_IRISH_6   "Byrne"
+#define LC_GEN_LNAME_IRISH_7   "Ryan"
+#define LC_GEN_LNAME_IRISH_8   "O'Connor"
+#define LC_GEN_LNAME_IRISH_9   "O'Neill"
+#define LC_GEN_LNAME_IRISH_10  "Doyle"
+#define LC_GEN_LNAME_IRISH_11  "McCarthy"
+#define LC_GEN_LNAME_IRISH_12  "Gallagher"
+#define LC_GEN_LNAME_IRISH_13  "Lynch"
+#define LC_GEN_LNAME_IRISH_14  "Murray"
+#define LC_GEN_LNAME_IRISH_15  "Nolan"
+
+/* ==================== ARABIC ==================== */
+/* Male first names */
+#define LC_GEN_FNAME_MALE_ARAB_1   "Muhammad"
+#define LC_GEN_FNAME_MALE_ARAB_2   "Ahmed"
+#define LC_GEN_FNAME_MALE_ARAB_3   "Ali"
+#define LC_GEN_FNAME_MALE_ARAB_4   "Omar"
+#define LC_GEN_FNAME_MALE_ARAB_5   "Hassan"
+#define LC_GEN_FNAME_MALE_ARAB_6   "Hussein"
+#define LC_GEN_FNAME_MALE_ARAB_7   "Khalid"
+#define LC_GEN_FNAME_MALE_ARAB_8   "Abdullah"
+#define LC_GEN_FNAME_MALE_ARAB_9   "Ibrahim"
+#define LC_GEN_FNAME_MALE_ARAB_10  "Youssef"
+#define LC_GEN_FNAME_MALE_ARAB_11  "Tariq"
+#define LC_GEN_FNAME_MALE_ARAB_12  "Zayd"
+#define LC_GEN_FNAME_MALE_ARAB_13  "Sami"
+#define LC_GEN_FNAME_MALE_ARAB_14  "Rami"
+#define LC_GEN_FNAME_MALE_ARAB_15  "Faris"
+
+/* Female first names */
+#define LC_GEN_FNAME_FEMALE_ARAB_1   "Fatima"
+#define LC_GEN_FNAME_FEMALE_ARAB_2   "Aisha"
+#define LC_GEN_FNAME_FEMALE_ARAB_3   "Mariam"
+#define LC_GEN_FNAME_FEMALE_ARAB_4   "Khadija"
+#define LC_GEN_FNAME_FEMALE_ARAB_5   "Layla"
+#define LC_GEN_FNAME_FEMALE_ARAB_6   "Noor"
+#define LC_GEN_FNAME_FEMALE_ARAB_7   "Samira"
+#define LC_GEN_FNAME_FEMALE_ARAB_8   "Nadia"
+#define LC_GEN_FNAME_FEMALE_ARAB_9   "Amira"
+#define LC_GEN_FNAME_FEMALE_ARAB_10  "Huda"
+#define LC_GEN_FNAME_FEMALE_ARAB_11  "Rania"
+#define LC_GEN_FNAME_FEMALE_ARAB_12  "Yasmin"
+#define LC_GEN_FNAME_FEMALE_ARAB_13  "Salma"
+#define LC_GEN_FNAME_FEMALE_ARAB_14  "Dalia"
+#define LC_GEN_FNAME_FEMALE_ARAB_15  "Lina"
+
+/* Last names (unisex) */
+#define LC_GEN_LNAME_ARAB_1   "Al-Hassan"
+#define LC_GEN_LNAME_ARAB_2   "Al-Fayed"
+#define LC_GEN_LNAME_ARAB_3   "Al-Masri"
+#define LC_GEN_LNAME_ARAB_4   "Al-Khoury"
+#define LC_GEN_LNAME_ARAB_5   "Al-Rashid"
+#define LC_GEN_LNAME_ARAB_6   "Al-Sharif"
+#define LC_GEN_LNAME_ARAB_7   "Al-Zahrani"
+#define LC_GEN_LNAME_ARAB_8   "Al-Ghamdi"
+#define LC_GEN_LNAME_ARAB_9   "Al-Saud"
+#define LC_GEN_LNAME_ARAB_10  "Al-Maktoum"
+#define LC_GEN_LNAME_ARAB_11  "Ibn-Abdallah"
+#define LC_GEN_LNAME_ARAB_12  "Ibn-Ibrahim"
+#define LC_GEN_LNAME_ARAB_13  "Ibn-Hassan"
+#define LC_GEN_LNAME_ARAB_14  "Ibn-Hussein"
+#define LC_GEN_LNAME_ARAB_15  "Ibn-Khalifa"
+
+/* ==================== AMERICAN (COMMON) ==================== */
+/* Male first names */
+#define LC_GEN_FNAME_MALE_COMMON_1   "James"
+#define LC_GEN_FNAME_MALE_COMMON_2   "John"
+#define LC_GEN_FNAME_MALE_COMMON_3   "Robert"
+#define LC_GEN_FNAME_MALE_COMMON_4   "Michael"
+#define LC_GEN_FNAME_MALE_COMMON_5   "William"
+#define LC_GEN_FNAME_MALE_COMMON_6   "David"
+#define LC_GEN_FNAME_MALE_COMMON_7   "Richard"
+#define LC_GEN_FNAME_MALE_COMMON_8   "Joseph"
+#define LC_GEN_FNAME_MALE_COMMON_9   "Thomas"
+#define LC_GEN_FNAME_MALE_COMMON_10  "Charles"
+#define LC_GEN_FNAME_MALE_COMMON_11  "Christopher"
+#define LC_GEN_FNAME_MALE_COMMON_12  "Daniel"
+#define LC_GEN_FNAME_MALE_COMMON_13  "Matthew"
+#define LC_GEN_FNAME_MALE_COMMON_14  "Anthony"
+#define LC_GEN_FNAME_MALE_COMMON_15  "Mark"
+
+/* Female first names */
+#define LC_GEN_FNAME_FEMALE_COMMON_1   "Mary"
+#define LC_GEN_FNAME_FEMALE_COMMON_2   "Patricia"
+#define LC_GEN_FNAME_FEMALE_COMMON_3   "Jennifer"
+#define LC_GEN_FNAME_FEMALE_COMMON_4   "Linda"
+#define LC_GEN_FNAME_FEMALE_COMMON_5   "Elizabeth"
+#define LC_GEN_FNAME_FEMALE_COMMON_6   "Jessica"
+#define LC_GEN_FNAME_FEMALE_COMMON_7   "Susan"
+#define LC_GEN_FNAME_FEMALE_COMMON_8   "Sarah"
+#define LC_GEN_FNAME_FEMALE_COMMON_9   "Karen"
+#define LC_GEN_FNAME_FEMALE_COMMON_10  "Lisa"
+#define LC_GEN_FNAME_FEMALE_COMMON_11  "Nancy"
+#define LC_GEN_FNAME_FEMALE_COMMON_12  "Betty"
+#define LC_GEN_FNAME_FEMALE_COMMON_13  "Helen"
+#define LC_GEN_FNAME_FEMALE_COMMON_14  "Sandra"
+#define LC_GEN_FNAME_FEMALE_COMMON_15  "Donna"
+
+/* Last names (unisex) */
+#define LC_GEN_LNAME_COMMON_1   "Smith"
+#define LC_GEN_LNAME_COMMON_2   "Johnson"
+#define LC_GEN_LNAME_COMMON_3   "Williams"
+#define LC_GEN_LNAME_COMMON_4   "Brown"
+#define LC_GEN_LNAME_COMMON_5   "Jones"
+#define LC_GEN_LNAME_COMMON_6   "Garcia"
+#define LC_GEN_LNAME_COMMON_7   "Miller"
+#define LC_GEN_LNAME_COMMON_8   "Davis"
+#define LC_GEN_LNAME_COMMON_9   "Rodriguez"
+#define LC_GEN_LNAME_COMMON_10  "Martinez"
+#define LC_GEN_LNAME_COMMON_11  "Hernandez"
+#define LC_GEN_LNAME_COMMON_12  "Lopez"
+#define LC_GEN_LNAME_COMMON_13  "Wilson"
+#define LC_GEN_LNAME_COMMON_14  "Anderson"
+#define LC_GEN_LNAME_COMMON_15  "Thomas"
 
 
 /* ----------------------------------------------------------------

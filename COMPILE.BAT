@@ -72,9 +72,13 @@ echo Compiling UI\MENUWND.C...                     >> %BLD%\build.log
 tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MENUWND.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
+
+
 echo Compiling UI\STATWND.C...                     >> %BLD%\build.log
 tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\STATWND.C >> %BLD%\build.log
 if errorlevel 1 goto err
+
+
 
 
 
@@ -99,6 +103,7 @@ echo MAPWND.OBJ+                                 >> %BLD%\GS-LINK.RSP
 echo NAV.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo MENUWND.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo STATWND.OBJ+                                    >> %BLD%\GS-LINK.RSP
+
 echo PATHWND.OBJ, GSCARD.EXE, GSCARD.MAP, %LIB%\EMU.LIB %LIB%\MATHS.LIB %LIB%\GRAPHICS.LIB %LIB%\CS.LIB >> %BLD%\GS-LINK.RSP
 
 cd %BLD%
@@ -151,7 +156,6 @@ echo.
 type build.log
 echo.
 echo Compilation failed — check BUILD\build.log above.
-pause
 
 :end
 cd ..\

@@ -387,3 +387,34 @@ void core_finder_calc_hyper_threads(int sol_size, SYSTEM* sol_list) {
     core_finder_calc_threads_costs(sol_size, sol_list, 1);
     }
 }
+/*
+void core_finder_calc_distances(int start, int* distances, int max_dist) {
+    int i, head = 0, tail = 0;
+    int* queue = (int*)malloc(sol_size * sizeof(int));
+    if (!queue) return;
+
+    for (i = 0; i < sol_size; i++) distances[i] = -1;
+    distances[start] = 0;
+    queue[tail++] = start;
+
+    while (head < tail) {
+        SYSTEM* sys;
+        int cur = queue[head++];
+        int curDist = distances[cur];
+        if (curDist >= max_dist) continue;
+
+        sys = &sol_list[cur];
+        for (i = 0; i < sys->threadSize; i++) {
+            int next = sys->threads[i].value;
+            if (distances[next] == -1) {
+                distances[next] = curDist + 1;
+                if (distances[next] <= max_dist) {
+                    queue[tail++] = next;
+                }
+            }
+        }
+    }
+    free(queue);
+}
+
+*/

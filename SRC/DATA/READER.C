@@ -79,7 +79,8 @@ int load_bounds(BOUND_LINE** list)
     return count;
 }
 
-int loadObjects(OBJECT** list) {
+int load_object(OBJECT** list) 
+{
   FILE* fp;
   char buf[100];
   int count = 0, counter = 0;
@@ -134,7 +135,8 @@ int loadObjects(OBJECT** list) {
   return counter;
 }
 
-int loadSolarFile(SYSTEM** list) {
+int load_solar(SYSTEM** list) 
+{
   FILE* fp;
   char buf[100];
   int count = 0, counter = 0;
@@ -315,4 +317,4 @@ int save_game(GAMESTATE* state, char* filename)
 
     fclose(fp);
     return 1;
-}
+}

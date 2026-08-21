@@ -20,6 +20,7 @@
 
 #include "core\objects.h"
 #include "core\finder.h"
+/*#include "core\game.h"*/
 
 #include "ui\ad.h"
 #include "ui\splash.h"
@@ -31,6 +32,8 @@
 #include "ui\map\nav.h"
 
 #include "ui\locale.h"
+
+unsigned _stklen = 16384;
 
 const int DEBUG = 1;
 
@@ -78,6 +81,8 @@ enum game_screen {
 /* ----------------------------------------------------------------
  * Game Data Structures
  * ---------------------------------------------------------------- */
+
+
 char* data_ship_names[SHIP_COUNT] = {
     LC_GAME_SHIP_1,
     LC_GAME_SHIP_2,
@@ -167,7 +172,7 @@ static void new_game(char *name, int sol_size)
 
     /* Load ads, calculate hyper-threads, load objects */
     core_finder_calc_hyper_threads(sol_size, sol_list);
-    obj_size = loadObjects(&obj_list);
+    obj_size = load_object(&obj_list);
 
     gui_map_nav_move_screen_to(sol_list, gs.current_system);
 
@@ -191,7 +196,7 @@ static int load_save(char *filename)
     {
         /* Load ads, calculate hyper-threads, load objects */
         core_finder_calc_hyper_threads(sol_size, sol_list);
-        obj_size = loadObjects(&obj_list);
+        obj_size = load_object(&obj_list);
 
         gui_map_nav_move_screen_to(sol_list, gs.current_system);
 
@@ -214,16 +219,16 @@ int main()
     int c = 0;
     int mm_select = 0;
     char buf[50];
-    int isCoord = 1, isHyper = 0, mode = 1;  /* 1 = 2D, 2 = 3D, 3 = YZ */
+    int is_coord = 1, is_hyper = 0, mode = 1;  /* 1 = 2D, 2 = 3D, 3 = YZ */
     enum game_screen cur_screen = SCR_MAIN_MENU;
     enum game_screen prev_screen = SCR_MAP;
     
     /* New game Player name*/
-    char* nameInput;
+    char* text_input;
 
     srand((unsigned)time(NULL));
 
-    sol_size = loadSolarFile(&sol_list);
+    sol_size = load_solar(&sol_list);
     bnd_size = load_bounds(&bnd_list);
 
     gui_init();
@@ -252,61 +257,61 @@ int main()
         case SCR_MAP:
             if (F1 == c) {
                 mode = (mode < 3) ? mode + 1 : 1;
-                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
             }
 
             if (F2 == c) {
-                isCoord = !isCoord;
-                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                is_coord = !is_coord;
+                gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
             }
 
             if (F4 == c) {
                 gui_map_nav_scale_plus();
-                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
             }
 
             if (F3 == c) {
                 gui_map_nav_scale_minus();
-                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
             }
 
             if (F5 == c) {
                 gui_map_nav_goto_system(sol_size, sol_list);
-                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
             }
 
             if (F6 == c) {
-                isHyper = !isHyper;
-                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                is_hyper = !is_hyper;
+                gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
             }
 
             if (F7 == c) {
                 current_point = -1;
                 core_finder_get_way(sol_size, sol_list, &wp);
                 dirty_path = 1;
-                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
             }
 
             if (LFT == c) {
                 gui_map_nav_offset_x_plus();
-                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
             }
 
             if (RHT == c) {
                 gui_map_nav_offset_x_minus();
-                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
             }
 
             if (UP == c) {
                 if (mode == 3 || mode == 2) gui_map_nav_offset_z_minus();
                 if (mode == 1 || mode == 2) gui_map_nav_offset_y_plus();
-                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
             }
 
             if (DWN == c) {
                 if (mode == 3 || mode == 2) gui_map_nav_offset_z_plus();
                 if (mode == 1 || mode == 2) gui_map_nav_offset_y_minus();
-                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
             }
 
             if (PUP == c) {
@@ -318,7 +323,7 @@ int main()
 
                     gui_map_nav_move_screen_to(sol_list, wp.way[current_point]);
                     dirty_path = 1;
-                    gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                    gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
                 }
             }
 
@@ -331,7 +336,7 @@ int main()
 
                     gui_map_nav_move_screen_to(sol_list, wp.way[current_point]);
                     dirty_path = 1;
-                    gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                    gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
                 }
             }
 
@@ -340,12 +345,12 @@ int main()
                 show_danger_hyperthreads = show_danger_hyperthreads == 1 ? 0 : 1;
                 show_danger_path_parts   = show_danger_path_parts == 1 ? 0 : 1;
                 
-                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
             }
 
             if (KEY_P == c ){
                 render_bounds = render_bounds == 1 ? 0 : 1;
-                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
             }
 
             if (TAB == c){
@@ -364,15 +369,15 @@ int main()
                         sprintf(buf, LC_CARD_JUMP_RESULT_TEXT, wp.way[1]);
                         wp.size = 0;
                         dirty_topbar = 1;
-                        gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);    
+                        gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);    
                         gui_warning_wnd(LC_CARD_JUMP_RESULT_HEAD, buf);
                         getch();
-                        gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                        gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
                     }
                     else{
                         wp.size = 0;
                         dirty_topbar = 1;                  
-                        gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);    
+                        gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);    
                     }
                 }
             }
@@ -380,7 +385,7 @@ int main()
             if (ESC == c){
                 if (wp.size){
                     wp.size = 0;
-                    gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                    gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
                 }
                 else{
                     prev_screen = cur_screen;
@@ -399,23 +404,23 @@ int main()
                 mm_select = 0;
                 cur_screen = prev_screen;
                 if (cur_screen == SCR_MAP)
-                    gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                    gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
                 if (cur_screen == SCR_STATUS)
                     gui_status_wnd();
             }
             /* Save game */
             if (mm_select == 0 && ENTER == c) {
-                nameInput = gui_input_wnd(LC_CARD_MENU_SAVE_WND_HEAD, LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
+                text_input = gui_input_wnd(LC_CARD_MENU_SAVE_WND_HEAD, LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
 
-                if (nameInput != NULL && nameInput[0] != '\0') 
+                if (text_input != NULL && text_input[0] != '\0') 
                 {
-                    if(save_game(&gs, nameInput) == 1)
+                    if(save_game(&gs, text_input) == 1)
                     {
                         cur_screen = prev_screen;
                         gui_warning_wnd(LC_GEN_SUCCESS_HEAD, LC_CARD_MENU_SAVE_SUCCESS);
                         getch();
                         if (cur_screen == SCR_MAP)
-                            gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                            gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
 
                         if (cur_screen == SCR_STATUS)
                             gui_status_wnd();
@@ -437,15 +442,15 @@ int main()
              /* Load game */
             if (mm_select == 1 && ENTER == c)
             {
-                nameInput = gui_input_wnd(LC_CARD_MENU_LOAD_WND_HEAD, LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
+                text_input = gui_input_wnd(LC_CARD_MENU_LOAD_WND_HEAD, LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
 
-                if (nameInput != NULL && nameInput[0] != '\0') 
+                if (text_input != NULL && text_input[0] != '\0') 
                 {
-                    if(load_game(&gs, nameInput) == 1)
+                    if(load_game(&gs, text_input) == 1)
                     {
                         cur_screen = SCR_MAP;
                         dirty_topbar = 1;
-                        gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                        gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
                     }
                     else
                     {
@@ -491,13 +496,13 @@ int main()
             /* Init new game */
             if (mm_select == 0 && ENTER == c)
             {
-                nameInput = gui_input_wnd(LC_CARD_MENU_NEW_WND_HEAD, LC_CARD_MENU_NEW_WND_TEXT, NULL);
+                text_input = gui_input_wnd(LC_CARD_MENU_NEW_WND_HEAD, LC_CARD_MENU_NEW_WND_TEXT, NULL);
 
-                if (nameInput != NULL && nameInput[0] != '\0') 
+                if (text_input != NULL && text_input[0] != '\0') 
                 {
-                    new_game(nameInput, sol_size);
+                    new_game(text_input, sol_size);
                     cur_screen = SCR_MAP;
-                    gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                    gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
                 } else {
                     gui_warning_wnd(LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE);
                     getch();
@@ -508,14 +513,14 @@ int main()
             /* Load game */
             if (mm_select == 1 && ENTER == c)
             {
-                nameInput = gui_input_wnd(LC_CARD_MENU_LOAD_WND_HEAD, LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
+                text_input = gui_input_wnd(LC_CARD_MENU_LOAD_WND_HEAD, LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
 
-                if (nameInput != NULL && nameInput[0] != '\0') 
+                if (text_input != NULL && text_input[0] != '\0') 
                 {
-                    if(load_save(nameInput) == 1)
+                    if(load_save(text_input) == 1)
                     {
                         cur_screen = SCR_MAP;
-                        gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                        gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
                     }
                     else
                     {
@@ -563,7 +568,8 @@ int main()
                 if (wp.size > 0)
                     dirty_path = 1;
                 cur_screen = SCR_MAP;
-                gui_map_wnd_draw(sol_size, sol_list, mode, isCoord, isHyper, &wp, current_point);
+                dirty_bottombar = 1;
+                gui_map_wnd_draw(sol_size, sol_list, mode, is_coord, is_hyper, &wp, current_point);
             }
 
             if (ESC == c){

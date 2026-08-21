@@ -8,6 +8,8 @@
 
 #include "ui\locale.h"
 
+/*#include "core\game.h"*/
+
 /* ----------------------------------------------------------------
  * Screen / viewport layout -- defined here, declared extern in gui.h
  * ---------------------------------------------------------------- */
@@ -35,13 +37,52 @@ static struct status_wnd {
 } status_wnd = { 0, 21, 639, 460 };
 
 
+/* ----------------------------------------------------------------
+ * gui_status_bottom_status_line -- bottom shortcut bar + memory usage
+ * ---------------------------------------------------------------- */
+void gui_status_bottom_status_line()
+{
+    unsigned int USED_MEM, FREE_MEM, TOTAL_MEM = 65535;
+    int xpos = BAR_LEFT;
+    char memMsg[50] = "";
+
+    settextstyle(SMALL_FONT, HORIZ_DIR, 5);
+    FREE_MEM = coreleft();
+    USED_MEM = TOTAL_MEM - FREE_MEM;
+    sprintf(memMsg, "%u/%u", USED_MEM, TOTAL_MEM);
+
+    setfillstyle(SOLID_FILL, BLACK);
+    bar(0, STATUSBAR_Y, MAP_WND_WIDTH, STATUSBAR_Y + STATUSBAR_H - 1);
+
+    /* Shortcut labels */
+    setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F1"); xpos += 13;
+    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "-HELP"); xpos += 45;
+
+    
+    /* Separator */
+    xpos = 470;
+    setcolor(BAR_COLOR);
+    line(xpos, STATUSBAR_Y - 1, xpos, STATUSBAR_Y + STATUSBAR_H - 1);
+
+    /* Memory */
+    setcolor(BAR_COLOR);
+    outtextxy(xpos + 5, STATUSBAR_Y + 2, LC_MAP_STATUS_MEM);
+    setcolor(TEXT_COLOR);
+    outtextxy(xpos + 35, STATUSBAR_Y + 2, memMsg);
+}
+
 void draw_player_status()
 {
+    int i=0;
     char captain_name[100];
     char ship_name[100];
     char hyper_class[100];
     char current_system[50];
     char sector[50];
+    int line_y, j;
+    char* p;
+    char line[100];
+    
 
     sprintf(captain_name, "%s: %s",LC_STATUS_WND_CAPTAIN, gs.captain_name);
     sprintf(ship_name, "%s: %s",LC_STATUS_WND_SHIP, data_ship_names[gs.ship_type]);
@@ -66,6 +107,8 @@ void draw_player_status()
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
     outtextxy(status_wnd.x1 + 10, status_wnd.y1 + 120, data_factions[sol_list[gs.current_system].faction]);
     outtextxy(status_wnd.x1 + 10, status_wnd.y1 + 140, sector);
+
+    gui_status_bottom_status_line();
 }
 
 void gui_status_wnd()
@@ -78,3 +121,4 @@ void gui_status_wnd()
 
     gui_top_status_line();
 }
+

@@ -102,4 +102,4 @@ GAMESTATE {
   QUEST* quest;
   unsigned char *visited;
   int visited_bytes;
-};
+};
