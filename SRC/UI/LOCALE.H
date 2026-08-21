@@ -138,10 +138,10 @@
  * ---------------------------------------------------------------- */
 
 #define LC_FINDER_LOAD_CALC "Преgварительный рассчет гипер-нитей: "
-#define LC_FINDER_REALOC "Освобождение памяти"
+#define LC_FINDER_REALOC "Освобожgение памяти"
 
 #define LC_FINDER_START_TEXT_1 "Ввеgите ИНДЕКС НАЧАЛЬНОЙ системы"
-#define LC_FINDER_START_TEXT_2 "Нажмите [ENTER] для старта из текущей"
+#define LC_FINDER_START_TEXT_2 "Нажмите [ENTER] gля старта из текущей"
 
 #define LC_FINDER_END_TEXT "Ввеgите ИНДЕКС системы НАЗНАЧЕНИЯ"
 
