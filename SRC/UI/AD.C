@@ -1,6 +1,7 @@
 #include <graphics.h>
 
 #include "ui\ad.h"
+#include "ui\locale.h"
 
 void gui_ad_quindett() {
   setcolor(4);
@@ -76,14 +77,14 @@ void gui_ad_upgrade() {
   settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
   setfillstyle(SOLID_FILL, RED);
   bar(405, 21, 540, 80);
-  outtextxy(410, 25, "CARD");
-  outtextxy(410, 45, "OUTDATED!");
+  outtextxy(410, 25, LC_AD_OUTDATED_HEAD_1);
+  outtextxy(410, 45, LC_AD_OUTDATED_HEAD_2);
 
   settextstyle(SMALL_FONT, HORIZ_DIR, 5);
   setcolor(4);
-  outtextxy(155, 25, "This GSCARD is outdated for 5401");
-  outtextxy(155, 40, "years! Call us at GS:1:3218-HSFT");
-  outtextxy(155, 55, "to purchase new version!");
+  outtextxy(155, 25, LC_AD_OUTDATED_TEXT_1);
+  outtextxy(155, 40, LC_AD_OUTDATED_TEXT_2);
+  outtextxy(155, 55, LC_AD_OUTDATED_TEXT_3);
 
   settextstyle(SMALL_FONT, HORIZ_DIR, 2);
   outtextxy(

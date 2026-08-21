@@ -17,6 +17,7 @@ set SRC=SRC
 set INC=%TURBOC%\INCLUDE
 set LIB=%TURBOC%\LIBRARY
 set ASST=ASSETS
+set RU=-DLANGUAGE_RU
 
 REM ensure BUILD directory exists
 if not exist %BLD% mkdir %BLD%
@@ -28,52 +29,53 @@ echo.                                         >> %BLD%\build.log
 
 REM ---------- compile each .c to BUILD\*.obj ----------
 echo Compiling CARD.C...                      >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CARD.C >> %BLD%\build.log
+tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CARD.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling UI\GUI.C...                       >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\GUI.C >> %BLD%\build.log
+tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\GUI.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling DATA\READER.C...                    >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\DATA\READER.C >> %BLD%\build.log
+tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\DATA\READER.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling CORE\FINDER.C...                    >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CORE\FINDER.C >> %BLD%\build.log
+tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CORE\FINDER.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling UI\AD.C...                        >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\AD.C >> %BLD%\build.log
+tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\AD.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling UI\SPLASH.C...                    >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\SPLASH.C >> %BLD%\build.log
+tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\SPLASH.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling CORE\OBJECTS.C...                    >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CORE\OBJECTS.C >> %BLD%\build.log
+tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CORE\OBJECTS.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling UI\MAP\MAPWND.C...                      >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MAP\MAPWND.C >> %BLD%\build.log
+tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MAP\MAPWND.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling UI\MAP\NAV.C...                         >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MAP\NAV.C >> %BLD%\build.log
+tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MAP\NAV.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling UI\MAP\PATHWND.C...                     >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MAP\PATHWND.C >> %BLD%\build.log
+tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MAP\PATHWND.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling UI\MENUWND.C...                     >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MENUWND.C >> %BLD%\build.log
+tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MENUWND.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling UI\STATWND.C...                     >> %BLD%\build.log
-tcc -c -ms -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\STATWND.C >> %BLD%\build.log
+tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\STATWND.C >> %BLD%\build.log
 if errorlevel 1 goto err
+
 
 
 echo.                                         >> %BLD%\build.log
