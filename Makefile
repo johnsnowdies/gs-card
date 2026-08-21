@@ -56,10 +56,8 @@ clean:
 	@echo "Done."
 
 fix:
-	@echo "Converting sources to DOS format (ASCII + CRLF)..."
-	@for f in $(SCRIPT_DIR)/SRC/*.C $(SCRIPT_DIR)/SRC/*.H; do \
-		iconv -f utf-8 -t ascii//TRANSLIT "$$f" 2>/dev/null > "$$f.tmp" && mv "$$f.tmp" "$$f" || rm -f "$$f.tmp"; \
-		sed -i 's/\r//g' "$$f"; \
-		sed -i 's/$$/\r/' "$$f"; \
-	done
+	@echo "Converting sources to DOS format (CP866 + CRLF)..."
+	@find $(SCRIPT_DIR)/SRC -type f \( -name "*.C" -o -name "*.H" \) -exec sh -c \
+		'file="$$1"; iconv -f utf-8 -t cp866 "$$file" 2>/dev/null > "$$file.tmp" && mv "$$file.tmp" "$$file" || rm -f "$$file.tmp"; sed -i "s/\r//g; s/$$/\r/" "$$file"' \
+		_ {} \;
 	@echo "Done."

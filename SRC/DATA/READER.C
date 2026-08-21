@@ -315,4 +315,4 @@ int save_game(GAMESTATE* state, char* filename)
 
     fclose(fp);
     return 1;
-}
+}

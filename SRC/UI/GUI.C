@@ -304,4 +304,4 @@ void gui_progress_wnd(char* header, char* text, int current, int total)
     outtextxy(400, 185, memMsg);
 
     setcolor(0);
-}
+}

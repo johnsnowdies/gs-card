@@ -77,7 +77,7 @@ void gui_ad_upgrade() {
   setfillstyle(SOLID_FILL, RED);
   bar(405, 21, 540, 80);
   outtextxy(410, 25, "CARD");
-  outtextxy(410, 45, "OUTDATED");
+  outtextxy(410, 45, "OUTDATED!");
 
   settextstyle(SMALL_FONT, HORIZ_DIR, 5);
   setcolor(4);

@@ -32,4 +32,4 @@ void  gui_draw_generic_wnd(int x, int y, int width, int height);
 void  gui_warning_wnd(char* header, char* text);
 char* gui_input_wnd(char* header, char* text, char* defaultValue);
 void  gui_progress_wnd(char* header, char* text, int current, int total);
-int   gui_bool_wnd(char* header, char* text);
+int   gui_bool_wnd(char* header, char* text);
