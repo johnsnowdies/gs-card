@@ -15,41 +15,41 @@ void gui_ad_quindett() {
 
   setcolor(0);
   settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-  outtextxy(475, 330, "Become a soldier of...");
+  outtextxy(475, 330, LC_AD_QUINDETT_HEADER);
 
   settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 4);
 
   setcolor(15);
-  outtextxy(475, 340, "Fortune!");
+  outtextxy(475, 340, LC_AD_QUINDETT_BIG);
 
   setcolor(0);
   setlinestyle(1, 10, 2);
   line(471, 374, 639, 374);
 
   settextstyle(SMALL_FONT, HORIZ_DIR, 4);
-  outtextxy(475, 380, "Quendett awaits you!");
-  outtextxy(475, 395, "Just imagine ");
+  outtextxy(475, 380, LC_AD_QUINDETT_TEXT_1);
+  outtextxy(475, 395, LC_AD_QUINDETT_TEXT_2);
 
   setcolor(15);
   settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 2);
-  outtextxy(555, 395, "2500 $$");
+  outtextxy(555, 395, LC_AD_QUINDETT_MONEY);
 
   rectangle(550, 395, 638, 420);
 
   setcolor(0);
   settextstyle(SMALL_FONT, HORIZ_DIR, 4);
-  outtextxy(475, 410, "trooper offer");
+  outtextxy(475, 410, LC_AD_QUINDETT_TEXT_3);
 
-  outtextxy(475, 425, "code:");
+  outtextxy(475, 425, LC_AD_QUINDETT_TEXT_4);
   setcolor(15);
-  outtextxy(510, 425, "\"I WANT TO QUINDETT!\"");
+  outtextxy(510, 425, LC_AD_QUINDETT_CODE);
 
   setfillstyle(SOLID_FILL, BLACK);
   bar(471, 453, 639, 459);
-  /*
+  
   settextstyle(SMALL_FONT,HORIZ_DIR,4);
-  outtextxy(478,433,"GS:1:234:QA");
-  */
+  outtextxy(478,440, LC_AD_QUINDETT_GS);
+  
 }
 
 void gui_ad_hypersoft() {
@@ -87,9 +87,7 @@ void gui_ad_upgrade() {
   outtextxy(155, 55, LC_AD_OUTDATED_TEXT_3);
 
   settextstyle(SMALL_FONT, HORIZ_DIR, 2);
-  outtextxy(
-      150, 83,
-      "Hypersoft ILTD takes no responsibility for usaging outdated GSCARDs. ");
+  outtextxy(150, 83, LC_AD_UPGRADE_TEXT);
 }
 
 void gui_ad_legion() {
@@ -99,16 +97,16 @@ void gui_ad_legion() {
   bar(20, 315, 215, 470);
 
   settextstyle(GOTHIC_FONT, HORIZ_DIR, 4);
-  outtextxy(25, 318, "Legion awaits");
-  outtextxy(25, 350, "you, Soldier!");
+  outtextxy(25, 318, LC_AD_LEGION_HEAD_1);
+  outtextxy(25, 350, LC_AD_LEGION_HEAD_2);
 
   setlinestyle(3, 0, 1);
   line(20, 390, 220, 390);
 
   settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-  outtextxy(25, 400, "Start your NEW life with");
-  outtextxy(25, 420, "Imperial military forces");
-  outtextxy(25, 440, "recruit today at GS:1:10A");
+  outtextxy(25, 400, LC_AD_LEGION_TEXT_1);
+  outtextxy(25, 420, LC_AD_LEGION_TEXT_2);
+  outtextxy(25, 440, LC_AD_LEGION_TEXT_3);
 
   setlinestyle(0, 0, 1);
 }
@@ -120,7 +118,7 @@ void gui_ad_pipboy() {
   setfillstyle(SOLID_FILL, 2);
   settextstyle(SMALL_FONT, HORIZ_DIR, 4);
   bar(420, 315, 620, 470);
-  outtextxy(425, 316, "Color display? No tricks, just");
+  outtextxy(425, 316, LC_AD_PIPBOY_PRE);
   setfillstyle(BKSLASH_FILL, 8);
   bar(420, 330, 620, 346);
   setfillstyle(SLASH_FILL, 4);
@@ -129,19 +127,19 @@ void gui_ad_pipboy() {
   settextstyle(DEFAULT_FONT, HORIZ_DIR, 4);
   setusercharsize(1, 1, 1, 1);
   setcolor(15);
-  outtextxy(425, 334, "PIPBOY");
+  outtextxy(425, 334, LC_AD_PIPBOY_HEAD);
   setcolor(0);
   settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-  outtextxy(425, 368, "Best wearable hardware in");
-  outtextxy(425, 378, "whole multiverse!");
-  outtextxy(425, 388, "Supports all Hypersoft's ");
-  outtextxy(425, 398, "GSCARD, it can make your");
-  outtextxy(425, 408, "hyper-run faster!");
+  outtextxy(425, 368, LC_AD_PIPBOY_TEXT_1);
+  outtextxy(425, 378, LC_AD_PIPBOY_TEXT_2);
+  outtextxy(425, 388, LC_AD_PIPBOY_TEXT_3);
+  outtextxy(425, 398, LC_AD_PIPBOY_TEXT_4);
+  outtextxy(425, 408, LC_AD_PIPBOY_TEXT_5);
   setfillstyle(SOLID_FILL, 4);
   bar(420, 428, 620, 470);
   setcolor(15);
   settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 4);
-  outtextxy(430, 430, "GS:14:24-PB");
+  outtextxy(430, 430, LC_AD_PIPBOY_GS);
 }
 
 void gui_ad_fleet() {
@@ -149,10 +147,10 @@ void gui_ad_fleet() {
   setcolor(4);
   rectangle(220, 315, 415, 388);
   settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-  outtextxy(225, 320, "  IMPERIAL TRADE FLEET");
-  outtextxy(225, 335, "HIRE: engieners, pilots");
-  outtextxy(225, 350, "OFFERS: 2000 $$ per year");
-  outtextxy(225, 365, "CONTACT: GS:1:15:SF-HR");
+  outtextxy(225, 320, LC_AD_FLEET_TEXT_1);
+  outtextxy(225, 335, LC_AD_FLEET_TEXT_2);
+  outtextxy(225, 350, LC_AD_FLEET_TEXT_3);
+  outtextxy(225, 365, LC_AD_FLEET_TEXT_4);
 }
 
 void gui_ad_legals() {
@@ -160,14 +158,14 @@ void gui_ad_legals() {
   setcolor(4);
   rectangle(220, 392, 415, 470);
   settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-  outtextxy(225, 395, " GSCARD, Hypersoft ILTD");
-  outtextxy(225, 410, "  All rights reserved");
-  outtextxy(225, 425, "Support line: GS:1:3218:S");
+  outtextxy(225, 395, LC_AD_LEGALS_TEXT_1);
+  outtextxy(225, 410, LC_AD_LEGALS_TEXT_2);
+  outtextxy(225, 425, LC_AD_LEGALS_TEXT_3);
   settextstyle(SMALL_FONT, HORIZ_DIR, 2);
-  outtextxy(225, 445, "Warntary void if program launched. Hypersoft ILTD");
-  outtextxy(225, 450, "is trademark of Imperial Trade Fleet. Illegal copy");
-  outtextxy(225, 455, "dissasembling and hacking this software disallowed");
-  outtextxy(225, 460, "          34M315 Terra, Washington DC");
+  outtextxy(225, 445, LC_AD_LEGALS_TEXT_4);
+  outtextxy(225, 450, LC_AD_LEGALS_TEXT_5);
+  outtextxy(225, 455, LC_AD_LEGALS_TEXT_6);
+  outtextxy(225, 460, LC_AD_LEGALS_TEXT_7);
 }
 
 void gui_ad_loading() {
