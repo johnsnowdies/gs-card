@@ -35,11 +35,11 @@ static struct status_wnd {
 
 void draw_player_status()
 {
-    char* captain_name[100];
-    char* ship_name[100];
-    char* hyper_class[100];
-    char* current_system[50];
-    char* sector[50];
+    char captain_name[100];
+    char ship_name[100];
+    char hyper_class[100];
+    char current_system[50];
+    char sector[50];
 
     sprintf(captain_name, "Software registered for: %s", gs.captain_name);
     sprintf(ship_name, "Spacevessel: %s", data_ship_names[gs.ship_type]);

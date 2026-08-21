@@ -144,6 +144,22 @@ static int ey(float y)
     return (int)((ymax - y) / ydens);
 }
 
+static int get_color_by_z(float z)
+{
+    /* Depth-colouring */
+    if      (z <= -200) return 1;
+    else if (z <= -150) return 5;
+    else if (z <= -100) return 3;
+    else if (z <= -50)  return 9;
+    else if (z < 0)     return 7;
+    else if (z == 0)    return 7;
+    else if (z < 50)    return 7;
+    else if (z < 100)   return 8;
+    else if (z < 150)   return 14;
+    else if (z < 200)   return 12;
+    else                return 4;
+}
+
 static struct point p(float x, float y, float z)
 {
     float b = 0.8660254F * y;
@@ -153,18 +169,7 @@ static struct point p(float x, float y, float z)
     res.x = (int)(MAP_WND_WIDTH  / 2 + (x - a) / xdens);
     res.y = (int)(MAP_WND_HEIGHT / 2 + (b / ydens) - (z / ydens));
 
-    /* Depth-colouring */
-    if      (z <= -200) POINT_COLOR = 1;
-    else if (z <= -150) POINT_COLOR = 5;
-    else if (z <= -100) POINT_COLOR = 3;
-    else if (z <= -50)  POINT_COLOR = 9;
-    else if (z < 0)     POINT_COLOR = 7;
-    else if (z == 0)    POINT_COLOR = 7;
-    else if (z < 50)    POINT_COLOR = 7;
-    else if (z < 100)   POINT_COLOR = 8;
-    else if (z < 150)   POINT_COLOR = 14;
-    else if (z < 200)   POINT_COLOR = 12;
-    else                POINT_COLOR = 4;
+    POINT_COLOR = get_color_by_z(z);
 
     return res;
 }
@@ -174,7 +179,7 @@ static struct point p(float x, float y, float z)
  * ---------------------------------------------------------------- */
 static void drawObjects(int mode)
 {
-    int i, color, inner;
+    int i, color;
 
     if (!obj_size || !obj_list || !render_danger_objects) return;
 
@@ -183,10 +188,10 @@ static void drawObjects(int mode)
         int r = obj_list[i].r;
 
         switch (obj_list[i].type) {
-            case OBJ_GASCLOUD:  color = 5;  inner = 13; break;
-            case OBJ_BLACKHOLE: color = 4;  inner = 0;  break;
-            case OBJ_NEBULA:    color = 9;  inner = 11; break;
-            default:            color = 5;  inner = 13; break;
+            case OBJ_GASCLOUD:  color = 5; break;
+            case OBJ_BLACKHOLE: color = 4; break;
+            case OBJ_NEBULA:    color = 9; break;
+            default:            color = 5; break;
         }
 
         if (mode == 1) {
@@ -267,7 +272,7 @@ static void draw2dwnd(int sol_size, struct system_solar* solar,
             for (j = 0; j < solar[i].threadSize; j++) {
                 if (solar[i].threads[j].cost >= 15) continue;
 
-                setcolor(15);
+                setcolor(get_color_by_z(solar[i].z));
                 setlinestyle(1, 0, 1);
                 buf = solar[solar[i].threads[j].value];
                 safe_line(ex(solar[i].x + offsetX), ey(solar[i].y + offsetY),
@@ -330,13 +335,6 @@ static void draw2dwnd(int sol_size, struct system_solar* solar,
                                 ex(solar[i].x + offsetX) + 30,
                                 ey(solar[i].y + offsetY) + 5 - 30, 
                                 data_sectors[solar[i].sector]);
-
-                            settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 2);
-                            safe_outtextxy(
-                                ex(solar[i].x + offsetX) - 50,
-                                ey(solar[i].y + offsetY) + 5 - 100, 
-                                data_factions[0]);
-
                         break;
 
                         case 1:
@@ -378,11 +376,7 @@ static void draw2dwnd(int sol_size, struct system_solar* solar,
                                 ey(solar[i].y + offsetY) + 5 + 25, 
                                 data_sectors[solar[i].sector]);
 
-                            settextstyle(GOTHIC_FONT, HORIZ_DIR, 2);
-                            safe_outtextxy(
-                                ex(solar[i].x + offsetX) + 5 - 100,
-                                ey(solar[i].y + offsetY) + 5 + 120, 
-                                data_factions[1]);
+                           
                         break;
 
                         case 6:
@@ -510,6 +504,7 @@ static void draw3dwnd(int sol_size, struct system_solar* solar,
 
         if (solar[i].threadSize && drawThreads) {
             setlinestyle(1, 0, 1);
+            setcolor(get_color_by_z(solar[i].z));
             for (j = 0; j < solar[i].threadSize; j++) {
                 buf = solar[solar[i].threads[j].value];
                 {
@@ -644,7 +639,7 @@ static void drawyzwnd(int sol_size, struct system_solar* solar,
             for (j = 0; j < solar[i].threadSize; j++) {
                 if (solar[i].threads[j].cost >= 15) continue;
 
-                setcolor(15);
+                setcolor(get_color_by_z(solar[i].z));
                 setlinestyle(1, 0, 1);
                 buf = solar[solar[i].threads[j].value];
                 safe_line(ex(solar[i].x + offsetX),

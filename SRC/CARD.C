@@ -192,7 +192,7 @@ int main()
 {
     int c = 0;
     int mm_select = 0;
-    char* buf[50];
+    char buf[50];
     int isCoord = 1, isHyper = 0, mode = 1;  /* 1 = 2D, 2 = 3D, 3 = YZ */
     enum game_screen cur_screen = SCR_MAIN_MENU;
     enum game_screen prev_screen = SCR_MAP;

@@ -9,13 +9,13 @@
 #include "ui\gui.h"
 #include "ui\menuwnd.h"
 
-const char* MAIN_MENU_ITEMS[3] = {
+char* MAIN_MENU_ITEMS[3] = {
     "New Game",
     "Load",
     "Exit to DOS"
 };
 
-const char* GAME_MENU_ITEMS[3] = {
+char* GAME_MENU_ITEMS[3] = {
     "Save Game",
     "Load",
     "Exit to DOS"
@@ -41,7 +41,7 @@ void gui_menu_wnd(int currentPos, int mode)
     int i = 0;
     int wx = (MAP_WND_WIDTH - WND_W) / 2;
     int wy = WND_DEFAULT_Y + 25;
-    const char **ITEMS;
+    char **ITEMS;
     if (mode == MAIN_MENU)
         ITEMS = MAIN_MENU_ITEMS;
     else

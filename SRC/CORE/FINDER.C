@@ -91,8 +91,8 @@ void core_finder_calc_threads_costs(int sol_size, SYSTEM* sol_list, int topCost)
                   p[0][1] * p[1][0] * p[2][2] - p[0][2] * p[1][1] * p[2][0];
 
           if (cross == 0) {
-            double dt, abxy, abz, cdxy, cdz;
-            double t, checkLeft, checkRight;
+            double dt, abxy, abz, cdxy, cdz, t;
+            /* double t, checkLeft, checkRight; */
 
             SYSTEM target;
 
@@ -106,8 +106,10 @@ void core_finder_calc_threads_costs(int sol_size, SYSTEM* sol_list, int topCost)
               target.y = (b.y - a.y) * t + a.y;
               target.z = (b.z - a.z) * t + a.z;
 
+              /*
               checkLeft = ((d.y - c.y) * ((b.x - a.x) * t + a.x - c.x));
               checkRight = ((d.x - c.x) * ((b.y - a.y) * t + a.y - c.y));
+              */
 
               abxy = (target.x - a.x) * (b.y - a.y) -
                      (target.y - a.y) * (b.x - a.x);
@@ -194,7 +196,7 @@ void core_finder_calc_threads_costs(int sol_size, SYSTEM* sol_list, int topCost)
 
 int core_finder_get_way(int sol_size, SYSTEM* sol_list, WAYPOINT* wp) {
   char* input;
-  char* current[5];
+  char current[5];
   int start, end, i, status;
 
   for (i = 0; i < sol_size; i++) {
