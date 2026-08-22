@@ -86,7 +86,6 @@ void gui_top_status_line()
     
     setcolor(TEXT_COLOR);
     outtextxy(xpos, 2, buf);
-  
 }
 
 
@@ -110,7 +109,7 @@ void gui_draw_generic_wnd(int x, int y, int width, int height)
 }
 
 /* ----------------------------------------------------------------
- * warningWnd -- simple centred warning dialog
+ * gui_warning_wnd -- simple centred warning dialog
  * ---------------------------------------------------------------- */
 void gui_warning_wnd(char* header, char* text)
 {
@@ -126,6 +125,9 @@ void gui_warning_wnd(char* header, char* text)
     setcolor(TEXT_COLOR);
 }
 
+/* ----------------------------------------------------------------
+ * gui_bool_wnd -- yes/no dialog
+ * ---------------------------------------------------------------- */
 int gui_bool_wnd(char* header, char* text)
 {
     int wx = (MAP_WND_WIDTH - WND_W) / 2;
@@ -305,4 +307,27 @@ void gui_progress_wnd(char* header, char* text, int current, int total)
     outtextxy(400, 185, memMsg);
 
     setcolor(0);
+}
+
+void gui_memory_status()
+{
+    unsigned int USED_MEM, FREE_MEM, TOTAL_MEM = 65535;
+    char memMsg[50] = "";
+    
+    FREE_MEM = coreleft();
+    USED_MEM = TOTAL_MEM - FREE_MEM;
+    sprintf(memMsg, "%u/%u", USED_MEM, TOTAL_MEM);
+
+    settextstyle(SMALL_FONT, HORIZ_DIR, 5);
+    setfillstyle(SOLID_FILL, BLACK);
+    bar(470, STATUSBAR_Y, MAP_WND_WIDTH, STATUSBAR_Y + STATUSBAR_H - 1);
+
+    setcolor(BAR_COLOR);
+    line(470, STATUSBAR_Y - 1, 470, STATUSBAR_Y + STATUSBAR_H - 1);
+
+    /* Memory */
+    setcolor(BAR_COLOR);
+    outtextxy(470 + 5, STATUSBAR_Y + 2, LC_MAP_STATUS_MEM);
+    setcolor(TEXT_COLOR);
+    outtextxy(470 + 35, STATUSBAR_Y + 2, memMsg);
 }

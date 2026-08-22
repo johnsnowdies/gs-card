@@ -48,22 +48,28 @@ static int POINT_COLOR = 0;
 /* ----------------------------------------------------------------
  * Extern game globals (defined in card.c)
  * ---------------------------------------------------------------- */
-extern struct object* obj_list;
-extern int      obj_size;
-extern int      render_danger_objects;
-extern int      render_bounds;
-extern int      show_danger_hyperthreads;
-extern int      show_danger_path_parts;
-extern int      dirty_path;
-extern int      dirty_topbar;
-extern int      dirty_bottombar;
-extern struct game_state gs;
-extern struct bound_line* bnd_list;
-extern int bnd_size;
+extern unsigned char render_danger_objects;
+extern unsigned char render_bounds;
+extern unsigned char show_danger_hyperthreads;
+extern unsigned char show_danger_path_parts;
+extern unsigned char dirty_path;
+extern unsigned char dirty_topbar;
+extern unsigned char dirty_bottombar;
+
+extern SYSTEM* sol_list;
+extern unsigned int sol_size;
+
+extern OBJECT* obj_list;
+extern unsigned int obj_size;
+
+extern BOUND_LINE* bnd_list;
+extern unsigned int bnd_size;
+
+extern GAMESTATE gs;
 
 extern char* data_factions[FACTIONS_COUNT];
 extern char* data_sectors[SECTORS_COUNT];
-extern data_factions_colors[FACTIONS_COUNT];
+extern unsigned int data_factions_colors[FACTIONS_COUNT];
 
 /* ----------------------------------------------------------------
  * Clipping helpers (safe_*) -- clip against map_wnd
@@ -241,8 +247,7 @@ static void draw_bounds()
 /* ----------------------------------------------------------------
  * draw2dwnd -- XY projection (top-down)
  * ---------------------------------------------------------------- */
-static void draw2dwnd(int sol_size, struct system_solar* solar,
-                      int isCoord, int isHyper, struct waypoint* wp)
+static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp)
 {
     int i, j, o;
     struct system_solar buf, a, b;
@@ -266,31 +271,31 @@ static void draw2dwnd(int sol_size, struct system_solar* solar,
     }
 
     for (i = 0; i < sol_size; i++) {
-        p(solar[i].x, solar[i].y, solar[i].z);
-        safe_putpixel(ex(solar[i].x + offsetX), ey(solar[i].y + offsetY),
+        p(sol_list[i].x, sol_list[i].y, sol_list[i].z);
+        safe_putpixel(ex(sol_list[i].x + offsetX), ey(sol_list[i].y + offsetY),
                       POINT_COLOR);
 
-        if (solar[i].threadSize && drawThreads) {
-            for (j = 0; j < solar[i].threadSize; j++) {
-                if (solar[i].threads[j].cost >= 15) continue;
+        if (sol_list[i].threadSize && drawThreads) {
+            for (j = 0; j < sol_list[i].threadSize; j++) {
+                if (sol_list[i].threads[j].cost >= 15) continue;
 
-                setcolor(get_color_by_z(solar[i].z));
+                setcolor(get_color_by_z(sol_list[i].z));
                 setlinestyle(1, 0, 1);
-                buf = solar[solar[i].threads[j].value];
-                safe_line(ex(solar[i].x + offsetX), ey(solar[i].y + offsetY),
+                buf = sol_list[sol_list[i].threads[j].value];
+                safe_line(ex(sol_list[i].x + offsetX), ey(sol_list[i].y + offsetY),
                           ex(buf.x + offsetX), ey(buf.y + offsetY));
 
                 /* unsafe thread */
                 if (show_danger_hyperthreads && obj_size) {
                     for (o = 0; o < obj_size; o++) {
                         if (core_objects_sphere_line_intersect(
-                                solar[i].x, solar[i].y, solar[i].z,
+                                sol_list[i].x, sol_list[i].y, sol_list[i].z,
                                 buf.x, buf.y, buf.z,
                                 obj_list[o].x, obj_list[o].y,
                                 obj_list[o].z, obj_list[o].r)) {
                             setcolor(4);
                             setlinestyle(0, 0, 1);
-                            safe_line(ex(solar[i].x + offsetX), ey(solar[i].y + offsetY),
+                            safe_line(ex(sol_list[i].x + offsetX), ey(sol_list[i].y + offsetY),
                                       ex(buf.x + offsetX), ey(buf.y + offsetY));
                             setlinestyle(1, 0, 1);
                             break;
@@ -301,82 +306,82 @@ static void draw2dwnd(int sol_size, struct system_solar* solar,
         }
 
         /* System label */
-        if (((xmax <= MAX_VALUE / 10) || i == gs.current_system || (solar[i].is_shipyard && solar[i].is_gas_station)) &&
-            ex(solar[i].x + offsetX) < (MAP_WND_WIDTH - 80) &&
-            ey(solar[i].y + offsetY) < (MAP_WND_HEIGHT - 15)) {
+        if (((xmax <= MAX_VALUE / 10) || i == gs.current_system || (sol_list[i].is_shipyard && sol_list[i].is_gas_station)) &&
+            ex(sol_list[i].x + offsetX) < (MAP_WND_WIDTH - 80) &&
+            ey(sol_list[i].y + offsetY) < (MAP_WND_HEIGHT - 15)) {
             char c[50] = "";
 
             if (game_is_visited(&gs, i)){
-                if (solar[i].is_shipyard){
-                    setcolor(data_factions_colors[solar[i].faction]);
-                    sprintf(c, "SA.%d(%d) [S][F]", i, solar[i].threadSize);
-                } else if (solar[i].is_gas_station){
+                if (sol_list[i].is_shipyard){
+                    setcolor(data_factions_colors[sol_list[i].faction]);
+                    sprintf(c, "SA.%d(%d) [S][F]", i, sol_list[i].threadSize);
+                } else if (sol_list[i].is_gas_station){
                     setcolor(1);
-                    sprintf(c, "SA.%d(%d) [F]", i, solar[i].threadSize);
+                    sprintf(c, "SA.%d(%d) [F]", i, sol_list[i].threadSize);
                 } else {
                     setcolor(15);
-                    sprintf(c, "SA.%d(%d)", i, solar[i].threadSize);
+                    sprintf(c, "SA.%d(%d)", i, sol_list[i].threadSize);
                 }
             } else {
                 setcolor(8);
-                sprintf(c, "SA.%d(%d)", i, solar[i].threadSize);
+                sprintf(c, "SA.%d(%d)", i, sol_list[i].threadSize);
             }
 
             /** CAPITALS **/
-            if (solar[i].is_shipyard && solar[i].is_gas_station && render_bounds){
-                    setcolor(data_factions_colors[solar[i].faction]);
+            if (sol_list[i].is_shipyard && sol_list[i].is_gas_station && render_bounds){
+                    setcolor(data_factions_colors[sol_list[i].faction]);
                     settextstyle(SMALL_FONT, HORIZ_DIR, 4);
                     
 
                     /* Manual politic map aligment*/
                     /* "Dhat", "Medinat", "Ghabkar", "Buraq", "Ben Vara", "Killoch Vairan", "Cuchulainn", "Danter", "Coalsack" */
-                    switch(solar[i].sector){
+                    switch(sol_list[i].sector){
                         case 0:
                             /* Dhat */
                             safe_outtextxy(
-                                ex(solar[i].x + offsetX) + 30,
-                                ey(solar[i].y + offsetY) + 5 - 30, 
-                                data_sectors[solar[i].sector]);
+                                ex(sol_list[i].x + offsetX) + 30,
+                                ey(sol_list[i].y + offsetY) + 5 - 30, 
+                                data_sectors[sol_list[i].sector]);
                         break;
 
                         case 1:
                             /* Medinat */
                             safe_outtextxy(
-                                ex(solar[i].x + offsetX) - 20,
-                                ey(solar[i].y + offsetY) + 5 - 24, 
-                                data_sectors[solar[i].sector]);
+                                ex(sol_list[i].x + offsetX) - 20,
+                                ey(sol_list[i].y + offsetY) + 5 - 24, 
+                                data_sectors[sol_list[i].sector]);
                         break;
 
                         case 2:
                             /* Ghabkar */
                             safe_outtextxy(
-                                ex(solar[i].x + offsetX) - 60,
-                                ey(solar[i].y + offsetY) + 5 - 20, 
-                                data_sectors[solar[i].sector]);
+                                ex(sol_list[i].x + offsetX) - 60,
+                                ey(sol_list[i].y + offsetY) + 5 - 20, 
+                                data_sectors[sol_list[i].sector]);
                         break;
 
                         case 3:
                             /* Buraq */
                             safe_outtextxy(
-                                ex(solar[i].x + offsetX) + 27,
-                                ey(solar[i].y + offsetY) + 5 - 50, 
-                                data_sectors[solar[i].sector]);
+                                ex(sol_list[i].x + offsetX) + 27,
+                                ey(sol_list[i].y + offsetY) + 5 - 50, 
+                                data_sectors[sol_list[i].sector]);
                         break;
 
                         case 4:
                             /* Ben Vara */
                             safe_outtextxy(
-                                ex(solar[i].x + offsetX),
-                                ey(solar[i].y + offsetY)  + 5, 
-                                data_sectors[solar[i].sector]);
+                                ex(sol_list[i].x + offsetX),
+                                ey(sol_list[i].y + offsetY)  + 5, 
+                                data_sectors[sol_list[i].sector]);
                         break;
 
                         case 5:
                             /* Killoch Vairan */
                             safe_outtextxy(
-                                ex(solar[i].x + offsetX),
-                                ey(solar[i].y + offsetY) + 5 + 25, 
-                                data_sectors[solar[i].sector]);
+                                ex(sol_list[i].x + offsetX),
+                                ey(sol_list[i].y + offsetY) + 5 + 25, 
+                                data_sectors[sol_list[i].sector]);
 
                            
                         break;
@@ -384,25 +389,25 @@ static void draw2dwnd(int sol_size, struct system_solar* solar,
                         case 6:
                             /* Cuchulainn */
                             safe_outtextxy(
-                                ex(solar[i].x + offsetX) - 115,
-                                ey(solar[i].y + offsetY) + 5 + 40, 
-                                data_sectors[solar[i].sector]);
+                                ex(sol_list[i].x + offsetX) - 115,
+                                ey(sol_list[i].y + offsetY) + 5 + 40, 
+                                data_sectors[sol_list[i].sector]);
                         break;
 
                         case 7:
                             /* Danter */
                             safe_outtextxy(
-                                ex(solar[i].x + offsetX),
-                                ey(solar[i].y + offsetY)  + 5 - 27, 
-                                data_sectors[solar[i].sector]);
+                                ex(sol_list[i].x + offsetX),
+                                ey(sol_list[i].y + offsetY)  + 5 - 27, 
+                                data_sectors[sol_list[i].sector]);
                         break;
 
                         case 8:
                             /* Coalsack */
                             safe_outtextxy(
-                                ex(solar[i].x + offsetX) - 16,
-                                ey(solar[i].y + offsetY) + 5 - 13, 
-                                data_sectors[solar[i].sector]);
+                                ex(sol_list[i].x + offsetX) - 16,
+                                ey(sol_list[i].y + offsetY) + 5 - 13, 
+                                data_sectors[sol_list[i].sector]);
                         break;
 
 
@@ -410,10 +415,10 @@ static void draw2dwnd(int sol_size, struct system_solar* solar,
 
                     }
             }else{
-                sprintf(c, "SA.%d(%d)", i, solar[i].threadSize);
+                sprintf(c, "SA.%d(%d)", i, sol_list[i].threadSize);
                 settextstyle(SMALL_FONT, HORIZ_DIR, 4);
-                safe_outtextxy(ex(solar[i].x + offsetX),
-                ey(solar[i].y + offsetY) + 5, c);
+                safe_outtextxy(ex(sol_list[i].x + offsetX),
+                ey(sol_list[i].y + offsetY) + 5, c);
             }
 
            
@@ -422,8 +427,8 @@ static void draw2dwnd(int sol_size, struct system_solar* solar,
 
     /* Waypoint path */
     for (i = 1; i < wp->size; i++) {
-        a = solar[wp->way[i - 1]];
-        b = solar[wp->way[i]];
+        a = sol_list[wp->way[i - 1]];
+        b = sol_list[wp->way[i]];
         setcolor(9);
         setlinestyle(3, 0, 1);
         safe_line(ex(a.x + offsetX), ey(a.y + offsetY),
@@ -436,12 +441,12 @@ static void draw2dwnd(int sol_size, struct system_solar* solar,
             int a_idx = wp->way[i - 1];
             int b_idx = wp->way[i];
             for (o = 0; o < obj_size; o++) {
-                if (core_objects_sphere_line_intersect(solar[a_idx].x, solar[a_idx].y, solar[a_idx].z,
-                                        solar[b_idx].x, solar[b_idx].y, solar[b_idx].z,
+                if (core_objects_sphere_line_intersect(sol_list[a_idx].x, sol_list[a_idx].y, sol_list[a_idx].z,
+                                        sol_list[b_idx].x, sol_list[b_idx].y, sol_list[b_idx].z,
                                         obj_list[o].x, obj_list[o].y, obj_list[o].z, obj_list[o].r)) {
                     setcolor(4);
-                    safe_line(ex(solar[a_idx].x + offsetX), ey(solar[a_idx].y + offsetY),
-                              ex(solar[b_idx].x + offsetX), ey(solar[b_idx].y + offsetY));
+                    safe_line(ex(sol_list[a_idx].x + offsetX), ey(sol_list[a_idx].y + offsetY),
+                              ex(sol_list[b_idx].x + offsetX), ey(sol_list[b_idx].y + offsetY));
                     break;
                 }
             }
@@ -460,8 +465,7 @@ static void draw2dwnd(int sol_size, struct system_solar* solar,
 /* ----------------------------------------------------------------
  * draw3dwnd -- Isometric (XYZ) projection
  * ---------------------------------------------------------------- */
-static void draw3dwnd(int sol_size, struct system_solar* solar,
-                      int isCoord, int isHyper, struct waypoint* wp)
+static void draw3dwnd(int isCoord, int isHyper, WAYPOINT* wp)
 {
     int i, j, o;
     struct system_solar buf, a, b;
@@ -499,20 +503,20 @@ static void draw3dwnd(int sol_size, struct system_solar* solar,
     }
 
     for (i = 0; i < sol_size; i++) {
-        struct point A1 = p(solar[i].x + offsetX, solar[i].y + offsetY,
-                            solar[i].z + offsetZ);
-        p(solar[i].x, solar[i].y, solar[i].z);
+        struct point A1 = p(sol_list[i].x + offsetX, sol_list[i].y + offsetY,
+                            sol_list[i].z + offsetZ);
+        p(sol_list[i].x, sol_list[i].y, sol_list[i].z);
         safe_putpixel(A1.x, A1.y, POINT_COLOR);
 
-        if (solar[i].threadSize && drawThreads) {
+        if (sol_list[i].threadSize && drawThreads) {
             setlinestyle(1, 0, 1);
-            setcolor(get_color_by_z(solar[i].z));
-            for (j = 0; j < solar[i].threadSize; j++) {
-                buf = solar[solar[i].threads[j].value];
+            setcolor(get_color_by_z(sol_list[i].z));
+            for (j = 0; j < sol_list[i].threadSize; j++) {
+                buf = sol_list[sol_list[i].threads[j].value];
                 {
                     struct point A8 = p(buf.x + offsetX, buf.y + offsetY,
                                         buf.z + offsetZ);
-                    if (solar[i].threads[j].cost < 30)
+                    if (sol_list[i].threads[j].cost < 30)
                         safe_line(A1.x, A1.y, A8.x, A8.y);
 
                     /* unsafe thread */
@@ -520,7 +524,7 @@ static void draw3dwnd(int sol_size, struct system_solar* solar,
                         int o;
                         for (o = 0; o < obj_size; o++) {
                             if (core_objects_sphere_line_intersect(
-                                    solar[i].x, solar[i].y, solar[i].z,
+                                    sol_list[i].x, sol_list[i].y, sol_list[i].z,
                                     buf.x, buf.y, buf.z,
                                     obj_list[o].x, obj_list[o].y,
                                     obj_list[o].z, obj_list[o].r)) {
@@ -536,26 +540,26 @@ static void draw3dwnd(int sol_size, struct system_solar* solar,
             }
         }
 
-        if (((xmax <= MAX_VALUE / 10) || i == gs.current_system || (solar[i].is_shipyard && solar[i].is_gas_station)) &&
+        if (((xmax <= MAX_VALUE / 10) || i == gs.current_system || (sol_list[i].is_shipyard && sol_list[i].is_gas_station)) &&
             A1.x < (MAP_WND_WIDTH - 80) && A1.y < (MAP_WND_HEIGHT - 20)) {
             char c[50] = "";
             setcolor(15);
             settextstyle(SMALL_FONT, HORIZ_DIR, 4);
             
             if (game_is_visited(&gs, i)){
-                if (solar[i].is_shipyard){
+                if (sol_list[i].is_shipyard){
                     setcolor(3);
-                    sprintf(c, "SA.%d(%d) [S][F]", i, solar[i].threadSize);
-                } else if (solar[i].is_gas_station){
+                    sprintf(c, "SA.%d(%d) [S][F]", i, sol_list[i].threadSize);
+                } else if (sol_list[i].is_gas_station){
                     setcolor(1);
-                    sprintf(c, "SA.%d(%d) [F]", i, solar[i].threadSize);
+                    sprintf(c, "SA.%d(%d) [F]", i, sol_list[i].threadSize);
                 } else {
                     setcolor(15);
-                    sprintf(c, "SA.%d(%d)", i, solar[i].threadSize);
+                    sprintf(c, "SA.%d(%d)", i, sol_list[i].threadSize);
                 }
             } else {
                 setcolor(8);
-                sprintf(c, "SA.%d(%d)", i, solar[i].threadSize);
+                sprintf(c, "SA.%d(%d)", i, sol_list[i].threadSize);
             }
 
 
@@ -565,8 +569,8 @@ static void draw3dwnd(int sol_size, struct system_solar* solar,
 
     /* Waypoint path */
     for (i = 1; i < wp->size; i++) {
-        a = solar[wp->way[i - 1]];
-        b = solar[wp->way[i]];
+        a = sol_list[wp->way[i - 1]];
+        b = sol_list[wp->way[i]];
         {
             struct point A8 = p(a.x + offsetX, a.y + offsetY, a.z + offsetZ);
             struct point A9 = p(b.x + offsetX, b.y + offsetY, b.z + offsetZ);
@@ -582,13 +586,13 @@ static void draw3dwnd(int sol_size, struct system_solar* solar,
             int a_idx = wp->way[i - 1];
             int b_idx = wp->way[i];
             for (o = 0; o < obj_size; o++) {
-                if (core_objects_sphere_line_intersect(solar[a_idx].x, solar[a_idx].y, solar[a_idx].z,
-                                        solar[b_idx].x, solar[b_idx].y, solar[b_idx].z,
+                if (core_objects_sphere_line_intersect(sol_list[a_idx].x, sol_list[a_idx].y, sol_list[a_idx].z,
+                                        sol_list[b_idx].x, sol_list[b_idx].y, sol_list[b_idx].z,
                                         obj_list[o].x, obj_list[o].y, obj_list[o].z, obj_list[o].r)) {
-                    struct point A8 = p(solar[a_idx].x + offsetX, solar[a_idx].y + offsetY,
-                                        solar[a_idx].z + offsetZ);
-                    struct point A9 = p(solar[b_idx].x + offsetX, solar[b_idx].y + offsetY,
-                                        solar[b_idx].z + offsetZ);
+                    struct point A8 = p(sol_list[a_idx].x + offsetX, sol_list[a_idx].y + offsetY,
+                                        sol_list[a_idx].z + offsetZ);
+                    struct point A9 = p(sol_list[b_idx].x + offsetX, sol_list[b_idx].y + offsetY,
+                                        sol_list[b_idx].z + offsetZ);
                     setcolor(4);
                     setlinestyle(0, 0, 1);
                     safe_line(A8.x, A8.y, A9.x, A9.y);
@@ -608,8 +612,7 @@ static void draw3dwnd(int sol_size, struct system_solar* solar,
 /* ----------------------------------------------------------------
  * drawyzwnd -- YZ (side) projection
  * ---------------------------------------------------------------- */
-static void drawyzwnd(int sol_size, struct system_solar* solar,
-                      int isCoord, int isHyper, struct waypoint* wp)
+static void drawyzwnd(int isCoord, int isHyper, WAYPOINT* wp)
 {
     int i, j, o;
     struct system_solar buf, a, b;
@@ -633,19 +636,19 @@ static void drawyzwnd(int sol_size, struct system_solar* solar,
     }
 
     for (i = 0; i < sol_size; i++) {
-        p(solar[i].x, solar[i].y, solar[i].z);
-        safe_putpixel(ex(solar[i].x + offsetX),
-                      ey(-1 * (solar[i].z + offsetZ)), POINT_COLOR);
+        p(sol_list[i].x, sol_list[i].y, sol_list[i].z);
+        safe_putpixel(ex(sol_list[i].x + offsetX),
+                      ey(-1 * (sol_list[i].z + offsetZ)), POINT_COLOR);
 
-        if (solar[i].threadSize && drawThreads) {
-            for (j = 0; j < solar[i].threadSize; j++) {
-                if (solar[i].threads[j].cost >= 15) continue;
+        if (sol_list[i].threadSize && drawThreads) {
+            for (j = 0; j < sol_list[i].threadSize; j++) {
+                if (sol_list[i].threads[j].cost >= 15) continue;
 
-                setcolor(get_color_by_z(solar[i].z));
+                setcolor(get_color_by_z(sol_list[i].z));
                 setlinestyle(1, 0, 1);
-                buf = solar[solar[i].threads[j].value];
-                safe_line(ex(solar[i].x + offsetX),
-                          ey(-1 * (solar[i].z + offsetZ)),
+                buf = sol_list[sol_list[i].threads[j].value];
+                safe_line(ex(sol_list[i].x + offsetX),
+                          ey(-1 * (sol_list[i].z + offsetZ)),
                           ex(buf.x + offsetX),
                           ey(-1 * (buf.z + offsetZ)));
 
@@ -654,14 +657,14 @@ static void drawyzwnd(int sol_size, struct system_solar* solar,
                     int o;
                     for (o = 0; o < obj_size; o++) {
                         if (core_objects_sphere_line_intersect(
-                                solar[i].x, solar[i].y, solar[i].z,
+                                sol_list[i].x, sol_list[i].y, sol_list[i].z,
                                 buf.x, buf.y, buf.z,
                                 obj_list[o].x, obj_list[o].y,
                                 obj_list[o].z, obj_list[o].r)) {
                             setcolor(4);
                             setlinestyle(0, 0, 1);
-                            safe_line(ex(solar[i].x + offsetX),
-                                      ey(-1 * (solar[i].z + offsetZ)),
+                            safe_line(ex(sol_list[i].x + offsetX),
+                                      ey(-1 * (sol_list[i].z + offsetZ)),
                                       ex(buf.x + offsetX),
                                       ey(-1 * (buf.z + offsetZ)));
                             setlinestyle(1, 0, 1);
@@ -672,37 +675,37 @@ static void drawyzwnd(int sol_size, struct system_solar* solar,
             }
         }
 
-        if (((xmax <= MAX_VALUE / 10) || i == gs.current_system || (solar[i].is_shipyard && solar[i].is_gas_station)) &&
-            ex(solar[i].x + offsetX) < (MAP_WND_WIDTH - 80) &&
-            ey(solar[i].y + offsetY) < (MAP_WND_HEIGHT - 100)) {
+        if (((xmax <= MAX_VALUE / 10) || i == gs.current_system || (sol_list[i].is_shipyard && sol_list[i].is_gas_station)) &&
+            ex(sol_list[i].x + offsetX) < (MAP_WND_WIDTH - 80) &&
+            ey(sol_list[i].y + offsetY) < (MAP_WND_HEIGHT - 100)) {
             char c[50] = "";
             
             if (game_is_visited(&gs, i)){
-                if (solar[i].is_shipyard){
+                if (sol_list[i].is_shipyard){
                     setcolor(3);
-                    sprintf(c, "SA.%d(%d) [S][F]", i, solar[i].threadSize);
-                } else if (solar[i].is_gas_station){
+                    sprintf(c, "SA.%d(%d) [S][F]", i, sol_list[i].threadSize);
+                } else if (sol_list[i].is_gas_station){
                     setcolor(1);
-                    sprintf(c, "SA.%d(%d) [F]", i, solar[i].threadSize);
+                    sprintf(c, "SA.%d(%d) [F]", i, sol_list[i].threadSize);
                 } else {
                     setcolor(15);
-                    sprintf(c, "SA.%d(%d)", i, solar[i].threadSize);
+                    sprintf(c, "SA.%d(%d)", i, sol_list[i].threadSize);
                 }
             } else {
                 setcolor(8);
-                sprintf(c, "SA.%d(%d)", i, solar[i].threadSize);
+                sprintf(c, "SA.%d(%d)", i, sol_list[i].threadSize);
             }
 
             settextstyle(SMALL_FONT, VERT_DIR, 4);
-            safe_outtextxy(ex(solar[i].x + offsetX),
-                           ey(-1 * (solar[i].z + offsetZ)) + 5, c);
+            safe_outtextxy(ex(sol_list[i].x + offsetX),
+                           ey(-1 * (sol_list[i].z + offsetZ)) + 5, c);
         }
     }
 
     /* Waypoint path */
     for (i = 1; i < wp->size; i++) {
-        a = solar[wp->way[i - 1]];
-        b = solar[wp->way[i]];
+        a = sol_list[wp->way[i - 1]];
+        b = sol_list[wp->way[i]];
         setcolor(9);
         setlinestyle(3, 0, 1);
         safe_line(ex(a.x + offsetX), ey(-1 * (a.z + offsetZ)),
@@ -715,14 +718,14 @@ static void drawyzwnd(int sol_size, struct system_solar* solar,
             int a_idx = wp->way[i - 1];
             int b_idx = wp->way[i];
             for (o = 0; o < obj_size; o++) {
-                if (core_objects_sphere_line_intersect(solar[a_idx].x, solar[a_idx].y, solar[a_idx].z,
-                                        solar[b_idx].x, solar[b_idx].y, solar[b_idx].z,
+                if (core_objects_sphere_line_intersect(sol_list[a_idx].x, sol_list[a_idx].y, sol_list[a_idx].z,
+                                        sol_list[b_idx].x, sol_list[b_idx].y, sol_list[b_idx].z,
                                         obj_list[o].x, obj_list[o].y, obj_list[o].z, obj_list[o].r)) {
                     setcolor(4);
-                    safe_line(ex(solar[a_idx].x + offsetX),
-                              ey(-1 * (solar[a_idx].z + offsetZ)),
-                              ex(solar[b_idx].x + offsetX),
-                              ey(-1 * (solar[b_idx].z + offsetZ)));
+                    safe_line(ex(sol_list[a_idx].x + offsetX),
+                              ey(-1 * (sol_list[a_idx].z + offsetZ)),
+                              ex(sol_list[b_idx].x + offsetX),
+                              ey(-1 * (sol_list[b_idx].z + offsetZ)));
                     break;
                 }
             }
@@ -741,15 +744,8 @@ static void drawyzwnd(int sol_size, struct system_solar* solar,
  * ---------------------------------------------------------------- */
 void map_bottom_status_line()
 {
-    unsigned int USED_MEM, FREE_MEM, TOTAL_MEM = 65535;
     int xpos = BAR_LEFT;
-    char memMsg[50] = "";
-
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-    FREE_MEM = coreleft();
-    USED_MEM = TOTAL_MEM - FREE_MEM;
-    sprintf(memMsg, "%u/%u", USED_MEM, TOTAL_MEM);
-
     setfillstyle(SOLID_FILL, BLACK);
     bar(0, STATUSBAR_Y, MAP_WND_WIDTH, STATUSBAR_Y + STATUSBAR_H - 1);
 
@@ -772,24 +768,12 @@ void map_bottom_status_line()
 
     setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F7"); xpos += 15;
     setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, LC_MAP_STATUS_RUN); xpos += 40;
-
-    /* Separator */
-    xpos = 470;
-    setcolor(BAR_COLOR);
-    line(xpos, STATUSBAR_Y - 1, xpos, STATUSBAR_Y + STATUSBAR_H - 1);
-
-    /* Memory */
-    setcolor(BAR_COLOR);
-    outtextxy(xpos + 5, STATUSBAR_Y + 2, LC_MAP_STATUS_MEM);
-    setcolor(TEXT_COLOR);
-    outtextxy(xpos + 35, STATUSBAR_Y + 2, memMsg);
 }
 
 /* ----------------------------------------------------------------
  * Public: gui_map_wnd_draw() -- main frame dispatcher
  * ---------------------------------------------------------------- */
-void gui_map_wnd_draw(int sol_size, struct system_solar* sol_list, int mode,
-          int isCoord, int isHyper, struct waypoint* way, int current_point)
+void gui_map_wnd_draw(int mode, int isCoord, int isHyper, WAYPOINT* way, int current_point)
 {
     /* Shrink main view when path panel is open */
     if (way->size)
@@ -801,9 +785,9 @@ void gui_map_wnd_draw(int sol_size, struct system_solar* sol_list, int mode,
 
     gui_map_wnd_clear();
 
-    if (mode == 1) draw2dwnd(sol_size, sol_list, isCoord, isHyper, way);
-    if (mode == 2) draw3dwnd(sol_size, sol_list, isCoord, isHyper, way);
-    if (mode == 3) drawyzwnd(sol_size, sol_list, isCoord, isHyper, way);
+    if (mode == 1) draw2dwnd(isCoord, isHyper, way);
+    if (mode == 2) draw3dwnd(isCoord, isHyper, way);
+    if (mode == 3) drawyzwnd(isCoord, isHyper, way);
 
     if (way->size && dirty_path) gui_map_path_wnd(way, current_point, sol_list);
     dirty_path = 0;
@@ -812,6 +796,7 @@ void gui_map_wnd_draw(int sol_size, struct system_solar* sol_list, int mode,
     if (dirty_bottombar) map_bottom_status_line();
     dirty_topbar = 0;
     dirty_bottombar = 0;
+    gui_memory_status();
 }
 
 /* ----------------------------------------------------------------

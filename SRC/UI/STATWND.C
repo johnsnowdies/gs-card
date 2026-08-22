@@ -138,6 +138,7 @@ void draw_player_status()
     }
 
     gui_status_bottom_status_line();
+    gui_memory_status();
 }
 
 void gui_status_wnd()

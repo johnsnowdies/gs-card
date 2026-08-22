@@ -12,11 +12,16 @@
 
 #include "ui\locale.h"
 
-/* object globals for thread safety checks */
-extern const int DEBUG;
+/* ----------------------------------------------------------------
+ * Extern game globals (defined in card.c)
+ * ---------------------------------------------------------------- */
+extern SYSTEM* sol_list;
+extern unsigned int sol_size;
 extern OBJECT* obj_list;
 extern int obj_size;
 extern struct game_state gs;
+
+extern const int DEBUG;
 
 int S;
 unsigned char gotEnd;
@@ -36,7 +41,7 @@ int min(int a, int b) {
 }
 
 
-void core_finder_clear_threads_costs(int sol_size, SYSTEM* sol_list) {
+void core_finder_clear_threads_costs() {
   int i, k;
 
   for (i = 0; i < sol_size; i++) {
@@ -46,7 +51,7 @@ void core_finder_clear_threads_costs(int sol_size, SYSTEM* sol_list) {
   }
 }
 
-void core_finder_calc_threads_costs(int sol_size, SYSTEM* sol_list, int topCost) {
+void core_finder_calc_threads_costs(int topCost) {
   int i, j, n, m, k, e;
   SYSTEM a, b, c, d;
   char wndLabel[50] = "";
@@ -194,7 +199,7 @@ void core_finder_calc_threads_costs(int sol_size, SYSTEM* sol_list, int topCost)
   }
 }
 
-int core_finder_get_way(int sol_size, SYSTEM* sol_list, WAYPOINT* wp) {
+int core_finder_get_way(WAYPOINT* wp) {
   char* input;
   char current[5];
   int start, end, i, status;
@@ -215,10 +220,10 @@ int core_finder_get_way(int sol_size, SYSTEM* sol_list, WAYPOINT* wp) {
   input = (char*)gui_input_wnd(LC_GEN_TITLE_GSCARD, LC_FINDER_END_TEXT, NULL);
   end = atoi(input);
 
-  if (start > 0 && end > 0 && start < sol_size && end < sol_size) {
-    core_finder_run_wave(sol_size, sol_list, start, end);
+  if (start >= 0 && end >= 0 && start < sol_size && end < sol_size) {
+    core_finder_run_wave(start, end);
     if (gotEnd) {
-      status = core_finder_restore_path(sol_size, sol_list, wp, start, end, 1);
+      status = core_finder_restore_path(wp, start, end, 1);
     }
 
     if (!gotEnd || !status) {
@@ -237,16 +242,16 @@ int core_finder_get_way(int sol_size, SYSTEM* sol_list, WAYPOINT* wp) {
   return 0;
 }
 
-int core_finder_restore_path(int sol_size, SYSTEM* sol_list, WAYPOINT* wp, int start, int end, int reverse) {
+int core_finder_restore_path(WAYPOINT* wp, int start, int end, int reverse) {
     int i, j, k, c, cnt = 1, prev;
     int minRate;
     int next;
 
-    c = end;
-    for (i = 0; i < 20; i++) wp->way[i] = 0;
+    for (i = 0; i < 25; i++) wp->way[i] = 0;   /* или 30, если используем весь массив */
     wp->way[0] = end;
 
-    while (c != start && cnt < 20) {
+    c = end;
+    while (c != start && cnt < 25) {
         prev = c;
         minRate = INT_MAX;
         next = -1;
@@ -269,8 +274,14 @@ int core_finder_restore_path(int sol_size, SYSTEM* sol_list, WAYPOINT* wp, int s
         if (prev == c) return 0;
     }
 
+    /* Если цикл завершился из-за cnt >= 25, но мы не дошли до start */
+    if (c != start) {
+        return 0;   /* путь слишком длинный */
+    }
+
+    /* Дальше реверс и установка size */
     if (cnt > 1) {
-        int buf[50];
+        int buf[25];
         wp->size = cnt;
 
         if (reverse) {
@@ -286,7 +297,7 @@ int core_finder_restore_path(int sol_size, SYSTEM* sol_list, WAYPOINT* wp, int s
     return 1;
 }
 
-void core_finder_run_wave(int sol_size, SYSTEM* sol_list, int c, int end) {
+void core_finder_run_wave(int c, int end) {
   int i, k;
   SYSTEM m;
 
@@ -312,7 +323,7 @@ void core_finder_run_wave(int sol_size, SYSTEM* sol_list, int c, int end) {
     m = sol_list[k];
 
     if (k != end && m.visited == 0) {
-      core_finder_run_wave(sol_size, sol_list, k, end);
+      core_finder_run_wave(k, end);
     }
 
     if (k == end) {
@@ -321,7 +332,7 @@ void core_finder_run_wave(int sol_size, SYSTEM* sol_list, int c, int end) {
   }
 }
 
-void core_finder_calc_hyper_threads(int sol_size, SYSTEM* sol_list) {
+void core_finder_calc_hyper_threads() {
   int i = 0, j = 0, k = 0, cnt = 0;
   int error = 0;
   int buffer[15];
@@ -375,12 +386,12 @@ void core_finder_calc_hyper_threads(int sol_size, SYSTEM* sol_list) {
     }
   }
   if (!DEBUG) {
-    core_finder_clear_threads_costs(sol_size, sol_list);
-    core_finder_calc_threads_costs(sol_size, sol_list, 1);
+    core_finder_clear_threads_costs();
+    core_finder_calc_threads_costs(1);
     }
 }
 
-void core_finder_calc_distances(int sol_size, SYSTEM* sol_list, int start, int* distances, int max_dist) {
+void core_finder_calc_distances(int start, int* distances, int max_dist) {
     int i, head = 0, tail = 0;
     int* queue = (int*)malloc(sol_size * sizeof(int));
     if (!queue) return;

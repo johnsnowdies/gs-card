@@ -68,23 +68,23 @@ THREAD {
 };
 
 WAYPOINT {
-  int way[30];
+  int way[25];
   int size;
 };
 
 NPC {
   char name[100];
-  int faction;
-  int portrait;
+  unsigned int faction;
+  unsigned int portrait;
 };
 
 QUEST {
-  int reward;
-  int penalty;
-  int type;  
-  int target_system;
-  int target_sector;
-  int cargo;
+  unsigned int reward;
+  unsigned int penalty;
+  unsigned int type;  
+  unsigned int target_system;
+  unsigned int target_sector;
+  unsigned int cargo;
   NPC* giver;
 };
 
@@ -92,15 +92,15 @@ GAMESTATE {
   char captain_name[100];
   long balance;
   int current_system;
-  int ship_type;
-  int tonnage;
-  int current_cargo;
+  unsigned int ship_type;
+  unsigned int tonnage;
+  unsigned int current_cargo;
   long cargo_value;
-  int hyper_class;
-  int smuggler_bay;
-  int reputation;
-  int missions_completed;
-  int fuel;
+  unsigned int hyper_class;
+  unsigned char smuggler_bay;
+  unsigned int reputation;
+  unsigned int missions_completed;
+  unsigned int fuel;
   QUEST* quest;
   unsigned char *visited;
   int visited_bytes;

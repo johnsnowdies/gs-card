@@ -126,6 +126,7 @@ copy ..\%ASST%\BGI\*.CHR BGI\ > nul
 copy ..\%ASST%\LOGO.BMP . > nul
 copy ..\%ASST%\SYSTEM.SOL . > nul
 copy ..\%ASST%\OBJECTS.SOL . > nul
+copy ..\%ASST%\BOUNDS.SOL . > nul
 
 REM ---------- cleanup intermediate files ----------
 echo Cleaning intermediates...                >> build.log

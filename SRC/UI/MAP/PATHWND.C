@@ -19,10 +19,10 @@
 /* ----------------------------------------------------------------
  * Extern game globals (defined in card.c)
  * ---------------------------------------------------------------- */
-extern struct   object* obj_list;
-extern struct   game_state gs;
-extern int      obj_size;
-extern int      show_danger_path_parts;
+extern struct object* obj_list;
+extern struct game_state gs;
+extern unsigned int obj_size;
+extern unsigned char show_danger_path_parts;
 
 /* ----------------------------------------------------------------
  * One-shot flag: only show the Quindett ad once per path calc
@@ -62,7 +62,6 @@ static void drawgui_map_path_wnd(struct waypoint* wp, int oy)
         gui_ad_quindett();
         pathListFlag = 1;
     }
-
 }
 
 /* ----------------------------------------------------------------
