@@ -58,7 +58,7 @@ int current_point;
 
 /* Render flags */
 unsigned char render_danger_objects = 0;
-unsigned char render_bounds = 0;
+unsigned char render_bounds = 1;
 unsigned char show_danger_hyperthreads = 0;
 unsigned char show_danger_path_parts = 0;
 unsigned char dirty_path = 0;
@@ -240,7 +240,13 @@ int main()
     gui_init();
 
     /* Splash screen */
-    if (!DEBUG) gui_splash();
+    /*if (!DEBUG) gui_splash();*/
+
+    draw_4bit_bmp("LOGO.BMP",0,0);
+    getch();
+
+    setfillstyle(SOLID_FILL, BLACK);
+    bar(0, 0, 640, 480);
 
     /* Show ads */
     gui_ad_loading();

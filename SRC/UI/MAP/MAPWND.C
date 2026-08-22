@@ -252,6 +252,7 @@ static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp)
     int i, j, o;
     struct system_solar buf, a, b;
     int drawThreads = isHyper;
+    char c[50] = "";
 
     xdens = (xmax - xmin) / MAP_WND_WIDTH;
     ydens = (ymax - ymin) / MAP_WND_HEIGHT;
@@ -306,14 +307,14 @@ static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp)
         }
 
         /* System label */
-        if (((xmax <= MAX_VALUE / 10) || i == gs.current_system || (sol_list[i].is_shipyard && sol_list[i].is_gas_station)) &&
+        if (((xmax <= MAX_VALUE / 10) || i == gs.current_system ) &&
             ex(sol_list[i].x + offsetX) < (MAP_WND_WIDTH - 80) &&
             ey(sol_list[i].y + offsetY) < (MAP_WND_HEIGHT - 15)) {
-            char c[50] = "";
+            
 
             if (game_is_visited(&gs, i)){
                 if (sol_list[i].is_shipyard){
-                    setcolor(data_factions_colors[sol_list[i].faction]);
+                    setcolor(3);
                     sprintf(c, "SA.%d(%d) [S][F]", i, sol_list[i].threadSize);
                 } else if (sol_list[i].is_gas_station){
                     setcolor(1);
@@ -327,7 +328,12 @@ static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp)
                 sprintf(c, "SA.%d(%d)", i, sol_list[i].threadSize);
             }
 
-            /** CAPITALS **/
+            settextstyle(SMALL_FONT, HORIZ_DIR, 4);
+            safe_outtextxy(ex(sol_list[i].x + offsetX),
+            ey(sol_list[i].y + offsetY) + 5, c);
+        }
+
+        /** CAPITALS **/
             if (sol_list[i].is_shipyard && sol_list[i].is_gas_station && render_bounds){
                     setcolor(data_factions_colors[sol_list[i].faction]);
                     settextstyle(SMALL_FONT, HORIZ_DIR, 4);
@@ -409,20 +415,8 @@ static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp)
                                 ey(sol_list[i].y + offsetY) + 5 - 13, 
                                 data_sectors[sol_list[i].sector]);
                         break;
-
-
-
-
                     }
-            }else{
-                sprintf(c, "SA.%d(%d)", i, sol_list[i].threadSize);
-                settextstyle(SMALL_FONT, HORIZ_DIR, 4);
-                safe_outtextxy(ex(sol_list[i].x + offsetX),
-                ey(sol_list[i].y + offsetY) + 5, c);
             }
-
-           
-        }
     }
 
     /* Waypoint path */
@@ -470,6 +464,7 @@ static void draw3dwnd(int isCoord, int isHyper, WAYPOINT* wp)
     int i, j, o;
     struct system_solar buf, a, b;
     int drawThreads = isHyper;
+    char c[50] = "";
 
     xdens = (xmax - xmin) / MAP_WND_WIDTH;
     ydens = (ymax - ymin) / MAP_WND_HEIGHT;
@@ -540,9 +535,8 @@ static void draw3dwnd(int isCoord, int isHyper, WAYPOINT* wp)
             }
         }
 
-        if (((xmax <= MAX_VALUE / 10) || i == gs.current_system || (sol_list[i].is_shipyard && sol_list[i].is_gas_station)) &&
+        if (((xmax <= MAX_VALUE / 10) || i == gs.current_system )  &&
             A1.x < (MAP_WND_WIDTH - 80) && A1.y < (MAP_WND_HEIGHT - 20)) {
-            char c[50] = "";
             setcolor(15);
             settextstyle(SMALL_FONT, HORIZ_DIR, 4);
             
@@ -617,6 +611,7 @@ static void drawyzwnd(int isCoord, int isHyper, WAYPOINT* wp)
     int i, j, o;
     struct system_solar buf, a, b;
     int drawThreads = isHyper;
+    char c[50] = "";
 
     xdens = (xmax - xmin) / MAP_WND_WIDTH;
     ydens = (ymax - ymin) / MAP_WND_HEIGHT;
@@ -675,10 +670,9 @@ static void drawyzwnd(int isCoord, int isHyper, WAYPOINT* wp)
             }
         }
 
-        if (((xmax <= MAX_VALUE / 10) || i == gs.current_system || (sol_list[i].is_shipyard && sol_list[i].is_gas_station)) &&
+        if (((xmax <= MAX_VALUE / 10) || i == gs.current_system ) &&
             ex(sol_list[i].x + offsetX) < (MAP_WND_WIDTH - 80) &&
             ey(sol_list[i].y + offsetY) < (MAP_WND_HEIGHT - 100)) {
-            char c[50] = "";
             
             if (game_is_visited(&gs, i)){
                 if (sol_list[i].is_shipyard){

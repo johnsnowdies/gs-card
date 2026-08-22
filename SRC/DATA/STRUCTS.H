@@ -76,6 +76,7 @@ NPC {
   char name[100];
   unsigned int faction;
   unsigned int portrait;
+  unsigned int gender;
 };
 
 QUEST {

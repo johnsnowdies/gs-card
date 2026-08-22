@@ -18,7 +18,7 @@ extern char* data_sectors[SECTORS_COUNT];
 
 extern QUEST system_quests[5];
 
-#define N_SIZE 10
+#define N_SIZE 15
 
 
 char* QUEST_TYPES[] = {
@@ -50,7 +50,30 @@ void core_game_gen_npc(NPC* npc_ptr, unsigned int faction)
         LC_GEN_FNAME_MALE_IRISH_7,
         LC_GEN_FNAME_MALE_IRISH_8,
         LC_GEN_FNAME_MALE_IRISH_9,
-        LC_GEN_FNAME_MALE_IRISH_10
+        LC_GEN_FNAME_MALE_IRISH_10,
+        LC_GEN_FNAME_MALE_IRISH_11,
+        LC_GEN_FNAME_MALE_IRISH_12,
+        LC_GEN_FNAME_MALE_IRISH_13,
+        LC_GEN_FNAME_MALE_IRISH_14,
+        LC_GEN_FNAME_MALE_IRISH_15
+    };
+
+    const char* IRISH_FEMALE_FIRST[] = {
+        LC_GEN_FNAME_FEMALE_IRISH_1,
+        LC_GEN_FNAME_FEMALE_IRISH_2,
+        LC_GEN_FNAME_FEMALE_IRISH_3,
+        LC_GEN_FNAME_FEMALE_IRISH_4,
+        LC_GEN_FNAME_FEMALE_IRISH_5,
+        LC_GEN_FNAME_FEMALE_IRISH_6,
+        LC_GEN_FNAME_FEMALE_IRISH_7,
+        LC_GEN_FNAME_FEMALE_IRISH_8,
+        LC_GEN_FNAME_FEMALE_IRISH_9,
+        LC_GEN_FNAME_FEMALE_IRISH_10,
+        LC_GEN_FNAME_FEMALE_IRISH_11,
+        LC_GEN_FNAME_FEMALE_IRISH_12,
+        LC_GEN_FNAME_FEMALE_IRISH_13,
+        LC_GEN_FNAME_FEMALE_IRISH_14,
+        LC_GEN_FNAME_FEMALE_IRISH_15
     };
 
     const char* IRISH_LAST[] = {
@@ -63,8 +86,14 @@ void core_game_gen_npc(NPC* npc_ptr, unsigned int faction)
         LC_GEN_LNAME_IRISH_7,
         LC_GEN_LNAME_IRISH_8,
         LC_GEN_LNAME_IRISH_9,
-        LC_GEN_LNAME_IRISH_10
+        LC_GEN_LNAME_IRISH_10,
+        LC_GEN_LNAME_IRISH_11,
+        LC_GEN_LNAME_IRISH_12,
+        LC_GEN_LNAME_IRISH_13,
+        LC_GEN_LNAME_IRISH_14,
+        LC_GEN_LNAME_IRISH_15
     };
+
 
     const char* ARAB_MALE_FIRST[] = {
         LC_GEN_FNAME_MALE_ARAB_1,
@@ -76,7 +105,32 @@ void core_game_gen_npc(NPC* npc_ptr, unsigned int faction)
         LC_GEN_FNAME_MALE_ARAB_7,
         LC_GEN_FNAME_MALE_ARAB_8,
         LC_GEN_FNAME_MALE_ARAB_9,
-        LC_GEN_FNAME_MALE_ARAB_10
+        LC_GEN_FNAME_MALE_ARAB_10,
+        LC_GEN_FNAME_MALE_ARAB_11,
+        LC_GEN_FNAME_MALE_ARAB_12,
+        LC_GEN_FNAME_MALE_ARAB_13,
+        LC_GEN_FNAME_MALE_ARAB_14,
+        LC_GEN_FNAME_MALE_ARAB_15
+
+    };
+
+    const char* ARAB_FEMALE_FIRST[] = {
+        LC_GEN_FNAME_FEMALE_ARAB_1,
+        LC_GEN_FNAME_FEMALE_ARAB_2,
+        LC_GEN_FNAME_FEMALE_ARAB_3,
+        LC_GEN_FNAME_FEMALE_ARAB_4,
+        LC_GEN_FNAME_FEMALE_ARAB_5,
+        LC_GEN_FNAME_FEMALE_ARAB_6,
+        LC_GEN_FNAME_FEMALE_ARAB_7,
+        LC_GEN_FNAME_FEMALE_ARAB_8,
+        LC_GEN_FNAME_FEMALE_ARAB_9,
+        LC_GEN_FNAME_FEMALE_ARAB_10,
+        LC_GEN_FNAME_FEMALE_ARAB_11,
+        LC_GEN_FNAME_FEMALE_ARAB_12,
+        LC_GEN_FNAME_FEMALE_ARAB_13,
+        LC_GEN_FNAME_FEMALE_ARAB_14,
+        LC_GEN_FNAME_FEMALE_ARAB_15
+
     };
 
 
@@ -90,7 +144,12 @@ void core_game_gen_npc(NPC* npc_ptr, unsigned int faction)
         LC_GEN_LNAME_ARAB_7,
         LC_GEN_LNAME_ARAB_8,
         LC_GEN_LNAME_ARAB_9,
-        LC_GEN_LNAME_ARAB_10
+        LC_GEN_LNAME_ARAB_10,
+        LC_GEN_LNAME_ARAB_11,
+        LC_GEN_LNAME_ARAB_12,
+        LC_GEN_LNAME_ARAB_13,
+        LC_GEN_LNAME_ARAB_14,
+        LC_GEN_LNAME_ARAB_15
     };
 
     const char* COMMON_MALE_FIRST[] = {
@@ -103,7 +162,30 @@ void core_game_gen_npc(NPC* npc_ptr, unsigned int faction)
         LC_GEN_FNAME_MALE_COMMON_7,
         LC_GEN_FNAME_MALE_COMMON_8,
         LC_GEN_FNAME_MALE_COMMON_9,
-        LC_GEN_FNAME_MALE_COMMON_10
+        LC_GEN_FNAME_MALE_COMMON_10,
+        LC_GEN_FNAME_MALE_COMMON_11,
+        LC_GEN_FNAME_MALE_COMMON_12,
+        LC_GEN_FNAME_MALE_COMMON_13,
+        LC_GEN_FNAME_MALE_COMMON_14,
+        LC_GEN_FNAME_MALE_COMMON_15
+    };
+
+    const char* COMMON_FEMALE_FIRST[] = {
+        LC_GEN_FNAME_FEMALE_COMMON_1,
+        LC_GEN_FNAME_FEMALE_COMMON_2,
+        LC_GEN_FNAME_FEMALE_COMMON_3,
+        LC_GEN_FNAME_FEMALE_COMMON_4,
+        LC_GEN_FNAME_FEMALE_COMMON_5,
+        LC_GEN_FNAME_FEMALE_COMMON_6,
+        LC_GEN_FNAME_FEMALE_COMMON_7,
+        LC_GEN_FNAME_FEMALE_COMMON_8,
+        LC_GEN_FNAME_FEMALE_COMMON_9,
+        LC_GEN_FNAME_FEMALE_COMMON_10,
+        LC_GEN_FNAME_FEMALE_COMMON_11,
+        LC_GEN_FNAME_FEMALE_COMMON_12,
+        LC_GEN_FNAME_FEMALE_COMMON_13,
+        LC_GEN_FNAME_FEMALE_COMMON_14,
+        LC_GEN_FNAME_FEMALE_COMMON_15
     };
 
     const char* COMMON_LAST[] = {
@@ -116,24 +198,45 @@ void core_game_gen_npc(NPC* npc_ptr, unsigned int faction)
         LC_GEN_LNAME_COMMON_7,
         LC_GEN_LNAME_COMMON_8,
         LC_GEN_LNAME_COMMON_9,
-        LC_GEN_LNAME_COMMON_10
+        LC_GEN_LNAME_COMMON_10,
+        LC_GEN_LNAME_COMMON_11,
+        LC_GEN_LNAME_COMMON_12,
+        LC_GEN_LNAME_COMMON_13,
+        LC_GEN_LNAME_COMMON_14,
+        LC_GEN_LNAME_COMMON_15
     };
 
     npc_ptr->faction = faction;
-    npc_ptr->portrait = rand() % 6;
+        /* 0 - Male 1 - Female */
+    npc_ptr->gender = rand() % 3 == 2 ? 1: 0;
+
+    if (npc_ptr->gender == 0)
+        npc_ptr->portrait = rand() % 6;
+    else
+        npc_ptr->portrait = rand() % 3;
+    
 
     switch(faction){
         case 1:
         case 3:
-            sprintf(npc_ptr->name, "%s %s", IRISH_MALE_FIRST[rand()%10], IRISH_LAST[rand()%10]);
+            if (npc_ptr->gender == 0)
+                sprintf(npc_ptr->name, "%s %s", IRISH_MALE_FIRST[rand()%N_SIZE], IRISH_LAST[rand()%N_SIZE]);
+            else
+                sprintf(npc_ptr->name, "%s %s", IRISH_FEMALE_FIRST[rand()%N_SIZE], IRISH_LAST[rand()%N_SIZE]);
         break;
 
         case 0:
-            sprintf(npc_ptr->name, "%s %s", ARAB_MALE_FIRST[rand()%10], ARAB_LAST[rand()%10]);
+            if (npc_ptr->gender == 0)
+                sprintf(npc_ptr->name, "%s %s", ARAB_MALE_FIRST[rand()%N_SIZE], ARAB_LAST[rand()%N_SIZE]);
+            else
+                sprintf(npc_ptr->name, "%s %s", ARAB_FEMALE_FIRST[rand()%N_SIZE], ARAB_LAST[rand()%N_SIZE]);
         break;
 
         default:
-            sprintf(npc_ptr->name, "%s %s", COMMON_MALE_FIRST[rand()%10], COMMON_LAST[rand()%10]);
+            if (npc_ptr->gender == 0)
+                sprintf(npc_ptr->name, "%s %s", COMMON_MALE_FIRST[rand()%N_SIZE], COMMON_LAST[rand()%N_SIZE]);
+            else
+                sprintf(npc_ptr->name, "%s %s", COMMON_FEMALE_FIRST[rand()%N_SIZE], COMMON_LAST[rand()%N_SIZE]);
         break;
     }
 }

@@ -82,9 +82,11 @@ void gui_status_bottom_status_line()
 
 void gui_status_quest_info(int selected)
 {
-    char* prequest[100], reward[100], photo[10];
-    char* system[10];
-    sprintf(system, "SA.%d", system_quests[selected].target_system);
+    char line_1[100], line_2[100], reward[100], photo[10];
+    char* genders[] = {
+        "M", "F"
+    };
+
 
     gui_draw_generic_wnd(quest_info_wnd.x1, quest_info_wnd.y1, 610, 340);
     setcolor(4);
@@ -95,15 +97,15 @@ void gui_status_quest_info(int selected)
     switch(system_quests[selected].giver->faction){
         case 1:
         case 3:
-            sprintf(photo, "NPC/R%d.BMP", system_quests[selected].giver->portrait + 1);
+            sprintf(photo, "NPC/R%s%d.BMP", genders[system_quests[selected].giver->gender], system_quests[selected].giver->portrait + 1);
         break;
 
         case 0:
-            sprintf(photo, "NPC/A%d.BMP", system_quests[selected].giver->portrait + 1);
+            sprintf(photo, "NPC/A%s%d.BMP", genders[system_quests[selected].giver->gender], system_quests[selected].giver->portrait + 1);
         break;
 
         default:
-            sprintf(photo, "NPC/S%d.BMP", system_quests[selected].giver->portrait + 1);
+            sprintf(photo, "NPC/S%s%d.BMP", genders[system_quests[selected].giver->gender], system_quests[selected].giver->portrait + 1);
         break;
     }
 
@@ -126,29 +128,36 @@ void gui_status_quest_info(int selected)
 
     switch(system_quests[selected].type){
     case 1:
-        sprintf(prequest, LC_QUEST_TYPE_1_LINE_1, system, data_sectors[system_quests[selected].target_sector]);
+        sprintf(line_1, LC_QUEST_TYPE_1_LINE_1, system_quests[selected].target_system, data_sectors[system_quests[selected].target_sector]);
+        sprintf(line_2, LC_QUEST_TYPE_1_LINE_2);
         sprintf(reward, LC_QUEST_REWARD_1, system_quests[selected].reward);
         break;
     case 2:
-        sprintf(prequest, LC_QUEST_TYPE_2_LINE_1, system, data_sectors[system_quests[selected].target_sector]);
+        sprintf(line_1, LC_QUEST_TYPE_2_LINE_1, system_quests[selected].target_system, data_sectors[system_quests[selected].target_sector]);
+        sprintf(line_2, LC_QUEST_TYPE_2_LINE_2);
         sprintf(reward, LC_QUEST_REWARD_2, system_quests[selected].reward);
         break;
     case 3: 
-        sprintf(prequest, LC_QUEST_TYPE_3_LINE_1, system, data_sectors[system_quests[selected].target_sector]);
+        sprintf(line_1, LC_QUEST_TYPE_3_LINE_1, system_quests[selected].target_system, data_sectors[system_quests[selected].target_sector]);
+        sprintf(line_2, LC_QUEST_TYPE_3_LINE_2);
         sprintf(reward, LC_QUEST_REWARD_3, system_quests[selected].reward);
         break;
     case 4:
-        sprintf(prequest, LC_QUEST_TYPE_4_LINE_1, system, data_sectors[system_quests[selected].target_sector]);
+        sprintf(line_1, LC_QUEST_TYPE_4_LINE_1, system_quests[selected].target_system, data_sectors[system_quests[selected].target_sector]);
+        sprintf(line_2, LC_QUEST_TYPE_4_LINE_2);
+        
         sprintf(reward, LC_QUEST_REWARD_4, system_quests[selected].reward);
         break;
     case 5:
-        sprintf(prequest, LC_QUEST_TYPE_5_LINE_1, system, data_sectors[system_quests[selected].target_sector]);
+        sprintf(line_1, LC_QUEST_TYPE_5_LINE_1, system_quests[selected].target_system, data_sectors[system_quests[selected].target_sector]);
+        sprintf(line_2, LC_QUEST_TYPE_5_LINE_2);
         sprintf(reward, LC_QUEST_REWARD_5, system_quests[selected].reward);
         break;
     }
 
-    outtextxy(quest_info_wnd.x1+160, quest_info_wnd.y1 + 95, prequest);
-    outtextxy(quest_info_wnd.x1+160, quest_info_wnd.y1 + 110, reward);
+    outtextxy(quest_info_wnd.x1+160, quest_info_wnd.y1 + 95, line_1);
+    outtextxy(quest_info_wnd.x1+160, quest_info_wnd.y1 + 110, line_2);
+    outtextxy(quest_info_wnd.x1+160, quest_info_wnd.y1 + 125, reward);
 
     
 }

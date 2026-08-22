@@ -230,19 +230,19 @@
 #define LC_QUEST_PREQUEST_1 "Есть заgача:"
 
 
-#define LC_QUEST_TYPE_1_LINE_1 "Нужно gоставить груз в %s в секторе %s."
-#define LC_QUEST_TYPE_1_LINE_2 "Это не далеко, ничего сложного"
+#define LC_QUEST_TYPE_1_LINE_1 "Нужно gоставить груз в SA.%d в секторе %s."
+#define LC_QUEST_TYPE_1_LINE_2 "Это не gалеко, ничего сложного"
 
-#define LC_QUEST_TYPE_2_LINE_1 "Нужно gоставить груз в %s в секторе %s."
+#define LC_QUEST_TYPE_2_LINE_1 "Нужно gоставить груз в SA.%d в секторе %s."
 #define LC_QUEST_TYPE_2_LINE_2 "Далековато, планируй маршрут заранее"
 
-#define LC_QUEST_TYPE_3_LINE_1 "Задача - доставить груз в %s в секторе %s."
+#define LC_QUEST_TYPE_3_LINE_1 "Заgача - gоставить груз в SA.%d в секторе %s."
 #define LC_QUEST_TYPE_3_LINE_2 "Документов нет, плачу больше."
 
-#define LC_QUEST_TYPE_4_LINE_1 "Моему gругу нужно попасть систему %s, сектор %s."
+#define LC_QUEST_TYPE_4_LINE_1 "Моему gругу нужно попасть систему SA.%d, сектор %s."
 #define LC_QUEST_TYPE_4_LINE_2 "Оплата - по прибытию."
 
-#define LC_QUEST_TYPE_5_LINE_1 "Не понятно что происхоgит в %s, сектор %s."
+#define LC_QUEST_TYPE_5_LINE_1 "Не понятно что происхоgит в SA.%d, сектор %s."
 #define LC_QUEST_TYPE_5_LINE_2 "Доставь маячок и сбрось его."
 
 
