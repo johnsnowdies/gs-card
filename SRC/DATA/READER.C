@@ -181,11 +181,16 @@ int load_solar(SYSTEM** list)
 }
 
 
-static void free_quest(GAMESTATE* state) {
-    if (state->quest) {
-        free(state->quest->giver);
-        free(state->quest);
-        state->quest = NULL;
+static void free_quests(GAMESTATE* state) {
+    int i;
+    for (i = 0; i < 5; i++) {
+        if (state->quests[i]) {
+            if (state->quests[i]->giver) {
+                free(state->quests[i]->giver);
+            }
+            free(state->quests[i]);
+            state->quests[i] = NULL;
+        }
     }
 }
 
@@ -209,13 +214,13 @@ static void copy_str(char* dest, const char* src, size_t size) {
 int load_game(GAMESTATE* state, char* filename)
 {
     FILE* fp;
-    int has_quest;
+    int i, has_quest;
     unsigned char* tmp_visited;
 
     if ((fp = fopen(filename, "rb")) == NULL)
         return 0;
 
-    free_quest(state);
+    free_quests(state);   /* освобождаем старые квесты */
 
     fread(state->captain_name, sizeof(char), 100, fp);
     fread(&state->balance, sizeof(long), 1, fp);
@@ -230,35 +235,39 @@ int load_game(GAMESTATE* state, char* filename)
     fread(&state->missions_completed, sizeof(int), 1, fp);
     fread(&state->fuel, sizeof(int), 1, fp);
 
-    fread(&has_quest, sizeof(int), 1, fp);
+    /* Читаем 5 слотов квестов */
+    for (i = 0; i < 5; i++) {
+        fread(&has_quest, sizeof(int), 1, fp);
 
-    if (has_quest) {
-        state->quest = (QUEST*)malloc(sizeof(QUEST));
-        if (!state->quest) {
-            fclose(fp);
-            return 0;
+        if (has_quest) {
+            state->quests[i] = (QUEST*)malloc(sizeof(QUEST));
+            if (!state->quests[i]) {
+                fclose(fp);
+                return 0;
+            }
+            state->quests[i]->giver = (NPC*)malloc(sizeof(NPC));
+            if (!state->quests[i]->giver) {
+                free(state->quests[i]);
+                state->quests[i] = NULL;
+                fclose(fp);
+                return 0;
+            }
+
+            fread(&state->quests[i]->reward, sizeof(int), 1, fp);
+            fread(&state->quests[i]->penalty, sizeof(int), 1, fp);
+            fread(&state->quests[i]->type, sizeof(int), 1, fp);
+
+            /* Была ошибка: повторно читался target_system, пропускался target_sector */
+            fread(&state->quests[i]->target_system, sizeof(int), 1, fp);
+            fread(&state->quests[i]->target_sector, sizeof(int), 1, fp);
+            fread(&state->quests[i]->cargo, sizeof(int), 1, fp);
+
+            fread(state->quests[i]->giver->name, sizeof(char), 100, fp);
+            fread(&state->quests[i]->giver->faction, sizeof(int), 1, fp);
+            fread(&state->quests[i]->giver->portrait, sizeof(int), 1, fp);
+        } else {
+            state->quests[i] = NULL;
         }
-        state->quest->giver = (NPC*)malloc(sizeof(NPC));
-        if (!state->quest->giver) {
-            free(state->quest);
-            state->quest = NULL;
-            fclose(fp);
-            return 0;
-        }
-
-        fread(&state->quest->reward, sizeof(int), 1, fp);
-        fread(&state->quest->penalty, sizeof(int), 1, fp);
-        fread(&state->quest->type, sizeof(int), 1, fp);
-
-        fread(&state->quest->target_system, sizeof(int), 1, fp);
-        fread(&state->quest->target_system, sizeof(int), 1, fp);
-        fread(&state->quest->cargo, sizeof(int), 1, fp);
-
-        fread(state->quest->giver->name, sizeof(char), 100, fp);
-        fread(&state->quest->giver->faction, sizeof(int), 1, fp);
-        fread(&state->quest->giver->portrait, sizeof(int), 1, fp);
-    } else {
-        state->quest = NULL;
     }
 
     fread(&state->visited_bytes, sizeof(int), 1, fp);
@@ -281,7 +290,7 @@ int load_game(GAMESTATE* state, char* filename)
 int save_game(GAMESTATE* state, char* filename)
 {
     FILE* fp;
-    int has_quest;
+    int i, has_quest;
 
     if ((fp = fopen(filename, "wb")) == NULL)
         return 0;
@@ -299,21 +308,24 @@ int save_game(GAMESTATE* state, char* filename)
     fwrite(&state->missions_completed, sizeof(int), 1, fp);
     fwrite(&state->fuel, sizeof(int), 1, fp);
 
-    has_quest = (state->quest != NULL) ? 1 : 0;
-    fwrite(&has_quest, sizeof(int), 1, fp);
+    /* Записываем 5 слотов квестов */
+    for (i = 0; i < 5; i++) {
+        has_quest = (state->quests[i] != NULL) ? 1 : 0;
+        fwrite(&has_quest, sizeof(int), 1, fp);
 
-    if (has_quest) {
-        fwrite(&state->quest->reward, sizeof(int), 1, fp);
-        fwrite(&state->quest->penalty, sizeof(int), 1, fp);
-        fwrite(&state->quest->type, sizeof(int), 1, fp);
+        if (has_quest) {
+            fwrite(&state->quests[i]->reward, sizeof(int), 1, fp);
+            fwrite(&state->quests[i]->penalty, sizeof(int), 1, fp);
+            fwrite(&state->quests[i]->type, sizeof(int), 1, fp);
 
-        fwrite(&state->quest->target_system, sizeof(int), 1, fp);
-        fwrite(&state->quest->target_sector, sizeof(int), 1, fp);
-        fwrite(&state->quest->cargo, sizeof(int), 1, fp);
+            fwrite(&state->quests[i]->target_system, sizeof(int), 1, fp);
+            fwrite(&state->quests[i]->target_sector, sizeof(int), 1, fp);
+            fwrite(&state->quests[i]->cargo, sizeof(int), 1, fp);
 
-        fwrite(state->quest->giver->name, sizeof(char), 100, fp);
-        fwrite(&state->quest->giver->faction, sizeof(int), 1, fp);
-        fwrite(&state->quest->giver->portrait, sizeof(int), 1, fp);
+            fwrite(state->quests[i]->giver->name, sizeof(char), 100, fp);
+            fwrite(&state->quests[i]->giver->faction, sizeof(int), 1, fp);
+            fwrite(&state->quests[i]->giver->portrait, sizeof(int), 1, fp);
+        }
     }
 
     fwrite(&state->visited_bytes, sizeof(int), 1, fp);

@@ -8,10 +8,15 @@
 #include "ui/locale.h" 
 #include "core/game.h"       
 
+/* ----------------------------------------------------------------
+ * Extern game globals (defined in card.c)
+ * ---------------------------------------------------------------- */
 extern SYSTEM* sol_list;
 extern int sol_size;
 extern struct game_state gs;
 extern char* data_sectors[SECTORS_COUNT];
+
+extern QUEST system_quests[5];
 
 #define N_SIZE 10
 
@@ -119,12 +124,12 @@ void core_game_gen_npc(NPC* npc_ptr, int faction)
     npc_ptr->portrait = 0;
 
     switch(faction){
-        case 0:
+        case 1:
         case 3:
             sprintf(npc_ptr->name, "%s %s", IRISH_MALE_FIRST[rand()%15], IRISH_LAST[rand()%15]);
         break;
 
-        case 1:
+        case 0:
             sprintf(npc_ptr->name, "%s %s", ARAB_MALE_FIRST[rand()%15], ARAB_LAST[rand()%15]);
         break;
 
@@ -236,7 +241,8 @@ void core_game_gen_quest(QUEST* quest_ptr, int player_rep, SYSTEM* current_syste
     if (penalty < (int)(reward * 0.1)) penalty = (int)(reward * 0.1);
     if (penalty < 0) penalty = 0;
 
-    core_game_gen_npc(&(quest_ptr->giver), current_system->faction);
+    quest_ptr->giver = (NPC*)malloc(sizeof(NPC));
+    core_game_gen_npc(quest_ptr->giver, current_system->faction);
 
     quest_ptr->reward = reward;
     quest_ptr->penalty = penalty;
@@ -245,4 +251,19 @@ void core_game_gen_quest(QUEST* quest_ptr, int player_rep, SYSTEM* current_syste
     quest_ptr->cargo = cargo;
     quest_ptr->type = type;
 
+}
+
+
+/*
+ * Arriving to new system events
+ */
+
+void core_game_run_event()
+{
+    int i = 0;
+    /* System quests generator */
+    for (i = 0; i < 5; i++) {
+        
+        core_game_gen_quest(&system_quests[i], gs.reputation, &sol_list[gs.current_system]);
+    }
 }

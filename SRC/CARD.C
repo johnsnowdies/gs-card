@@ -35,7 +35,7 @@
 
 unsigned _stklen = 16384;
 
-const int DEBUG = 0;
+const int DEBUG = 1;
 
 /* ----------------------------------------------------------------
  * Game globals
@@ -48,6 +48,9 @@ unsigned int obj_size;
 
 BOUND_LINE* bnd_list;
 unsigned int bnd_size;
+
+QUEST system_quests[5];
+unsigned int system_quest_selected;
 
 WAYPOINT wp;
 
@@ -75,7 +78,8 @@ enum game_screen {
     SCR_MAP,
     SCR_MAIN_MENU,
     SCR_GAME_MENU,
-    SCR_STATUS
+    SCR_STATUS,
+    SCR_QUEST_LIST_DETAIL
 };
 
 /* ----------------------------------------------------------------
@@ -177,6 +181,7 @@ static void new_game(char *name, int sol_size)
     gui_map_nav_move_screen_to(sol_list, gs.current_system);
 
     game_mark_visited(&gs, gs.current_system);
+    core_game_run_event();
 
     wp.size = 0;
     current_point = -1;
@@ -252,6 +257,13 @@ int main()
         c = getch();
 
         switch (cur_screen) {
+
+        case SCR_QUEST_LIST_DETAIL:
+            if (ESC == c) {
+                cur_screen = SCR_STATUS;
+                gui_status_wnd();
+            }
+        break;
 
         /* ============================================================
          * SCR_MAP -- star map with navigation
@@ -368,6 +380,7 @@ int main()
                     sprintf(buf, LC_CARD_READY_TO_JUMP, wp.way[0], wp.way[1]);
                     
                     if (gui_bool_wnd(LC_CARD_JUMP_WND_HEAD, buf)) {
+                        core_game_run_event();
                         gs.current_system = wp.way[1];
                         game_mark_visited(&gs, gs.current_system);
                         gs.fuel -= data_hyper_fuel[gs.hyper_class];
@@ -582,6 +595,23 @@ int main()
                 cur_screen = SCR_GAME_MENU;
                 mm_select = 0;
                 gui_menu_wnd(mm_select, GAME_MENU);
+            }
+
+            if (UP == c){
+                if (system_quest_selected > 0)
+                    system_quest_selected--;
+                gui_status_quest_wnd(system_quest_selected);
+            }
+
+            if (DWN == c){
+                if (system_quest_selected < 4)
+                    system_quest_selected++;
+                gui_status_quest_wnd(system_quest_selected);
+            }
+
+            if (ENTER == c){
+                cur_screen = SCR_QUEST_LIST_DETAIL;
+                gui_status_quest_info(system_quest_selected);
             }
         break;
         } /* switch (cur_screen) */

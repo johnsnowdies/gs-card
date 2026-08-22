@@ -101,7 +101,7 @@ GAMESTATE {
   unsigned int reputation;
   unsigned int missions_completed;
   unsigned int fuel;
-  QUEST* quest;
+  QUEST* quests[5];
   unsigned char *visited;
   int visited_bytes;
 };

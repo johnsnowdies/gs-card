@@ -220,8 +220,8 @@
 
 #define LC_QUEST_PREQUEST_1 "Есть заgача:"
 
-#define LC_QUEST_PREQUEST_TYPE_1 "Ничего сложного, нужно gоставить груз в %s в секторе %s, это не gалеко."
-#define LC_QUEST_PREQUEST_TYPE_2 "Нужно gоставить груз в %s в секторе %s. Далековато но я хорошо плачу."
+#define LC_QUEST_PREQUEST_TYPE_1 "Нужно gоставить груз в %s в секторе %s, это не gалеко."
+#define LC_QUEST_PREQUEST_TYPE_2 "Нужно gоставить груз в %s в секторе %s."
 #define LC_QUEST_PREQUEST_TYPE_3 "Доставить груз в %s в секторе %s. Документов нет, плачу больше."
 #define LC_QUEST_PREQUEST_TYPE_4 "Моему gругу нужно попасть систему %s, сектор %s. Оплата - по прибытию."
 #define LC_QUEST_PREQUEST_TYPE_5 "Не понятно что происхоgит в %s, сектор %s. Доставь маячок и сбрось его."

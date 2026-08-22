@@ -6,7 +6,7 @@ REM
 REM  Compile:   tcc -c -nBUILD  (obj в BUILD)
 REM  Link:      tlink @response file
 REM
-REM  Memory model: SMALL (-ms)
+REM  Memory model: SMALL (-ml)
 REM =============================================
 
 set PATH=C:\TURBOC\BIN;%PATH%
@@ -29,55 +29,55 @@ echo.                                         >> %BLD%\build.log
 
 REM ---------- compile each .c to BUILD\*.obj ----------
 echo Compiling CARD.C...                      >> %BLD%\build.log
-tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CARD.C >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CARD.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling UI\GUI.C...                       >> %BLD%\build.log
-tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\GUI.C >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\GUI.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling DATA\READER.C...                    >> %BLD%\build.log
-tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\DATA\READER.C >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\DATA\READER.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling CORE\FINDER.C...                    >> %BLD%\build.log
-tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CORE\FINDER.C >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CORE\FINDER.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling UI\AD.C...                        >> %BLD%\build.log
-tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\AD.C >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\AD.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling UI\SPLASH.C...                    >> %BLD%\build.log
-tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\SPLASH.C >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\SPLASH.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling CORE\OBJECTS.C...                    >> %BLD%\build.log
-tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CORE\OBJECTS.C >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CORE\OBJECTS.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling UI\MAP\MAPWND.C...                      >> %BLD%\build.log
-tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MAP\MAPWND.C >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MAP\MAPWND.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling UI\MAP\NAV.C...                         >> %BLD%\build.log
-tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MAP\NAV.C >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MAP\NAV.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling UI\MAP\PATHWND.C...                     >> %BLD%\build.log
-tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MAP\PATHWND.C >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MAP\PATHWND.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling UI\MENUWND.C...                     >> %BLD%\build.log
-tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MENUWND.C >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MENUWND.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling UI\STATWND.C...                     >> %BLD%\build.log
-tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\STATWND.C >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\STATWND.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling CORE\GAME.C...                     >> %BLD%\build.log
-tcc -c -ms %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CORE\GAME.C >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CORE\GAME.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 
@@ -93,7 +93,7 @@ REM   line 2:    more objfiles, exefile
 REM   line 3:    mapfile
 REM   line 4:    libfiles (space-separated)
 
-echo /x /c %LIB%\C0S.OBJ+ >  %BLD%\GS-LINK.RSP
+echo /x /c %LIB%\C0L.OBJ+ >  %BLD%\GS-LINK.RSP
 echo CARD.OBJ+                              >> %BLD%\GS-LINK.RSP
 echo GUI.OBJ+                                >> %BLD%\GS-LINK.RSP
 echo READER.OBJ+                             >> %BLD%\GS-LINK.RSP
@@ -106,7 +106,7 @@ echo NAV.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo MENUWND.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo STATWND.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo GAME.OBJ+                                    >> %BLD%\GS-LINK.RSP
-echo PATHWND.OBJ, GSCARD.EXE, GSCARD.MAP, %LIB%\EMU.LIB %LIB%\MATHS.LIB %LIB%\GRAPHICS.LIB %LIB%\CS.LIB >> %BLD%\GS-LINK.RSP
+echo PATHWND.OBJ, GSCARD.EXE, GSCARD.MAP, %LIB%\EMU.LIB %LIB%\MATHL.LIB %LIB%\GRAPHICS.LIB %LIB%\CL.LIB >> %BLD%\GS-LINK.RSP
 
 cd %BLD%
 
