@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Galaxy Map Editor · system.sol</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0b0e14;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            color: #e0e8f0;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .app {
+            max-width: 1400px;
+            width: 100%;
+            background: #141a24;
+            border-radius: 20px;
+            padding: 24px 28px 28px 28px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+            border: 1px solid #2a3344;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 22px;
+        }
+        .header h1 {
+            font-weight: 400;
+            font-size: 24px;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #b2d0ff, #7aa9ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header h1 span {
+            font-weight: 300;
+            font-size: 16px;
+            -webkit-text-fill-color: #6a7f9b;
+            margin-left: 8px;
+        }
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .btn {
+            background: #212b3d;
+            border: 1px solid #334155;
+            color: #d6e2f0;
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            user-select: none;
+        }
+        .btn:hover {
+            background: #2c3a50;
+            border-color: #4a6a8a;
+        }
+        .btn:active {
+            transform: scale(0.97);
+        }
+        .btn-primary {
+            background: #1f4a7a;
+            border-color: #2e6a9a;
+        }
+        .btn-primary:hover {
+            background: #2a5d94;
+            border-color: #4080b8;
+        }
+        .btn-success {
+            background: #1d6b4a;
+            border-color: #2a8a5e;
+        }
+        .btn-success:hover {
+            background: #26855a;
+            border-color: #34a872;
+        }
+        .btn-danger {
+            background: #6b2a2a;
+            border-color: #8a3a3a;
+        }
+        .btn-danger:hover {
+            background: #853535;
+            border-color: #aa4848;
+        }
+        .btn-outline {
+            background: transparent;
+            border-color: #2a3a50;
+        }
+        .btn-outline:hover {
+            background: #1f2a3a;
+            border-color: #4a6a8a;
+        }
+        .btn-active {
+            background: #1f4a7a;
+            border-color: #4a8ac8;
+            box-shadow: 0 0 8px rgba(74, 138, 200, 0.4);
+        }
+        .file-input-wrap {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        .file-input-wrap input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .badge {
+            background: #1f2a3a;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 13px;
+            color: #8aa0c0;
+            border: 1px solid #2a3a4a;
+        }
+        .mode-group {
+            display: flex;
+            gap: 4px;
+            background: #0d121c;
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid #1f2a3a;
+        }
+        .mode-group .btn {
+            padding: 6px 16px;
+            font-size: 13px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: #8aa0c0;
+        }
+        .mode-group .btn:hover {
+            background: #1a2535;
+            color: #d0dce8;
+        }
+        .mode-group .btn-active {
+            background: #1f4a7a;
+            border-color: #2e6a9a;
+            color: white;
+        }
+
+        .main {
+            display: flex;
+            gap: 22px;
+            flex-wrap: wrap;
+        }
+        .canvas-wrap {
+            flex: 1 1 0;
+            min-width: 480px;
+            background: #0d121c;
+            border-radius: 16px;
+            border: 1px solid #212b3d;
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 16 / 10;
+        }
+        .canvas-wrap canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+        }
+        .canvas-wrap canvas.select-mode {
+            cursor: crosshair;
+        }
+        .canvas-wrap canvas.bounds-mode {
+            cursor: crosshair;
+        }
+        .canvas-wrap canvas:active {
+            cursor: grabbing;
+        }
+        .canvas-status {
+            position: absolute;
+            bottom: 12px;
+            right: 16px;
+            font-size: 12px;
+            color: #4a6080;
+            background: rgba(11, 14, 20, 0.7);
+            padding: 2px 12px;
+            border-radius: 30px;
+            border: 1px solid #1f2a3a;
+            pointer-events: none;
+        }
+
+        .panel {
+            width: 320px;
+            min-width: 260px;
+            flex-shrink: 0;
+            background: #111a26;
+            border-radius: 16px;
+            border: 1px solid #212b3d;
+            padding: 18px 20px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .panel::-webkit-scrollbar {
+            width: 4px;
+        }
+        .panel::-webkit-scrollbar-track {
+            background: #0d121c;
+        }
+        .panel::-webkit-scrollbar-thumb {
+            background: #2a3a50;
+            border-radius: 10px;
+        }
+
+        .panel-section-title {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #5a7a9a;
+            border-bottom: 1px solid #1f2a3a;
+            padding-bottom: 6px;
+            margin-bottom: 4px;
+        }
+        .selection-info {
+            background: #0d121c;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid #1a2535;
+            font-size: 14px;
+        }
+        .selection-info .count {
+            color: #7aa9ff;
+            font-weight: 600;
+        }
+        .selection-info .indices {
+            color: #a0b8d8;
+            font-size: 13px;
+            margin-top: 4px;
+            word-break: break-all;
+            line-height: 1.5;
+        }
+        .selection-info .indices .empty {
+            color: #4a5a6a;
+            font-style: italic;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .control-group label {
+            font-size: 13px;
+            color: #8aa0c0;
+            font-weight: 500;
+        }
+        .control-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .control-row select {
+            flex: 1;
+            background: #0d121c;
+            border: 1px solid #2a3a50;
+            color: #e0e8f0;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+            min-width: 120px;
+        }
+        .control-row select:focus {
+            border-color: #4a7aaa;
+        }
+        .control-row .btn-sm {
+            padding: 6px 16px;
+            font-size: 12px;
+            border-radius: 8px;
+            background: #1f2a3a;
+            border: 1px solid #2a3a50;
+            color: #d0dce8;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .control-row .btn-sm:hover {
+            background: #2a3a50;
+            border-color: #4a6a8a;
+        }
+        .control-row .btn-sm.active {
+            background: #1f4a7a;
+            border-color: #3a7aaa;
+        }
+        .btn-sm.active-on {
+            background: #1d6b4a;
+            border-color: #2a8a5e;
+        }
+        .btn-sm.active-off {
+            background: #4a3a3a;
+            border-color: #6a4a4a;
+        }
+
+        .star-detail {
+            background: #0d121c;
+            border-radius: 10px;
+            padding: 10px 12px;
+            border: 1px solid #1a2535;
+            font-size: 13px;
+        }
+        .star-detail .idx {
+            color: #7aa9ff;
+            font-weight: 600;
+        }
+        .star-detail .props {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 2px 14px;
+            margin-top: 6px;
+            color: #b0c8e0;
+        }
+        .star-detail .props .label {
+            color: #6a8aaa;
+        }
+        .star-detail .props .value {
+            font-weight: 500;
+        }
+        .star-detail .no-sel {
+            color: #5a6a7a;
+            font-style: italic;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 14px;
+            font-size: 12px;
+            color: #8aa0c0;
+            padding-top: 4px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .legend-item .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 1px solid #1a2535;
+        }
+
+        .clear-btn {
+            background: #4a2a2a;
+            border-color: #6a3a3a;
+        }
+        .clear-btn:hover {
+            background: #5a3535;
+            border-color: #8a4a4a;
+        }
+
+        .bounds-info {
+            background: #0d121c;
+            border-radius: 10px;
+            padding: 8px 12px;
+            border: 1px solid #1a2535;
+            font-size: 13px;
+            color: #8aa0c0;
+        }
+        .bounds-info .count {
+            color: #f0b34a;
+            font-weight: 600;
+        }
+
+        @media (max-width: 820px) {
+            .main {
+                flex-direction: column;
+            }
+            .canvas-wrap {
+                min-width: unset;
+                aspect-ratio: 16 / 9;
+            }
+            .panel {
+                width: 100%;
+                max-height: 400px;
+            }
+        }
+        @media (max-width: 480px) {
+            .app {
+                padding: 14px;
+            }
+            .header h1 {
+                font-size: 18px;
+            }
+            .toolbar .btn {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>🌌 Galaxy Map Editor <span>system.sol</span></h1>
+            <div class="toolbar">
+                <div class="file-input-wrap">
+                    <button class="btn btn-primary">📂 Load File</button>
+                    <input type="file" id="fileInput" accept=".sol,.txt" />
+                </div>
+                <button class="btn btn-success" id="exportBtn">💾 Export</button>
+                <button class="btn btn-success" id="exportBoundsBtn">📐 Export Bounds</button>
+                <button class="btn btn-danger" id="resetBtn">✕ Clear</button>
+                <button class="btn" id="resetViewBtn">⟲ Reset View</button>
+                <button class="btn clear-btn" id="clearSelectionBtn">✖ Clear Sel</button>
+                <button class="btn clear-btn" id="clearBoundsBtn">🗑 Clear Bounds</button>
+                <span class="badge" id="starCountBadge">0 stars</span>
+            </div>
+        </div>
+
+        <!-- MODE TOGGLE -->
+        <div style="display:flex; gap:12px; align-items:center; margin-bottom:16px;">
+            <span style="font-size:13px; color:#5a7a9a;">Mode:</span>
+            <div class="mode-group" id="modeGroup">
+                <button class="btn btn-active" data-mode="pan">🖐 Pan</button>
+                <button class="btn" data-mode="select">⬜ Select</button>
+                <button class="btn" data-mode="bounds">📐 Bounds</button>
+            </div>
+            <span style="font-size:12px; color:#4a6080; margin-left:8px;" id="modeHint">drag to pan · scroll zoom</span>
+        </div>
+
+        <!-- MAIN -->
+        <div class="main">
+            <div class="canvas-wrap">
+                <canvas id="mapCanvas"></canvas>
+                <div class="canvas-status" id="canvasStatus">load a .sol file</div>
+            </div>
+
+            <div class="panel" id="panel">
+                <!-- Selection info -->
+                <div>
+                    <div class="panel-section-title">Selection</div>
+                    <div class="selection-info" id="selectionInfo">
+                        <div><span class="count">0</span> stars selected</div>
+                        <div class="indices" id="selectedIndices"><span class="empty">none</span></div>
+                    </div>
+                </div>
+
+                <!-- Bounds info -->
+                <div>
+                    <div class="panel-section-title">Bounds</div>
+                    <div class="bounds-info" id="boundsInfo">
+                        <span class="count">0</span> segments drawn
+                    </div>
+                </div>
+
+                <!-- Faction -->
+                <div class="control-group">
+                    <label>Faction</label>
+                    <div class="control-row">
+                        <select id="factionSelect"></select>
+                        <button class="btn-sm" id="applyFactionBtn">Apply</button>
+                    </div>
+                </div>
+
+                <!-- Sector -->
+                <div class="control-group">
+                    <label>Sector</label>
+                    <div class="control-row">
+                        <select id="sectorSelect"></select>
+                        <button class="btn-sm" id="applySectorBtn">Apply</button>
+                    </div>
+                </div>
+
+                <!-- Shipyard & Gas -->
+                <div class="control-group">
+                    <label>Flags</label>
+                    <div class="control-row" style="gap:6px;">
+                        <span style="font-size:13px;color:#6a8aaa;">🛠 Shipyard</span>
+                        <button class="btn-sm" id="shipyardOn">ON</button>
+                        <button class="btn-sm" id="shipyardOff">OFF</button>
+                        <span style="margin-left:8px;font-size:13px;color:#6a8aaa;">⛽ Gas</span>
+                        <button class="btn-sm" id="gasOn">ON</button>
+                        <button class="btn-sm" id="gasOff">OFF</button>
+                    </div>
+                </div>
+
+                <!-- Single star detail -->
+                <div>
+                    <div class="panel-section-title">Star Details</div>
+                    <div class="star-detail" id="starDetail">
+                        <div class="no-sel">Select a star to see details</div>
+                    </div>
+                </div>
+
+                <!-- Legend -->
+                <div>
+                    <div class="panel-section-title">Legend</div>
+                    <div class="legend" id="legend"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        //  CONFIG
+        // ============================================================
+        const FACTIONS = [
+            { id: 0, name: 'Serpent and Star Union', color: '#4a8ec4' },
+            { id: 1, name: 'Ireland-Mermaidian Confederation', color: '#4caf7a' },
+            { id: 2, name: 'Sentinel Coalition Peacemakers', color: '#f0b34a' },
+            { id: 3, name: 'Pirates', color: '#e06050' },
+        ];
+
+        const SECTORS = [
+            { id: 0, name: 'Dhat' },
+            { id: 1, name: 'Medinat' },
+            { id: 2, name: 'Ghabkar' },
+            { id: 3, name: 'Buraq' },
+            { id: 4, name: 'Ben Vara' },
+            { id: 5, name: 'Killoch Vairan' },
+            { id: 6, name: 'Cuchulainn' },
+            { id: 7, name: 'Danter' },
+            { id: 8, name: 'Coalsack' },
+        ];
+
+        // ============================================================
+        //  STATE
+        // ============================================================
+        let stars = [];
+        let selected = new Set();
+
+        // Bounds: array of segments { x1, y1, x2, y2 }
+        let boundsSegments = [];
+        // Temporary for drawing
+        let currentBoundStart = null; // { x, y } or null
+
+        // View state
+        let view = {
+            minX: -100,
+            maxX: 100,
+            minY: -100,
+            maxY: 100,
+        };
+
+        // Mode: 'pan', 'select', 'bounds'
+        let currentMode = 'pan';
+
+        // Selection rectangle state
+        let isSelecting = false;
+        let selectStartX = 0,
+            selectStartY = 0;
+        let selectEndX = 0,
+            selectEndY = 0;
+        let showSelectRect = false;
+
+        // DOM refs
+        const canvas = document.getElementById('mapCanvas');
+        const ctx = canvas.getContext('2d');
+        const fileInput = document.getElementById('fileInput');
+        const exportBtn = document.getElementById('exportBtn');
+        const exportBoundsBtn = document.getElementById('exportBoundsBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const resetViewBtn = document.getElementById('resetViewBtn');
+        const clearSelectionBtn = document.getElementById('clearSelectionBtn');
+        const clearBoundsBtn = document.getElementById('clearBoundsBtn');
+        const starCountBadge = document.getElementById('starCountBadge');
+        const canvasStatus = document.getElementById('canvasStatus');
+        const selectionInfo = document.getElementById('selectionInfo');
+        const selectedIndices = document.getElementById('selectedIndices');
+        const starDetail = document.getElementById('starDetail');
+        const boundsInfo = document.getElementById('boundsInfo');
+        const factionSelect = document.getElementById('factionSelect');
+        const sectorSelect = document.getElementById('sectorSelect');
+        const applyFactionBtn = document.getElementById('applyFactionBtn');
+        const applySectorBtn = document.getElementById('applySectorBtn');
+        const shipyardOn = document.getElementById('shipyardOn');
+        const shipyardOff = document.getElementById('shipyardOff');
+        const gasOn = document.getElementById('gasOn');
+        const gasOff = document.getElementById('gasOff');
+        const legendEl = document.getElementById('legend');
+        const modeHint = document.getElementById('modeHint');
+
+        // ============================================================
+        //  INIT UI
+        // ============================================================
+        function populateSelects() {
+            factionSelect.innerHTML = '';
+            FACTIONS.forEach(f => {
+                const opt = document.createElement('option');
+                opt.value = f.id;
+                opt.textContent = f.name;
+                factionSelect.appendChild(opt);
+            });
+            sectorSelect.innerHTML = '';
+            SECTORS.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.id;
+                opt.textContent = s.name;
+                sectorSelect.appendChild(opt);
+            });
+            legendEl.innerHTML = '';
+            FACTIONS.forEach(f => {
+                const div = document.createElement('span');
+                div.className = 'legend-item';
+                div.innerHTML = `<span class="dot" style="background:${f.color}"></span> ${f.name}`;
+                legendEl.appendChild(div);
+            });
+            const div0 = document.createElement('span');
+            div0.className = 'legend-item';
+            div0.innerHTML = `<span class="dot" style="background:#4a5a6a;border-color:#2a3a50;"></span> unassigned`;
+            legendEl.appendChild(div0);
+        }
+        populateSelects();
+
+        // Mode switching
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-group .btn').forEach(b => {
+                b.classList.toggle('btn-active', b.dataset.mode === mode);
+            });
+            canvas.classList.toggle('select-mode', mode === 'select');
+            canvas.classList.toggle('bounds-mode', mode === 'bounds');
+            if (mode === 'bounds') {
+                modeHint.textContent = 'Left click to place points · Right click to finish/clear current';
+                canvas.style.cursor = 'crosshair';
+            } else if (mode === 'select') {
+                modeHint.textContent = 'drag to select · click stars (shift)';
+                canvas.style.cursor = 'crosshair';
+            } else {
+                modeHint.textContent = 'drag to pan · scroll zoom';
+                canvas.style.cursor = 'grab';
+            }
+            // Reset selection rect
+            showSelectRect = false;
+            // If switching away from bounds, clear current point
+            if (mode !== 'bounds') {
+                currentBoundStart = null;
+            }
+            render();
+        }
+
+        document.querySelectorAll('.mode-group .btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                setMode(btn.dataset.mode);
+            });
+        });
+
+        // ============================================================
+        //  FILE LOADING
+        // ============================================================
+        function loadFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                parseData(text);
+                fitViewToData();
+                render();
+                updatePanel();
+                starCountBadge.textContent = stars.length + ' stars';
+                canvasStatus.textContent = `loaded ${stars.length} systems`;
+                selected.clear();
+                updatePanel();
+                clearSelectionBtn.textContent = '✖ Clear Sel';
+            };
+            reader.readAsText(file);
+        }
+
+        function parseData(text) {
+            stars = [];
+            const lines = text.split(/\r?\n/);
+            let idx = 0;
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed) continue;
+                let x, y, z, faction = 0,
+                    shipyard = 0,
+                    gas = 0,
+                    sector = 0;
+                const n = sscanf(trimmed, '%d;%d;%d;%u;%u;%u;%u', (v, i) => {
+                    if (i === 0) x = v;
+                    else if (i === 1) y = v;
+                    else if (i === 2) z = v;
+                    else if (i === 3) faction = v;
+                    else if (i === 4) shipyard = v;
+                    else if (i === 5) gas = v;
+                    else if (i === 6) sector = v;
+                });
+                if (n < 3) continue;
+                stars.push({
+                    x: x,
+                    y: y,
+                    z: z,
+                    faction: (n >= 4) ? faction : 0,
+                    shipyard: (n >= 5) ? shipyard : 0,
+                    gas: (n >= 6) ? gas : 0,
+                    sector: (n >= 7) ? sector : 0,
+                    idx: idx,
+                });
+                idx++;
+            }
+        }
+
+        function sscanf(str, fmt, callback) {
+            const parts = str.split(';');
+            let count = 0;
+            for (let i = 0; i < parts.length && i < 7; i++) {
+                const val = parseInt(parts[i], 10);
+                if (isNaN(val)) break;
+                callback(val, i);
+                count++;
+            }
+            return count;
+        }
+
+        // ============================================================
+        //  VIEW / FIT
+        // ============================================================
+        function fitViewToData() {
+            if (stars.length === 0) {
+                view.minX = -100;
+                view.maxX = 100;
+                view.minY = -100;
+                view.maxY = 100;
+                return;
+            }
+            let minX = Infinity,
+                maxX = -Infinity,
+                minY = Infinity,
+                maxY = -Infinity;
+            for (const s of stars) {
+                if (s.x < minX) minX = s.x;
+                if (s.x > maxX) maxX = s.x;
+                if (s.y < minY) minY = s.y;
+                if (s.y > maxY) maxY = s.y;
+            }
+            const dx = maxX - minX || 1;
+            const dy = maxY - minY || 1;
+            const pad = 40;
+            view.minX = minX - dx * 0.08 - pad;
+            view.maxX = maxX + dx * 0.08 + pad;
+            view.minY = minY - dy * 0.08 - pad;
+            view.maxY = maxY + dy * 0.08 + pad;
+        }
+
+        function getCanvasCoords(s, rect) {
+            const w = rect.width;
+            const h = rect.height;
+            const x = (s.x - view.minX) / (view.maxX - view.minX) * w;
+            const y = (s.y - view.minY) / (view.maxY - view.minY) * h;
+            return { x, y };
+        }
+
+        function getWorldCoords(mx, my, rect) {
+            const w = rect.width;
+            const h = rect.height;
+            const wx = (mx / w) * (view.maxX - view.minX) + view.minX;
+            const wy = (my / h) * (view.maxY - view.minY) + view.minY;
+            return { wx, wy };
+        }
+
+        // ============================================================
+        //  RENDER
+        // ============================================================
+        function render() {
+            const rect = canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            canvas.style.width = rect.width + 'px';
+            canvas.style.height = rect.height + 'px';
+            ctx.scale(dpr, dpr);
+
+            const w = rect.width;
+            const h = rect.height;
+
+            // background
+            ctx.fillStyle = '#0d121c';
+            ctx.fillRect(0, 0, w, h);
+
+            // subtle grid
+            ctx.strokeStyle = '#16202e';
+            ctx.lineWidth = 0.5;
+            const step = 50;
+            for (let x = step; x < w; x += step) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, h);
+                ctx.stroke();
+            }
+            for (let y = step; y < h; y += step) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(w, y);
+                ctx.stroke();
+            }
+
+            // Draw bounds segments (permanent)
+            ctx.strokeStyle = '#f0b34a';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([]);
+            for (const seg of boundsSegments) {
+                const p1 = getCanvasCoords({ x: seg.x1, y: seg.y1 }, rect);
+                const p2 = getCanvasCoords({ x: seg.x2, y: seg.y2 }, rect);
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.stroke();
+            }
+
+            // Draw current temporary line (if any)
+            if (currentBoundStart && currentMode === 'bounds') {
+                // Draw a dashed line from start to mouse (will be updated on mousemove)
+                // We'll draw it only if we have a start point and mouse is moving
+                // Actually we can draw it on mousemove, but we need mouse coords.
+                // We'll handle in mousemove event.
+            }
+
+            if (stars.length === 0) {
+                ctx.fillStyle = '#3a4a5a';
+                ctx.font = '18px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('No data loaded — load a .sol file', w / 2, h / 2);
+                return;
+            }
+
+            const radius = 8;
+
+            for (const s of stars) {
+                const pos = getCanvasCoords(s, rect);
+                const cx = pos.x;
+                const cy = pos.y;
+                const isSel = selected.has(s.idx);
+
+                let color = '#4a5a6a';
+                for (const f of FACTIONS) {
+                    if (f.id === s.faction) { color = f.color; break; }
+                }
+
+                if (isSel) {
+                    ctx.shadowColor = '#7aa9ff';
+                    ctx.shadowBlur = 18;
+                }
+
+                ctx.beginPath();
+                ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+                ctx.fillStyle = color;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                ctx.strokeStyle = isSel ? '#8ac0ff' : '#1a2535';
+                ctx.lineWidth = isSel ? 2.5 : 0.8;
+                ctx.stroke();
+
+                // index label
+                ctx.fillStyle = isSel ? '#ffffff' : '#b0c8e0';
+                ctx.font = isSel ? 'bold 10px sans-serif' : '9px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+                ctx.fillText(s.idx, cx, cy - radius - 4);
+
+                let flags = '';
+                if (s.shipyard) flags += '🛠';
+                if (s.gas) flags += '⛽';
+                if (flags) {
+                    ctx.fillStyle = '#d0e8ff';
+                    ctx.font = '8px sans-serif';
+                    ctx.textBaseline = 'top';
+                    ctx.fillText(flags, cx + radius + 6, cy - radius + 2);
+                }
+
+                if (s.sector !== undefined && s.sector >= 0 && s.sector < SECTORS.length) {
+                    const secName = SECTORS[s.sector].name;
+                    ctx.fillStyle = '#5a7a8a';
+                    ctx.font = '6px sans-serif';
+                    ctx.textBaseline = 'top';
+                    ctx.textAlign = 'left';
+                    ctx.fillText(secName.substring(0, 4), cx + radius + 6, cy + 2);
+                }
+            }
+
+            // Selection rectangle
+            if (showSelectRect && currentMode === 'select') {
+                ctx.strokeStyle = '#7aa9ff';
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([6, 4]);
+                ctx.strokeRect(
+                    Math.min(selectStartX, selectEndX),
+                    Math.min(selectStartY, selectEndY),
+                    Math.abs(selectEndX - selectStartX),
+                    Math.abs(selectEndY - selectStartY)
+                );
+                ctx.setLineDash([]);
+                ctx.fillStyle = 'rgba(122, 169, 255, 0.08)';
+                ctx.fillRect(
+                    Math.min(selectStartX, selectEndX),
+                    Math.min(selectStartY, selectEndY),
+                    Math.abs(selectEndX - selectStartX),
+                    Math.abs(selectEndY - selectStartY)
+                );
+            }
+
+            // Draw temporary line if in bounds mode and we have a start point
+            if (currentMode === 'bounds' && currentBoundStart && window._mouseX !== undefined && window._mouseY !==
+                undefined) {
+                const start = getCanvasCoords({ x: currentBoundStart.x, y: currentBoundStart.y }, rect);
+                const endX = window._mouseX;
+                const endY = window._mouseY;
+                ctx.strokeStyle = '#f0b34a';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([6, 6]);
+                ctx.beginPath();
+                ctx.moveTo(start.x, start.y);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            if (selected.size > 0) {
+                ctx.fillStyle = '#6a8aaa';
+                ctx.font = '12px sans-serif';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'bottom';
+                ctx.fillText(`${selected.size} selected`, w - 14, h - 10);
+            }
+        }
+
+        // ============================================================
+        //  PANEL UPDATE
+        // ============================================================
+        function updatePanel() {
+            const selArr = Array.from(selected).sort((a, b) => a - b);
+            const count = selArr.length;
+
+            const countEl = selectionInfo.querySelector('.count');
+            countEl.textContent = count;
+            if (count === 0) {
+                selectedIndices.innerHTML = '<span class="empty">none</span>';
+            } else {
+                selectedIndices.textContent = selArr.join(', ');
+            }
+
+            if (count === 1) {
+                const idx = selArr[0];
+                const s = stars.find(st => st.idx === idx);
+                if (s) {
+                    const fname = FACTIONS.find(f => f.id === s.faction)?.name || 'unassigned';
+                    const sname = (s.sector >= 0 && s.sector < SECTORS.length) ? SECTORS[s.sector].name : 'unassigned';
+                    starDetail.innerHTML = `
+                <div><span class="idx">#${s.idx}</span>  x:${s.x}  y:${s.y}  z:${s.z}</div>
+                <div class="props">
+                  <span class="label">Faction</span><span class="value">${fname}</span>
+                  <span class="label">Sector</span><span class="value">${sname}</span>
+                  <span class="label">Shipyard</span><span class="value">${s.shipyard ? '✅ Yes' : '❌ No'}</span>
+                  <span class="label">Gas station</span><span class="value">${s.gas ? '✅ Yes' : '❌ No'}</span>
+                </div>
+              `;
+                } else {
+                    starDetail.innerHTML = '<div class="no-sel">star not found</div>';
+                }
+            } else if (count > 1) {
+                starDetail.innerHTML = `<div style="color:#8aa0c0;font-size:13px;">${count} stars selected — use batch controls above</div>`;
+            } else {
+                starDetail.innerHTML = '<div class="no-sel">Select a star to see details</div>';
+            }
+
+            const hasSel = count > 0;
+            factionSelect.disabled = !hasSel;
+            sectorSelect.disabled = !hasSel;
+            applyFactionBtn.disabled = !hasSel;
+            applySectorBtn.disabled = !hasSel;
+            shipyardOn.disabled = !hasSel;
+            shipyardOff.disabled = !hasSel;
+            gasOn.disabled = !hasSel;
+            gasOff.disabled = !hasSel;
+            clearSelectionBtn.textContent = hasSel ? `✖ Clear (${count})` : '✖ Clear Sel';
+
+            // Bounds info
+            boundsInfo.innerHTML = `<span class="count">${boundsSegments.length}</span> segments drawn`;
+        }
+
+        // ============================================================
+        //  SELECTION HELPERS
+        // ============================================================
+        function selectStarsInRect(x1, y1, x2, y2, rect, add) {
+            const minX = Math.min(x1, x2);
+            const maxX = Math.max(x1, x2);
+            const minY = Math.min(y1, y2);
+            const maxY = Math.max(y1, y2);
+
+            const newly = [];
+            for (const s of stars) {
+                const pos = getCanvasCoords(s, rect);
+                if (pos.x >= minX && pos.x <= maxX && pos.y >= minY && pos.y <= maxY) {
+                    newly.push(s.idx);
+                }
+            }
+
+            if (add) {
+                for (const idx of newly) {
+                    selected.add(idx);
+                }
+            } else {
+                selected.clear();
+                for (const idx of newly) {
+                    selected.add(idx);
+                }
+            }
+        }
+
+        function selectStarAt(mx, my, rect, add) {
+            let bestIdx = -1;
+            let bestDist = 20;
+            for (const s of stars) {
+                const pos = getCanvasCoords(s, rect);
+                const dx = pos.x - mx;
+                const dy = pos.y - my;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    bestIdx = s.idx;
+                }
+            }
+            if (bestIdx === -1) {
+                return;
+            }
+            if (add) {
+                if (selected.has(bestIdx)) selected.delete(bestIdx);
+                else selected.add(bestIdx);
+            } else {
+                selected.clear();
+                selected.add(bestIdx);
+            }
+        }
+
+        // ============================================================
+        //  INTERACTION: PAN, SELECT, BOUNDS
+        // ============================================================
+        let isDragging = false;
+        let dragStartX = 0,
+            dragStartY = 0;
+        let dragStartView = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
+
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+
+            if (e.button === 2) {
+                // Right click: in bounds mode, cancel current point
+                if (currentMode === 'bounds') {
+                    currentBoundStart = null;
+                    render();
+                    canvasStatus.textContent = 'bounds drawing cancelled';
+                    setTimeout(() => { canvasStatus.textContent = 'bounds mode: left click to place points'; }, 1500);
+                }
+                return;
+            }
+
+            if (currentMode === 'pan') {
+                isDragging = true;
+                dragStartX = mx;
+                dragStartY = my;
+                dragStartView = { ...view };
+                canvas.style.cursor = 'grabbing';
+                showSelectRect = false;
+                render();
+            } else if (currentMode === 'select') {
+                isDragging = true;
+                selectStartX = mx;
+                selectStartY = my;
+                selectEndX = mx;
+                selectEndY = my;
+                showSelectRect = true;
+                canvas.style.cursor = 'crosshair';
+                render();
+            } else if (currentMode === 'bounds') {
+                // Left click: add point
+                const world = getWorldCoords(mx, my, rect);
+                if (currentBoundStart === null) {
+                    currentBoundStart = { x: world.wx, y: world.wy };
+                    canvasStatus.textContent = `start point (${world.wx.toFixed(1)}, ${world.wy.toFixed(1)}) — click to place line`;
+                } else {
+                    // Create segment from currentBoundStart to new point
+                    const seg = {
+                        x1: currentBoundStart.x,
+                        y1: currentBoundStart.y,
+                        x2: world.wx,
+                        y2: world.wy,
+                    };
+                    boundsSegments.push(seg);
+                    // New start becomes this point
+                    currentBoundStart = { x: world.wx, y: world.wy };
+                    canvasStatus.textContent = `segment added — next point (${world.wx.toFixed(1)}, ${world.wy.toFixed(1)})`;
+                    updatePanel();
+                    render();
+                }
+            }
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+            window._mouseX = mx;
+            window._mouseY = my;
+
+            if (!isDragging) {
+                // For bounds mode, re-render to update temporary line
+                if (currentMode === 'bounds') {
+                    render();
+                }
+                return;
+            }
+
+            if (currentMode === 'pan') {
+                const dx = mx - dragStartX;
+                const dy = my - dragStartY;
+                const w = rect.width;
+                const h = rect.height;
+                const worldDx = (dx / w) * (view.maxX - view.minX);
+                const worldDy = (dy / h) * (view.maxY - view.minY);
+                view.minX = dragStartView.minX - worldDx;
+                view.maxX = dragStartView.maxX - worldDx;
+                view.minY = dragStartView.minY - worldDy;
+                view.maxY = dragStartView.maxY - worldDy;
+                render();
+            } else if (currentMode === 'select') {
+                selectEndX = mx;
+                selectEndY = my;
+                render();
+            }
+        });
+
+        window.addEventListener('mouseup', (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+            canvas.style.cursor = currentMode === 'pan' ? 'grab' : 'crosshair';
+
+            if (currentMode === 'select') {
+                const rect = canvas.getBoundingClientRect();
+                const dx = Math.abs(selectEndX - selectStartX);
+                const dy = Math.abs(selectEndY - selectStartY);
+                if (dx < 5 && dy < 5) {
+                    const shift = e.shiftKey;
+                    selectStarAt(selectStartX, selectStartY, rect, shift);
+                    showSelectRect = false;
+                    render();
+                    updatePanel();
+                } else {
+                    const shift = e.shiftKey;
+                    selectStarsInRect(selectStartX, selectStartY, selectEndX, selectEndY, rect, shift);
+                    showSelectRect = false;
+                    render();
+                    updatePanel();
+                }
+            }
+        });
+
+        // Right-click context menu suppression for canvas
+        canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        // Zoom with wheel
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+            const w = rect.width;
+            const h = rect.height;
+
+            const factor = e.deltaY < 0 ? 0.9 : 1.1;
+            const cx = (mx / w) * (view.maxX - view.minX) + view.minX;
+            const cy = (my / h) * (view.maxY - view.minY) + view.minY;
+            const newW = (view.maxX - view.minX) * factor;
+            const newH = (view.maxY - view.minY) * factor;
+            view.minX = cx - newW * (mx / w);
+            view.maxX = cx + newW * (1 - mx / w);
+            view.minY = cy - newH * (my / h);
+            view.maxY = cy + newH * (1 - my / h);
+            render();
+        }, { passive: false });
+
+        // ============================================================
+        //  BATCH ACTIONS
+        // ============================================================
+        function applyFaction() {
+            const val = parseInt(factionSelect.value, 10);
+            if (isNaN(val)) return;
+            for (const idx of selected) {
+                const s = stars.find(st => st.idx === idx);
+                if (s) s.faction = val;
+            }
+            render();
+            updatePanel();
+        }
+
+        function applySector() {
+            const val = parseInt(sectorSelect.value, 10);
+            if (isNaN(val)) return;
+            for (const idx of selected) {
+                const s = stars.find(st => st.idx === idx);
+                if (s) s.sector = val;
+            }
+            render();
+            updatePanel();
+        }
+
+        function setShipyard(val) {
+            for (const idx of selected) {
+                const s = stars.find(st => st.idx === idx);
+                if (s) s.shipyard = val ? 1 : 0;
+            }
+            render();
+            updatePanel();
+        }
+
+        function setGas(val) {
+            for (const idx of selected) {
+                const s = stars.find(st => st.idx === idx);
+                if (s) s.gas = val ? 1 : 0;
+            }
+            render();
+            updatePanel();
+        }
+
+        // ============================================================
+        //  EXPORT
+        // ============================================================
+        function exportFile() {
+            if (stars.length === 0) {
+                alert('No data to export.');
+                return;
+            }
+            let lines = [];
+            for (const s of stars) {
+                const parts = [
+                    s.x, s.y, s.z,
+                    s.faction || 0,
+                    s.shipyard || 0,
+                    s.gas || 0,
+                    s.sector || 0,
+                ];
+                lines.push(parts.join(';'));
+            }
+            const content = lines.join('\n');
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'system.sol';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function exportBounds() {
+            if (boundsSegments.length === 0) {
+                alert('No bounds to export.');
+                return;
+            }
+            const lines = boundsSegments.map(seg =>
+                `${seg.x1},${seg.y1};${seg.x2},${seg.y2}`
+            );
+            const content = lines.join('\n');
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'bounds.sol';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // ============================================================
+        //  RESET
+        // ============================================================
+        function resetAll() {
+            stars = [];
+            selected.clear();
+            boundsSegments = [];
+            currentBoundStart = null;
+            fitViewToData();
+            render();
+            updatePanel();
+            starCountBadge.textContent = '0 stars';
+            canvasStatus.textContent = 'cleared';
+        }
+
+        function resetView() {
+            fitViewToData();
+            render();
+            canvasStatus.textContent = 'view reset';
+        }
+
+        function clearSelection() {
+            selected.clear();
+            render();
+            updatePanel();
+        }
+
+        function clearBounds() {
+            boundsSegments = [];
+            currentBoundStart = null;
+            updatePanel();
+            render();
+            canvasStatus.textContent = 'bounds cleared';
+            setTimeout(() => { canvasStatus.textContent = 'bounds mode: left click to place points'; }, 1500);
+        }
+
+        // ============================================================
+        //  RESIZE
+        // ============================================================
+        function resizeCanvas() {
+            render();
+        }
+
+        // ============================================================
+        //  EVENT BINDING
+        // ============================================================
+        fileInput.addEventListener('change', function(e) {
+            if (this.files.length > 0) {
+                loadFile(this.files[0]);
+            }
+            this.value = '';
+        });
+
+        exportBtn.addEventListener('click', exportFile);
+        exportBoundsBtn.addEventListener('click', exportBounds);
+        resetBtn.addEventListener('click', resetAll);
+        resetViewBtn.addEventListener('click', resetView);
+        clearSelectionBtn.addEventListener('click', clearSelection);
+        clearBoundsBtn.addEventListener('click', clearBounds);
+
+        applyFactionBtn.addEventListener('click', applyFaction);
+        applySectorBtn.addEventListener('click', applySector);
+        shipyardOn.addEventListener('click', () => setShipyard(1));
+        shipyardOff.addEventListener('click', () => setShipyard(0));
+        gasOn.addEventListener('click', () => setGas(1));
+        gasOff.addEventListener('click', () => setGas(0));
+
+        window.addEventListener('resize', resizeCanvas);
+
+        const panel = document.getElementById('panel');
+        if (panel) {
+            const ro = new ResizeObserver(() => { render(); });
+            ro.observe(panel);
+        }
+
+        // ============================================================
+        //  KEYBOARD SHORTCUTS
+        // ============================================================
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (currentMode === 'bounds') {
+                    currentBoundStart = null;
+                    render();
+                    canvasStatus.textContent = 'bounds drawing cancelled';
+                    setTimeout(() => { canvasStatus.textContent = 'bounds mode: left click to place points'; }, 1500);
+                } else {
+                    clearSelection();
+                }
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+                e.preventDefault();
+                if (stars.length > 0 && currentMode === 'select') {
+                    selected.clear();
+                    for (const s of stars) selected.add(s.idx);
+                    render();
+                    updatePanel();
+                }
+            }
+        });
+
+        // ============================================================
+        //  DRAG & DROP
+        // ============================================================
+        document.addEventListener('dragover', (e) => { e.preventDefault(); });
+        document.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const f = files[0];
+                if (f.name.endsWith('.sol') || f.name.endsWith('.txt')) {
+                    loadFile(f);
+                } else {
+                    alert('Please drop a .sol or .txt file');
+                }
+            }
+        });
+
+        // ============================================================
+        //  INIT — empty
+        // ============================================================
+        fitViewToData();
+        requestAnimationFrame(() => {
+            render();
+            updatePanel();
+            starCountBadge.textContent = '0 stars';
+            canvasStatus.textContent = 'load a .sol file to begin';
+            setMode('pan');
+        });
+
+        console.log('🌌 Galaxy Map Editor ready');
+        console.log('  Modes: Pan, Select, Bounds');
+        console.log('  Bounds: left-click to place points, right-click to cancel current');
+        console.log('  Export bounds to bounds.sol');
+    </script>
+</body>
+</html>

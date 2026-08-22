@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Граф SYSTEM.SOL</title>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; }
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            pointer-events: none;
+            z-index: 10;
+        }
+        #controls {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            pointer-events: all;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        #controls label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #controls input[type="file"] {
+            background: #2a6f9c;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        #controls input[type="file"]:hover {
+            background: #3a8fc4;
+        }
+        #stats {
+            color: #aaa;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">
+        <h2>Граф космических систем</h2>
+        <p id="stats">Загрузите SYSTEM.SOL</p>
+    </div>
+    <div id="controls">
+        <input type="file" id="fileInput" accept=".sol">
+        <label>
+            <input type="checkbox" id="toggleEdges" checked> Показать рёбра
+        </label>
+        <span id="edgeCount" style="font-size:13px; color:#ccc;">Рёбер: 0</span>
+    </div>
+
+    <!-- Подключаем Three.js и OrbitControls с CDN -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // --- Инициализация сцены ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x111122);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
+        camera.position.set(400, 300, 600);
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = false;
+        document.body.appendChild(renderer.domElement);
+
+        // --- Контролы ---
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.autoRotate = false;
+        controls.rotateSpeed = 0.8;
+        controls.zoomSpeed = 1.2;
+
+        // --- Освещение ---
+        const ambientLight = new THREE.AmbientLight(0x404060);
+        scene.add(ambientLight);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+        dirLight.position.set(1, 2, 1);
+        scene.add(dirLight);
+        const backLight = new THREE.DirectionalLight(0x8888ff, 0.5);
+        backLight.position.set(-1, -1, -1);
+        scene.add(backLight);
+
+        // --- Вспомогательная сетка (для ориентира) ---
+        const gridHelper = new THREE.GridHelper(1000, 20, 0x6666aa, 0x333366);
+        scene.add(gridHelper);
+        // Оси (ради красоты)
+        // const axesHelper = new THREE.AxesHelper(200);
+        // scene.add(axesHelper);
+
+        // --- Глобальные переменные для объектов ---
+        let pointsGroup = new THREE.Group();
+        let edgesGroup = new THREE.Group();
+        scene.add(pointsGroup);
+        scene.add(edgesGroup);
+
+        // --- Функция парсинга и построения ---
+        function buildGraphFromText(text) {
+            // Парсим
+            const lines = text.split('\n').filter(line => line.trim() !== '');
+            const systems = [];
+            for (let line of lines) {
+                const parts = line.split(';').map(s => s.trim());
+                if (parts.length < 3) continue;
+                const x = parseInt(parts[0]);
+                const y = parseInt(parts[1]);
+                const z = parseInt(parts[2]);
+                const faction = parseInt(parts[3]) || 0;
+                const isShipyard = parseInt(parts[4]) || 0;
+                const isGasStation = parseInt(parts[5]) || 0;
+                const sector = parseInt(parts[6]) || 0;
+                systems.push({ x, y, z, faction, isShipyard, isGasStation, sector });
+            }
+            if (systems.length === 0) {
+                alert('Не удалось распарсить файл. Проверьте формат.');
+                return;
+            }
+
+            const n = systems.length;
+            const maxDist = 130;
+            const maxNeighbors = 15;
+
+            // Построение рёбер (как в Python скрипте)
+            const edges = [];
+            for (let i = 0; i < n; i++) {
+                const neighbors = [];
+                for (let j = 0; j < n; j++) {
+                    if (i === j) continue;
+                    const dx = systems[i].x - systems[j].x;
+                    const dy = systems[i].y - systems[j].y;
+                    const dz = systems[i].z - systems[j].z;
+                    const d2 = dx*dx + dy*dy + dz*dz;
+                    if (d2 <= maxDist * maxDist) {
+                        neighbors.push({ d2, idx: j });
+                    }
+                }
+                neighbors.sort((a, b) => a.d2 - b.d2);
+                const taken = neighbors.slice(0, maxNeighbors);
+                for (let nb of taken) {
+                    edges.push([i, nb.idx]);
+                }
+            }
+
+            // Убираем дубликаты (неориентированные) для визуализации,
+            // т.к. в исходном коде рёбра ориентированные, но для отображения достаточно уникальных.
+            const edgeSet = new Set();
+            const uniqueEdges = [];
+            for (let [a, b] of edges) {
+                const key = a < b ? `${a},${b}` : `${b},${a}`;
+                if (!edgeSet.has(key)) {
+                    edgeSet.add(key);
+                    uniqueEdges.push([a, b]);
+                }
+            }
+
+            document.getElementById('edgeCount').textContent = `Рёбер: ${uniqueEdges.length} (из ${edges.length} ориентированных)`;
+            document.getElementById('stats').textContent = `Загружено систем: ${n}`;
+
+            // --- Очистка старых групп ---
+            while(pointsGroup.children.length) pointsGroup.remove(pointsGroup.children[0]);
+            while(edgesGroup.children.length) edgesGroup.remove(edgesGroup.children[0]);
+
+            // Цвета для фракций (до 10 разных)
+            const factionColors = [
+                0xffaa00, 0x00ccff, 0xff5555, 0x55ff55, 0xff44ff,
+                0xffff44, 0x44ffff, 0xff8844, 0x88ff44, 0x8888ff
+            ];
+
+            // --- Точки ---
+            const sphereGeometry = new THREE.SphereGeometry(4, 12, 12);
+            for (let sys of systems) {
+                const color = factionColors[sys.faction % factionColors.length] || 0xcccccc;
+                const material = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.3 });
+                const sphere = new THREE.Mesh(sphereGeometry, material);
+                sphere.position.set(sys.x, sys.y, sys.z);
+                pointsGroup.add(sphere);
+            }
+
+            // --- Рёбра ---
+            const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x88ccff, transparent: true, opacity: 0.35 });
+            const edgeGeometry = new THREE.BufferGeometry();
+            const positions = [];
+            for (let [a, b] of uniqueEdges) {
+                const p1 = systems[a];
+                const p2 = systems[b];
+                positions.push(p1.x, p1.y, p1.z);
+                positions.push(p2.x, p2.y, p2.z);
+            }
+            if (positions.length > 0) {
+                edgeGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+                const lines = new THREE.LineSegments(edgeGeometry, edgeMaterial);
+                edgesGroup.add(lines);
+            }
+
+            // Автоподстройка камеры под размер данных
+            const center = new THREE.Vector3(0, 0, 0);
+            let maxCoord = 0;
+            for (let sys of systems) {
+                maxCoord = Math.max(maxCoord, Math.abs(sys.x), Math.abs(sys.y), Math.abs(sys.z));
+            }
+            const dist = maxCoord * 1.8 + 100;
+            camera.position.set(dist * 0.6, dist * 0.4, dist * 0.8);
+            controls.target.set(0, 0, 0);
+            controls.update();
+        }
+
+        // --- Обработчик загрузки файла ---
+        document.getElementById('fileInput').addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const text = e.target.result;
+                buildGraphFromText(text);
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // чтобы можно было перезагрузить тот же файл
+        });
+
+        // --- Чекбокс показа рёбер ---
+        document.getElementById('toggleEdges').addEventListener('change', (e) => {
+            edgesGroup.visible = e.target.checked;
+        });
+
+        // --- Анимация ---
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // --- Ресайз окна ---
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // --- Для демонстрации загружаем пример, если файл не выбран (можно оставить пустым) ---
+        console.log('Готов к загрузке SYSTEM.SOL');
+
+        // Небольшая звёздная подложка (опционально)
+        function addStars() {
+            const starsGeometry = new THREE.BufferGeometry();
+            const starsCount = 2000;
+            const positions = new Float32Array(starsCount * 3);
+            for (let i = 0; i < starsCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 4000;
+                positions[i+1] = (Math.random() - 0.5) * 4000;
+                positions[i+2] = (Math.random() - 0.5) * 4000;
+            }
+            starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const starsMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 1.5, transparent: true });
+            const stars = new THREE.Points(starsGeometry, starsMaterial);
+            scene.add(stars);
+        }
+        addStars();
+    </script>
+</body>
+</html>
