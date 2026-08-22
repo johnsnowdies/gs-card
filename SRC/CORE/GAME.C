@@ -6,7 +6,7 @@
 #include "core/objects.h"
 #include "core/finder.h"
 #include "ui/locale.h" 
-#include "core/game.h"       
+#include "core/game.h"    
 
 /* ----------------------------------------------------------------
  * Extern game globals (defined in card.c)
@@ -120,7 +120,7 @@ void core_game_gen_npc(NPC* npc_ptr, unsigned int faction)
     };
 
     npc_ptr->faction = faction;
-    npc_ptr->portrait = 0;
+    npc_ptr->portrait = rand() % 6;
 
     switch(faction){
         case 1:

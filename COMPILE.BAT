@@ -83,7 +83,6 @@ if errorlevel 1 goto err
 
 
 
-
 echo.                                         >> %BLD%\build.log
 echo Linking GSCARD.EXE...                    >> %BLD%\build.log
 

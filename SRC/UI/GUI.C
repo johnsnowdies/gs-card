@@ -330,4 +330,4 @@ void gui_memory_status()
     outtextxy(470 + 5, STATUSBAR_Y + 2, LC_MAP_STATUS_MEM);
     setcolor(TEXT_COLOR);
     outtextxy(470 + 35, STATUSBAR_Y + 2, memMsg);
-}
+}

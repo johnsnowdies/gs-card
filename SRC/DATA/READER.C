@@ -387,4 +387,4 @@ void draw_4bit_bmp(char *filename, int px, int py)
 
     free(row);
     fclose(fp);
-}
+}

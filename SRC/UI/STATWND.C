@@ -82,7 +82,7 @@ void gui_status_bottom_status_line()
 
 void gui_status_quest_info(int selected)
 {
-    char* prequest[100], reward[100];
+    char* prequest[100], reward[100], photo[10];
     char* system[10];
     sprintf(system, "SA.%d", system_quests[selected].target_system);
 
@@ -92,7 +92,22 @@ void gui_status_quest_info(int selected)
     settextstyle(SMALL_FONT, HORIZ_DIR, 6);
     outtextxy(quest_info_wnd.x1+40, quest_info_wnd.y1 + 100, "NO PHOTO");
 
-    draw_4bit_bmp("1.bmp", 20, 60);
+    switch(system_quests[selected].giver->faction){
+        case 1:
+        case 3:
+            sprintf(photo, "NPC/R%d.BMP", system_quests[selected].giver->portrait + 1);
+        break;
+
+        case 0:
+            sprintf(photo, "NPC/A%d.BMP", system_quests[selected].giver->portrait + 1);
+        break;
+
+        default:
+            sprintf(photo, "NPC/S%d.BMP", system_quests[selected].giver->portrait + 1);
+        break;
+    }
+
+    draw_4bit_bmp(photo, 20, 60);
     
     setcolor(15);
     outtextxy(quest_info_wnd.x1+160, quest_info_wnd.y1 + 30, QUEST_TYPES[system_quests[selected].type]);

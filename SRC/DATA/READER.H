@@ -7,4 +7,4 @@ int load_solar(struct system_solar** list);
 int load_game(struct game_state* state, char* filename);
 int save_game(struct game_state* state, char* filename);
 
-void draw_4bit_bmp(char *filename, int px, int py);
+void draw_4bit_bmp(char *filename, int px, int py);

@@ -247,7 +247,7 @@ int core_finder_restore_path(WAYPOINT* wp, int start, int end, int reverse) {
     int minRate;
     int next;
 
-    for (i = 0; i < 25; i++) wp->way[i] = 0;   /* –∏–ª–∏ 30, –µ—Å–ª–∏ –∏—Å–ø–æ–ª—å–∑—É–µ–º –≤–µ—Å—å –º–∞—Å—Å–∏–≤ */
+    for (i = 0; i < 25; i++) wp->way[i] = 0;   /* ®´® 30, •·´® ®·ØÆ´Ïß„•¨ ¢•·Ï ¨†··®¢ */
     wp->way[0] = end;
 
     c = end;
@@ -274,12 +274,12 @@ int core_finder_restore_path(WAYPOINT* wp, int start, int end, int reverse) {
         if (prev == c) return 0;
     }
 
-    /* –ï—Å–ª–∏ —Ü–∏–∫–ª –∑–∞–≤–µ—Ä—à–∏–ª—Å—è –∏–∑-–∑–∞ cnt >= 25, –Ω–æ –º—ã –Ω–µ –¥–æ—à–ª–∏ –¥–æ start */
+    /* Ö·´® Ê®™´ ß†¢•‡Ë®´·Ô ®ß-ß† cnt >= 25, ≠Æ ¨Î ≠• §ÆË´® §Æ start */
     if (c != start) {
-        return 0;   /* –ø—É—Ç—å —Å–ª–∏—à–∫–æ–º –¥–ª–∏–Ω–Ω—ã–π */
+        return 0;   /* Ø„‚Ï ·´®Ë™Æ¨ §´®≠≠Î© */
     }
 
-    /* –î–∞–ª—å—à–µ —Ä–µ–≤–µ—Ä—Å –∏ —É—Å—Ç–∞–Ω–æ–≤–∫–∞ size */
+    /* Ñ†´ÏË• ‡•¢•‡· ® „·‚†≠Æ¢™† size */
     if (cnt > 1) {
         int buf[25];
         wp->size = cnt;
