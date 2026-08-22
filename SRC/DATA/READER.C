@@ -246,10 +246,13 @@ int load_game(GAMESTATE* state, char* filename)
             return 0;
         }
 
-        fread(state->quest->name, sizeof(char), 100, fp);
         fread(&state->quest->reward, sizeof(int), 1, fp);
         fread(&state->quest->penalty, sizeof(int), 1, fp);
         fread(&state->quest->type, sizeof(int), 1, fp);
+
+        fread(&state->quest->target_system, sizeof(int), 1, fp);
+        fread(&state->quest->target_system, sizeof(int), 1, fp);
+        fread(&state->quest->cargo, sizeof(int), 1, fp);
 
         fread(state->quest->giver->name, sizeof(char), 100, fp);
         fread(&state->quest->giver->faction, sizeof(int), 1, fp);
@@ -300,10 +303,13 @@ int save_game(GAMESTATE* state, char* filename)
     fwrite(&has_quest, sizeof(int), 1, fp);
 
     if (has_quest) {
-        fwrite(state->quest->name, sizeof(char), 100, fp);
         fwrite(&state->quest->reward, sizeof(int), 1, fp);
         fwrite(&state->quest->penalty, sizeof(int), 1, fp);
         fwrite(&state->quest->type, sizeof(int), 1, fp);
+
+        fwrite(&state->quest->target_system, sizeof(int), 1, fp);
+        fwrite(&state->quest->target_sector, sizeof(int), 1, fp);
+        fwrite(&state->quest->cargo, sizeof(int), 1, fp);
 
         fwrite(state->quest->giver->name, sizeof(char), 100, fp);
         fwrite(&state->quest->giver->faction, sizeof(int), 1, fp);

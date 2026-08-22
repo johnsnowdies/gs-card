@@ -8,7 +8,7 @@
 
 #include "ui\locale.h"
 
-/*#include "core\game.h"*/
+#include "core\game.h"
 
 /* ----------------------------------------------------------------
  * Screen / viewport layout -- defined here, declared extern in gui.h
@@ -30,6 +30,8 @@ extern char* data_sectors[SECTORS_COUNT];
 extern char* data_ship_names[SHIP_COUNT];
 extern int   data_ship_tonnages[SHIP_COUNT];
 extern char* data_hyper_names[HYPER_COUNT];
+
+extern char* QUEST_TYPES[];
 
 /* Viewport bounds for clipping (status window only) */
 static struct status_wnd {
@@ -80,9 +82,7 @@ void draw_player_status()
     char current_system[50];
     char sector[50];
     int line_y, j;
-    char* p;
     char line[100];
-    
 
     sprintf(captain_name, "%s: %s",LC_STATUS_WND_CAPTAIN, gs.captain_name);
     sprintf(ship_name, "%s: %s",LC_STATUS_WND_SHIP, data_ship_names[gs.ship_type]);
@@ -107,6 +107,35 @@ void draw_player_status()
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
     outtextxy(status_wnd.x1 + 10, status_wnd.y1 + 120, data_factions[sol_list[gs.current_system].faction]);
     outtextxy(status_wnd.x1 + 10, status_wnd.y1 + 140, sector);
+
+    sprintf(line, "%-25.25s %-15.15s %-6.6s %6s %6s %6s",  
+            "Заgача", 
+            "Сектор", 
+            "Система",
+            "Груз", 
+            "Награgа", 
+            "Штраф");
+    settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
+    outtextxy(status_wnd.x1 + 10, status_wnd.y1 + 200, line);
+    for (i=0; i<5; i++){
+        char buf[128], system[16];
+        QUEST current;
+
+        core_game_gen_quest(&current, gs.reputation, gs.current_system);
+
+        sprintf(system, "SA.%d", current.target_system);
+        sprintf(buf, 
+            "%-25.25s %-15.15s %-6.6s %6d %6d %6d",
+                QUEST_TYPES[current.type],
+                data_sectors[current.target_sector],
+                system,
+                current.cargo,
+                current.reward,
+                current.penalty
+            );
+        
+        outtextxy(status_wnd.x1 + 10, status_wnd.y1 + 220 + (15*i), buf);
+    }
 
     gui_status_bottom_status_line();
 }

@@ -35,7 +35,7 @@
 
 unsigned _stklen = 16384;
 
-const int DEBUG = 1;
+const int DEBUG = 0;
 
 /* ----------------------------------------------------------------
  * Game globals

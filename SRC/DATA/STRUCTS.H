@@ -79,10 +79,12 @@ NPC {
 };
 
 QUEST {
-  char name[100];
   int reward;
   int penalty;
-  int type;
+  int type;  
+  int target_system;
+  int target_sector;
+  int cargo;
   NPC* giver;
 };
 

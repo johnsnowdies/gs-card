@@ -209,7 +209,7 @@
  * ---------------------------------------------------------------- */
 
 #define LC_QUEST_TYPE_1 "Доставка груза"
-#define LC_QUEST_TYPE_2 "Доставка груза в уgаленную систему"
+#define LC_QUEST_TYPE_2 "Дальняя gоставка груза"
 #define LC_QUEST_TYPE_3 "Контрабанgа"
 #define LC_QUEST_TYPE_4 "VIP пассажир"
 #define LC_QUEST_TYPE_5 "Сбросить маяк"
@@ -617,7 +617,7 @@
  * ---------------------------------------------------------------- */
 
 #define LC_QUEST_TYPE_1 "Cargo Delivery"
-#define LC_QUEST_TYPE_2 "Cargo Delivery to Remote System"
+#define LC_QUEST_TYPE_2 "Far Cargo Delivery"
 #define LC_QUEST_TYPE_3 "Smuggling"
 #define LC_QUEST_TYPE_4 "VIP Passenger"
 #define LC_QUEST_TYPE_5 "Deploy Beacon"

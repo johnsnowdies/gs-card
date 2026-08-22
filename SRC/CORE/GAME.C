@@ -16,7 +16,7 @@ extern char* data_sectors[SECTORS_COUNT];
  * Name constants
  */
 
-#define N_SIZE 15
+#define N_SIZE 10
 
 const char* IRISH_MALE_FIRST[] = {
     LC_GEN_FNAME_MALE_IRISH_1,
@@ -28,30 +28,7 @@ const char* IRISH_MALE_FIRST[] = {
     LC_GEN_FNAME_MALE_IRISH_7,
     LC_GEN_FNAME_MALE_IRISH_8,
     LC_GEN_FNAME_MALE_IRISH_9,
-    LC_GEN_FNAME_MALE_IRISH_10,
-    LC_GEN_FNAME_MALE_IRISH_11,
-    LC_GEN_FNAME_MALE_IRISH_12,
-    LC_GEN_FNAME_MALE_IRISH_13,
-    LC_GEN_FNAME_MALE_IRISH_14,
-    LC_GEN_FNAME_MALE_IRISH_15
-};
-
-const char* IRISH_FEMALE_FIRST[] = {
-    LC_GEN_FNAME_FEMALE_IRISH_1,
-    LC_GEN_FNAME_FEMALE_IRISH_2,
-    LC_GEN_FNAME_FEMALE_IRISH_3,
-    LC_GEN_FNAME_FEMALE_IRISH_4,
-    LC_GEN_FNAME_FEMALE_IRISH_5,
-    LC_GEN_FNAME_FEMALE_IRISH_6,
-    LC_GEN_FNAME_FEMALE_IRISH_7,
-    LC_GEN_FNAME_FEMALE_IRISH_8,
-    LC_GEN_FNAME_FEMALE_IRISH_9,
-    LC_GEN_FNAME_FEMALE_IRISH_10,
-    LC_GEN_FNAME_FEMALE_IRISH_11,
-    LC_GEN_FNAME_FEMALE_IRISH_12,
-    LC_GEN_FNAME_FEMALE_IRISH_13,
-    LC_GEN_FNAME_FEMALE_IRISH_14,
-    LC_GEN_FNAME_FEMALE_IRISH_15
+    LC_GEN_FNAME_MALE_IRISH_10
 };
 
 const char* IRISH_LAST[] = {
@@ -64,12 +41,7 @@ const char* IRISH_LAST[] = {
     LC_GEN_LNAME_IRISH_7,
     LC_GEN_LNAME_IRISH_8,
     LC_GEN_LNAME_IRISH_9,
-    LC_GEN_LNAME_IRISH_10,
-    LC_GEN_LNAME_IRISH_11,
-    LC_GEN_LNAME_IRISH_12,
-    LC_GEN_LNAME_IRISH_13,
-    LC_GEN_LNAME_IRISH_14,
-    LC_GEN_LNAME_IRISH_15
+    LC_GEN_LNAME_IRISH_10
 };
 
 const char* ARAB_MALE_FIRST[] = {
@@ -82,31 +54,9 @@ const char* ARAB_MALE_FIRST[] = {
     LC_GEN_FNAME_MALE_ARAB_7,
     LC_GEN_FNAME_MALE_ARAB_8,
     LC_GEN_FNAME_MALE_ARAB_9,
-    LC_GEN_FNAME_MALE_ARAB_10,
-    LC_GEN_FNAME_MALE_ARAB_11,
-    LC_GEN_FNAME_MALE_ARAB_12,
-    LC_GEN_FNAME_MALE_ARAB_13,
-    LC_GEN_FNAME_MALE_ARAB_14,
-    LC_GEN_FNAME_MALE_ARAB_15
+    LC_GEN_FNAME_MALE_ARAB_10
 };
 
-const char* ARAB_FEMALE_FIRST[] = {
-    LC_GEN_FNAME_FEMALE_ARAB_1,
-    LC_GEN_FNAME_FEMALE_ARAB_2,
-    LC_GEN_FNAME_FEMALE_ARAB_3,
-    LC_GEN_FNAME_FEMALE_ARAB_4,
-    LC_GEN_FNAME_FEMALE_ARAB_5,
-    LC_GEN_FNAME_FEMALE_ARAB_6,
-    LC_GEN_FNAME_FEMALE_ARAB_7,
-    LC_GEN_FNAME_FEMALE_ARAB_8,
-    LC_GEN_FNAME_FEMALE_ARAB_9,
-    LC_GEN_FNAME_FEMALE_ARAB_10,
-    LC_GEN_FNAME_FEMALE_ARAB_11,
-    LC_GEN_FNAME_FEMALE_ARAB_12,
-    LC_GEN_FNAME_FEMALE_ARAB_13,
-    LC_GEN_FNAME_FEMALE_ARAB_14,
-    LC_GEN_FNAME_FEMALE_ARAB_15
-};
 
 const char* ARAB_LAST[] = {
     LC_GEN_LNAME_ARAB_1,
@@ -118,12 +68,7 @@ const char* ARAB_LAST[] = {
     LC_GEN_LNAME_ARAB_7,
     LC_GEN_LNAME_ARAB_8,
     LC_GEN_LNAME_ARAB_9,
-    LC_GEN_LNAME_ARAB_10,
-    LC_GEN_LNAME_ARAB_11,
-    LC_GEN_LNAME_ARAB_12,
-    LC_GEN_LNAME_ARAB_13,
-    LC_GEN_LNAME_ARAB_14,
-    LC_GEN_LNAME_ARAB_15
+    LC_GEN_LNAME_ARAB_10
 };
 
 const char* COMMON_MALE_FIRST[] = {
@@ -136,30 +81,7 @@ const char* COMMON_MALE_FIRST[] = {
     LC_GEN_FNAME_MALE_COMMON_7,
     LC_GEN_FNAME_MALE_COMMON_8,
     LC_GEN_FNAME_MALE_COMMON_9,
-    LC_GEN_FNAME_MALE_COMMON_10,
-    LC_GEN_FNAME_MALE_COMMON_11,
-    LC_GEN_FNAME_MALE_COMMON_12,
-    LC_GEN_FNAME_MALE_COMMON_13,
-    LC_GEN_FNAME_MALE_COMMON_14,
-    LC_GEN_FNAME_MALE_COMMON_15
-};
-
-const char* COMMON_FEMALE_FIRST[] = {
-    LC_GEN_FNAME_FEMALE_COMMON_1,
-    LC_GEN_FNAME_FEMALE_COMMON_2,
-    LC_GEN_FNAME_FEMALE_COMMON_3,
-    LC_GEN_FNAME_FEMALE_COMMON_4,
-    LC_GEN_FNAME_FEMALE_COMMON_5,
-    LC_GEN_FNAME_FEMALE_COMMON_6,
-    LC_GEN_FNAME_FEMALE_COMMON_7,
-    LC_GEN_FNAME_FEMALE_COMMON_8,
-    LC_GEN_FNAME_FEMALE_COMMON_9,
-    LC_GEN_FNAME_FEMALE_COMMON_10,
-    LC_GEN_FNAME_FEMALE_COMMON_11,
-    LC_GEN_FNAME_FEMALE_COMMON_12,
-    LC_GEN_FNAME_FEMALE_COMMON_13,
-    LC_GEN_FNAME_FEMALE_COMMON_14,
-    LC_GEN_FNAME_FEMALE_COMMON_15
+    LC_GEN_FNAME_MALE_COMMON_10
 };
 
 const char* COMMON_LAST[] = {
@@ -172,12 +94,16 @@ const char* COMMON_LAST[] = {
     LC_GEN_LNAME_COMMON_7,
     LC_GEN_LNAME_COMMON_8,
     LC_GEN_LNAME_COMMON_9,
-    LC_GEN_LNAME_COMMON_10,
-    LC_GEN_LNAME_COMMON_11,
-    LC_GEN_LNAME_COMMON_12,
-    LC_GEN_LNAME_COMMON_13,
-    LC_GEN_LNAME_COMMON_14,
-    LC_GEN_LNAME_COMMON_15
+    LC_GEN_LNAME_COMMON_10
+};
+
+char* QUEST_TYPES[] = {
+    "",
+    LC_QUEST_TYPE_1,
+    LC_QUEST_TYPE_2,
+    LC_QUEST_TYPE_3,
+    LC_QUEST_TYPE_4,
+    LC_QUEST_TYPE_5
 };
 
 /*
@@ -186,41 +112,24 @@ const char* COMMON_LAST[] = {
 
 void core_game_gen_npc(NPC* npc_ptr, int faction)
 {
-    int gender = (rand() % 3 == 0)? 0: 1;
-
     npc_ptr->faction = faction;
     npc_ptr->portrait = 0;
 
     switch(faction){
         case 0:
         case 3:
-            if (gender == 0){
-                sprintf(npc_ptr->name, "%s %s", IRISH_FEMALE_FIRST[rand()%15], IRISH_LAST[rand()%15]);
-            }else{
-                sprintf(npc_ptr->name, "%s %s", IRISH_MALE_FIRST[rand()%15], IRISH_LAST[rand()%15]);
-            }
+            sprintf(npc_ptr->name, "%s %s", IRISH_MALE_FIRST[rand()%15], IRISH_LAST[rand()%15]);
         break;
 
         case 1:
-            if (gender == 0){
-                sprintf(npc_ptr->name, "%s %s", ARAB_FEMALE_FIRST[rand()%15], ARAB_LAST[rand()%15]);
-            }else{
-                sprintf(npc_ptr->name, "%s %s", ARAB_MALE_FIRST[rand()%15], ARAB_LAST[rand()%15]);
-            }
+            sprintf(npc_ptr->name, "%s %s", ARAB_MALE_FIRST[rand()%15], ARAB_LAST[rand()%15]);
         break;
 
         default:
-            if (gender == 0){
-                sprintf(npc_ptr->name, "%s %s", COMMON_FEMALE_FIRST[rand()%15], COMMON_LAST[rand()%15]);
-            }else{
-                sprintf(npc_ptr->name, "%s %s", COMMON_MALE_FIRST[rand()%15], COMMON_LAST[rand()%15]);
-            }
+            sprintf(npc_ptr->name, "%s %s", COMMON_MALE_FIRST[rand()%15], COMMON_LAST[rand()%15]);
         break;
     }
 }
-
-/*
-
 
 static int pick_target_system(int current, int min_dist, int max_dist) {
     int candidates[1000]; 
@@ -228,7 +137,7 @@ static int pick_target_system(int current, int min_dist, int max_dist) {
     int* distances = (int*)malloc(sol_size * sizeof(int));
     if (!distances) return -1;
 
-    core_finder_calc_distances(current, distances, 999);
+    core_finder_calc_distances(sol_size, &sol_list, current, distances, 999);
 
     for (i = 0; i < sol_size; i++) {
         if (i == current) continue;
@@ -286,6 +195,51 @@ static int calc_reward(int type, int cargo, int distance) {
 
 void core_game_gen_quest(QUEST* quest_ptr, int player_rep, SYSTEM* current_system)
 {
+    int type, target, cargo, distance, reward, penalty, r;
+    int* dist_arr;
 
-   
-}*/
+    r = rand() % 100;
+    if (r < 50) type = 1;
+    else if (r < 75) type = 2;
+    else if (r < 90) type = 3;
+    else if (r < 95) type = 4;
+    else type = 5;
+
+    if (type == 1)
+        target = pick_target_system(gs.current_system, 1, 10);
+    else if (type == 2)
+        target = pick_target_system(gs.current_system, 11, 50);
+    else
+        target = pick_target_system(gs.current_system, 1, 50);
+
+    if (type <= 3) 
+        cargo = generate_cargo();
+    else 
+        cargo = 1;
+
+    dist_arr = (int*)malloc(sol_size * sizeof(int));
+    if (dist_arr) {
+        core_finder_calc_distances(sol_size, &sol_list, gs.current_system, dist_arr, 999);
+        distance = dist_arr[target];
+        free(dist_arr);
+    } else {
+        distance = 1;
+    }
+    if (distance < 1) distance = 1;
+
+    reward = calc_reward(type, cargo, distance);
+
+    penalty = (int)(reward * (0.5 - player_rep * 0.0004));
+    if (penalty < (int)(reward * 0.1)) penalty = (int)(reward * 0.1);
+    if (penalty < 0) penalty = 0;
+
+    core_game_gen_npc(&(quest_ptr->giver), current_system->faction);
+
+    quest_ptr->reward = reward;
+    quest_ptr->penalty = penalty;
+    quest_ptr->target_system = target;
+    quest_ptr->target_sector = sol_list[target].sector;
+    quest_ptr->cargo = cargo;
+    quest_ptr->type = type;
+
+}

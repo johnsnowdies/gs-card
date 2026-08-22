@@ -59,17 +59,14 @@ void core_finder_calc_threads_costs(int sol_size, SYSTEM* sol_list, int topCost)
     if (j % max(1, sol_size / 50) == 0 || j == sol_size - 1)
       gui_progress_wnd("GSCARD 1.5", wndLabel, j, sol_size);
 
-    /* All threads for 'a' */
     for (i = 0; i < a.threadSize; i++) {
       k = a.threads[i].value;
       b = sol_list[k];
 
-      /* a -> b */
 
       for (n = 0; n < sol_size; n++) {
         c = sol_list[n];
 
-        /* All threads for 'c' */
         for (m = 0; m < c.threadSize; m++) {
           int p[3][3];
           int cross;
@@ -219,7 +216,6 @@ int core_finder_get_way(int sol_size, SYSTEM* sol_list, WAYPOINT* wp) {
   end = atoi(input);
 
   if (start > 0 && end > 0 && start < sol_size && end < sol_size) {
-    /* DIRECT DIRECTION*/
     core_finder_run_wave(sol_size, sol_list, start, end);
     if (gotEnd) {
       status = core_finder_restore_path(sol_size, sol_list, wp, start, end, 1);
@@ -338,7 +334,6 @@ void core_finder_calc_hyper_threads(int sol_size, SYSTEM* sol_list) {
     a = sol_list[i];
     a.threadSize = 0;
 
-    /* throttle progress bar: ????????? ?????? N/50 ??? ???? ?? ??? */
     if (i % max(1, sol_size / 50) == 0 || i == sol_size - 1)
       gui_progress_wnd("GSCARD", "Processing hyper-threads calculation", i, sol_size);
 
@@ -352,10 +347,8 @@ void core_finder_calc_hyper_threads(int sol_size, SYSTEM* sol_list) {
       dy = (double)(a.y - b.y);
       dz = (double)(a.z - b.z);
 
-      /* pow(x,2.0) ??????? ?? x*x -- ? ~50-100x ??????? */
       distSq = dx * dx + dy * dy + dz * dz;
 
-      /* ?????????? ????????, ????? ?? ???????? sqrt */
       if (distSq > 130.0 * 130.0) error = 1;
 
       if (!error && cnt < 15) {
@@ -372,7 +365,6 @@ void core_finder_calc_hyper_threads(int sol_size, SYSTEM* sol_list) {
         exit(1);
       }
 
-      /* ???????: ???? k < 15 (buffer overflow ??? cnt < 15) */
       for (k = 0; k < cnt; k++) {
         int val = buffer[k];
         sol_list[i].threads[k].value = val;
@@ -387,8 +379,8 @@ void core_finder_calc_hyper_threads(int sol_size, SYSTEM* sol_list) {
     core_finder_calc_threads_costs(sol_size, sol_list, 1);
     }
 }
-/*
-void core_finder_calc_distances(int start, int* distances, int max_dist) {
+
+void core_finder_calc_distances(int sol_size, SYSTEM* sol_list, int start, int* distances, int max_dist) {
     int i, head = 0, tail = 0;
     int* queue = (int*)malloc(sol_size * sizeof(int));
     if (!queue) return;
@@ -416,5 +408,3 @@ void core_finder_calc_distances(int start, int* distances, int max_dist) {
     }
     free(queue);
 }
-
-*/
