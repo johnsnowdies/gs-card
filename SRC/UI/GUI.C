@@ -77,12 +77,12 @@ void gui_top_status_line()
     outtextxy(xpos, 2, LC_GUI_STATUS_INFO);
 
     xpos += 40;
-    sprintf(buf, "SA.%d (%d) | %s: %ld$$ | %s: %d%% | %s: %d/%d = %ld$$",
+    sprintf(buf, "SA.%d (%d) | %s: %ld$$ | %s: %d%% | %s: %d/%d",
         gs.current_system,
         sol_list[gs.current_system].threadSize,
         LC_GUI_STATUS_BALANCE, gs.balance,
         LC_GUI_STATUS_FUEL, gs.fuel,
-        LC_GUI_STATUS_CARGO, gs.current_cargo, gs.tonnage, gs.cargo_value);
+        LC_GUI_STATUS_CARGO, gs.current_cargo, gs.tonnage);
     
     setcolor(TEXT_COLOR);
     outtextxy(xpos, 2, buf);

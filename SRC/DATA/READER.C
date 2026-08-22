@@ -336,3 +336,55 @@ int save_game(GAMESTATE* state, char* filename)
     fclose(fp);
     return 1;
 }
+
+
+void draw_4bit_bmp(char *filename, int px, int py)
+{
+    FILE *fp;
+    long offbits;
+    int w, h, bitcount;
+    int rowlen;
+    unsigned char *row;
+    int x, y;
+
+    fp = fopen(filename, "rb");
+    if (!fp) return;
+
+    fseek(fp, 10, SEEK_SET);
+    offbits = fgetc(fp) + (fgetc(fp) << 8) + (fgetc(fp) << 16) + (fgetc(fp) << 24);
+
+    fseek(fp, 18, SEEK_SET);
+    w = fgetc(fp) + (fgetc(fp) << 8) + (fgetc(fp) << 16) + (fgetc(fp) << 24);
+    h = fgetc(fp) + (fgetc(fp) << 8) + (fgetc(fp) << 16) + (fgetc(fp) << 24);
+
+    fseek(fp, 28, SEEK_SET);
+    bitcount = fgetc(fp) + (fgetc(fp) << 8);
+    if (bitcount != 4) {
+        fclose(fp);
+        return;
+    }
+
+    rowlen = ((w + 1) / 2 + 3) & ~3;
+    row = (unsigned char *)malloc(rowlen);
+    if (!row) {
+        fclose(fp);
+        return;
+    }
+
+    fseek(fp, offbits, SEEK_SET);
+    for (y = h - 1; y >= 0; y--) {
+        fread(row, 1, rowlen, fp);
+        for (x = 0; x < w; x++) {
+            unsigned char byte = row[x / 2];
+            unsigned char idx;
+            if (x % 2 == 0)
+                idx = byte >> 4;      /* левый пиксель — старший полубайт */
+            else
+                idx = byte & 0x0F;    /* правый пиксель — младший полубайт */
+            putpixel(px + x, py + y, idx);
+        }
+    }
+
+    free(row);
+    fclose(fp);
+}

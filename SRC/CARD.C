@@ -154,7 +154,7 @@ static void new_game(char *name, int sol_size)
 
     strcpy(gs.captain_name, name);
     gs.balance            = 100;
-    gs.current_system     = rand() % sol_size;
+    gs.current_system     = 87; /*rand() % sol_size;*/
     if (gs.current_system < 0) gs.current_system = 0;
     if (gs.current_system >= sol_size) gs.current_system = 0;
 
@@ -204,6 +204,7 @@ static int load_save(char *filename)
         obj_size = load_object(&obj_list);
 
         gui_map_nav_move_screen_to(sol_list, gs.current_system);
+        core_game_run_event();
 
         wp.size = 0;
         current_point = -1;
@@ -380,9 +381,10 @@ int main()
                     sprintf(buf, LC_CARD_READY_TO_JUMP, wp.way[0], wp.way[1]);
                     
                     if (gui_bool_wnd(LC_CARD_JUMP_WND_HEAD, buf)) {
-                        core_game_run_event();
+                        
                         gs.current_system = wp.way[1];
                         game_mark_visited(&gs, gs.current_system);
+                        core_game_run_event();
                         gs.fuel -= data_hyper_fuel[gs.hyper_class];
                         sprintf(buf, LC_CARD_JUMP_RESULT_TEXT, wp.way[1]);
                         wp.size = 0;

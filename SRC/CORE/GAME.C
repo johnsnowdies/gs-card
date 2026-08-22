@@ -34,10 +34,9 @@ char* QUEST_TYPES[] = {
  * Quests
  */
 
-void core_game_gen_npc(NPC* npc_ptr, int faction)
+void core_game_gen_npc(NPC* npc_ptr, unsigned int faction)
 {
-
-    /*
+/*
     * Name constants
     */
 
@@ -126,15 +125,15 @@ void core_game_gen_npc(NPC* npc_ptr, int faction)
     switch(faction){
         case 1:
         case 3:
-            sprintf(npc_ptr->name, "%s %s", IRISH_MALE_FIRST[rand()%15], IRISH_LAST[rand()%15]);
+            sprintf(npc_ptr->name, "%s %s", IRISH_MALE_FIRST[rand()%10], IRISH_LAST[rand()%10]);
         break;
 
         case 0:
-            sprintf(npc_ptr->name, "%s %s", ARAB_MALE_FIRST[rand()%15], ARAB_LAST[rand()%15]);
+            sprintf(npc_ptr->name, "%s %s", ARAB_MALE_FIRST[rand()%10], ARAB_LAST[rand()%10]);
         break;
 
         default:
-            sprintf(npc_ptr->name, "%s %s", COMMON_MALE_FIRST[rand()%15], COMMON_LAST[rand()%15]);
+            sprintf(npc_ptr->name, "%s %s", COMMON_MALE_FIRST[rand()%10], COMMON_LAST[rand()%10]);
         break;
     }
 }
@@ -201,7 +200,7 @@ static int calc_reward(int type, int cargo, int distance) {
     }
 }
 
-void core_game_gen_quest(QUEST* quest_ptr, int player_rep, SYSTEM* current_system)
+void core_game_gen_quest(QUEST* quest_ptr, int player_rep, unsigned int faction)
 {
     int type, target, cargo, distance, reward, penalty, r;
     int* dist_arr;
@@ -227,7 +226,7 @@ void core_game_gen_quest(QUEST* quest_ptr, int player_rep, SYSTEM* current_syste
 
     dist_arr = (int*)malloc(sol_size * sizeof(int));
     if (dist_arr) {
-        core_finder_calc_distances(gs.current_system, dist_arr, 999);
+        core_finder_calc_distances(gs.current_system, dist_arr, 50);
         distance = dist_arr[target];
         free(dist_arr);
     } else {
@@ -242,7 +241,7 @@ void core_game_gen_quest(QUEST* quest_ptr, int player_rep, SYSTEM* current_syste
     if (penalty < 0) penalty = 0;
 
     quest_ptr->giver = (NPC*)malloc(sizeof(NPC));
-    core_game_gen_npc(quest_ptr->giver, current_system->faction);
+    core_game_gen_npc(quest_ptr->giver, faction);
 
     quest_ptr->reward = reward;
     quest_ptr->penalty = penalty;
@@ -263,7 +262,6 @@ void core_game_run_event()
     int i = 0;
     /* System quests generator */
     for (i = 0; i < 5; i++) {
-        
-        core_game_gen_quest(&system_quests[i], gs.reputation, &sol_list[gs.current_system]);
+        core_game_gen_quest(&system_quests[i], gs.reputation, sol_list[gs.current_system].faction);
     }
 }

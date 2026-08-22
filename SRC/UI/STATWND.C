@@ -91,6 +91,8 @@ void gui_status_quest_info(int selected)
     rectangle(quest_info_wnd.x1 + 10, quest_info_wnd.y1 + 30, quest_info_wnd.x1 + 150, quest_info_wnd.y1 + 200);
     settextstyle(SMALL_FONT, HORIZ_DIR, 6);
     outtextxy(quest_info_wnd.x1+40, quest_info_wnd.y1 + 100, "NO PHOTO");
+
+    draw_4bit_bmp("1.bmp", 20, 60);
     
     setcolor(15);
     outtextxy(quest_info_wnd.x1+160, quest_info_wnd.y1 + 30, QUEST_TYPES[system_quests[selected].type]);
@@ -109,23 +111,23 @@ void gui_status_quest_info(int selected)
 
     switch(system_quests[selected].type){
     case 1:
-        sprintf(prequest, LC_QUEST_PREQUEST_TYPE_1, system, data_sectors[system_quests[selected].target_sector]);
+        sprintf(prequest, LC_QUEST_TYPE_1_LINE_1, system, data_sectors[system_quests[selected].target_sector]);
         sprintf(reward, LC_QUEST_REWARD_1, system_quests[selected].reward);
         break;
     case 2:
-        sprintf(prequest, LC_QUEST_PREQUEST_TYPE_2, system, data_sectors[system_quests[selected].target_sector]);
+        sprintf(prequest, LC_QUEST_TYPE_2_LINE_1, system, data_sectors[system_quests[selected].target_sector]);
         sprintf(reward, LC_QUEST_REWARD_2, system_quests[selected].reward);
         break;
     case 3: 
-        sprintf(prequest, LC_QUEST_PREQUEST_TYPE_3, system, data_sectors[system_quests[selected].target_sector]);
+        sprintf(prequest, LC_QUEST_TYPE_3_LINE_1, system, data_sectors[system_quests[selected].target_sector]);
         sprintf(reward, LC_QUEST_REWARD_3, system_quests[selected].reward);
         break;
     case 4:
-        sprintf(prequest, LC_QUEST_PREQUEST_TYPE_4, system, data_sectors[system_quests[selected].target_sector]);
+        sprintf(prequest, LC_QUEST_TYPE_4_LINE_1, system, data_sectors[system_quests[selected].target_sector]);
         sprintf(reward, LC_QUEST_REWARD_4, system_quests[selected].reward);
         break;
     case 5:
-        sprintf(prequest, LC_QUEST_PREQUEST_TYPE_5, system, data_sectors[system_quests[selected].target_sector]);
+        sprintf(prequest, LC_QUEST_TYPE_5_LINE_1, system, data_sectors[system_quests[selected].target_sector]);
         sprintf(reward, LC_QUEST_REWARD_5, system_quests[selected].reward);
         break;
     }
@@ -147,13 +149,20 @@ void gui_status_quest_wnd(int selected)
     setfillstyle(SOLID_FILL, BLACK);
     bar(x_pos, y_pos, 630, 459);
 
+    setfillstyle(SOLID_FILL, RED);
+    bar(0, y_pos-20, 640, y_pos - 50);
+
+    setcolor(0);
+    settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
+    outtextxy(10, y_pos-42, LC_QUEST_NEW_HEAD);
+
     sprintf(line, "%-25.25s %-15.15s %-6.6s %6s %6s %6s",  
-            "Заgача", 
-            "Сектор", 
-            "Система",
-            "Груз", 
-            "Награgа", 
-            "Штраф");
+            LC_QUEST_TABLE_1,
+            LC_QUEST_TABLE_2,
+            LC_QUEST_TABLE_3,
+            LC_QUEST_TABLE_4,
+            LC_QUEST_TABLE_5,
+            LC_QUEST_TABLE_6);
     settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
     setcolor(4);
     outtextxy(x_pos, y_pos - 15, line);

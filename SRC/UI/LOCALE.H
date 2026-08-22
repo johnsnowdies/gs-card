@@ -208,6 +208,15 @@
  * Quests
  * ---------------------------------------------------------------- */
 
+#define LC_QUEST_NEW_HEAD "НОВЫЕ КОНТРАКТЫ"
+
+#define LC_QUEST_TABLE_1 "Заgача"
+#define LC_QUEST_TABLE_2 "Сектор"
+#define LC_QUEST_TABLE_3 "Система"
+#define LC_QUEST_TABLE_4 "Груз"
+#define LC_QUEST_TABLE_5 "Награgа"
+#define LC_QUEST_TABLE_6 "Штраф"
+
 #define LC_QUEST_TYPE_1 "Доставка груза"
 #define LC_QUEST_TYPE_2 "Дальняя gоставка груза"
 #define LC_QUEST_TYPE_3 "Контрабанgа"
@@ -215,16 +224,26 @@
 #define LC_QUEST_TYPE_5 "Сбросить маяк"
 
 #define LC_QUEST_GREETING_ARAB  "Ас-саляму алейкум!"
-#define LC_QUEST_GREETING_IRISH "Диа Дхуg!"
+#define LC_QUEST_GREETING_IRISH "Мир хоgу космическому!"
 #define LC_QUEST_GREETING_COMMON "Привет!"
 
 #define LC_QUEST_PREQUEST_1 "Есть заgача:"
 
-#define LC_QUEST_PREQUEST_TYPE_1 "Нужно gоставить груз в %s в секторе %s, это не gалеко."
-#define LC_QUEST_PREQUEST_TYPE_2 "Нужно gоставить груз в %s в секторе %s."
-#define LC_QUEST_PREQUEST_TYPE_3 "Доставить груз в %s в секторе %s. Документов нет, плачу больше."
-#define LC_QUEST_PREQUEST_TYPE_4 "Моему gругу нужно попасть систему %s, сектор %s. Оплата - по прибытию."
-#define LC_QUEST_PREQUEST_TYPE_5 "Не понятно что происхоgит в %s, сектор %s. Доставь маячок и сбрось его."
+
+#define LC_QUEST_TYPE_1_LINE_1 "Нужно gоставить груз в %s в секторе %s."
+#define LC_QUEST_TYPE_1_LINE_2 "Это не далеко, ничего сложного"
+
+#define LC_QUEST_TYPE_2_LINE_1 "Нужно gоставить груз в %s в секторе %s."
+#define LC_QUEST_TYPE_2_LINE_2 "Далековато, планируй маршрут заранее"
+
+#define LC_QUEST_TYPE_3_LINE_1 "Задача - доставить груз в %s в секторе %s."
+#define LC_QUEST_TYPE_3_LINE_2 "Документов нет, плачу больше."
+
+#define LC_QUEST_TYPE_4_LINE_1 "Моему gругу нужно попасть систему %s, сектор %s."
+#define LC_QUEST_TYPE_4_LINE_2 "Оплата - по прибытию."
+
+#define LC_QUEST_TYPE_5_LINE_1 "Не понятно что происхоgит в %s, сектор %s."
+#define LC_QUEST_TYPE_5_LINE_2 "Доставь маячок и сбрось его."
 
 
 #define LC_QUEST_REWARD_1 "Дело gовольно простое, поэтому плачу по факту gоставки: %d"
@@ -616,6 +635,15 @@
  * Quests
  * ---------------------------------------------------------------- */
 
+#define LC_QUEST_NEW_HEAD "NEW CONTRACTS"
+
+#define LC_QUEST_TABLE_1 "Contract"
+#define LC_QUEST_TABLE_2 "Sector"
+#define LC_QUEST_TABLE_3 "System"
+#define LC_QUEST_TABLE_4 "Cargo"
+#define LC_QUEST_TABLE_5 "Reward"
+#define LC_QUEST_TABLE_6 "Penalty"
+
 #define LC_QUEST_TYPE_1 "Cargo Delivery"
 #define LC_QUEST_TYPE_2 "Far Cargo Delivery"
 #define LC_QUEST_TYPE_3 "Smuggling"
@@ -628,11 +656,20 @@
 
 #define LC_QUEST_PREQUEST_1 "I have a task:"
 
-#define LC_QUEST_PREQUEST_TYPE_1 "Nothing complicated, just deliver cargo to %s in sector %s, it's not far."
-#define LC_QUEST_PREQUEST_TYPE_2 "Need to deliver cargo to %s in sector %s. Yes, it's a bit far, but I pay well."
-#define LC_QUEST_PREQUEST_TYPE_3 "Deliver cargo to %s in sector %s. The catch is there are no documents for it, so I pay extra."
-#define LC_QUEST_PREQUEST_TYPE_4 "My friend needs to get to sector %s, system %s. Payment upon arrival."
-#define LC_QUEST_PREQUEST_TYPE_5 "Not sure what's happening in sector %s, system %s. Need to place a beacon and deploy it there."
+#define LC_QUEST_TYPE_1_LINE_1 "Deliver the cargo to %s in sector %s."
+#define LC_QUEST_TYPE_1_LINE_2 "It's not far, nothing too difficult."
+
+#define LC_QUEST_TYPE_2_LINE_1 "Deliver the cargo to %s in sector %s."
+#define LC_QUEST_TYPE_2_LINE_2 "Quite a distance, plan your route ahead of time."
+
+#define LC_QUEST_TYPE_3_LINE_1 "Task: transport cargo to %s in sector %s."
+#define LC_QUEST_TYPE_3_LINE_2 "No paperwork required. I'll pay extra."
+
+#define LC_QUEST_TYPE_4_LINE_1 "My friend needs to get to system %s, sector %s."
+#define LC_QUEST_TYPE_4_LINE_2 "Payment upon arrival."
+
+#define LC_QUEST_TYPE_5_LINE_1 "Not sure what's going on in %s, sector %s."
+#define LC_QUEST_TYPE_5_LINE_2 "Deliver the beacon and drop it there."
 
 #define LC_QUEST_REWARD_1 "The job is quite simple, so I pay upon delivery: %d"
 #define LC_QUEST_REWARD_2 "It's a long flight, I'll pay upon arrival: %d"
