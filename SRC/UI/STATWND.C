@@ -38,7 +38,7 @@ extern QUEST system_quests[5];
 extern unsigned int system_quest_selected;
 
 /* ----------------------------------------------------------------
- * gui_status_bottom_status_line -- bottom shortcut bar + memory usage
+ * gui_status_bottom_status_line -- bottom shortcut bar
  * ---------------------------------------------------------------- */
 void gui_status_bottom_status_line()
 {
@@ -48,7 +48,7 @@ void gui_status_bottom_status_line()
 
     status_line.x = 0;
     status_line.y = STATUSBAR_Y;
-    status_line.width = MAP_WND_WIDTH;
+    status_line.width = STATUSBAR_WIDTH;
     status_line.height = STATUSBAR_H;
     status_line.header = NULL;
 
@@ -63,7 +63,7 @@ void gui_status_quest_info(WND *quest_info_wnd, int selected)
         "M", "F"
     };
 
-    gui_draw_wnd_proto(quest_info_wnd);   /* используем новую функцию отрисовки окна */
+    gui_draw_wnd_proto(quest_info_wnd);
 
     setcolor(4);
     rectangle(quest_info_wnd->x + 9, quest_info_wnd->y + 29, quest_info_wnd->x + 150, quest_info_wnd->y + 200);
@@ -153,14 +153,12 @@ void gui_status_quest_list(WND *status_wnd, int selected)
     char line[100];
     int i = 0, y_pos, x_pos;
 
-    y_pos = status_wnd->y + 220;   /* позиция начала списка */
+    y_pos = status_wnd->y + 220;
     x_pos = status_wnd->x + 10;
 
-    /* Очистка области списка */
     setfillstyle(SOLID_FILL, BLACK);
-    bar(x_pos, y_pos, status_wnd->x + status_wnd->width - 10, status_wnd->y + status_wnd->height - 1);
+    bar(x_pos, y_pos, status_wnd->x + status_wnd->width - 11, status_wnd->y + status_wnd->height - 2);
 
-    /* Красный заголовок */
     setfillstyle(SOLID_FILL, RED);
     bar(status_wnd->x, y_pos - 20, status_wnd->x + status_wnd->width, y_pos - 50);
 
@@ -168,7 +166,6 @@ void gui_status_quest_list(WND *status_wnd, int selected)
     settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
     outtextxy(status_wnd->x + 10, y_pos - 42, LC_QUEST_NEW_HEAD);
 
-    /* Заголовки столбцов */
     sprintf(line, "%-25.25s %-15.15s %-6.6s %6s %6s %6s",  
             LC_QUEST_TABLE_1,
             LC_QUEST_TABLE_2,
@@ -181,7 +178,6 @@ void gui_status_quest_list(WND *status_wnd, int selected)
     outtextxy(x_pos, y_pos - 15, line);
     setcolor(15);
 
-    /* Список квестов */
     for (i = 0; i < 5; i++) {
         char buf[128], system[16];
         sprintf(system, "SA.%d", system_quests[i].target_system);
@@ -217,10 +213,6 @@ void draw_player_status(WND *status_wnd)
     sprintf(current_system, "%s: SA.%d", LC_STATUS_WND_SYSTEM, gs.current_system);
     sprintf(sector, "%s: %s", LC_STATUS_WND_SECTOR, data_sectors[sol_list[gs.current_system].sector]);
 
-    setcolor(4);
-    setlinestyle(0, 0, 1);
-    rectangle(status_wnd->x + 1, status_wnd->y + 1, status_wnd->x + status_wnd->width - 1, status_wnd->y + MAP_WND_HEIGHT - 1);
-
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
     setcolor(15);
 
@@ -238,7 +230,6 @@ void draw_player_status(WND *status_wnd)
 
 void gui_status_wnd()
 {
-    /* Инициализация окон */
     status_wnd.header = "";
     status_wnd.x = 0;
     status_wnd.y = 21;
@@ -259,4 +250,4 @@ void gui_status_wnd()
 
     gui_status_quest_list(&status_wnd, system_quest_selected);
     gui_status_bottom_status_line();
-}
+}

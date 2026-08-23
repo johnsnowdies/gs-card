@@ -25,11 +25,11 @@ char* GAME_MENU_ITEMS[3] = {
 };
 
 
-void gui_menu_wnd(int currentPos, int mode)
+void gui_menu_wnd(WND* ptr_parent, int currentPos, int mode)
 {
     WND menu_wnd;
     int i = 0;
-    int wx = (MAP_WND_WIDTH - WND_W) / 2;
+    int wx = (ptr_parent->width - WND_W) / 2;
     int wy = WND_DEFAULT_Y + 25;
     char **ITEMS;
 
@@ -40,7 +40,7 @@ void gui_menu_wnd(int currentPos, int mode)
 
     menu_wnd.header = "GS-CARD v1.5";
 
-    menu_wnd.x = (MAP_WND_WIDTH - WND_W) / 2;
+    menu_wnd.x = (ptr_parent->width - WND_W) / 2;
     menu_wnd.y = WND_MODAL_DEFAULT_Y;
     menu_wnd.width = WND_MODAL_DEFAULT_WIDTH;
     menu_wnd.height = WND_MODAL_DEFAULT_HEIGHT;

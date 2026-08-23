@@ -23,14 +23,19 @@
 /* ----------------------------------------------------------------
  * Screen / viewport layout -- defined here, declared extern in gui.h
  * ---------------------------------------------------------------- */
-int MAP_WND_WIDTH  = 639;   /* may shrink to 470 when path panel is open */
-int MAP_WND_HEIGHT = 460;
 
+WND map_wnd = {
+    NULL,
+    0,
+    21,
+    639,
+    460
+};
 
 /* Viewport bounds for clipping (map window only) */
-static struct map_wnd {
+static struct map_bounds {
     int x1, y1, x2, y2;
-} map_wnd = { 0, 21, 639, 460 };
+} map_bounds = { 0, 21, 639, 460 };
 
 /* Projection bounds */
 #define MAX_VALUE  1400
@@ -53,9 +58,6 @@ extern unsigned char render_danger_objects;
 extern unsigned char render_bounds;
 extern unsigned char show_danger_hyperthreads;
 extern unsigned char show_danger_path_parts;
-extern unsigned char dirty_path;
-extern unsigned char dirty_topbar;
-extern unsigned char dirty_bottombar;
 
 extern SYSTEM* sol_list;
 extern unsigned int sol_size;
@@ -73,12 +75,12 @@ extern char* data_sectors[SECTORS_COUNT];
 extern unsigned int data_factions_colors[FACTIONS_COUNT];
 
 /* ----------------------------------------------------------------
- * Clipping helpers (safe_*) -- clip against map_wnd
+ * Clipping helpers (safe_*) -- clip against map_bounds
  * ---------------------------------------------------------------- */
 static void safe_putpixel(int x, int y, int c)
 {
-    if (x >= map_wnd.x1 && x <= map_wnd.x2 &&
-        y >= map_wnd.y1 && y <= map_wnd.y2)
+    if (x >= map_bounds.x1 && x <= map_bounds.x2 &&
+        y >= map_bounds.y1 && y <= map_bounds.y2)
         putpixel(x, y, c);
 }
 
@@ -90,22 +92,22 @@ static void safe_line(int x1, int y1, int x2, int y2)
     float dy, dx;
 
     /* Quick reject */
-    if (x1 < map_wnd.x1 && x2 < map_wnd.x1) return;
-    if (x1 > map_wnd.x2 && x2 > map_wnd.x2) return;
-    if (y1 < map_wnd.y1 && y2 < map_wnd.y1) return;
-    if (y1 > map_wnd.y2 && y2 > map_wnd.y2) return;
+    if (x1 < map_bounds.x1 && x2 < map_bounds.x1) return;
+    if (x1 > map_bounds.x2 && x2 > map_bounds.x2) return;
+    if (y1 < map_bounds.y1 && y2 < map_bounds.y1) return;
+    if (y1 > map_bounds.y2 && y2 > map_bounds.y2) return;
 
     /* Cohen-Sutherland */
     while (!done) {
         code1 = 0; code2 = 0;
-        if (y1 < map_wnd.y1) code1 |= 1;
-        if (y1 > map_wnd.y2) code1 |= 2;
-        if (y2 < map_wnd.y1) code2 |= 1;
-        if (y2 > map_wnd.y2) code2 |= 2;
-        if (x1 < map_wnd.x1) code1 |= 4;
-        if (x1 > map_wnd.x2) code1 |= 8;
-        if (x2 < map_wnd.x1) code2 |= 4;
-        if (x2 > map_wnd.x2) code2 |= 8;
+        if (y1 < map_bounds.y1) code1 |= 1;
+        if (y1 > map_bounds.y2) code1 |= 2;
+        if (y2 < map_bounds.y1) code2 |= 1;
+        if (y2 > map_bounds.y2) code2 |= 2;
+        if (x1 < map_bounds.x1) code1 |= 4;
+        if (x1 > map_bounds.x2) code1 |= 8;
+        if (x2 < map_bounds.x1) code2 |= 4;
+        if (x2 > map_bounds.x2) code2 |= 8;
 
         if (code1 == 0 && code2 == 0) { accept = 1; done = 1; }
         else if (code1 & code2)        { done = 1; }
@@ -116,10 +118,10 @@ static void safe_line(int x1, int y1, int x2, int y2)
             dy = (float)(y2 - y1);
             dx = (float)(x2 - x1);
 
-            if      (code & 1) { *yp = map_wnd.y1; if (dy) *xp = x1 + dx * (map_wnd.y1 - y1) / dy; }
-            else if (code & 2) { *yp = map_wnd.y2; if (dy) *xp = x1 + dx * (map_wnd.y2 - y1) / dy; }
-            else if (code & 4) { *xp = map_wnd.x1; if (dx) *yp = y1 + dy * (map_wnd.x1 - x1) / dx; }
-            else if (code & 8) { *xp = map_wnd.x2; if (dx) *yp = y1 + dy * (map_wnd.x2 - x1) / dx; }
+            if      (code & 1) { *yp = map_bounds.y1; if (dy) *xp = x1 + dx * (map_bounds.y1 - y1) / dy; }
+            else if (code & 2) { *yp = map_bounds.y2; if (dy) *xp = x1 + dx * (map_bounds.y2 - y1) / dy; }
+            else if (code & 4) { *xp = map_bounds.x1; if (dx) *yp = y1 + dy * (map_bounds.x1 - x1) / dx; }
+            else if (code & 8) { *xp = map_bounds.x2; if (dx) *yp = y1 + dy * (map_bounds.x2 - x1) / dx; }
         }
     }
     if (accept) line(x1, y1, x2, y2);
@@ -127,17 +129,17 @@ static void safe_line(int x1, int y1, int x2, int y2)
 
 static void safe_outtextxy(int x, int y, char* s)
 {
-    if (x >= map_wnd.x1 && x <= map_wnd.x2 &&
-        x < map_wnd.x2 - textwidth(s) &&
-        y >= map_wnd.y1 && y <= map_wnd.y2 - 60 &&
-        y < map_wnd.y2 - textheight(s) )
+    if (x >= map_bounds.x1 && x <= map_bounds.x2 &&
+        x < map_bounds.x2 - textwidth(s) &&
+        y >= map_bounds.y1 && y <= map_bounds.y2 - 60 &&
+        y < map_bounds.y2 - textheight(s) )
         outtextxy(x, y, s);
 }
 
 static void safe_circle(int x, int y, int r)
 {
-    if (x - r >= map_wnd.x1 && x + r <= map_wnd.x2 &&
-        y - r >= map_wnd.y1 && y + r <= map_wnd.y2)
+    if (x - r >= map_bounds.x1 && x + r <= map_bounds.x2 &&
+        y - r >= map_bounds.y1 && y + r <= map_bounds.y2)
         circle(x, y, r);
 }
 
@@ -177,8 +179,8 @@ static struct point p(float x, float y, float z)
     float a = y / 2.0F;
     struct point res;
 
-    res.x = (int)(MAP_WND_WIDTH  / 2 + (x - a) / xdens);
-    res.y = (int)(MAP_WND_HEIGHT / 2 + (b / ydens) - (z / ydens));
+    res.x = (int)(map_wnd.width  / 2 + (x - a) / xdens);
+    res.y = (int)(map_wnd.height / 2 + (b / ydens) - (z / ydens));
 
     POINT_COLOR = get_color_by_z(z);
 
@@ -257,8 +259,8 @@ static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp)
     int drawThreads = isHyper;
     char c[50] = "";
 
-    xdens = (xmax - xmin) / MAP_WND_WIDTH;
-    ydens = (ymax - ymin) / MAP_WND_HEIGHT;
+    xdens = (xmax - xmin) / map_wnd.width;
+    ydens = (ymax - ymin) / map_wnd.height;
 
     if (isCoord) {
         int x0 = ex(0 + offsetX);
@@ -266,12 +268,12 @@ static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp)
 
         setcolor(15);
         setlinestyle(0, 0, 1);
-        safe_line(x0, y0, MAP_WND_WIDTH, y0);
+        safe_line(x0, y0, map_wnd.width, y0);
         safe_line(x0, y0, x0, 0);
 
         setlinestyle(1, 0, 1);
         safe_line(0, y0, x0, y0);
-        safe_line(x0, MAP_WND_HEIGHT, x0, y0);
+        safe_line(x0, map_wnd.height, x0, y0);
     }
 
     for (i = 0; i < sol_size; i++) {
@@ -311,8 +313,8 @@ static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp)
 
         /* System label */
         if (((xmax <= MAX_VALUE / 10) || i == gs.current_system ) &&
-            ex(sol_list[i].x + offsetX) < (MAP_WND_WIDTH - 80) &&
-            ey(sol_list[i].y + offsetY) < (MAP_WND_HEIGHT - 15)) {
+            ex(sol_list[i].x + offsetX) < (map_wnd.width - 80) &&
+            ey(sol_list[i].y + offsetY) < (map_wnd.height - 15)) {
             
 
             if (game_is_visited(&gs, i)){
@@ -453,8 +455,7 @@ static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp)
     draw_bounds();
 
     setcolor(4);
-    rectangle(0, 21, MAP_WND_WIDTH, MAP_WND_HEIGHT);
-    gui_ad_hypersoft();
+    rectangle(0, 21, map_wnd.width, map_wnd.height);
 }
 
 /* ----------------------------------------------------------------
@@ -467,15 +468,15 @@ static void draw3dwnd(int isCoord, int isHyper, WAYPOINT* wp)
     int drawThreads = isHyper;
     char c[50] = "";
 
-    xdens = (xmax - xmin) / MAP_WND_WIDTH;
-    ydens = (ymax - ymin) / MAP_WND_HEIGHT;
+    xdens = (xmax - xmin) / map_wnd.width;
+    ydens = (ymax - ymin) / map_wnd.height;
 
     if (isCoord) {
         struct point A1 = p(0.0F + offsetX, 0.0F + offsetY, 0.0F + offsetZ);
 
         /* X axis */
         setcolor(15); setlinestyle(0, 0, 1);
-        safe_line(A1.x, A1.y, MAP_WND_WIDTH, A1.y);
+        safe_line(A1.x, A1.y, map_wnd.width, A1.y);
         setlinestyle(1, 0, 1);
         safe_line(0, A1.y, A1.x, A1.y);
 
@@ -483,7 +484,7 @@ static void draw3dwnd(int isCoord, int isHyper, WAYPOINT* wp)
         setcolor(15); setlinestyle(0, 0, 1);
         safe_line(A1.x, A1.y, A1.x, 0);
         setlinestyle(1, 0, 1);
-        safe_line(A1.x, MAP_WND_HEIGHT, A1.x, A1.y);
+        safe_line(A1.x, map_wnd.height, A1.x, A1.y);
 
         /* Y axis (diagonal) */
         {
@@ -537,7 +538,7 @@ static void draw3dwnd(int isCoord, int isHyper, WAYPOINT* wp)
         }
 
         if (((xmax <= MAX_VALUE / 10) || i == gs.current_system )  &&
-            A1.x < (MAP_WND_WIDTH - 80) && A1.y < (MAP_WND_HEIGHT - 20)) {
+            A1.x < (map_wnd.width - 80) && A1.y < (map_wnd.height - 20)) {
             setcolor(15);
             settextstyle(SMALL_FONT, HORIZ_DIR, 4);
             
@@ -600,8 +601,7 @@ static void draw3dwnd(int isCoord, int isHyper, WAYPOINT* wp)
     drawObjects(2);
     setlinestyle(0, 0, 1);
     setcolor(4);
-    rectangle(0, 21, MAP_WND_WIDTH, MAP_WND_HEIGHT);
-    gui_ad_hypersoft();
+    rectangle(0, 21, map_wnd.width, map_wnd.height);
 }
 
 /* ----------------------------------------------------------------
@@ -614,8 +614,8 @@ static void drawyzwnd(int isCoord, int isHyper, WAYPOINT* wp)
     int drawThreads = isHyper;
     char c[50] = "";
 
-    xdens = (xmax - xmin) / MAP_WND_WIDTH;
-    ydens = (ymax - ymin) / MAP_WND_HEIGHT;
+    xdens = (xmax - xmin) / map_wnd.width;
+    ydens = (ymax - ymin) / map_wnd.height;
 
     if (isCoord) {
         int y0 = ey(-1 * (0 + offsetZ));
@@ -623,12 +623,12 @@ static void drawyzwnd(int isCoord, int isHyper, WAYPOINT* wp)
 
         setcolor(15);
         setlinestyle(0, 0, 1);
-        safe_line(x0, y0, MAP_WND_WIDTH, y0);
+        safe_line(x0, y0, map_wnd.width, y0);
         safe_line(x0, y0, x0, 0);
 
         setlinestyle(1, 0, 1);
         safe_line(0, y0, x0, y0);
-        safe_line(x0, MAP_WND_HEIGHT, x0, y0);
+        safe_line(x0, map_wnd.height, x0, y0);
     }
 
     for (i = 0; i < sol_size; i++) {
@@ -672,8 +672,8 @@ static void drawyzwnd(int isCoord, int isHyper, WAYPOINT* wp)
         }
 
         if (((xmax <= MAX_VALUE / 10) || i == gs.current_system ) &&
-            ex(sol_list[i].x + offsetX) < (MAP_WND_WIDTH - 80) &&
-            ey(sol_list[i].y + offsetY) < (MAP_WND_HEIGHT - 100)) {
+            ex(sol_list[i].x + offsetX) < (map_wnd.width - 80) &&
+            ey(sol_list[i].y + offsetY) < (map_wnd.height - 100)) {
             
             if (game_is_visited(&gs, i)){
                 if (sol_list[i].is_shipyard){
@@ -730,8 +730,7 @@ static void drawyzwnd(int isCoord, int isHyper, WAYPOINT* wp)
     setlinestyle(0, 0, 1);
     drawObjects(3);
     setcolor(4);
-    rectangle(0, 21, MAP_WND_WIDTH, MAP_WND_HEIGHT);
-    gui_ad_hypersoft();
+    rectangle(0, 21, map_wnd.width, map_wnd.height);
 }
 
 /* ----------------------------------------------------------------
@@ -760,7 +759,7 @@ void gui_map_top_status_line()
 
     status_line.x = 0;
     status_line.y = 0;
-    status_line.width = MAP_WND_WIDTH;
+    status_line.width = map_wnd.width;
     status_line.height = TOPBAR_H;
     status_line.header = NULL;
 
@@ -784,7 +783,7 @@ void gui_map_bottom_status_line()
 
     status_line.x = 0;
     status_line.y = STATUSBAR_Y;
-    status_line.width = MAP_WND_WIDTH;
+    status_line.width = map_wnd.width;
     status_line.height = STATUSBAR_H;
     status_line.header = NULL;
 
@@ -799,11 +798,11 @@ void gui_map_wnd_draw(int mode, int isCoord, int isHyper, WAYPOINT* way, int cur
 {
     /* Shrink main view when path panel is open */
     if (way->size)
-        MAP_WND_WIDTH = 470;
+        map_wnd.width = 470;
     else
-        MAP_WND_WIDTH = 639;
+        map_wnd.width = 639;
 
-    map_wnd.x2 = MAP_WND_WIDTH;
+    map_bounds.x2 = map_wnd.width;
 
     gui_map_wnd_clear();
 
@@ -811,13 +810,7 @@ void gui_map_wnd_draw(int mode, int isCoord, int isHyper, WAYPOINT* way, int cur
     if (mode == 2) draw3dwnd(isCoord, isHyper, way);
     if (mode == 3) drawyzwnd(isCoord, isHyper, way);
 
-    if (way->size && dirty_path) gui_map_path_wnd(way, current_point, sol_list);
-    dirty_path = 0;
-
-    if (dirty_topbar) gui_map_top_status_line();
-    if (dirty_bottombar) gui_map_bottom_status_line();
-    dirty_topbar = 0;
-    dirty_bottombar = 0;
+    gui_ad_hypersoft();
     gui_memory_status();
 }
 
@@ -827,5 +820,5 @@ void gui_map_wnd_draw(int mode, int isCoord, int isHyper, WAYPOINT* way, int cur
 void gui_map_wnd_clear()
 {
     setfillstyle(SOLID_FILL, BLACK);
-    bar(1, 21, MAP_WND_WIDTH - 1, MAP_WND_HEIGHT - 1);
+    bar(1, 21, map_wnd.width - 1, map_wnd.height - 1);
 }

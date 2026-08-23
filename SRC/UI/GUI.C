@@ -233,13 +233,13 @@ void gui_set_progress(PROGRESS_BAR *pb, int current)
 /* ----------------------------------------------------------------
  * Modal: simple centred warning dialog
  * ---------------------------------------------------------------- */
-void gui_warning_wnd(char* header, char* text)
+void gui_warning_wnd(WND* ptr_parent, char* header, char* text)
 {
     WND warning_wnd;
     
     warning_wnd.header = header;
     /* TODO: remove map dependency!*/
-    warning_wnd.x = (MAP_WND_WIDTH - WND_MODAL_DEFAULT_WIDTH) / 2;
+    warning_wnd.x = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
     warning_wnd.y = WND_MODAL_DEFAULT_Y;
     warning_wnd.width = WND_MODAL_DEFAULT_WIDTH;
     warning_wnd.height = WND_MODAL_DEFAULT_HEIGHT;
@@ -253,7 +253,7 @@ void gui_warning_wnd(char* header, char* text)
 /* ----------------------------------------------------------------
  * Modal: yes/no dialog
  * ---------------------------------------------------------------- */
-int gui_confirm_wnd(char* header, char* text)
+int gui_confirm_wnd(WND* ptr_parent, char* header, char* text)
 {
     WND confirm_wnd;
     BTN btn_yes, btn_no;
@@ -264,7 +264,7 @@ int gui_confirm_wnd(char* header, char* text)
     int total = 2 * btn_width + btn_gap;
 
     confirm_wnd.header = header;
-    confirm_wnd.x = (MAP_WND_WIDTH - WND_W) / 2;
+    confirm_wnd.x = (ptr_parent->width - WND_W) / 2;
     confirm_wnd.y = WND_DEFAULT_Y;
     confirm_wnd.width = WND_MODAL_DEFAULT_WIDTH;
     confirm_wnd.height = WND_MODAL_DEFAULT_HEIGHT;
@@ -317,14 +317,14 @@ int gui_confirm_wnd(char* header, char* text)
 /* ----------------------------------------------------------------
  * Modal: input dialog
  * ---------------------------------------------------------------- */
-char* gui_input_wnd(char* header, char* text, char* defaultValue)
+char* gui_input_wnd(WND* ptr_parent, char* header, char* text, char* defaultValue)
 {
     WND input_wnd;
     INPUT_FIELD field;
     static char result[Q_INPUT_LEN];
 
     input_wnd.header = header;
-    input_wnd.x = (MAP_WND_WIDTH - WND_MODAL_DEFAULT_WIDTH) / 2;
+    input_wnd.x = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
     input_wnd.y = WND_MODAL_DEFAULT_Y;
     input_wnd.width = WND_MODAL_DEFAULT_WIDTH;
     input_wnd.height = WND_MODAL_DEFAULT_HEIGHT;
@@ -364,13 +364,13 @@ char* gui_input_wnd(char* header, char* text, char* defaultValue)
  * Modal: progress bar dialog
  * ---------------------------------------------------------------- */
 
-void gui_progress_wnd(char* header, char* text, int current, int total)
+void gui_progress_wnd(WND* ptr_parent, char* header, char* text, int current, int total)
 {
     WND progress_wnd;
     PROGRESS_BAR pb;
 
     progress_wnd.header = header;
-    progress_wnd.x = (MAP_WND_WIDTH - WND_MODAL_DEFAULT_WIDTH) / 2;
+    progress_wnd.x = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
     progress_wnd.y = WND_MODAL_DEFAULT_Y;
     progress_wnd.width = WND_MODAL_DEFAULT_WIDTH;
     progress_wnd.height = WND_MODAL_DEFAULT_HEIGHT;
@@ -431,7 +431,7 @@ void gui_memory_status()
 
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
     setfillstyle(SOLID_FILL, BLACK);
-    bar(470, STATUSBAR_Y, MAP_WND_WIDTH, STATUSBAR_Y + STATUSBAR_H - 1);
+    bar(470, STATUSBAR_Y, 640, STATUSBAR_Y + STATUSBAR_H - 1);
 
     setcolor(BAR_COLOR);
     line(470, STATUSBAR_Y - 1, 470, STATUSBAR_Y + STATUSBAR_H - 1);

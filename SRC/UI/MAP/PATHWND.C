@@ -13,6 +13,7 @@
 #include "ui\gui.h"
 #include "ui\ad.h"
 #include "ui\map\pathwnd.h"
+#include "ui\map\mapwnd.h"
 
 #include "ui\locale.h"
 
@@ -32,30 +33,28 @@ static int pathListFlag = 0;
 /* ----------------------------------------------------------------
  * Private: drawPathWnd -- background frame of the path panel
  * ---------------------------------------------------------------- */
-static void drawgui_map_path_wnd(struct waypoint* wp, int oy)
+static void draw_gui_map_path_wnd(struct waypoint* wp, int oy)
 {
-    extern int MAP_WND_WIDTH, MAP_WND_HEIGHT;
-
     setfillstyle(SOLID_FILL, BLACK);
     setcolor(15);
-    bar(MAP_WND_WIDTH + 1, 21, 638, MAP_WND_HEIGHT-1);
+    bar(map_wnd.width + 1, 21, 638, map_wnd.height-1);
 
     /* Title bar */
     setfillstyle(SOLID_FILL, RED);
     setcolor(0);
-    bar(MAP_WND_WIDTH + 1, 21, 638, 41);
+    bar(map_wnd.width + 1, 21, 638, 41);
     settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
-    outtextxy(MAP_WND_WIDTH + 5, 26, LC_PATH_WND_HEAD);
+    outtextxy(map_wnd.width + 5, 26, LC_PATH_WND_HEAD);
 
     /* Separator + hint */
     setcolor(4);
     setlinestyle(1, 0, 1);
-    line(MAP_WND_WIDTH + 1, oy, 638, oy);
+    line(map_wnd.width + 1, oy, 638, oy);
 
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-    outtextxy(MAP_WND_WIDTH + 5, oy + 5, "PgUp/PgDn");
+    outtextxy(map_wnd.width + 5, oy + 5, "PgUp/PgDn");
     setcolor(15);
-    outtextxy(MAP_WND_WIDTH + 80, oy + 5, LC_PATH_WND_SELECT);
+    outtextxy(map_wnd.width + 80, oy + 5, LC_PATH_WND_SELECT);
 
     /* Embedded ad (one-shot per path) */
     if (wp->size < 15 && !pathListFlag) {
@@ -74,12 +73,11 @@ void gui_map_path_wnd(struct waypoint* wp, int current_point,
     int o;
     char buf[50];
 
-    extern int MAP_WND_WIDTH, MAP_WND_HEIGHT;
 
     pathListFlag = 0;
 
     oy = 46 + wp->size * yStep;
-    drawgui_map_path_wnd(wp, oy);
+    draw_gui_map_path_wnd(wp, oy);
 
     setcolor(15);
     settextstyle(SMALL_FONT, HORIZ_DIR, 4);
@@ -92,12 +90,12 @@ void gui_map_path_wnd(struct waypoint* wp, int current_point,
         if (i == current_point) {
             setcolor(0);
             setfillstyle(SOLID_FILL, RED);
-            bar(MAP_WND_WIDTH + 1, 46 + i * yStep,
+            bar(map_wnd.width + 1, 46 + i * yStep,
                 638, 46 + i * yStep + 15);
         } else {
             setcolor(15);
             setfillstyle(SOLID_FILL, BLACK);
-            bar(MAP_WND_WIDTH + 1, 46 + i * yStep,
+            bar(map_wnd.width + 1, 46 + i * yStep,
                 638, 46 + i * yStep + 15);
         }
 
@@ -126,6 +124,6 @@ void gui_map_path_wnd(struct waypoint* wp, int current_point,
             }
         }
 
-        outtextxy(MAP_WND_WIDTH + 5, 46 + i * yStep, buf);
+        outtextxy(map_wnd.width + 5, 46 + i * yStep, buf);
     }
 }

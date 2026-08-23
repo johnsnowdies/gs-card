@@ -1,7 +1,7 @@
 /* gui.h -- window system / status bar API
  *
- * MAP_WND_WIDTH / MAP_WND_HEIGHT are defined in mapwnd.c.
  */
+
 /* ----------------------------------------------------------------
  * Layout constants
  * ---------------------------------------------------------------- */
@@ -16,6 +16,8 @@
 #define WND_DEFAULT_Y 180    /* default window Y      */
 
 #define TOPBAR_H      20     /* top status bar height  */
+
+#define STATUSBAR_WIDTH 640
 #define STATUSBAR_H   20     /* bottom status bar height */
 #define STATUSBAR_Y   461    /* bottom bar Y = MAP_WND_HEIGHT + 1 */
 
@@ -89,9 +91,6 @@ BTN {
     unsigned char visible;
 };
 
-
-extern int MAP_WND_WIDTH, MAP_WND_HEIGHT;
-
 void gui_init(void);
 
 /* Window prototype - size, header */
@@ -111,16 +110,16 @@ void gui_init_progress_bar(PROGRESS_BAR *pb, int x, int y, int width, int height
 void gui_draw_progress_bar(PROGRESS_BAR *pb);
 
 /* Modal: simple centred warning dialog */
-void  gui_warning_wnd(char* header, char* text);
+void  gui_warning_wnd(WND* ptr_parent, char* header, char* text);
 
 /* Modal: yes/no dialog */
-int gui_confirm_wnd(char* header, char* text);
+int gui_confirm_wnd(WND* ptr_parent, char* header, char* text);
 
 /* Modal: input dialog */
-char* gui_input_wnd(char* header, char* text, char* defaultValue);
+char* gui_input_wnd(WND* ptr_parent, char* header, char* text, char* defaultValue);
 
 /* Modal: progress bar dialog */
-void  gui_progress_wnd(char* header, char* text, int current, int total);
+void  gui_progress_wnd(WND* ptr_parent, char* header, char* text, int current, int total);
 
 /* Universal status line */
 void gui_draw_status_line(WND* ptr_wnd, char* keys[], char* items[]);

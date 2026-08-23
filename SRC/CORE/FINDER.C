@@ -12,6 +12,8 @@
 
 #include "ui\locale.h"
 
+#include "ui\map\mapwnd.h"
+
 /* ----------------------------------------------------------------
  * Extern game globals (defined in card.c)
  * ---------------------------------------------------------------- */
@@ -62,7 +64,7 @@ void core_finder_calc_threads_costs(int topCost) {
     a = sol_list[j];
 
     if (j % max(1, sol_size / 50) == 0 || j == sol_size - 1)
-      gui_progress_wnd("GSCARD 1.5", wndLabel, j, sol_size);
+      gui_progress_wnd(&map_wnd, "GSCARD 1.5", wndLabel, j, sol_size);
 
     for (i = 0; i < a.threadSize; i++) {
       k = a.threads[i].value;
@@ -163,7 +165,7 @@ void core_finder_calc_threads_costs(int topCost) {
     a = sol_list[j];
 
     if (j % max(1, sol_size / 50) == 0 || j == sol_size - 1)
-      gui_progress_wnd(LC_GEN_TITLE_GSCARD, LC_FINDER_REALOC, j, sol_size);
+      gui_progress_wnd(&map_wnd, LC_GEN_TITLE_GSCARD, LC_FINDER_REALOC, j, sol_size);
 
     for (i = 0; i < a.threadSize; i++) {
       if (a.threads[i].cost < topCost) {
@@ -214,10 +216,10 @@ int core_finder_get_way(WAYPOINT* wp) {
   S = 1;
   gotEnd = 0;
   sprintf(current, "%d", gs.current_system);
-  input = (char*)gui_input_wnd(LC_GEN_TITLE_GSCARD, LC_FINDER_START_TEXT_1, current);
+  input = (char*)gui_input_wnd(&map_wnd, LC_GEN_TITLE_GSCARD, LC_FINDER_START_TEXT_1, current);
   start = atoi(input);
 
-  input = (char*)gui_input_wnd(LC_GEN_TITLE_GSCARD, LC_FINDER_END_TEXT, NULL);
+  input = (char*)gui_input_wnd(&map_wnd, LC_GEN_TITLE_GSCARD, LC_FINDER_END_TEXT, NULL);
   end = atoi(input);
 
   if (start >= 0 && end >= 0 && start < sol_size && end < sol_size) {
@@ -227,7 +229,7 @@ int core_finder_get_way(WAYPOINT* wp) {
     }
 
     if (!gotEnd || !status) {
-      gui_warning_wnd(LC_GEN_TITLE_GSCARD, LC_FINDER_ERROR_NOWAY);
+      gui_warning_wnd(&map_wnd, LC_GEN_TITLE_GSCARD, LC_FINDER_ERROR_NOWAY);
       getch();
       return 0;
     }
@@ -235,7 +237,7 @@ int core_finder_get_way(WAYPOINT* wp) {
     return 1;
 
   } else {
-    gui_warning_wnd(LC_GEN_TITLE_GSCARD, LC_GEN_ERROR_INCORRECT_VALUE);
+    gui_warning_wnd(&map_wnd, LC_GEN_TITLE_GSCARD, LC_GEN_ERROR_INCORRECT_VALUE);
     getch();
   }
 
@@ -346,7 +348,7 @@ void core_finder_calc_hyper_threads() {
     a.threadSize = 0;
 
     if (i % max(1, sol_size / 50) == 0 || i == sol_size - 1)
-      gui_progress_wnd("GSCARD", "Processing hyper-threads calculation", i, sol_size);
+      gui_progress_wnd(&map_wnd, "GSCARD", "Processing hyper-threads calculation", i, sol_size);
 
     for (j = 0; j < sol_size; j++) {
       if (j == i) continue;

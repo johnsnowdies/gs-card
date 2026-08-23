@@ -63,17 +63,19 @@ unsigned char render_bounds = 1;
 unsigned char show_danger_hyperthreads = 0;
 unsigned char show_danger_path_parts = 0;
 
-unsigned char dirty_path = 0;
-unsigned char dirty_topbar = 1;
-unsigned char dirty_bottombar = 1;
-
 /* Game state */
 struct game_state gs;
 
 /* Exit signal */
 unsigned char SIG_TERM = 0;
 
+/* ----------------------------------------------------------------
+ * Extern other global windows
+ * ---------------------------------------------------------------- */
+
 extern WND quest_info_wnd;
+extern WND map_wnd;
+
 
 /* ----------------------------------------------------------------
  * Screen enumeration -- add new screens here
@@ -185,6 +187,8 @@ static void new_game(char *name, int sol_size)
     obj_size = load_object(&obj_list);
 
     gui_map_nav_move_screen_to(sol_list, gs.current_system);
+    gui_map_bottom_status_line();
+    gui_map_top_status_line();
 
     game_mark_visited(&gs, gs.current_system);
     core_game_run_event();
@@ -240,6 +244,11 @@ int main()
     /* New game Player name*/
     char* text_input;
 
+    WND main_wnd = {
+        NULL,
+        0,0,640,480
+    };
+
     srand((unsigned)time(NULL));
 
     sol_size = load_solar(&sol_list);
@@ -260,7 +269,7 @@ int main()
     gui_ad_loading();
     
     /* Draw Main Menu */
-    gui_menu_wnd(mm_select, MAIN_MENU);
+    gui_menu_wnd(&main_wnd, mm_select, MAIN_MENU);
 
     if (DEBUG) gui_memory_status();
 
@@ -316,10 +325,10 @@ int main()
 
             if (F7 == c) {
                 current_point = -1;
-                core_finder_get_way(&wp);
-                dirty_path = 1;
-                dirty_bottombar = 1;
-                gui_map_wnd_draw(mode, is_coord, is_hyper, &wp, current_point);
+                if(core_finder_get_way(&wp)){
+                    gui_map_wnd_draw(mode, is_coord, is_hyper, &wp, current_point);
+                    gui_map_path_wnd(wp.way, current_point, sol_list);
+                }
             }
 
             if (LFT == c) {
@@ -352,8 +361,7 @@ int main()
                         current_point--;
 
                     gui_map_nav_move_screen_to(sol_list, wp.way[current_point]);
-                    dirty_path = 1;
-                    dirty_bottombar = 1;
+                    gui_map_path_wnd(wp.way, current_point, sol_list);
                     gui_map_wnd_draw(mode, is_coord, is_hyper, &wp, current_point);
                 }
             }
@@ -366,8 +374,7 @@ int main()
                         current_point++;
 
                     gui_map_nav_move_screen_to(sol_list, wp.way[current_point]);
-                    dirty_path = 1;
-                    dirty_bottombar = 1;
+                    gui_map_path_wnd(wp.way, current_point, sol_list);
                     gui_map_wnd_draw(mode, is_coord, is_hyper, &wp, current_point);
                 }
             }
@@ -394,7 +401,7 @@ int main()
                 if (wp.size > 1 && wp.way[0] == gs.current_system){
                     sprintf(buf, LC_CARD_READY_TO_JUMP, wp.way[0], wp.way[1]);
                     
-                    if (gui_confirm_wnd(LC_CARD_JUMP_WND_HEAD, buf)) {
+                    if (gui_confirm_wnd(&map_wnd, LC_CARD_JUMP_WND_HEAD, buf)) {
                         
                         gs.current_system = wp.way[1];
                         game_mark_visited(&gs, gs.current_system);
@@ -402,15 +409,15 @@ int main()
                         gs.fuel -= data_hyper_fuel[gs.hyper_class];
                         sprintf(buf, LC_CARD_JUMP_RESULT_TEXT, wp.way[1]);
                         wp.size = 0;
-                        dirty_topbar = 1;
+                        gui_map_top_status_line();
                         gui_map_wnd_draw(mode, is_coord, is_hyper, &wp, current_point);    
-                        gui_warning_wnd(LC_CARD_JUMP_RESULT_HEAD, buf);
+                        gui_warning_wnd(&map_wnd, LC_CARD_JUMP_RESULT_HEAD, buf);
                         getch();
                         gui_map_wnd_draw(mode, is_coord, is_hyper, &wp, current_point);
                     }
                     else{
                         wp.size = 0;
-                        dirty_topbar = 1;                  
+                        gui_map_top_status_line();           
                         gui_map_wnd_draw(mode, is_coord, is_hyper, &wp, current_point);    
                     }
                 }
@@ -425,7 +432,7 @@ int main()
                     prev_screen = cur_screen;
                     cur_screen = SCR_GAME_MENU;
                     mm_select = 0;
-                    gui_menu_wnd(mm_select, GAME_MENU);
+                    gui_menu_wnd(&map_wnd, mm_select, GAME_MENU);
                 }
             }
 
@@ -444,14 +451,14 @@ int main()
             }
             /* Save game */
             if (mm_select == 0 && ENTER == c) {
-                text_input = gui_input_wnd(LC_CARD_MENU_SAVE_WND_HEAD, LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
+                text_input = gui_input_wnd(&main_wnd, LC_CARD_MENU_SAVE_WND_HEAD, LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
 
                 if (text_input != NULL && text_input[0] != '\0') 
                 {
                     if(save_game(&gs, text_input) == 1)
                     {
                         cur_screen = prev_screen;
-                        gui_warning_wnd(LC_GEN_SUCCESS_HEAD, LC_CARD_MENU_SAVE_SUCCESS);
+                        gui_warning_wnd(&main_wnd, LC_GEN_SUCCESS_HEAD, LC_CARD_MENU_SAVE_SUCCESS);
                         getch();
                         if (cur_screen == SCR_MAP)
                             gui_map_wnd_draw(mode, is_coord, is_hyper, &wp, current_point);
@@ -461,14 +468,14 @@ int main()
                     }
                     else
                     {
-                        gui_warning_wnd(LC_GEN_ERROR_HEAD, LC_CARD_MENU_SAVE_ERROR);
+                        gui_warning_wnd(&main_wnd, LC_GEN_ERROR_HEAD, LC_CARD_MENU_SAVE_ERROR);
                         getch();
-                        gui_menu_wnd(mm_select, GAME_MENU);
+                        gui_menu_wnd(&main_wnd, mm_select, GAME_MENU);
                     }
                 } else {
-                    gui_warning_wnd(LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE);
+                    gui_warning_wnd(&main_wnd, LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE);
                     getch();
-                    gui_menu_wnd(mm_select, GAME_MENU);
+                    gui_menu_wnd(&main_wnd, mm_select, GAME_MENU);
                 }
 
             }
@@ -476,26 +483,26 @@ int main()
              /* Load game */
             if (mm_select == 1 && ENTER == c)
             {
-                text_input = gui_input_wnd(LC_CARD_MENU_LOAD_WND_HEAD, LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
+                text_input = gui_input_wnd(&main_wnd, LC_CARD_MENU_LOAD_WND_HEAD, LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
 
                 if (text_input != NULL && text_input[0] != '\0') 
                 {
                     if(load_game(&gs, text_input) == 1)
                     {
                         cur_screen = SCR_MAP;
-                        dirty_topbar = 1;
+                        gui_map_top_status_line();
                         gui_map_wnd_draw(mode, is_coord, is_hyper, &wp, current_point);
                     }
                     else
                     {
-                        gui_warning_wnd(LC_GEN_ERROR_HEAD, LC_CARD_MENU_LOAD_ERROR);
+                        gui_warning_wnd(&main_wnd, LC_GEN_ERROR_HEAD, LC_CARD_MENU_LOAD_ERROR);
                         getch();
-                        gui_menu_wnd(mm_select, GAME_MENU);
+                        gui_menu_wnd(&main_wnd, mm_select, GAME_MENU);
                     }
                 } else {
-                    gui_warning_wnd(LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE);
+                    gui_warning_wnd(&main_wnd, LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE);
                     getch();
-                    gui_menu_wnd(mm_select, GAME_MENU);
+                    gui_menu_wnd(&main_wnd, mm_select, GAME_MENU);
                 }
             }
 
@@ -510,7 +517,7 @@ int main()
                 if (mm_select > 0)
                 {
                     mm_select--;
-                    gui_menu_wnd(mm_select, GAME_MENU);
+                    gui_menu_wnd(&main_wnd, mm_select, GAME_MENU);
                 }
             }
 
@@ -518,7 +525,7 @@ int main()
                 if (mm_select < 2)
                 {
                     mm_select++;
-                    gui_menu_wnd(mm_select, GAME_MENU);
+                    gui_menu_wnd(&main_wnd, mm_select, GAME_MENU);
                 }
             }
         break;
@@ -530,7 +537,7 @@ int main()
             /* Init new game */
             if (mm_select == 0 && ENTER == c)
             {
-                text_input = gui_input_wnd(LC_CARD_MENU_NEW_WND_HEAD, LC_CARD_MENU_NEW_WND_TEXT, NULL);
+                text_input = gui_input_wnd(&main_wnd, LC_CARD_MENU_NEW_WND_HEAD, LC_CARD_MENU_NEW_WND_TEXT, NULL);
 
                 if (text_input != NULL && text_input[0] != '\0') 
                 {
@@ -538,16 +545,16 @@ int main()
                     cur_screen = SCR_MAP;
                     gui_map_wnd_draw(mode, is_coord, is_hyper, &wp, current_point);
                 } else {
-                    gui_warning_wnd(LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE);
+                    gui_warning_wnd(&main_wnd, LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE);
                     getch();
-                    gui_menu_wnd(mm_select, MAIN_MENU);
+                    gui_menu_wnd(&main_wnd, mm_select, MAIN_MENU);
                 }
             }
 
             /* Load game */
             if (mm_select == 1 && ENTER == c)
             {
-                text_input = gui_input_wnd(LC_CARD_MENU_LOAD_WND_HEAD, LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
+                text_input = gui_input_wnd(&main_wnd, LC_CARD_MENU_LOAD_WND_HEAD, LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
 
                 if (text_input != NULL && text_input[0] != '\0') 
                 {
@@ -558,14 +565,14 @@ int main()
                     }
                     else
                     {
-                         gui_warning_wnd(LC_GEN_ERROR_HEAD, LC_CARD_MENU_LOAD_ERROR);
+                        gui_warning_wnd(&main_wnd, LC_GEN_ERROR_HEAD, LC_CARD_MENU_LOAD_ERROR);
                         getch();
-                        gui_menu_wnd(mm_select, MAIN_MENU);
+                        gui_menu_wnd(&main_wnd, mm_select, MAIN_MENU);
                     }
                 } else {
-                    gui_warning_wnd(LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE);
+                    gui_warning_wnd(&main_wnd, LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE);
                     getch();
-                    gui_menu_wnd(mm_select, MAIN_MENU);
+                    gui_menu_wnd(&main_wnd, mm_select, MAIN_MENU);
                 }
             }
             
@@ -581,7 +588,7 @@ int main()
                 if (mm_select > 0)
                 {
                     mm_select--;
-                    gui_menu_wnd(mm_select, MAIN_MENU);
+                    gui_menu_wnd(&main_wnd, mm_select, MAIN_MENU);
                 }
             }
 
@@ -589,7 +596,7 @@ int main()
                 if (mm_select < 2)
                 {
                     mm_select++;
-                    gui_menu_wnd(mm_select, MAIN_MENU);
+                    gui_menu_wnd(&main_wnd, mm_select, MAIN_MENU);
                 }
             }
         break;
@@ -600,9 +607,10 @@ int main()
         case SCR_STATUS:
             if (TAB == c){
                 if (wp.size > 0)
-                    dirty_path = 1;
+                    gui_map_path_wnd(wp.way, current_point, sol_list);
+
                 cur_screen = SCR_MAP;
-                dirty_bottombar = 1;
+                gui_map_bottom_status_line();
                 gui_map_wnd_draw(mode, is_coord, is_hyper, &wp, current_point);
             }
 
@@ -610,7 +618,7 @@ int main()
                 prev_screen = cur_screen;
                 cur_screen = SCR_GAME_MENU;
                 mm_select = 0;
-                gui_menu_wnd(mm_select, GAME_MENU);
+                gui_menu_wnd(&main_wnd, mm_select, GAME_MENU);
             }
 
             if (UP == c){
