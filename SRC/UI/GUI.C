@@ -23,6 +23,7 @@
  * ---------------------------------------------------------------- */
 extern struct game_state   gs;
 extern struct system_solar* sol_list;
+extern unsigned char SIG_CLOSE_QUEST_WND;
 
 /* ----------------------------------------------------------------
  * init -- BGI graphics init
@@ -309,6 +310,51 @@ void gui_progress_wnd(char* header, char* text, int current, int total)
     setcolor(0);
 }
 
+
+void marquee_text(int x, int y, char *text, int max_chars)
+{
+    int offset = 0;
+    int text_len = strlen(text);
+    char buffer[21];          
+    int ch;
+    int i;
+
+    
+    settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
+    setcolor(15);             
+
+    while (SIG_CLOSE_QUEST_WND == 0) {   
+        if (kbhit()) {
+            ch = getch();
+            if (ch == 27) {
+                SIG_CLOSE_QUEST_WND = 1;
+                gui_status_wnd();
+                break;
+            }
+        }
+        
+        for (i = 0; i < max_chars; i++) {
+            buffer[i] = text[(offset + i) % text_len];
+        }
+        buffer[max_chars] = '\0';
+
+        
+        setfillstyle(SOLID_FILL, BLACK);
+        bar(x, y, x + textwidth("W") * max_chars, y + textheight("H"));
+        setfillstyle(BKSLASH_FILL, RED);
+        bar(x, y, x + textwidth("W") * max_chars, y + textheight("H"));
+
+        
+        setcolor(15);
+        outtextxy(x, y, buffer);
+
+        
+        offset = (offset + 1) % text_len;
+
+        delay(1000);   
+    }
+}
+
 void gui_memory_status()
 {
     unsigned int USED_MEM, FREE_MEM, TOTAL_MEM = 65535;
@@ -330,4 +376,4 @@ void gui_memory_status()
     outtextxy(470 + 5, STATUSBAR_Y + 2, LC_MAP_STATUS_MEM);
     setcolor(TEXT_COLOR);
     outtextxy(470 + 35, STATUSBAR_Y + 2, memMsg);
-}
+}

@@ -34,3 +34,4 @@ char* gui_input_wnd(char* header, char* text, char* defaultValue);
 void  gui_progress_wnd(char* header, char* text, int current, int total);
 int   gui_bool_wnd(char* header, char* text);
 void gui_memory_status(void);
+void marquee_text(int x, int y, char *text, int max_chars);

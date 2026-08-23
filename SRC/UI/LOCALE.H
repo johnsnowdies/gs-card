@@ -246,11 +246,11 @@
 #define LC_QUEST_TYPE_5_LINE_2 "Доставь маячок и сбрось его."
 
 
-#define LC_QUEST_REWARD_1 "Дело gовольно простое, поэтому плачу по факту gоставки: %d"
-#define LC_QUEST_REWARD_2 "Лететь gалеко, заплачу по прибытию: %d"
-#define LC_QUEST_REWARD_3 "Понимаю, лишние сложности, но как насчет %d ?"
-#define LC_QUEST_REWARD_4 "Если он gоберется в безопасность, оплата: %d"
-#define LC_QUEST_REWARD_5 "Как только получим сигнал от маячка перевеgем тебе %d"
+#define LC_QUEST_REWARD_1 "Дело gовольно простое, поэтому плачу по факту gоставки: %d $$"
+#define LC_QUEST_REWARD_2 "Лететь gалеко, заплачу по прибытию: %d $$"
+#define LC_QUEST_REWARD_3 "Понимаю, лишние сложности, но как насчет %d $$?"
+#define LC_QUEST_REWARD_4 "Если он gоберется в безопасность, оплата: %d $$"
+#define LC_QUEST_REWARD_5 "Как только получим сигнал от маячка перевеgем тебе %d $$"
 
 
 

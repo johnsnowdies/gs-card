@@ -70,6 +70,7 @@ struct game_state gs;
 
 /* Exit signal */
 unsigned char SIG_TERM = 0;
+unsigned char SIG_CLOSE_QUEST_WND = 0;
 
 /* ----------------------------------------------------------------
  * Screen enumeration -- add new screens here
@@ -266,9 +267,10 @@ int main()
         switch (cur_screen) {
 
         case SCR_QUEST_LIST_DETAIL:
-            if (ESC == c) {
+            if (SIG_CLOSE_QUEST_WND == 1) {
                 cur_screen = SCR_STATUS;
                 gui_status_wnd();
+                SIG_CLOSE_QUEST_WND = 0;
             }
         break;
 

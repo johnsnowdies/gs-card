@@ -1,5 +1,6 @@
 #include <graphics.h>
 #include <stdio.h>
+#include <conio.h>
 
 #include "data\structs.h"
 #include "data\reader.h"
@@ -13,7 +14,7 @@
 /* ----------------------------------------------------------------
  * Screen / viewport layout -- defined here, declared extern in gui.h
  * ---------------------------------------------------------------- */
-int STATUS_WND_WIDTH  = 639;   /* may shrink to 470 when path panel is open */
+int STATUS_WND_WIDTH  = 639;   
 int STATUS_WND_HEIGHT = 460;
 
 /* ----------------------------------------------------------------
@@ -21,9 +22,9 @@ int STATUS_WND_HEIGHT = 460;
  * ---------------------------------------------------------------- */
 extern struct game_state gs;
 extern struct system_solar* sol_list;
-extern int      render_danger_objects;
-extern int      show_danger_hyperthreads;
-extern int      show_danger_path_parts;
+extern int render_danger_objects;
+extern int show_danger_hyperthreads;
+extern int show_danger_path_parts;
 
 extern char* data_factions[FACTIONS_COUNT];
 extern char* data_sectors[SECTORS_COUNT];
@@ -36,7 +37,7 @@ extern char* QUEST_TYPES[];
 extern QUEST system_quests[5];
 extern unsigned int system_quest_selected;
 
-/* Viewport bounds for clipping (status window only) */
+
 static struct status_wnd {
     int x1, y1, x2, y2;
 } status_wnd = { 0, 21, 639, 460 };
@@ -44,7 +45,7 @@ static struct status_wnd {
 static struct quest_info_wnd
 {
     int x1, y1, x2, y2;
-} quest_info_wnd = { 10, 30, 610, 650};
+} quest_info_wnd = { 10, 60, 610, 650};
 
 /* ----------------------------------------------------------------
  * gui_status_bottom_status_line -- bottom shortcut bar + memory usage
@@ -63,22 +64,23 @@ void gui_status_bottom_status_line()
     setfillstyle(SOLID_FILL, BLACK);
     bar(0, STATUSBAR_Y, MAP_WND_WIDTH, STATUSBAR_Y + STATUSBAR_H - 1);
 
-    /* Shortcut labels */
+    
     setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F1"); xpos += 13;
     setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "-HELP"); xpos += 45;
 
     
-    /* Separator */
+    
     xpos = 470;
     setcolor(BAR_COLOR);
     line(xpos, STATUSBAR_Y - 1, xpos, STATUSBAR_Y + STATUSBAR_H - 1);
 
-    /* Memory */
+    
     setcolor(BAR_COLOR);
     outtextxy(xpos + 5, STATUSBAR_Y + 2, LC_MAP_STATUS_MEM);
     setcolor(TEXT_COLOR);
     outtextxy(xpos + 35, STATUSBAR_Y + 2, memMsg);
 }
+
 
 void gui_status_quest_info(int selected)
 {
@@ -88,11 +90,22 @@ void gui_status_quest_info(int selected)
     };
 
 
-    gui_draw_generic_wnd(quest_info_wnd.x1, quest_info_wnd.y1, 610, 340);
+    gui_draw_generic_wnd(quest_info_wnd.x1, quest_info_wnd.y1, 610, 240);
     setcolor(4);
-    rectangle(quest_info_wnd.x1 + 10, quest_info_wnd.y1 + 30, quest_info_wnd.x1 + 150, quest_info_wnd.y1 + 200);
+    rectangle(quest_info_wnd.x1 + 9, quest_info_wnd.y1 + 29, quest_info_wnd.x1 + 150, quest_info_wnd.y1 + 200);
     settextstyle(SMALL_FONT, HORIZ_DIR, 6);
     outtextxy(quest_info_wnd.x1+40, quest_info_wnd.y1 + 100, "NO PHOTO");
+
+
+/*
+    setfillstyle(BKSLASH_FILL, RED);
+    bar(quest_info_wnd.x1 + 9, quest_info_wnd.y1 + 200, quest_info_wnd.x1 + 150, quest_info_wnd.y1 + 230);
+    setcolor(15);
+    outtextxy(quest_info_wnd.x1+40, quest_info_wnd.y1 + 205, "SIGNAL ESTABLISHED CONNECTION 100%");
+*/
+    
+
+
 
     switch(system_quests[selected].giver->faction){
         case 1:
@@ -109,7 +122,9 @@ void gui_status_quest_info(int selected)
         break;
     }
 
-    draw_4bit_bmp(photo, 20, 60);
+    draw_4bit_bmp(photo, quest_info_wnd.x1 + 10, quest_info_wnd.y1 + 30);
+
+    
     
     setcolor(15);
     outtextxy(quest_info_wnd.x1+160, quest_info_wnd.y1 + 30, QUEST_TYPES[system_quests[selected].type]);
@@ -159,7 +174,20 @@ void gui_status_quest_info(int selected)
     outtextxy(quest_info_wnd.x1+160, quest_info_wnd.y1 + 110, line_2);
     outtextxy(quest_info_wnd.x1+160, quest_info_wnd.y1 + 125, reward);
 
-    
+    setcolor(4);
+    outtextxy(quest_info_wnd.x1+160, quest_info_wnd.y1 + 140, LC_QUEST_TABLE_6);
+    outtextxy(quest_info_wnd.x1+160, quest_info_wnd.y1 + 155, LC_QUEST_TABLE_4);
+
+    setcolor(15);
+
+    sprintf(line_1, "%d $$", system_quests[selected].penalty);
+    sprintf(line_2, "%d", system_quests[selected].cargo);
+
+    outtextxy(quest_info_wnd.x1+210, quest_info_wnd.y1 + 140, line_1);
+    outtextxy(quest_info_wnd.x1+210, quest_info_wnd.y1 + 155, line_2);
+
+
+    marquee_text(quest_info_wnd.x1 + 9, quest_info_wnd.y1 + 200, "SIGNAL ESTABLISHED CONNECTION 100%", 18);
 
     
 }
@@ -270,4 +298,3 @@ void gui_status_wnd()
 
     gui_top_status_line();
 }
-
