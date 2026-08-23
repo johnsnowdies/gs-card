@@ -160,6 +160,8 @@ void gui_status_quest_info(int selected)
     outtextxy(quest_info_wnd.x1+160, quest_info_wnd.y1 + 125, reward);
 
     
+
+    
 }
 
 void gui_status_quest_wnd(int selected)

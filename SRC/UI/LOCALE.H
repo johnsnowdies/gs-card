@@ -656,19 +656,19 @@
 
 #define LC_QUEST_PREQUEST_1 "I have a task:"
 
-#define LC_QUEST_TYPE_1_LINE_1 "Deliver the cargo to %s in sector %s."
+#define LC_QUEST_TYPE_1_LINE_1 "Deliver the cargo to SA.%d in sector %s."
 #define LC_QUEST_TYPE_1_LINE_2 "It's not far, nothing too difficult."
 
-#define LC_QUEST_TYPE_2_LINE_1 "Deliver the cargo to %s in sector %s."
+#define LC_QUEST_TYPE_2_LINE_1 "Deliver the cargo to SA.%d in sector %s."
 #define LC_QUEST_TYPE_2_LINE_2 "Quite a distance, plan your route ahead of time."
 
-#define LC_QUEST_TYPE_3_LINE_1 "Task: transport cargo to %s in sector %s."
+#define LC_QUEST_TYPE_3_LINE_1 "Task: transport cargo to SA.%d in sector %s."
 #define LC_QUEST_TYPE_3_LINE_2 "No paperwork required. I'll pay extra."
 
-#define LC_QUEST_TYPE_4_LINE_1 "My friend needs to get to system %s, sector %s."
+#define LC_QUEST_TYPE_4_LINE_1 "My friend needs to get to system SA.%d, sector %s."
 #define LC_QUEST_TYPE_4_LINE_2 "Payment upon arrival."
 
-#define LC_QUEST_TYPE_5_LINE_1 "Not sure what's going on in %s, sector %s."
+#define LC_QUEST_TYPE_5_LINE_1 "Not sure what's going on in SA.%d, sector %s."
 #define LC_QUEST_TYPE_5_LINE_2 "Deliver the beacon and drop it there."
 
 #define LC_QUEST_REWARD_1 "The job is quite simple, so I pay upon delivery: %d"
