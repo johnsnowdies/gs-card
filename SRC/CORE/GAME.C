@@ -15,7 +15,7 @@ extern SYSTEM* sol_list;
 extern int sol_size;
 extern struct game_state gs;
 extern char* data_sectors[SECTORS_COUNT];
-
+extern unsigned int system_quests_size;
 extern QUEST system_quests[5];
 
 #define N_SIZE 15
@@ -343,8 +343,7 @@ void core_game_gen_quest(QUEST* quest_ptr, int player_rep, unsigned int faction)
     if (penalty < (int)(reward * 0.1)) penalty = (int)(reward * 0.1);
     if (penalty < 0) penalty = 0;
 
-    quest_ptr->giver = (NPC*)malloc(sizeof(NPC));
-    core_game_gen_npc(quest_ptr->giver, faction);
+    core_game_gen_npc(&quest_ptr->giver, faction);
 
     quest_ptr->reward = reward;
     quest_ptr->penalty = penalty;
@@ -355,6 +354,31 @@ void core_game_gen_quest(QUEST* quest_ptr, int player_rep, unsigned int faction)
 
 }
 
+int accept_quest(unsigned int index)
+{
+    int i;
+
+    if (gs.quests_size >= 5) {
+        return 0;
+    }
+    if (index >= system_quests_size) {
+        return 0;
+    }
+
+    gs.quests[gs.quests_size] = system_quests[index];
+    gs.quests_size++;
+
+    for (i = index; i < system_quests_size - 1; i++) {
+        system_quests[i] = system_quests[i + 1];
+    }
+
+    system_quests_size--;
+
+    /* Очищаем последний слот, чтобы не осталось мусора */
+
+    return 1;
+}
+
 
 /*
  * Arriving to new system events
@@ -363,6 +387,7 @@ void core_game_gen_quest(QUEST* quest_ptr, int player_rep, unsigned int faction)
 void core_game_run_event()
 {
     int i = 0;
+    system_quests_size = 5;
     /* System quests generator */
     for (i = 0; i < 5; i++) {
         core_game_gen_quest(&system_quests[i], gs.reputation, sol_list[gs.current_system].faction);

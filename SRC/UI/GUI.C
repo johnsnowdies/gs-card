@@ -14,7 +14,6 @@
 #include "data\keys.h"
 
 #include "ui\gui.h"
-
 #include "ui\locale.h"
 
 
@@ -23,7 +22,6 @@
  * ---------------------------------------------------------------- */
 extern struct game_state   gs;
 extern struct system_solar* sol_list;
-extern unsigned char SIG_CLOSE_QUEST_WND;
 
 /* ----------------------------------------------------------------
  * init -- BGI graphics init
@@ -43,318 +41,385 @@ void gui_init()
     settextstyle(SMALL_FONT, HORIZ_DIR, 4);
 }
 
-int count_digits_loop(long n) {
-    int count = 0;
-    if (n == 0) return 1;
-    if (n < 0) n = -n;
-
-    while (n) { ++count; n /= 10; }
-    return count;
-}
-
 /* ----------------------------------------------------------------
- * gui_top_status_line -- system name, faction, balance
+ * Window prototype - size, header
  * ---------------------------------------------------------------- */
-void gui_top_status_line()
-{
-    int xpos = BAR_LEFT;
-    char buf[100] = "";
 
-    setfillstyle(SOLID_FILL, BLACK);
-    bar(0, 0, MAP_WND_WIDTH, TOPBAR_H - 1);
+void gui_draw_wnd_proto(WND* ptr_wnd)
+{    
+    int width = ptr_wnd->x + ptr_wnd->width,
+        height = ptr_wnd->y + ptr_wnd->height;
 
-    settextstyle(SMALL_FONT, HORIZ_DIR, 5);
+    /* Fill window space with BLACK */
+    setfillstyle(SOLID_FILL, WND_FILL_COLOR);
+    bar(ptr_wnd->x, ptr_wnd->y, width, height);
 
-    /* TAB-MODE */
-    setcolor(BAR_COLOR);
-    outtextxy(xpos, 2, "TAB");
-    xpos += 25;
-    setcolor(TEXT_COLOR);
-    outtextxy(xpos, 2, LC_GUI_STATUS_MODE);
-
-    xpos += 55;
-    
-    setcolor(BAR_COLOR);
-    outtextxy(xpos, 2, LC_GUI_STATUS_INFO);
-
-    xpos += 40;
-    sprintf(buf, "SA.%d (%d) | %s: %ld$$ | %s: %d%% | %s: %d/%d",
-        gs.current_system,
-        sol_list[gs.current_system].threadSize,
-        LC_GUI_STATUS_BALANCE, gs.balance,
-        LC_GUI_STATUS_FUEL, gs.fuel,
-        LC_GUI_STATUS_CARGO, gs.current_cargo, gs.tonnage);
-    
-    setcolor(TEXT_COLOR);
-    outtextxy(xpos, 2, buf);
-}
-
-
-/* ----------------------------------------------------------------
- * drawWnd -- generic window frame
- * ---------------------------------------------------------------- */
-void gui_draw_generic_wnd(int x, int y, int width, int height)
-{
-    setfillstyle(SOLID_FILL, BLACK);
-    setcolor(BAR_COLOR);
-
-    /* Body */
-    bar(x, y, x + width, y + height);
-    rectangle(x, y, x + width, y + height);
+    /* Window RED border */
+    setcolor(WND_BORDER_COLOR);
+    rectangle(ptr_wnd->x, ptr_wnd->y, width, height);
 
     /* Title bar */
-    setfillstyle(SOLID_FILL, RED);
-    bar(x, y, x + width, y + WND_TITLE_H);
+    if (ptr_wnd->header){
+        setfillstyle(SOLID_FILL, RED);
+        bar(ptr_wnd->x, ptr_wnd->y, width, ptr_wnd->y + WND_HEADER_HEIGHT);
+        settextstyle(WND_HEADER_FONT);
+        setcolor(0);
+        outtextxy(ptr_wnd->x + WND_HEADER_X_OFFSET, ptr_wnd->y + WND_HEADER_Y_OFFSET, ptr_wnd->header);
+        setcolor(BAR_COLOR);   
+    }
+}
+/* ----------------------------------------------------------------
+ * Element: Button
+ * ---------------------------------------------------------------- */
 
-    settextstyle(SMALL_FONT, HORIZ_DIR, 4);
+void gui_draw_btn(BTN *btn)
+{
+    if (!btn->visible) return;
+    setlinestyle(0, 0, 1);
+    if (btn->enabled) {
+        if (btn->selected) {
+            setfillstyle(SOLID_FILL, RED);
+            setcolor(RED);
+            bar(btn->x, btn->y, btn->x + btn->width, btn->y + btn->height);
+            rectangle(btn->x, btn->y, btn->x + btn->width, btn->y + btn->height);
+            setcolor(BLACK);
+        } else {
+            setcolor(RED);
+            rectangle(btn->x, btn->y, btn->x + btn->width, btn->y + btn->height);
+            setcolor(RED);
+        }
+        outtextxy(btn->x + (btn->width - textwidth(btn->text)) / 2,
+                  btn->y + (btn->height - textheight(btn->text)) / 2,
+                  btn->text);
+    } else {
+        setcolor(DARKGRAY);
+        rectangle(btn->x, btn->y, btn->x + btn->width, btn->y + btn->height);
+        setcolor(DARKGRAY);
+        outtextxy(btn->x + (btn->width - textwidth(btn->text)) / 2,
+                  btn->y + (btn->height - textheight(btn->text)) / 2,
+                  btn->text);
+    }
+}
+
+int gui_handle_btn_keys(int num_btns, int *current)
+{
+    int ch, ext;
+    ch = getch();
+    if (ch == 0) {
+        ext = getch();
+        if (ext == LFT || ext == UP) {
+            (*current)--;
+            if (*current < 0) *current = num_btns - 1;
+            return 0;
+        }
+        if (ext == RHT || ext == DWN) {
+            (*current)++;
+            if (*current >= num_btns) *current = 0;
+            return 0;
+        }
+    } else if (ch == ENTER) {
+        return 1;
+    } else if (ch == ESC) {
+        return -1;
+    }
+    return 0;
 }
 
 /* ----------------------------------------------------------------
- * gui_warning_wnd -- simple centred warning dialog
+ * Element: Input Field
+ * ---------------------------------------------------------------- */
+void gui_draw_input_field(INPUT_FIELD *field)
+{
+    if (!field->visible) return;
+
+    setcolor(field->border_color);
+    rectangle(field->x, field->y, field->x + field->width, field->y + field->height);
+
+    if (field->fill_color >= 0) {
+        setfillstyle(SOLID_FILL, field->fill_color);
+        bar(field->x + 1, field->y + 1, field->x + field->width - 1, field->y + field->height - 1);
+    }
+
+    setcolor(field->text_color);
+    outtextxy(field->x + 5, field->y + (field->height - textheight("A")) / 2, field->buffer);
+}
+
+static int gui_handle_input_key(INPUT_FIELD *field, int ch)
+{
+    int len = strlen(field->buffer);
+
+    if (ch == 8) {
+        if (len > 0) {
+            field->buffer[len - 1] = '\0';
+        }
+        return 0;
+    }
+    if (ch == 13) {
+        return 1;
+    }
+    if (ch == 27) {
+        field->buffer[0] = '\0';
+        return 1;
+    }
+    if (ch >= ' ' && ch <= '~') {
+        if (len < field->max_len - 1) {
+            field->buffer[len] = (char)ch;
+            field->buffer[len + 1] = '\0';
+        }
+        return 0;
+    }
+    return 0;
+}
+
+void gui_run_input_field(INPUT_FIELD *field)
+{
+    int done = 0;
+    while (!done) {
+        gui_draw_input_field(field);
+        {
+            int ch = getch();
+            done = gui_handle_input_key(field, ch);
+        }
+    }
+}
+
+/* ----------------------------------------------------------------
+ * Element: Progress Bar
+ * ---------------------------------------------------------------- */
+void gui_init_progress_bar(PROGRESS_BAR *pb, int x, int y, int width, int height,
+                           int total, int border_color, int fill_color, int bg_color)
+{
+    pb->x = x;
+    pb->y = y;
+    pb->width = width;
+    pb->height = height;
+    pb->current = 0;
+    pb->total = total;
+    pb->border_color = border_color;
+    pb->fill_color = fill_color;
+    pb->bg_color = bg_color;
+    pb->visible = 1;
+}
+
+void gui_draw_progress_bar(PROGRESS_BAR *pb)
+{
+    int fill_width;
+
+    if (!pb->visible) return;
+    if (pb->total <= 0) return;
+
+    setcolor(pb->border_color);
+    rectangle(pb->x, pb->y, pb->x + pb->width, pb->y + pb->height);
+
+    if (pb->bg_color >= 0) {
+        setfillstyle(SOLID_FILL, pb->bg_color);
+        bar(pb->x + 1, pb->y + 1, pb->x + pb->width - 1, pb->y + pb->height - 1);
+    }
+
+    fill_width = (int)((long)pb->current * pb->width / pb->total);
+    if (fill_width > 0) {
+        setfillstyle(SOLID_FILL, pb->fill_color);
+        bar(pb->x + 1, pb->y + 1, pb->x + fill_width, pb->y + pb->height - 1);
+    }
+}
+
+void gui_set_progress(PROGRESS_BAR *pb, int current)
+{
+    if (current < 0) current = 0;
+    if (current > pb->total) current = pb->total;
+    pb->current = current;
+}
+
+/* ----------------------------------------------------------------
+ * Modal: simple centred warning dialog
  * ---------------------------------------------------------------- */
 void gui_warning_wnd(char* header, char* text)
 {
-    int wx = (MAP_WND_WIDTH - WND_W) / 2;
-    int wy = WND_DEFAULT_Y;
+    WND warning_wnd;
+    
+    warning_wnd.header = header;
+    /* TODO: remove map dependency!*/
+    warning_wnd.x = (MAP_WND_WIDTH - WND_MODAL_DEFAULT_WIDTH) / 2;
+    warning_wnd.y = WND_MODAL_DEFAULT_Y;
+    warning_wnd.width = WND_MODAL_DEFAULT_WIDTH;
+    warning_wnd.height = WND_MODAL_DEFAULT_HEIGHT;
 
-    gui_draw_generic_wnd(wx, wy, WND_W, WND_H);
+    gui_draw_wnd_proto(&warning_wnd);
 
-    setcolor(0);
-    outtextxy(wx + 2, wy + 5, header);
-    setcolor(BAR_COLOR);
-    outtextxy(wx + 2, wy + 20, text);
-    setcolor(TEXT_COLOR);
+    setcolor(RED);
+    outtextxy(warning_wnd.x + 2, warning_wnd.y + 20, text);
 }
 
 /* ----------------------------------------------------------------
- * gui_bool_wnd -- yes/no dialog
+ * Modal: yes/no dialog
  * ---------------------------------------------------------------- */
-int gui_bool_wnd(char* header, char* text)
+int gui_confirm_wnd(char* header, char* text)
 {
-    int wx = (MAP_WND_WIDTH - WND_W) / 2;
-    int wy = WND_DEFAULT_Y;
-    int selected = 0;         
-    int ch, ext;
+    WND confirm_wnd;
+    BTN btn_yes, btn_no;
+    int selected = 0;   
 
-    int btnW = 50, btnH = 20, gap = 10;
-    int btnY = wy + WND_H - btnH - 10;           
-    int total = 2 * btnW + gap;
-    int btnX1 = wx + (WND_W - total) / 2;        
-    int btnX2 = btnX1 + btnW + gap;   
+    int btn_width = 50, btn_height = 20, btn_gap = 10;
+    int btn_y;
+    int total = 2 * btn_width + btn_gap;
 
-    setlinestyle(0, 0, 1);          
+    confirm_wnd.header = header;
+    confirm_wnd.x = (MAP_WND_WIDTH - WND_W) / 2;
+    confirm_wnd.y = WND_DEFAULT_Y;
+    confirm_wnd.width = WND_MODAL_DEFAULT_WIDTH;
+    confirm_wnd.height = WND_MODAL_DEFAULT_HEIGHT;
+
+    btn_y = confirm_wnd.y  + WND_MODAL_DEFAULT_HEIGHT - btn_height - 10;
+
+    btn_yes.text = LC_GUI_BOOL_YES;
+    btn_yes.x = confirm_wnd.x + (WND_MODAL_DEFAULT_WIDTH - total) / 2;
+    btn_yes.y = btn_y;
+    btn_yes.width = btn_width;
+    btn_yes.height = btn_height;
+    btn_yes.selected = (selected == 0) ? 1 : 0;
+    btn_yes.enabled = 1;
+    btn_yes.visible = 1;
+
+    btn_no.text = LC_GUI_BOOL_NO;
+    btn_no.x = btn_yes.x + btn_yes.width + btn_gap;
+    btn_no.y = btn_y;
+    btn_no.width = btn_width;
+    btn_no.height = btn_height;
+    btn_no.selected = (selected == 1) ? 1 : 0;
+    btn_no.enabled = 1;
+    btn_no.visible = 1;
 
     while (1) {
-        gui_draw_generic_wnd(wx, wy, WND_W, WND_H);
-
-        setcolor(0);                             
-        outtextxy(wx + 2, wy + 5, header);
-        setcolor(BAR_COLOR);                
-        outtextxy(wx + 2, wy + 20, text);
-        setcolor(TEXT_COLOR);
-
-        if (selected == 0) {
-            setfillstyle(SOLID_FILL, RED);
-            setcolor(RED);
-            bar(btnX1, btnY, btnX1 + btnW, btnY + btnH);
-            rectangle(btnX1, btnY, btnX1 + btnW, btnY + btnH);
-            setcolor(BLACK);
-            outtextxy(btnX1 + (btnW - textwidth(LC_GUI_BOOL_YES)) / 2,
-                      btnY + (btnH - textheight(LC_GUI_BOOL_YES)) / 2, LC_GUI_BOOL_YES);
-        } else {
-            
-            setcolor(RED);
-            rectangle(btnX1, btnY, btnX1 + btnW, btnY + btnH);
-            setcolor(RED);
-            outtextxy(btnX1 + (btnW - textwidth(LC_GUI_BOOL_YES)) / 2,
-                      btnY + (btnH - textheight(LC_GUI_BOOL_YES)) / 2, LC_GUI_BOOL_YES);
+        if (selected == 0)
+        {
+            btn_yes.selected = 1;
+            btn_no.selected = 0;
         }
 
-        if (selected == 1) {
-            setfillstyle(SOLID_FILL, RED);
-            setcolor(RED);
-            bar(btnX2, btnY, btnX2 + btnW, btnY + btnH);
-            rectangle(btnX2, btnY, btnX2 + btnW, btnY + btnH);
-            setcolor(BLACK);
-            outtextxy(btnX2 + (btnW - textwidth(LC_GUI_BOOL_NO)) / 2,
-                      btnY + (btnH - textheight(LC_GUI_BOOL_NO)) / 2, LC_GUI_BOOL_NO);
-        } else {
-            setcolor(RED);
-            rectangle(btnX2, btnY, btnX2 + btnW, btnY + btnH);
-            setcolor(RED);
-            outtextxy(btnX2 + (btnW - textwidth(LC_GUI_BOOL_NO)) / 2,
-                      btnY + (btnH - textheight(LC_GUI_BOOL_NO)) / 2, LC_GUI_BOOL_NO);
+        if (selected == 1)
+        {
+            btn_yes.selected = 0;
+            btn_no.selected = 1;
         }
 
-        ch = getch();
-        if (ch == 0) {             
-            ext = getch();
-            if (ext == LFT) {
-                if (selected == 1) selected = 0;  
-            } else if (ext == RHT) {
-                if (selected == 0) selected = 1; 
-            }
-        } else if (ch == ENTER) {
-            return (selected == 0) ? 1 : 0;     
+        gui_draw_wnd_proto(&confirm_wnd);
+        outtextxy(confirm_wnd.x + 5, confirm_wnd.y + 20, text);
+
+        gui_draw_btn(&btn_yes);
+        gui_draw_btn(&btn_no);
+
+        if (gui_handle_btn_keys(2, &selected) == 1){
+            return selected;
         }
     }
 }
 
 /* ----------------------------------------------------------------
- * questionWnd -- text input dialog
- *
- * Returns a pointer to a static buffer (valid until next call).
+ * Modal: input dialog
  * ---------------------------------------------------------------- */
 char* gui_input_wnd(char* header, char* text, char* defaultValue)
 {
-    static char inputbuf[Q_INPUT_LEN];
-    int i = 0, c = 0, input_pos = 0, the_end = 0;
-    int wx = (MAP_WND_WIDTH - WND_W) / 2;
-    int wy = WND_DEFAULT_Y;
+    WND input_wnd;
+    INPUT_FIELD field;
+    static char result[Q_INPUT_LEN];
 
-    if (defaultValue != NULL && defaultValue[0] != '\0')
-    {
-        for (i = 0; i < Q_INPUT_LEN - 1 && defaultValue[i] != '\0'; i++)
-        {
-            inputbuf[i] = defaultValue[i];
-        }
-        inputbuf[i] = '\0';
+    input_wnd.header = header;
+    input_wnd.x = (MAP_WND_WIDTH - WND_MODAL_DEFAULT_WIDTH) / 2;
+    input_wnd.y = WND_MODAL_DEFAULT_Y;
+    input_wnd.width = WND_MODAL_DEFAULT_WIDTH;
+    input_wnd.height = WND_MODAL_DEFAULT_HEIGHT;
+
+    field.max_len = Q_INPUT_LEN;
+    field.x = input_wnd.x + 20;
+    field.y = input_wnd.y + 50;
+    field.width = 280;
+    field.height = 18;
+    field.border_color = RED;
+    field.text_color = BLACK;
+    field.fill_color = RED;
+    field.active = 1;
+    field.visible = 1;
+
+    if (defaultValue != NULL && defaultValue[0] != '\0') {
+        strncpy(field.buffer, defaultValue, Q_INPUT_LEN - 1);
+        field.buffer[Q_INPUT_LEN - 1] = '\0';
+    } else {
+        field.buffer[0] = '\0';
     }
-    else
-    {
-        inputbuf[0] = '\0';
-    }
+    field.cursor_pos = strlen(field.buffer);
 
-    gui_draw_generic_wnd(wx, wy, WND_W, WND_H);
-
-    setcolor(0);
-    outtextxy(wx + 2, wy + 5, header);
+    gui_draw_wnd_proto(&input_wnd);
+    
     setcolor(BAR_COLOR);
-    outtextxy(wx + 2, wy + 20, text);
-    outtextxy(wx + 2, wy + 88, LC_GUI_INPUT_TEXT);
+    outtextxy(input_wnd.x + 2, input_wnd.y + 20, text);
+    outtextxy(input_wnd.x + 2, input_wnd.y + 88, LC_GUI_INPUT_TEXT);
 
-    moveto(wx + 5, wy + 40);
-    setcolor(TEXT_COLOR);
+    gui_run_input_field(&field);
 
-    do {
-        /* Redraw input field */
-        setfillstyle(SOLID_FILL, RED);
-        bar(wx + 20, wy + 50, wx + 300, wy + 68);
-        setcolor(0);
-        outtextxy(wx + 25, wy + 55, inputbuf);
-
-        c = getch();
-        switch (c) {
-            case 8:                     /* BACKSPACE */
-                if (input_pos) {
-                    input_pos--;
-                    inputbuf[input_pos] = '\0';
-                }
-                break;
-            case 13:                    /* RETURN */
-                the_end = 1;
-                break;
-            case ESC:                   /* ESC */
-                inputbuf[0] = '\0';
-                the_end = 1;
-                break;
-            default:
-                if (input_pos < Q_INPUT_LEN - 1 && c >= ' ' && c <= '~') {
-                    inputbuf[input_pos] = c;
-                    input_pos++;
-                    inputbuf[input_pos] = '\0';
-                }
-        }
-    } while (!the_end);
-
-    return inputbuf;
-#undef Q_INPUT_LEN
+    strcpy(result, field.buffer);
+    return result;
 }
 
 /* ----------------------------------------------------------------
- * progressWnd -- progress bar dialog
+ * Modal: progress bar dialog
  * ---------------------------------------------------------------- */
+
 void gui_progress_wnd(char* header, char* text, int current, int total)
 {
-    float di, x;
-    unsigned int MEM;
-    char memMsg[50] = "";
+    WND progress_wnd;
+    PROGRESS_BAR pb;
 
-    MEM = coreleft();
-    sprintf(memMsg, "M: %d", MEM);
+    progress_wnd.header = header;
+    progress_wnd.x = (MAP_WND_WIDTH - WND_MODAL_DEFAULT_WIDTH) / 2;
+    progress_wnd.y = WND_MODAL_DEFAULT_Y;
+    progress_wnd.width = WND_MODAL_DEFAULT_WIDTH;
+    progress_wnd.height = WND_MODAL_DEFAULT_HEIGHT;
 
-    if (total == 0) return;
-    di = (float)current / total;
-    if (di < 0) di = -di;
-    x = 280.0F * di + 180.0F;
+    gui_init_progress_bar(&pb,
+                          progress_wnd.x + 20, progress_wnd.y + 50,
+                          260, 18,
+                          total,
+                          RED, RED, BLACK);
 
     if (current == 0) {
-        int wx = (MAP_WND_WIDTH - WND_W) / 2;
-        gui_draw_generic_wnd(wx, WND_DEFAULT_Y, WND_W, WND_H);
-
-        setcolor(0);
-        outtextxy(wx + 2, WND_DEFAULT_Y + 5, header);
+        gui_draw_wnd_proto(&progress_wnd);
         setcolor(BAR_COLOR);
-        outtextxy(wx + 2, WND_DEFAULT_Y + 20, text);
+        outtextxy(progress_wnd.x + 2, progress_wnd.y + 20, text);
         setcolor(TEXT_COLOR);
-
-        setcolor(BAR_COLOR);
-        rectangle(180, 230, 460, 248);
     }
 
-    setfillstyle(SOLID_FILL, RED);
-    bar(400, 185, 475, 195);
-    bar(180, 230, (int)x, 248);
-    outtextxy(400, 185, memMsg);
-
-    setcolor(0);
+    gui_set_progress(&pb, current);
+    gui_draw_progress_bar(&pb);
 }
 
-
-void marquee_text(int x, int y, char *text, int max_chars)
+/* ----------------------------------------------------------------
+ * Universal status line
+ * ---------------------------------------------------------------- */
+void gui_draw_status_line(WND* ptr_wnd, char* keys[], char* items[])
 {
-    int offset = 0;
-    int text_len = strlen(text);
-    char buffer[21];          
-    int ch;
-    int i;
+    int xpos = ptr_wnd->x + 5;
+    int i = 0;
 
-    
-    settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
-    setcolor(15);             
+    setfillstyle(SOLID_FILL, BLACK);
+    bar(ptr_wnd->x, ptr_wnd->y,
+        ptr_wnd->x + ptr_wnd->width, ptr_wnd->y + ptr_wnd->height - 1);
 
-    while (SIG_CLOSE_QUEST_WND == 0) {   
-        if (kbhit()) {
-            ch = getch();
-            if (ch == 27) {
-                SIG_CLOSE_QUEST_WND = 1;
-                gui_status_wnd();
-                break;
-            }
-        }
-        
-        for (i = 0; i < max_chars; i++) {
-            buffer[i] = text[(offset + i) % text_len];
-        }
-        buffer[max_chars] = '\0';
+    while (keys[i] != NULL && items[i] != NULL) {
+        setcolor(BAR_COLOR);
+        outtextxy(xpos, ptr_wnd->y + 2, keys[i]);
+        xpos += textwidth(keys[i]) + 4;
 
-        
-        setfillstyle(SOLID_FILL, BLACK);
-        bar(x, y, x + textwidth("W") * max_chars, y + textheight("H"));
-        setfillstyle(BKSLASH_FILL, RED);
-        bar(x, y, x + textwidth("W") * max_chars, y + textheight("H"));
+        setcolor(TEXT_COLOR);
+        outtextxy(xpos, ptr_wnd->y + 2, items[i]);
+        xpos += textwidth(items[i]) + 2;
 
-        
-        setcolor(15);
-        outtextxy(x, y, buffer);
-
-        
-        offset = (offset + 1) % text_len;
-
-        delay(1000);   
+        i++;
     }
 }
 
+/* ----------------------------------------------------------------
+ * Memory status (fixed)
+ * ---------------------------------------------------------------- */
 void gui_memory_status()
 {
     unsigned int USED_MEM, FREE_MEM, TOTAL_MEM = 65535;

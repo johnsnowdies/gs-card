@@ -11,6 +11,7 @@
 
 #include "ui\locale.h"
 
+
 char* MAIN_MENU_ITEMS[3] = {
     LC_MENU_NEW_GAME,
     LC_MENU_LOAD,
@@ -23,33 +24,28 @@ char* GAME_MENU_ITEMS[3] = {
     LC_MENU_EXIT
 };
 
-static void drawgui_menu_wnd()
-{
-    int wx = (MAP_WND_WIDTH - WND_W) / 2;
-    int wy = WND_DEFAULT_Y;
-
-    gui_draw_generic_wnd(wx, wy, WND_W, WND_H);
-
-    setcolor(0);
-    outtextxy(wx + 2, wy + 5, "GS-CARD v1.5");
-    setcolor(BAR_COLOR);
-    
-    moveto(wx + 5, wy + 40);
-    setcolor(TEXT_COLOR);
-}
 
 void gui_menu_wnd(int currentPos, int mode)
 {
+    WND menu_wnd;
     int i = 0;
     int wx = (MAP_WND_WIDTH - WND_W) / 2;
     int wy = WND_DEFAULT_Y + 25;
     char **ITEMS;
+
     if (mode == MAIN_MENU)
         ITEMS = MAIN_MENU_ITEMS;
     else
         ITEMS = GAME_MENU_ITEMS;
 
-    drawgui_menu_wnd();
+    menu_wnd.header = "GS-CARD v1.5";
+
+    menu_wnd.x = (MAP_WND_WIDTH - WND_W) / 2;
+    menu_wnd.y = WND_MODAL_DEFAULT_Y;
+    menu_wnd.width = WND_MODAL_DEFAULT_WIDTH;
+    menu_wnd.height = WND_MODAL_DEFAULT_HEIGHT;
+
+    gui_draw_wnd_proto(&menu_wnd);
 
     setcolor(4);
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
@@ -65,7 +61,6 @@ void gui_menu_wnd(int currentPos, int mode)
             setcolor(BAR_COLOR);
         }
 
-    
         outtextxy(wx+20, wy+5+(20*i), ITEMS[i]);
     }
 }

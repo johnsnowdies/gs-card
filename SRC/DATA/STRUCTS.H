@@ -86,7 +86,7 @@ QUEST {
   unsigned int target_system;
   unsigned int target_sector;
   unsigned int cargo;
-  NPC* giver;
+  NPC giver;
 };
 
 GAMESTATE {
@@ -102,7 +102,8 @@ GAMESTATE {
   unsigned int reputation;
   unsigned int missions_completed;
   unsigned int fuel;
-  QUEST* quests[5];
+  unsigned int quests_size;
+  QUEST quests[5];
   unsigned char *visited;
   int visited_bytes;
-};
+};

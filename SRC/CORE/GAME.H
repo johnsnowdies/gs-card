@@ -5,6 +5,7 @@
 void core_game_gen_npc(NPC* npc_ptr, unsigned int faction);
 void core_game_gen_quest(QUEST* quest_ptr, int player_rep, unsigned int faction);
 void core_game_run_event();
+int accept_quest(unsigned int index);
 /*
 void core_game_accept_quest(QUEST* quest);
 int core_game_check_quest_done(QUEST* active_quest, SYSTEM* current_system);

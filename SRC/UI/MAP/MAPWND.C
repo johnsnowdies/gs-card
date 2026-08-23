@@ -26,6 +26,7 @@
 int MAP_WND_WIDTH  = 639;   /* may shrink to 470 when path panel is open */
 int MAP_WND_HEIGHT = 460;
 
+
 /* Viewport bounds for clipping (map window only) */
 static struct map_wnd {
     int x1, y1, x2, y2;
@@ -127,7 +128,9 @@ static void safe_line(int x1, int y1, int x2, int y2)
 static void safe_outtextxy(int x, int y, char* s)
 {
     if (x >= map_wnd.x1 && x <= map_wnd.x2 &&
-        y >= map_wnd.y1 && y <= map_wnd.y2 - 60)
+        x < map_wnd.x2 - textwidth(s) &&
+        y >= map_wnd.y1 && y <= map_wnd.y2 - 60 &&
+        y < map_wnd.y2 - textheight(s) )
         outtextxy(x, y, s);
 }
 
@@ -388,8 +391,6 @@ static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp)
                                 ex(sol_list[i].x + offsetX),
                                 ey(sol_list[i].y + offsetY) + 5 + 25, 
                                 data_sectors[sol_list[i].sector]);
-
-                           
                         break;
 
                         case 6:
@@ -734,34 +735,61 @@ static void drawyzwnd(int isCoord, int isHyper, WAYPOINT* wp)
 }
 
 /* ----------------------------------------------------------------
- * map_bottom_status_line -- bottom shortcut bar + memory usage
+ * Status lines
  * ---------------------------------------------------------------- */
-void map_bottom_status_line()
+void gui_map_top_status_line()
 {
-    int xpos = BAR_LEFT;
+    WND status_line;
+    char buf[100];
+    char *keys[3];
+    char *items[3];
+
+    sprintf(buf, "SA.%d (%d) | %s: %ld$$ | %s: %d%% | %s: %d/%d",
+        gs.current_system,
+        sol_list[gs.current_system].threadSize,
+        LC_GUI_STATUS_BALANCE, gs.balance,
+        LC_GUI_STATUS_FUEL, gs.fuel,
+        LC_GUI_STATUS_CARGO, gs.current_cargo, gs.tonnage);
+
+    keys[0] = "TAB";
+    items[0] = LC_GUI_STATUS_MODE;
+    keys[1] = "INFO";
+    items[1] = buf;
+    keys[2] = NULL;
+    items[2] = NULL;
+
+    status_line.x = 0;
+    status_line.y = 0;
+    status_line.width = MAP_WND_WIDTH;
+    status_line.height = TOPBAR_H;
+    status_line.header = NULL;
+
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-    setfillstyle(SOLID_FILL, BLACK);
-    bar(0, STATUSBAR_Y, MAP_WND_WIDTH, STATUSBAR_Y + STATUSBAR_H - 1);
+    gui_draw_status_line(&status_line, keys, items);
+}
 
-    /* Shortcut labels */
-    setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F1"); xpos += 13;
-    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, LC_MAP_STATUS_VIEW); xpos += 45;
+void gui_map_bottom_status_line()
+{
+    WND status_line;
+    char *keys[] = { "F1", "F2", "F3/F4", "F5", "F6", "F7", NULL };
+    char *items[] = {
+        LC_MAP_STATUS_VIEW,
+        LC_MAP_STATUS_AXIS,
+        LC_MAP_STATUS_ZOOM,
+        LC_MAP_STATUS_GOTO,
+        LC_MAP_STATUS_THREADS,
+        LC_MAP_STATUS_RUN,
+        NULL
+    };
 
-    setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F2");
-    setcolor(TEXT_COLOR); xpos += 15;
-    outtextxy(xpos, STATUSBAR_Y + 2, LC_MAP_STATUS_AXIS); xpos += 45;
+    status_line.x = 0;
+    status_line.y = STATUSBAR_Y;
+    status_line.width = MAP_WND_WIDTH;
+    status_line.height = STATUSBAR_H;
+    status_line.header = NULL;
 
-    setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F3/F4"); xpos += 40;
-    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, LC_MAP_STATUS_ZOOM); xpos += 45;
-
-    setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F5"); xpos += 15;
-    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, LC_MAP_STATUS_GOTO); xpos += 45;
-
-    setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F6"); xpos += 15;
-    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, LC_MAP_STATUS_THREADS); xpos += 70;
-
-    setcolor(BAR_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, "F7"); xpos += 15;
-    setcolor(TEXT_COLOR); outtextxy(xpos, STATUSBAR_Y + 2, LC_MAP_STATUS_RUN); xpos += 40;
+    settextstyle(SMALL_FONT, HORIZ_DIR, 5);
+    gui_draw_status_line(&status_line, keys, items);
 }
 
 /* ----------------------------------------------------------------
@@ -786,8 +814,8 @@ void gui_map_wnd_draw(int mode, int isCoord, int isHyper, WAYPOINT* way, int cur
     if (way->size && dirty_path) gui_map_path_wnd(way, current_point, sol_list);
     dirty_path = 0;
 
-    if (dirty_topbar) gui_top_status_line();
-    if (dirty_bottombar) map_bottom_status_line();
+    if (dirty_topbar) gui_map_top_status_line();
+    if (dirty_bottombar) gui_map_bottom_status_line();
     dirty_topbar = 0;
     dirty_bottombar = 0;
     gui_memory_status();
