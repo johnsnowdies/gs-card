@@ -141,18 +141,6 @@ char* data_sectors[SECTORS_COUNT] = {
     LC_GAME_SECTOR_9
 };
 
-void game_mark_visited(GAMESTATE *gs, int system) {
-    if (system < 0 || system >= sol_size || !gs->visited) return;
-    gs->visited[system >> 3] |= (1 << (system & 7));
-}
-
-int game_is_visited(GAMESTATE *gs, int system) {
-    if (system < 0 || system >= sol_size || !gs->visited) return 0;
-    return (gs->visited[system >> 3] >> (system & 7)) & 1;
-}
-
-
-
 
 
 /* ----------------------------------------------------------------

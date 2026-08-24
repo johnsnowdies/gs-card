@@ -926,15 +926,19 @@ int gui_map_wnd_key(int ch, WND *parent)
     }
     if (ENTER == ch) {
         if (wp.size > 1 && wp.way[0] == gs.current_system) {
+
             sprintf(buf, LC_CARD_READY_TO_JUMP, wp.way[0], wp.way[1]);
             if (gui_confirm_wnd(&map_wnd, LC_CARD_JUMP_WND_HEAD, buf) == 0) {
-                gui_map_top_status_line();
-                core_game_run_event();
+                
+                
                 wp.size = 0;
                 gs.current_system = wp.way[1];
+                core_game_run_event();
                 sprintf(buf, LC_CARD_JUMP_RESULT_TEXT, gs.current_system);
-
+                gui_map_top_status_line();
                 gui_warning_wnd(&map_wnd, LC_CARD_JUMP_RESULT_HEAD, buf);
+                getch();
+
                 gui_map_wnd_draw();
             } else {
                 wp.size = 0;
