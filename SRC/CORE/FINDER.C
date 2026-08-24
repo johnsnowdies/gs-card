@@ -225,6 +225,8 @@ int core_finder_get_way(WAYPOINT* wp) {
     return 0;
   end = atoi(input);
 
+  free(input);
+
   if (start >= 0 && end >= 0 && start < sol_size && end < sol_size) {
     core_finder_run_wave(start, end);
     if (gotEnd) {

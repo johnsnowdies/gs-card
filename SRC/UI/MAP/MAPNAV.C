@@ -137,8 +137,9 @@ void gui_map_nav_goto_system(int sol_size, struct system_solar* solar)
     int value;
     int error = 0;
 
-    input = gui_input_wnd(&map_wnd, LC_NAV_NORMAL_HEAD, LC_NAV_INPUT_COORD, NULL);
+    input = (char*)gui_input_wnd(&map_wnd, LC_NAV_NORMAL_HEAD, LC_NAV_INPUT_COORD, NULL);
     value = atoi(input);
+    free(input);
 
     if (value != 0) {
         if (value > sol_size || value < 1) {

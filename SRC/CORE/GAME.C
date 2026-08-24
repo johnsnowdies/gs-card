@@ -6,7 +6,7 @@
 
 #include "core/objects.h"
 #include "core/finder.h"
-#include "core/game.h"    
+#include "core/game.h"
 
 
 #include "ui/locale.h" 
@@ -147,17 +147,28 @@ void new_game(char *name, int sol_size)
 
     system_quests_size = 0;
 
-    data_reader_save_game_file(&gs, "USER.SAV");
+    core_game_save("USER.SAV");
 }
 
 /* ----------------------------------------------------------------
  * load_game -- initialise game state from file
  * ---------------------------------------------------------------- */
-int load_game(char *filename)
+int core_game_load(char *filename)
 {
+
     int result = 0;
+    char* debug_buf;
+   
 
     result = data_reader_load_game_file(&gs, filename);
+
+    sprintf(debug_buf, "Result: %d Filename [%s]", result, filename );
+
+
+     clrscr();
+    setcolor(15);
+    outtextxy(0,0, debug_buf);
+        getch();
 
     if (result == 1)
     {
@@ -172,6 +183,13 @@ int load_game(char *filename)
     }
 
 
+    return result;
+}
+
+int core_game_save(char *filename)
+{
+    int result = 0;
+    result = data_reader_save_game_file(&gs, filename);
     return result;
 }
 

@@ -6,12 +6,12 @@
 #include "data\keys.h"
 
 #include "core\objects.h"
+#include "core\game.h"
 
 #include "ui\gui.h"
 #include "ui\locale.h"
 
 #include "ui\menu\menuwnd.h"
-
 #include "ui\menu\menunav.h"
 
 /* SCREEN NAVIGATION */
@@ -30,27 +30,35 @@ extern unsigned int sol_size;
  * ---------------------------------------------------------- */
 int gui_menu_main_wnd_key(int ch, WND *parent)
 {
-    char* text_input;
+    
 
     if (mm_select == 0 && ENTER == ch) {
-        text_input = gui_input_wnd(parent, LC_CARD_MENU_NEW_WND_HEAD,
+        char* text_input;
+        text_input = (char*)gui_input_wnd(parent, LC_CARD_MENU_NEW_WND_HEAD,
                                    LC_CARD_MENU_NEW_WND_TEXT, NULL);
         if (text_input != NULL && text_input[0] != '\0') {
             new_game(text_input, sol_size);
             cur_screen = SCR_MAP;
             gui_map_wnd_draw();
+            gui_map_bottom_status_line();
+            gui_map_top_status_line();
         } else {
             gui_warning_wnd(parent, LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE);
             getch();
             gui_menu_wnd(parent, mm_select, MAIN_MENU);
         }
+        free(text_input);
     }
     if (mm_select == 1 && ENTER == ch) {
-        text_input = gui_input_wnd(parent, LC_CARD_MENU_LOAD_WND_HEAD, LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
+        char* text_input;
+        text_input = (char*)gui_input_wnd(parent, LC_CARD_MENU_LOAD_WND_HEAD, LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
         if (text_input != NULL && text_input[0] != '\0') {
-            if (load_game(&gs, "USER.SAV") == 1) {
+            if (core_game_load(text_input) == 1) {
                 cur_screen = SCR_MAP;
                 gui_map_wnd_draw();
+                gui_map_bottom_status_line();
+                gui_map_top_status_line();
+
             } else {
                 gui_warning_wnd(parent, LC_GEN_ERROR_HEAD, LC_CARD_MENU_LOAD_ERROR);
                 getch();
@@ -61,6 +69,7 @@ int gui_menu_main_wnd_key(int ch, WND *parent)
             getch();
             gui_menu_wnd(parent, mm_select, MAIN_MENU);
         }
+        free(text_input);
     }
     if (mm_select == 2 && ENTER == ch) {
         SIG_TERM = 1;
@@ -85,8 +94,6 @@ int gui_menu_main_wnd_key(int ch, WND *parent)
  * ---------------------------------------------------------- */
 int gui_menu_game_wnd_key(int ch, WND *parent)
 {
-    char *text_input;
-
     if (ESC == ch) {
         mm_select = 0;
         cur_screen = prev_screen;
@@ -96,16 +103,21 @@ int gui_menu_game_wnd_key(int ch, WND *parent)
             gui_status_wnd();
     }
     if (mm_select == 0 && ENTER == ch) {
-        text_input = gui_input_wnd(parent, LC_CARD_MENU_SAVE_WND_HEAD,
+        char *text_input;
+        text_input = (char*)gui_input_wnd(parent, LC_CARD_MENU_SAVE_WND_HEAD,
                                    LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
         if (text_input != NULL && text_input[0] != '\0') {
-            if (data_reader_save_game_file(&gs, text_input) == 1) {
+            if (core_game_save(text_input) == 1) {
                 cur_screen = prev_screen;
                 gui_warning_wnd(parent, LC_GEN_SUCCESS_HEAD, LC_CARD_MENU_SAVE_SUCCESS);
                 getch();
                 if (cur_screen == SCR_MAP)
                     gui_map_wnd_draw();
+                    gui_map_bottom_status_line();
+                    gui_map_top_status_line();
                 if (cur_screen == SCR_STATUS)
+                    gui_map_top_status_line();
+                    gui_status_bottom_status_line();
                     gui_status_wnd();
             } else {
                 gui_warning_wnd(parent, LC_GEN_ERROR_HEAD, LC_CARD_MENU_SAVE_ERROR);
@@ -117,14 +129,18 @@ int gui_menu_game_wnd_key(int ch, WND *parent)
             getch();
             gui_menu_wnd(parent, mm_select, GAME_MENU);
         }
+        free(text_input);
     }
     if (mm_select == 1 && ENTER == ch) {
-        text_input = gui_input_wnd(parent, LC_CARD_MENU_LOAD_WND_HEAD,
+        char *text_input;
+        text_input = (char*)gui_input_wnd(parent, LC_CARD_MENU_LOAD_WND_HEAD,
                                    LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
         if (text_input != NULL && text_input[0] != '\0') {
-            if (load_game(&gs, "USER.SAV") == 1) {
+            if (core_game_load(&text_input) == 1) {
                 cur_screen = SCR_MAP;
                 gui_map_top_status_line();
+                gui_map_bottom_status_line();
+
                 gui_map_wnd_draw();
             } else {
                 gui_warning_wnd(parent, LC_GEN_ERROR_HEAD, LC_CARD_MENU_LOAD_ERROR);
@@ -136,6 +152,7 @@ int gui_menu_game_wnd_key(int ch, WND *parent)
             getch();
             gui_menu_wnd(parent, mm_select, GAME_MENU);
         }
+        free(text_input);
     }
     if (mm_select == 2 && ENTER == ch) {
         SIG_TERM = 1;

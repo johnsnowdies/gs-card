@@ -321,7 +321,7 @@ char* gui_input_wnd(WND* ptr_parent, char* header, char* text, char* defaultValu
 {
     WND input_wnd;
     INPUT_FIELD field;
-    char result[Q_INPUT_LEN];
+    char* result;
 
     input_wnd.header = header;
     input_wnd.x = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
@@ -355,6 +355,7 @@ char* gui_input_wnd(WND* ptr_parent, char* header, char* text, char* defaultValu
     outtextxy(input_wnd.x + 2, input_wnd.y + 88, LC_GUI_INPUT_TEXT);
 
     gui_run_input_field(&field);
+    result = (char*)malloc(Q_INPUT_LEN);
 
     strcpy(result, field.buffer);
     return result;
