@@ -32,9 +32,6 @@ echo Compiling CARD.C...                      >> %BLD%\build.log
 tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CARD.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
-echo Compiling UI\GUI.C...                       >> %BLD%\build.log
-tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\GUI.C >> %BLD%\build.log
-if errorlevel 1 goto err
 
 echo Compiling DATA\READER.C...                    >> %BLD%\build.log
 tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\DATA\READER.C >> %BLD%\build.log
@@ -44,12 +41,21 @@ echo Compiling CORE\FINDER.C...                    >> %BLD%\build.log
 tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CORE\FINDER.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
-echo Compiling UI\AD.C...                        >> %BLD%\build.log
-tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\AD.C >> %BLD%\build.log
+echo Compiling CORE\GAME.C...                     >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CORE\GAME.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling CORE\OBJECTS.C...                    >> %BLD%\build.log
 tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CORE\OBJECTS.C >> %BLD%\build.log
+if errorlevel 1 goto err
+
+REM ----------------------GUI---------------------------
+echo Compiling UI\GUI.C...                       >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\GUI.C >> %BLD%\build.log
+if errorlevel 1 goto err
+
+echo Compiling UI\AD\AD.C...                        >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\AD\AD.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling UI\MAP\MAPWND.C...                      >> %BLD%\build.log
@@ -64,17 +70,22 @@ echo Compiling UI\MAP\PATHWND.C...                     >> %BLD%\build.log
 tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MAP\PATHWND.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
-echo Compiling UI\MENUWND.C...                     >> %BLD%\build.log
-tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MENUWND.C >> %BLD%\build.log
+echo Compiling UI\MENU\MENUWND.C...                     >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MENU\MENUWND.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
-echo Compiling UI\STATWND.C...                     >> %BLD%\build.log
-tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\STATWND.C >> %BLD%\build.log
+echo Compiling UI\MENU\MENUNAV.C...                     >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MENU\MENUNAV.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
-echo Compiling CORE\GAME.C...                     >> %BLD%\build.log
-tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CORE\GAME.C >> %BLD%\build.log
+echo Compiling UI\STAT\STATWND.C...                     >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\STAT\STATWND.C >> %BLD%\build.log
 if errorlevel 1 goto err
+
+echo Compiling UI\STAT\STATNAV.C...                     >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\STAT\STATNAV.C >> %BLD%\build.log
+if errorlevel 1 goto err
+
 
 
 
@@ -100,6 +111,8 @@ echo MAPNAV.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo MENUWND.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo STATWND.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo GAME.OBJ+                                    >> %BLD%\GS-LINK.RSP
+echo MENUNAV.OBJ+                                    >> %BLD%\GS-LINK.RSP
+echo STATNAV.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo PATHWND.OBJ, GSCARD.EXE, GSCARD.MAP, %LIB%\EMU.LIB %LIB%\MATHL.LIB %LIB%\GRAPHICS.LIB %LIB%\CL.LIB >> %BLD%\GS-LINK.RSP
 
 cd %BLD%

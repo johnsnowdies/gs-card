@@ -10,12 +10,14 @@
 
 #include "data\structs.h"
 #include "data\keys.h"
+
 #include "core\game.h"
 
 #include "ui\gui.h"
+#include "ui\locale.h"
+
 #include "ui\map\mapnav.h"
 #include "ui\map\mapwnd.h"
-#include "ui\locale.h"
 
 /* ----------------------------------------------------------------
  * Extern viewport globals (defined in mapwnd.c)

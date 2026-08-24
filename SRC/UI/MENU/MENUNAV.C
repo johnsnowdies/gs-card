@@ -8,15 +8,11 @@
 #include "core\objects.h"
 
 #include "ui\gui.h"
-#include "ui\menuwnd.h"
-
 #include "ui\locale.h"
 
-/* ----------------------------------------------------------------
- * Extern game globals (defined in card.c)
- * ---------------------------------------------------------------- */
+#include "ui\menu\menuwnd.h"
 
-extern unsigned int sol_size;
+#include "ui\menu\menunav.h"
 
 /* SCREEN NAVIGATION */
 extern E_GAME_SCREEN cur_screen;
@@ -25,60 +21,9 @@ extern E_GAME_SCREEN prev_screen;
 extern unsigned char SIG_TERM;
 extern GAME_STATE gs;
 
-char* MAIN_MENU_ITEMS[3] = {
-    LC_MENU_NEW_GAME,
-    LC_MENU_LOAD,
-    LC_MENU_EXIT
-};
+extern mm_select;
 
-char* GAME_MENU_ITEMS[3] = {
-    LC_MENU_SAVE,
-    LC_MENU_LOAD,
-    LC_MENU_EXIT
-};
-
-int mm_select = 0;
-
-
-void gui_menu_wnd(WND* ptr_parent, int currentPos, int mode)
-{
-    WND menu_wnd;
-    int i = 0;
-    int wx = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
-    int wy = ((ptr_parent->height - WND_MODAL_DEFAULT_HEIGHT) / 2) + 25;
-    char **ITEMS;
-
-    if (mode == MAIN_MENU)
-        ITEMS = MAIN_MENU_ITEMS;
-    else
-        ITEMS = GAME_MENU_ITEMS;
-
-    menu_wnd.header = "GS-CARD v1.5";
-
-    menu_wnd.x = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
-    menu_wnd.y = (ptr_parent->height - WND_MODAL_DEFAULT_HEIGHT) / 2;
-    menu_wnd.width = WND_MODAL_DEFAULT_WIDTH;
-    menu_wnd.height = WND_MODAL_DEFAULT_HEIGHT;
-
-    gui_draw_wnd_proto(&menu_wnd);
-
-    setcolor(4);
-    settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-    
-    for (i = 0; i < 3; i++){
-        if (i == currentPos){
-            setfillstyle(SOLID_FILL, RED);
-            bar(wx+10, wy+(20*i), wx + WND_MODAL_DEFAULT_WIDTH - 10, wy+(20*(i+1)));
-            setcolor(0);
-        }
-        else
-        {
-            setcolor(RED);
-        }
-
-        outtextxy(wx+20, wy+5+(20*i), ITEMS[i]);
-    }
-}
+extern unsigned int sol_size;
 
 /* ----------------------------------------------------------
  * SCR_MAIN_MENU -- main menu on startup

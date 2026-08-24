@@ -8,7 +8,6 @@
 #include "core\finder.h"
 
 #include "ui\gui.h"
-#include "ui\ad.h"
 
 #include "ui\locale.h"
 

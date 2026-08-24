@@ -11,14 +11,16 @@
 
 #include "data\structs.h"
 #include "data\keys.h"
+
 #include "core\objects.h"
 #include "core\game.h"
 
 #include "ui\gui.h"
-#include "ui\ad.h"
+#include "ui\locale.h"
+
+#include "ui\ad\ad.h"
 #include "ui\map\mapwnd.h"
 #include "ui\map\pathwnd.h"
-#include "ui\locale.h"
 
 /* ----------------------------------------------------------------
  * Globals

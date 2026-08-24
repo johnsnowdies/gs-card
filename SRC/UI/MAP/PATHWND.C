@@ -11,11 +11,12 @@
 #include "core\objects.h"
 
 #include "ui\gui.h"
-#include "ui\ad.h"
+#include "ui\locale.h"
+
+#include "ui\ad\ad.h"
 #include "ui\map\pathwnd.h"
 #include "ui\map\mapwnd.h"
 
-#include "ui\locale.h"
 
 /* ----------------------------------------------------------------
  * Extern game globals (defined in card.c)

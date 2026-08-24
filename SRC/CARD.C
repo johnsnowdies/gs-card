@@ -22,14 +22,20 @@
 #include "core\finder.h"
 #include "core\game.h"
 
-#include "ui\ad.h"
 #include "ui\gui.h"
-#include "ui\menuwnd.h"
-#include "ui\statwnd.h"
+#include "ui\ad\ad.h"
 
 #include "ui\map\mapwnd.h"
 #include "ui\map\mapnav.h"
+
+#include "ui\menu\menuwnd.h"
+#include "ui\menu\menunav.h"
+
+
 #include "ui\map\pathwnd.h"
+
+#include "ui\stat\statwnd.h"
+#include "ui\stat\statnav.h"
 
 #include "ui\locale.h"
 
