@@ -45,8 +45,8 @@ void gui_menu_wnd(WND* ptr_parent, int currentPos, int mode)
 {
     WND menu_wnd;
     int i = 0;
-    int wx = (ptr_parent->width - WND_W) / 2;
-    int wy = WND_DEFAULT_Y + 25;
+    int wx = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
+    int wy = ((ptr_parent->height - WND_MODAL_DEFAULT_HEIGHT) / 2) + 25;
     char **ITEMS;
 
     if (mode == MAIN_MENU)
@@ -56,8 +56,8 @@ void gui_menu_wnd(WND* ptr_parent, int currentPos, int mode)
 
     menu_wnd.header = "GS-CARD v1.5";
 
-    menu_wnd.x = (ptr_parent->width - WND_W) / 2;
-    menu_wnd.y = WND_MODAL_DEFAULT_Y;
+    menu_wnd.x = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
+    menu_wnd.y = (ptr_parent->height - WND_MODAL_DEFAULT_HEIGHT) / 2;
     menu_wnd.width = WND_MODAL_DEFAULT_WIDTH;
     menu_wnd.height = WND_MODAL_DEFAULT_HEIGHT;
 
@@ -69,7 +69,7 @@ void gui_menu_wnd(WND* ptr_parent, int currentPos, int mode)
     for (i = 0; i < 3; i++){
         if (i == currentPos){
             setfillstyle(SOLID_FILL, RED);
-            bar(wx+10, wy+(20*i), wx + WND_W - 10, wy+(20*(i+1)));
+            bar(wx+10, wy+(20*i), wx + WND_MODAL_DEFAULT_WIDTH - 10, wy+(20*(i+1)));
             setcolor(0);
         }
         else
@@ -102,10 +102,9 @@ int gui_main_menu_key(int ch, WND *parent)
         }
     }
     if (mm_select == 1 && ENTER == ch) {
-        text_input = gui_input_wnd(parent, LC_CARD_MENU_LOAD_WND_HEAD,
-                                   LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
+        text_input = gui_input_wnd(parent, LC_CARD_MENU_LOAD_WND_HEAD, LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
         if (text_input != NULL && text_input[0] != '\0') {
-            if (text_input == 1) {
+            if (load_game(&gs, "USER.SAV") == 1) {
                 cur_screen = SCR_MAP;
                 gui_map_wnd_draw();
             } else {
@@ -179,7 +178,7 @@ int gui_game_menu_key(int ch, WND *parent)
         text_input = gui_input_wnd(parent, LC_CARD_MENU_LOAD_WND_HEAD,
                                    LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
         if (text_input != NULL && text_input[0] != '\0') {
-            if (load_game(&gs, text_input) == 1) {
+            if (load_game(&gs, "USER.SAV") == 1) {
                 cur_screen = SCR_MAP;
                 gui_map_top_status_line();
                 gui_map_wnd_draw();
@@ -210,4 +209,4 @@ int gui_game_menu_key(int ch, WND *parent)
         }
     }
     return 0;
-}
+}

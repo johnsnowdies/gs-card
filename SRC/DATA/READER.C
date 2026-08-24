@@ -189,7 +189,6 @@ int load_game_file(GAMESTATE* state, char* filename)
     if ((fp = fopen(filename, "rb")) == NULL)
         return 0;
 
-    /* Освобождаем старую память для visited (если была) */
     if (state->visited) {
         free(state->visited);
         state->visited = NULL;
@@ -203,24 +202,22 @@ int load_game_file(GAMESTATE* state, char* filename)
     fread(&state->current_cargo, sizeof(int), 1, fp);
     fread(&state->cargo_value, sizeof(long), 1, fp);
     fread(&state->hyper_class, sizeof(int), 1, fp);
-    fread(&state->smuggler_bay, sizeof(int), 1, fp);
+    fread(&state->smuggler_bay, sizeof(unsigned char), 1, fp);
     fread(&state->reputation, sizeof(int), 1, fp);
     fread(&state->missions_completed, sizeof(int), 1, fp);
     fread(&state->fuel, sizeof(int), 1, fp);
 
+    /*
     fread(&state->quests_size, sizeof(int), 1, fp);
 
-    /* Проверка на допустимое количество квестов */
     if (state->quests_size > 5) {
-        state->quests_size = 5;   /* или можно вернуть ошибку */
+        state->quests_size = 5;   
     }
 
-    /* Читаем ровно quests_size структур квестов */
     for (i = 0; i < state->quests_size; i++) {
         fread(&state->quests[i], sizeof(QUEST), 1, fp);
     }
 
-    /* Обнуляем оставшиеся слоты */
     for (i = state->quests_size; i < 5; i++) {
         memset(&state->quests[i], 0, sizeof(QUEST));
     }
@@ -236,7 +233,7 @@ int load_game_file(GAMESTATE* state, char* filename)
         fread(state->visited, sizeof(unsigned char), state->visited_bytes, fp);
     } else {
         state->visited = NULL;
-    }
+    }*/
 
     fclose(fp);
     return 1;
@@ -258,14 +255,15 @@ int save_game_file(GAMESTATE* state, char* filename)
     fwrite(&state->current_cargo, sizeof(int), 1, fp);
     fwrite(&state->cargo_value, sizeof(long), 1, fp);
     fwrite(&state->hyper_class, sizeof(int), 1, fp);
-    fwrite(&state->smuggler_bay, sizeof(int), 1, fp);
+    fwrite(&state->smuggler_bay, sizeof(unsigned char), 1, fp);
     fwrite(&state->reputation, sizeof(int), 1, fp);
     fwrite(&state->missions_completed, sizeof(int), 1, fp);
     fwrite(&state->fuel, sizeof(int), 1, fp);
 
+    /*
+
     fwrite(&state->quests_size, sizeof(int), 1, fp);
 
-    /* Записываем ровно quests_size структур квестов */
     for (i = 0; i < state->quests_size; i++) {
         fwrite(&state->quests[i], sizeof(QUEST), 1, fp);
     }
@@ -274,7 +272,7 @@ int save_game_file(GAMESTATE* state, char* filename)
     if (state->visited_bytes > 0 && state->visited != NULL) {
         fwrite(state->visited, sizeof(unsigned char), state->visited_bytes, fp);
     }
-
+*/
     fclose(fp);
     return 1;
 }

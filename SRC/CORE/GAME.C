@@ -16,7 +16,6 @@
  * Extern game globals (defined in card.c)
  * ---------------------------------------------------------------- */
 extern struct game_state gs;
-extern char* data_sectors[SECTORS_COUNT];
 extern unsigned int system_quests_size;
 extern QUEST system_quests[5];
 extern WAYPOINT wp;
@@ -27,9 +26,59 @@ extern unsigned int sol_size;
 extern OBJECT* obj_list;
 extern unsigned int obj_size;
 
-extern char* data_hyper_fuel;
-
 #define N_SIZE 15
+
+/* ----------------------------------------------------------------
+ * Game Data Structures
+ * ---------------------------------------------------------------- */
+
+
+char* data_ship_names[SHIP_COUNT] = {
+    LC_GAME_SHIP_1,
+    LC_GAME_SHIP_2,
+    LC_GAME_SHIP_3,
+    LC_GAME_SHIP_4,
+    LC_GAME_SHIP_5,
+    LC_GAME_SHIP_6
+};
+
+unsigned int data_ship_tonnages[SHIP_COUNT] = {
+    50, 80, 100, 150, 200, 400
+};
+
+char* data_hyper_names[HYPER_COUNT] = {
+    LC_GAME_ENGINE_1,
+    LC_GAME_ENGINE_2,
+    LC_GAME_ENGINE_3,
+    LC_GAME_ENGINE_4
+};
+
+unsigned int data_hyper_fuel[HYPER_COUNT] = {
+    10, 8, 5, 2
+};
+
+char* data_factions[FACTIONS_COUNT] = {
+    LC_GAME_FACTION_1,
+    LC_GAME_FACTION_2,
+    LC_GAME_FACTION_3,
+    LC_GAME_FACTION_4
+};
+
+unsigned int data_factions_colors[FACTIONS_COUNT] = {
+    2, 14, 9, 4
+};
+
+char* data_sectors[SECTORS_COUNT] = {
+    LC_GAME_SECTOR_1,
+    LC_GAME_SECTOR_2,
+    LC_GAME_SECTOR_3,
+    LC_GAME_SECTOR_4,
+    LC_GAME_SECTOR_5,
+    LC_GAME_SECTOR_6,
+    LC_GAME_SECTOR_7,
+    LC_GAME_SECTOR_8,
+    LC_GAME_SECTOR_9
+};
 
 
 char* QUEST_TYPES[] = {
@@ -108,7 +157,13 @@ void new_game(char *name, int sol_size)
 int load_game(char *filename)
 {
     int result = 0;
+
+    char* buf;
     result = load_game_file(&gs, filename);
+    sprintf(buf, "READ ERROR: %d", result);
+    setcolor(4);
+
+    outtextxy(0,0,buf);
 
     if (result == 1)
     {

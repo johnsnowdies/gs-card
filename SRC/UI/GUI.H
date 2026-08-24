@@ -10,23 +10,19 @@
 #define SCREEN_W      640
 #define SCREEN_H      480
 
-#define WND_W         320    /* default window width  */
-#define WND_H         100    /* default window height */
-#define WND_TITLE_H   16     /* title bar height      */
-#define WND_DEFAULT_Y 180    /* default window Y      */
-
-#define TOPBAR_H      20     /* top status bar height  */
 
 #define STATUSBAR_WIDTH 640
+#define STATUSBAR_HEIGHT 20
+#define STATUSBAR_BOTTOM_Y   461
+
 #define STATUSBAR_H   20     /* bottom status bar height */
-#define STATUSBAR_Y   461    /* bottom bar Y = MAP_WND_HEIGHT + 1 */
+
 
 #define BAR_LEFT       2     /* left margin in bars */
 #define BAR_COLOR      4     /* highlight colour    */
 
 
 /* change with 1/2 calculation */
-#define WND_MODAL_DEFAULT_Y 180
 #define WND_MODAL_DEFAULT_WIDTH 320
 #define WND_MODAL_DEFAULT_HEIGHT 100
 

@@ -41,23 +41,20 @@ const int DEBUG = 1;
  * Game globals
  * ---------------------------------------------------------------- */
 SYSTEM* sol_list;
-unsigned int sol_size;
-
 OBJECT* obj_list;
-unsigned int obj_size;
-
 BOUND_LINE* bnd_list;
-unsigned int bnd_size;
-
 QUEST system_quests[5];
+
+unsigned int sol_size;
+unsigned int obj_size;
+unsigned int bnd_size;
 unsigned int system_quests_size = 0;
-unsigned int system_quest_selected;
 
 WAYPOINT wp;
 
 /* Render flags */
-unsigned char render_danger_objects = 0;
 unsigned char render_bounds = 1;
+unsigned char render_danger_objects = 0;
 unsigned char show_danger_hyperthreads = 0;
 unsigned char show_danger_path_parts = 0;
 
@@ -66,8 +63,6 @@ struct game_state gs;
 
 /* Exit signal */
 unsigned char SIG_TERM = 0;
-
-int path_wnd_index = 0;
 
 
 /* ----------------------------------------------------------------
@@ -89,75 +84,14 @@ key_handler key_handlers[] = {
     gui_quest_detail_key    /* SCR_QUEST_LIST_DETAIL */
 };
 
-/* ----------------------------------------------------------------
- * Game Data Structures
- * ---------------------------------------------------------------- */
-
-
-char* data_ship_names[SHIP_COUNT] = {
-    LC_GAME_SHIP_1,
-    LC_GAME_SHIP_2,
-    LC_GAME_SHIP_3,
-    LC_GAME_SHIP_4,
-    LC_GAME_SHIP_5,
-    LC_GAME_SHIP_6
-};
-
-unsigned int data_ship_tonnages[SHIP_COUNT] = {
-    50, 80, 100, 150, 200, 400
-};
-
-char* data_hyper_names[HYPER_COUNT] = {
-    LC_GAME_ENGINE_1,
-    LC_GAME_ENGINE_2,
-    LC_GAME_ENGINE_3,
-    LC_GAME_ENGINE_4
-};
-
-unsigned int data_hyper_fuel[HYPER_COUNT] = {
-    10, 8, 5, 2
-};
-
-char* data_factions[FACTIONS_COUNT] = {
-    LC_GAME_FACTION_1,
-    LC_GAME_FACTION_2,
-    LC_GAME_FACTION_3,
-    LC_GAME_FACTION_4
-};
-
-unsigned int data_factions_colors[FACTIONS_COUNT] = {
-    2, 14, 9, 4
-};
-
-char* data_sectors[SECTORS_COUNT] = {
-    LC_GAME_SECTOR_1,
-    LC_GAME_SECTOR_2,
-    LC_GAME_SECTOR_3,
-    LC_GAME_SECTOR_4,
-    LC_GAME_SECTOR_5,
-    LC_GAME_SECTOR_6,
-    LC_GAME_SECTOR_7,
-    LC_GAME_SECTOR_8,
-    LC_GAME_SECTOR_9
-};
-
-
 
 /* ----------------------------------------------------------------
  * main
  * ---------------------------------------------------------------- */
 int main()
 {
-    int c = 0;
-    char buf[50];
-    
-    /* New game Player name*/
-    char* text_input;
-
-    WND root_wnd = {
-        NULL,
-        0,0,640,480
-    };
+    char c;
+    WND root_wnd = {NULL, 0, 21, 639, 460};
 
     srand((unsigned)time(NULL));
 
@@ -167,10 +101,7 @@ int main()
     gui_init();
 
     /* Splash screen */
-    /*if (!DEBUG) gui_splash();*/
-
     draw_4bit_bmp("LOGO.BMP",0,0);
-
     setfillstyle(SOLID_FILL, BLACK);
     bar(0, 0, 640, 480);
 
@@ -179,8 +110,6 @@ int main()
     
     /* Draw Main Menu */
     gui_menu_wnd(&root_wnd, 0, MAIN_MENU);
-
-    if (DEBUG) gui_memory_status();
 
     while (!SIG_TERM) {
         c = getch();

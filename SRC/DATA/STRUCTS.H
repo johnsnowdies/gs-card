@@ -8,23 +8,6 @@
 #define GAMESTATE struct game_state
 #define BOUND_LINE struct bound_line
 
-#define SHIP_ALMIGHTY       0
-#define SHIP_BETSY          1
-#define SHIP_IMPERIAL       2
-#define SHIP_GAE_BULG       3
-#define SHIP_NOVA           4
-#define SHIP_BULK_CARRIER   5
-
-#define HYPER_I         0
-#define HYPER_II        1
-#define HYPER_III       2
-#define HYPER_UMBRELLA  3
-
-#define SHIP_COUNT     6
-#define HYPER_COUNT    4
-#define FACTIONS_COUNT 4
-#define SECTORS_COUNT  9
-
 SYSTEM {
   /* POSITIONING */
   int x;
@@ -114,4 +97,4 @@ enum game_screen {
     SCR_GAME_MENU,
     SCR_STATUS,
     SCR_QUEST_LIST_DETAIL
-};
+};

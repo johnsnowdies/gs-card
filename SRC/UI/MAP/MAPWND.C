@@ -12,6 +12,7 @@
 #include "data\structs.h"
 #include "data\keys.h"
 #include "core\objects.h"
+#include "core\game.h"
 
 #include "ui\gui.h"
 #include "ui\ad.h"
@@ -20,18 +21,12 @@
 #include "ui\locale.h"
 
 /* ----------------------------------------------------------------
- * Screen / viewport layout -- defined here, declared extern in gui.h
+ * Map window globals
  * ---------------------------------------------------------------- */
 
-WND map_wnd = {
-    NULL,
-    0,
-    21,
-    639,
-    460
-};
-
+WND map_wnd = {NULL, 0, 21, 639, 460};
 int is_coord = 1, is_hyper = 0, mode = 1; 
+int path_wnd_index = 0;
 
 /* Viewport bounds for clipping (map window only) */
 static struct map_bounds {
@@ -80,7 +75,6 @@ extern unsigned int data_factions_colors[FACTIONS_COUNT];
 extern enum game_screen cur_screen;
 extern enum game_screen prev_screen;
 
-extern int path_wnd_index;
 
 
 /* ----------------------------------------------------------------
@@ -768,8 +762,8 @@ void gui_map_top_status_line()
 
     status_line.x = 0;
     status_line.y = 0;
-    status_line.width = map_wnd.width;
-    status_line.height = TOPBAR_H;
+    status_line.width = STATUSBAR_WIDTH;
+    status_line.height = STATUSBAR_HEIGHT;
     status_line.header = NULL;
 
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
@@ -791,9 +785,9 @@ void gui_map_bottom_status_line()
     };
 
     status_line.x = 0;
-    status_line.y = STATUSBAR_Y;
-    status_line.width = map_wnd.width;
-    status_line.height = STATUSBAR_H;
+    status_line.y = STATUSBAR_BOTTOM_Y;
+    status_line.width = STATUSBAR_WIDTH;
+    status_line.height = STATUSBAR_HEIGHT;
     status_line.header = NULL;
 
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
@@ -934,9 +928,11 @@ int gui_map_wnd_key(int ch, WND *parent)
                 wp.size = 0;
                 gs.current_system = wp.way[1];
                 core_game_run_event();
-                sprintf(buf, LC_CARD_JUMP_RESULT_TEXT, gs.current_system);
                 gui_map_top_status_line();
+
+                sprintf(buf, LC_CARD_JUMP_RESULT_TEXT, gs.current_system);
                 gui_warning_wnd(&map_wnd, LC_CARD_JUMP_RESULT_HEAD, buf);
+
                 getch();
 
                 gui_map_wnd_draw();
@@ -954,7 +950,7 @@ int gui_map_wnd_key(int ch, WND *parent)
         } else {
             prev_screen = cur_screen;
             cur_screen = SCR_GAME_MENU;
-            gui_menu_wnd(&map_wnd, 0, 1);
+            gui_menu_wnd(&map_wnd, 0, 2);
         }
     }
     return 0;

@@ -240,7 +240,7 @@ void gui_warning_wnd(WND* ptr_parent, char* header, char* text)
     warning_wnd.header = header;
     /* TODO: remove map dependency!*/
     warning_wnd.x = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
-    warning_wnd.y = WND_MODAL_DEFAULT_Y;
+    warning_wnd.y = (ptr_parent->height - WND_MODAL_DEFAULT_HEIGHT) / 2;;
     warning_wnd.width = WND_MODAL_DEFAULT_WIDTH;
     warning_wnd.height = WND_MODAL_DEFAULT_HEIGHT;
 
@@ -264,8 +264,8 @@ int gui_confirm_wnd(WND* ptr_parent, char* header, char* text)
     int total = 2 * btn_width + btn_gap;
 
     confirm_wnd.header = header;
-    confirm_wnd.x = (ptr_parent->width - WND_W) / 2;
-    confirm_wnd.y = WND_DEFAULT_Y;
+    confirm_wnd.x = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
+    confirm_wnd.y = (ptr_parent->height - WND_MODAL_DEFAULT_HEIGHT) / 2;
     confirm_wnd.width = WND_MODAL_DEFAULT_WIDTH;
     confirm_wnd.height = WND_MODAL_DEFAULT_HEIGHT;
 
@@ -325,7 +325,7 @@ char* gui_input_wnd(WND* ptr_parent, char* header, char* text, char* defaultValu
 
     input_wnd.header = header;
     input_wnd.x = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
-    input_wnd.y = WND_MODAL_DEFAULT_Y;
+    input_wnd.y = (ptr_parent->height - WND_MODAL_DEFAULT_HEIGHT) / 2;;
     input_wnd.width = WND_MODAL_DEFAULT_WIDTH;
     input_wnd.height = WND_MODAL_DEFAULT_HEIGHT;
 
@@ -371,7 +371,7 @@ void gui_progress_wnd(WND* ptr_parent, char* header, char* text, int current, in
 
     progress_wnd.header = header;
     progress_wnd.x = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
-    progress_wnd.y = WND_MODAL_DEFAULT_Y;
+    progress_wnd.y = (ptr_parent->height - WND_MODAL_DEFAULT_HEIGHT) / 2;;
     progress_wnd.width = WND_MODAL_DEFAULT_WIDTH;
     progress_wnd.height = WND_MODAL_DEFAULT_HEIGHT;
 
@@ -398,20 +398,21 @@ void gui_progress_wnd(WND* ptr_parent, char* header, char* text, int current, in
 void gui_draw_status_line(WND* ptr_wnd, char* keys[], char* items[])
 {
     int xpos = ptr_wnd->x + 5;
+    int width = ptr_wnd->x + ptr_wnd->width,
+        height = ptr_wnd->y + ptr_wnd->height;
     int i = 0;
 
-    setfillstyle(SOLID_FILL, BLACK);
-    bar(ptr_wnd->x, ptr_wnd->y,
-        ptr_wnd->x + ptr_wnd->width, ptr_wnd->y + ptr_wnd->height - 1);
+    setfillstyle(SOLID_FILL, RED);
+    bar(ptr_wnd->x, ptr_wnd->y, width, height);
 
     while (keys[i] != NULL && items[i] != NULL) {
-        setcolor(BAR_COLOR);
+        setcolor(BLACK);
         outtextxy(xpos, ptr_wnd->y + 2, keys[i]);
         xpos += textwidth(keys[i]) + 4;
 
         setcolor(TEXT_COLOR);
         outtextxy(xpos, ptr_wnd->y + 2, items[i]);
-        xpos += textwidth(items[i]) + 2;
+        xpos += textwidth(items[i]) + 5;
 
         i++;
     }
@@ -431,14 +432,14 @@ void gui_memory_status()
 
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
     setfillstyle(SOLID_FILL, BLACK);
-    bar(470, STATUSBAR_Y, 640, STATUSBAR_Y + STATUSBAR_H - 1);
+    bar(470, STATUSBAR_BOTTOM_Y, 640, STATUSBAR_BOTTOM_Y + STATUSBAR_HEIGHT - 1);
 
     setcolor(BAR_COLOR);
-    line(470, STATUSBAR_Y - 1, 470, STATUSBAR_Y + STATUSBAR_H - 1);
+    line(470, STATUSBAR_BOTTOM_Y - 1, 470, STATUSBAR_BOTTOM_Y + STATUSBAR_HEIGHT - 1);
 
     /* Memory */
     setcolor(BAR_COLOR);
-    outtextxy(470 + 5, STATUSBAR_Y + 2, LC_MAP_STATUS_MEM);
+    outtextxy(470 + 5, STATUSBAR_BOTTOM_Y + 2, LC_MAP_STATUS_MEM);
     setcolor(TEXT_COLOR);
-    outtextxy(470 + 35, STATUSBAR_Y + 2, memMsg);
+    outtextxy(470 + 35, STATUSBAR_BOTTOM_Y + 2, memMsg);
 }

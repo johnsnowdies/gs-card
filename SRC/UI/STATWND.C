@@ -13,14 +13,8 @@
 
 #include "core\game.h"
 
-WND status_wnd;
-WND quest_info_wnd;
-
-/* ----------------------------------------------------------------
- * Screen / viewport layout -- defined here, declared extern in gui.h
- * ---------------------------------------------------------------- */
-int STATUS_WND_WIDTH  = 639;   
-int STATUS_WND_HEIGHT = 460;
+WND status_wnd, quest_info_wnd;
+int system_quest_selected = 0;
 
 /* ----------------------------------------------------------------
  * Extern game globals (defined in card.c)
@@ -37,7 +31,7 @@ extern char* data_hyper_names[HYPER_COUNT];
 extern char* QUEST_TYPES[];
 
 extern QUEST system_quests[5];
-extern unsigned int system_quest_selected;
+
 extern WAYPOINT wp;
 
 /* SCREEN NAVIGATION */
@@ -54,9 +48,9 @@ void gui_status_bottom_status_line()
     char *items[] = { "-HELP", NULL };
 
     status_line.x = 0;
-    status_line.y = STATUSBAR_Y;
+    status_line.y = STATUSBAR_BOTTOM_Y;
     status_line.width = STATUSBAR_WIDTH;
-    status_line.height = STATUSBAR_H;
+    status_line.height = STATUSBAR_HEIGHT;
     status_line.header = NULL;
 
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
@@ -250,7 +244,7 @@ void gui_status_wnd()
     quest_info_wnd.height = 300;
 
     setfillstyle(SOLID_FILL, BLACK);
-    bar(1, 22, STATUS_WND_WIDTH - 1, STATUS_WND_HEIGHT - 1);
+    bar(1, 22, status_wnd.width - 1, status_wnd.height - 1);
 
     gui_ad_hypersoft();
     draw_player_status(&status_wnd);
@@ -303,4 +297,4 @@ int gui_quest_detail_key(int ch, WND *parent)
         gui_status_wnd();
     }
     return 0;
-}
+}
