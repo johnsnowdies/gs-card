@@ -1,46 +1,33 @@
-/* gui.h -- window system / status bar API
- *
- */
-
 /* ----------------------------------------------------------------
  * Layout constants
  * ---------------------------------------------------------------- */
 
-
+/* VGA Screen */
 #define SCREEN_W      640
 #define SCREEN_H      480
 
-
+/* Status Bar constants */
 #define STATUSBAR_WIDTH 640
 #define STATUSBAR_HEIGHT 20
 #define STATUSBAR_BOTTOM_Y   461
 
-#define STATUSBAR_H   20     /* bottom status bar height */
 
-
-#define BAR_LEFT       2     /* left margin in bars */
-#define BAR_COLOR      4     /* highlight colour    */
-
-
-/* change with 1/2 calculation */
+/* Modal windows width */
 #define WND_MODAL_DEFAULT_WIDTH 320
 #define WND_MODAL_DEFAULT_HEIGHT 100
 
-
-#define WND_BORDER_COLOR      4     /* highlight colour    */
-#define WND_FILL_COLOR 0
-
+/* Window header constants*/
 #define WND_HEADER_FONT SMALL_FONT, HORIZ_DIR, 4
 #define WND_HEADER_HEIGHT 16
 #define WND_HEADER_X_OFFSET 2
 #define WND_HEADER_Y_OFFSET 5
 
-
-
-#define TEXT_COLOR    15     /* normal text colour  */
-
+/* Input Field Length*/
 #define Q_INPUT_LEN 30
 
+/* ----------------------------------------------------------------
+ * GUI Elements
+ * ---------------------------------------------------------------- */
 
 #define INPUT_FIELD struct input_field
 INPUT_FIELD {
@@ -86,6 +73,10 @@ BTN {
     unsigned char enabled;
     unsigned char visible;
 };
+
+/* ----------------------------------------------------------------
+ * GUI API
+ * ---------------------------------------------------------------- */
 
 void gui_init(void);
 

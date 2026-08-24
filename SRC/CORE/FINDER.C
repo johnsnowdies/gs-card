@@ -21,8 +21,8 @@ extern SYSTEM* sol_list;
 extern unsigned int sol_size;
 extern OBJECT* obj_list;
 extern int obj_size;
-extern struct game_state gs;
-
+extern GAME_STATE gs;
+extern WND map_wnd;
 extern const int DEBUG;
 
 int S;

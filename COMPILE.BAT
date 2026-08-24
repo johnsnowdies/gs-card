@@ -48,10 +48,6 @@ echo Compiling UI\AD.C...                        >> %BLD%\build.log
 tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\AD.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
-echo Compiling UI\SPLASH.C...                    >> %BLD%\build.log
-tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\SPLASH.C >> %BLD%\build.log
-if errorlevel 1 goto err
-
 echo Compiling CORE\OBJECTS.C...                    >> %BLD%\build.log
 tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CORE\OBJECTS.C >> %BLD%\build.log
 if errorlevel 1 goto err
@@ -60,8 +56,8 @@ echo Compiling UI\MAP\MAPWND.C...                      >> %BLD%\build.log
 tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MAP\MAPWND.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
-echo Compiling UI\MAP\NAV.C...                         >> %BLD%\build.log
-tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MAP\NAV.C >> %BLD%\build.log
+echo Compiling UI\MAP\MAPNAV.C...                         >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MAP\MAPNAV.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 echo Compiling UI\MAP\PATHWND.C...                     >> %BLD%\build.log
@@ -98,10 +94,9 @@ echo GUI.OBJ+                                >> %BLD%\GS-LINK.RSP
 echo READER.OBJ+                             >> %BLD%\GS-LINK.RSP
 echo FINDER.OBJ+                             >> %BLD%\GS-LINK.RSP
 echo AD.OBJ+                                 >> %BLD%\GS-LINK.RSP
-echo SPLASH.OBJ+                                 >> %BLD%\GS-LINK.RSP
 echo OBJECTS.OBJ+                                >> %BLD%\GS-LINK.RSP
 echo MAPWND.OBJ+                                 >> %BLD%\GS-LINK.RSP
-echo NAV.OBJ+                                    >> %BLD%\GS-LINK.RSP
+echo MAPNAV.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo MENUWND.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo STATWND.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo GAME.OBJ+                                    >> %BLD%\GS-LINK.RSP

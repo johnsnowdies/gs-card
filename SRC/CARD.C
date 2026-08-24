@@ -23,13 +23,13 @@
 #include "core\game.h"
 
 #include "ui\ad.h"
-#include "ui\splash.h"
 #include "ui\gui.h"
 #include "ui\menuwnd.h"
 #include "ui\statwnd.h"
+
 #include "ui\map\mapwnd.h"
+#include "ui\map\mapnav.h"
 #include "ui\map\pathwnd.h"
-#include "ui\map\nav.h"
 
 #include "ui\locale.h"
 
@@ -38,8 +38,10 @@ unsigned _stklen = 16384;
 const int DEBUG = 1;
 
 /* ----------------------------------------------------------------
- * Game globals
+ * Globals
  * ---------------------------------------------------------------- */
+
+/* Data related global variables */
 SYSTEM* sol_list;
 OBJECT* obj_list;
 BOUND_LINE* bnd_list;
@@ -52,31 +54,21 @@ unsigned int system_quests_size = 0;
 
 WAYPOINT wp;
 
-/* Render flags */
-unsigned char render_bounds = 1;
-unsigned char render_danger_objects = 0;
-unsigned char show_danger_hyperthreads = 0;
-unsigned char show_danger_path_parts = 0;
-
 /* Game state */
-struct game_state gs;
+GAME_STATE gs;
 
 /* Exit signal */
 unsigned char SIG_TERM = 0;
 
-
-/* ----------------------------------------------------------------
- * Screen enumeration -- add new screens here
- * ---------------------------------------------------------------- */
-
-enum game_screen cur_screen = SCR_MAIN_MENU;
-enum game_screen prev_screen = SCR_MAP;
+/* Screen enumerations */
+E_GAME_SCREEN cur_screen = SCR_MAIN_MENU;
+E_GAME_SCREEN prev_screen = SCR_MAP;
 
 /* ----------------------------------------------------------------
  * Handlers table
  * ---------------------------------------------------------------- */
 typedef int (*key_handler)(int ch, WND *parent);
-key_handler key_handlers[] = {
+static key_handler key_handlers[] = {
     gui_map_wnd_key,        /* SCR_MAP */
     gui_main_menu_key,      /* SCR_MAIN_MENU */
     gui_game_menu_key,      /* SCR_GAME_MENU */

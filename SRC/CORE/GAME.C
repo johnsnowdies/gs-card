@@ -1,7 +1,6 @@
 #include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <math.h>
+
 #include "data/structs.h"
 #include "data/reader.h"
 
@@ -15,7 +14,7 @@
 /* ----------------------------------------------------------------
  * Extern game globals (defined in card.c)
  * ---------------------------------------------------------------- */
-extern struct game_state gs;
+extern GAME_STATE gs;
 extern unsigned int system_quests_size;
 extern QUEST system_quests[5];
 extern WAYPOINT wp;
@@ -90,12 +89,12 @@ char* QUEST_TYPES[] = {
     LC_QUEST_TYPE_5
 };
 
-void game_mark_visited(GAMESTATE *gs, int system) {
+void game_mark_visited(GAME_STATE *gs, int system) {
     if (system < 0 || system >= sol_size || !gs->visited) return;
     gs->visited[system >> 3] |= (1 << (system & 7));
 }
 
-int game_is_visited(GAMESTATE *gs, int system) {
+int game_is_visited(GAME_STATE *gs, int system) {
     if (system < 0 || system >= sol_size || !gs->visited) return 0;
     return (gs->visited[system >> 3] >> (system & 7)) & 1;
 }

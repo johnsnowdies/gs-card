@@ -21,22 +21,19 @@
 #include "ui\locale.h"
 
 /* ----------------------------------------------------------------
- * Map window globals
+ * Globals
  * ---------------------------------------------------------------- */
 
 WND map_wnd = {NULL, 0, 21, 639, 460};
 int is_coord = 1, is_hyper = 0, mode = 1; 
 int path_wnd_index = 0;
 
-/* Viewport bounds for clipping (map window only) */
-static struct map_bounds {
-    int x1, y1, x2, y2;
-} map_bounds = { 0, 21, 639, 460 };
+unsigned char render_danger_objects;
+unsigned char render_bounds;
+unsigned char show_danger_hyperthreads;
+unsigned char show_danger_path_parts;
 
 /* Projection bounds */
-#define MAX_VALUE  1400
-#define MIN_VALUE -1400
-
 float xmin = MIN_VALUE, xmax = MAX_VALUE;
 float ymin = MIN_VALUE, ymax = MAX_VALUE;
 float zmin = MIN_VALUE, zmax = MAX_VALUE;
@@ -44,16 +41,20 @@ float zmin = MIN_VALUE, zmax = MAX_VALUE;
 int  offsetX = 0, offsetY = 0, offsetZ = 0;
 float xdens, ydens;
 
+
 /* Colour computed as a side-effect of p() */
 static int POINT_COLOR = 0;
 
+/* Viewport bounds for clipping (map window only) */
+static struct map_bounds {
+    int x1, y1, x2, y2;
+} map_bounds = { 0, 21, 639, 460 };
+
+
 /* ----------------------------------------------------------------
- * Extern game globals (defined in card.c)
+ * Extern globals
  * ---------------------------------------------------------------- */
-extern unsigned char render_danger_objects;
-extern unsigned char render_bounds;
-extern unsigned char show_danger_hyperthreads;
-extern unsigned char show_danger_path_parts;
+
 extern WAYPOINT wp;
 
 extern SYSTEM* sol_list;
@@ -65,15 +66,15 @@ extern unsigned int obj_size;
 extern BOUND_LINE* bnd_list;
 extern unsigned int bnd_size;
 
-extern GAMESTATE gs;
+extern GAME_STATE gs;
 
 extern char* data_factions[FACTIONS_COUNT];
 extern char* data_sectors[SECTORS_COUNT];
 extern unsigned int data_factions_colors[FACTIONS_COUNT];
 
 /* SCREEN NAVIGATION */
-extern enum game_screen cur_screen;
-extern enum game_screen prev_screen;
+extern E_GAME_SCREEN cur_screen;
+extern E_GAME_SCREEN prev_screen;
 
 
 
@@ -176,11 +177,11 @@ static int get_color_by_z(float z)
     else                return 4;
 }
 
-static struct point p(float x, float y, float z)
+static POINT p(float x, float y, float z)
 {
     float b = 0.8660254F * y;
     float a = y / 2.0F;
-    struct point res;
+    POINT res;
 
     res.x = (int)(map_wnd.width  / 2 + (x - a) / xdens);
     res.y = (int)(map_wnd.height / 2 + (b / ydens) - (z / ydens));
@@ -214,7 +215,7 @@ static void drawObjects(int mode)
             cx = ex(obj_list[i].x + offsetX);
             cy = ey(obj_list[i].y + offsetY);
         } else if (mode == 2) {
-            struct point c = p(obj_list[i].x + offsetX,
+            POINT c = p(obj_list[i].x + offsetX,
                                obj_list[i].y + offsetY,
                                obj_list[i].z + offsetZ);
             cx = c.x;  cy = c.y;
@@ -258,7 +259,7 @@ static void draw_bounds()
 static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp)
 {
     int i, j, o;
-    struct system_solar buf, a, b;
+    SYSTEM buf, a, b;
     int drawThreads = isHyper;
     char c[50] = "";
 
@@ -467,7 +468,7 @@ static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp)
 static void draw3dwnd(int isCoord, int isHyper, WAYPOINT* wp)
 {
     int i, j, o;
-    struct system_solar buf, a, b;
+    SYSTEM buf, a, b;
     int drawThreads = isHyper;
     char c[50] = "";
 
@@ -475,7 +476,7 @@ static void draw3dwnd(int isCoord, int isHyper, WAYPOINT* wp)
     ydens = (ymax - ymin) / map_wnd.height;
 
     if (isCoord) {
-        struct point A1 = p(0.0F + offsetX, 0.0F + offsetY, 0.0F + offsetZ);
+        POINT A1 = p(0.0F + offsetX, 0.0F + offsetY, 0.0F + offsetZ);
 
         /* X axis */
         setcolor(15); setlinestyle(0, 0, 1);
@@ -492,7 +493,7 @@ static void draw3dwnd(int isCoord, int isHyper, WAYPOINT* wp)
         /* Y axis (diagonal) */
         {
             float farY = (xmax - xmin) * 10.0F;
-            struct point yPos, yNeg;
+            POINT yPos, yNeg;
             setcolor(15); setlinestyle(0, 0, 1);
             yPos = p(0.0F + offsetX, farY + offsetY, 0.0F + offsetZ);
             safe_line(A1.x, A1.y, yPos.x, yPos.y);
@@ -503,7 +504,7 @@ static void draw3dwnd(int isCoord, int isHyper, WAYPOINT* wp)
     }
 
     for (i = 0; i < sol_size; i++) {
-        struct point A1 = p(sol_list[i].x + offsetX, sol_list[i].y + offsetY,
+        POINT A1 = p(sol_list[i].x + offsetX, sol_list[i].y + offsetY,
                             sol_list[i].z + offsetZ);
         p(sol_list[i].x, sol_list[i].y, sol_list[i].z);
         safe_putpixel(A1.x, A1.y, POINT_COLOR);
@@ -514,7 +515,7 @@ static void draw3dwnd(int isCoord, int isHyper, WAYPOINT* wp)
             for (j = 0; j < sol_list[i].threadSize; j++) {
                 buf = sol_list[sol_list[i].threads[j].value];
                 {
-                    struct point A8 = p(buf.x + offsetX, buf.y + offsetY,
+                    POINT A8 = p(buf.x + offsetX, buf.y + offsetY,
                                         buf.z + offsetZ);
                     if (sol_list[i].threads[j].cost < 30)
                         safe_line(A1.x, A1.y, A8.x, A8.y);
@@ -571,8 +572,8 @@ static void draw3dwnd(int isCoord, int isHyper, WAYPOINT* wp)
         a = sol_list[wp->way[i - 1]];
         b = sol_list[wp->way[i]];
         {
-            struct point A8 = p(a.x + offsetX, a.y + offsetY, a.z + offsetZ);
-            struct point A9 = p(b.x + offsetX, b.y + offsetY, b.z + offsetZ);
+            POINT A8 = p(a.x + offsetX, a.y + offsetY, a.z + offsetZ);
+            POINT A9 = p(b.x + offsetX, b.y + offsetY, b.z + offsetZ);
             setcolor(9);
             setlinestyle(3, 0, 1);
             safe_line(A8.x, A8.y, A9.x, A9.y);
@@ -588,9 +589,9 @@ static void draw3dwnd(int isCoord, int isHyper, WAYPOINT* wp)
                 if (core_objects_sphere_line_intersect(sol_list[a_idx].x, sol_list[a_idx].y, sol_list[a_idx].z,
                                         sol_list[b_idx].x, sol_list[b_idx].y, sol_list[b_idx].z,
                                         obj_list[o].x, obj_list[o].y, obj_list[o].z, obj_list[o].r)) {
-                    struct point A8 = p(sol_list[a_idx].x + offsetX, sol_list[a_idx].y + offsetY,
+                    POINT A8 = p(sol_list[a_idx].x + offsetX, sol_list[a_idx].y + offsetY,
                                         sol_list[a_idx].z + offsetZ);
-                    struct point A9 = p(sol_list[b_idx].x + offsetX, sol_list[b_idx].y + offsetY,
+                    POINT A9 = p(sol_list[b_idx].x + offsetX, sol_list[b_idx].y + offsetY,
                                         sol_list[b_idx].z + offsetZ);
                     setcolor(4);
                     setlinestyle(0, 0, 1);
@@ -794,6 +795,13 @@ void gui_map_bottom_status_line()
     gui_draw_status_line(&status_line, keys, items);
 }
 
+void gui_map_wnd_clear()
+{
+    setfillstyle(SOLID_FILL, BLACK);
+    bar(1, 21, map_wnd.width - 1, map_wnd.height - 1);
+}
+
+
 /* ----------------------------------------------------------------
  * Public: gui_map_wnd_draw() -- main frame dispatcher
  * ---------------------------------------------------------------- */
@@ -818,140 +826,3 @@ void gui_map_wnd_draw()
     gui_memory_status();
 }
 
-/* ----------------------------------------------------------------
- * Public: gui_map_wnd_clear() -- fill map area with black
- * ---------------------------------------------------------------- */
-void gui_map_wnd_clear()
-{
-    setfillstyle(SOLID_FILL, BLACK);
-    bar(1, 21, map_wnd.width - 1, map_wnd.height - 1);
-}
-
-
-int gui_map_wnd_key(int ch, WND *parent)
-{
-    char buf[128];   /* для сообщений */
-
-    if (F1 == ch) {
-        mode = (mode < 3) ? mode + 1 : 1;
-        gui_map_wnd_draw();
-    }
-    if (F2 == ch) {
-        is_coord = !is_coord;
-        gui_map_wnd_draw();
-    }
-    if (F4 == ch) {
-        gui_map_nav_scale_plus();
-        gui_map_wnd_draw();
-    }
-    if (F3 == ch) {
-        gui_map_nav_scale_minus();
-        gui_map_wnd_draw();
-    }
-    if (F5 == ch) {
-        gui_map_nav_goto_system(sol_size, sol_list);
-        gui_map_wnd_draw();
-    }
-    if (F6 == ch) {
-        is_hyper = !is_hyper;
-        gui_map_wnd_draw();
-    }
-    if (F7 == ch) {
-        if (core_finder_get_way(&wp)) {
-            gui_map_wnd_draw();
-            gui_map_path_wnd();
-        }else{
-            gui_map_wnd_draw();
-        }
-    }
-    if (LFT == ch) {
-        gui_map_nav_offset_x_plus();
-        gui_map_wnd_draw();
-    }
-    if (RHT == ch) {
-        gui_map_nav_offset_x_minus();
-        gui_map_wnd_draw();
-    }
-    if (UP == ch) {
-        if (mode == 3 || mode == 2) gui_map_nav_offset_z_minus();
-        if (mode == 1 || mode == 2) gui_map_nav_offset_y_plus();
-        gui_map_wnd_draw();
-    }
-    if (DWN == ch) {
-        if (mode == 3 || mode == 2) gui_map_nav_offset_z_plus();
-        if (mode == 1 || mode == 2) gui_map_nav_offset_y_minus();
-        gui_map_wnd_draw();
-    }
-    if (PUP == ch) {
-        if (wp.size) {
-            if (path_wnd_index == -1 || path_wnd_index == 0)
-                path_wnd_index = (wp.size - 1);
-            else
-                path_wnd_index--;
-            gui_map_nav_move_screen_to(sol_list, wp.way[path_wnd_index]);
-            gui_map_path_wnd();
-            gui_map_wnd_draw();
-        }
-    }
-    if (PDWN == ch) {
-        if (wp.size) {
-            if (path_wnd_index == -1 || path_wnd_index == (wp.size - 1))
-                path_wnd_index = 0;
-            else
-                path_wnd_index++;
-            gui_map_nav_move_screen_to(sol_list, wp.way[path_wnd_index]);
-            gui_map_path_wnd();
-            gui_map_wnd_draw();
-        }
-    }
-    if (KEY_D == ch) {
-        render_danger_objects = (render_danger_objects == 1) ? 0 : 1;
-        show_danger_hyperthreads = (show_danger_hyperthreads == 1) ? 0 : 1;
-        show_danger_path_parts = (show_danger_path_parts == 1) ? 0 : 1;
-        gui_map_wnd_draw();
-    }
-    if (KEY_P == ch) {
-        render_bounds = (render_bounds == 1) ? 0 : 1;
-        gui_map_wnd_draw();
-    }
-    if (TAB == ch) {
-        cur_screen = SCR_STATUS;
-        gui_status_wnd();
-    }
-    if (ENTER == ch) {
-        if (wp.size > 1 && wp.way[0] == gs.current_system) {
-
-            sprintf(buf, LC_CARD_READY_TO_JUMP, wp.way[0], wp.way[1]);
-            if (gui_confirm_wnd(&map_wnd, LC_CARD_JUMP_WND_HEAD, buf) == 0) {
-                
-                
-                wp.size = 0;
-                gs.current_system = wp.way[1];
-                core_game_run_event();
-                gui_map_top_status_line();
-
-                sprintf(buf, LC_CARD_JUMP_RESULT_TEXT, gs.current_system);
-                gui_warning_wnd(&map_wnd, LC_CARD_JUMP_RESULT_HEAD, buf);
-
-                getch();
-
-                gui_map_wnd_draw();
-            } else {
-                wp.size = 0;
-                gui_map_top_status_line();
-                gui_map_wnd_draw();
-            }
-        }
-    }
-    if (ESC == ch) {
-        if (wp.size) {
-            wp.size = 0;
-            gui_map_wnd_draw();
-        } else {
-            prev_screen = cur_screen;
-            cur_screen = SCR_GAME_MENU;
-            gui_menu_wnd(&map_wnd, 0, 2);
-        }
-    }
-    return 0;
-}

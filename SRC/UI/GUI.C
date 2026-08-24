@@ -20,8 +20,8 @@
 /* ----------------------------------------------------------------
  * Extern game globals (defined in card.c)
  * ---------------------------------------------------------------- */
-extern struct game_state   gs;
-extern struct system_solar* sol_list;
+extern GAME_STATE gs;
+extern SYSTEM* sol_list;
 
 /* ----------------------------------------------------------------
  * init -- BGI graphics init
@@ -51,11 +51,11 @@ void gui_draw_wnd_proto(WND* ptr_wnd)
         height = ptr_wnd->y + ptr_wnd->height;
 
     /* Fill window space with BLACK */
-    setfillstyle(SOLID_FILL, WND_FILL_COLOR);
+    setfillstyle(SOLID_FILL, BLACK);
     bar(ptr_wnd->x, ptr_wnd->y, width, height);
 
     /* Window RED border */
-    setcolor(WND_BORDER_COLOR);
+    setcolor(RED);
     rectangle(ptr_wnd->x, ptr_wnd->y, width, height);
 
     /* Title bar */
@@ -63,9 +63,9 @@ void gui_draw_wnd_proto(WND* ptr_wnd)
         setfillstyle(SOLID_FILL, RED);
         bar(ptr_wnd->x, ptr_wnd->y, width, ptr_wnd->y + WND_HEADER_HEIGHT);
         settextstyle(WND_HEADER_FONT);
-        setcolor(0);
+        setcolor(BLACK);
         outtextxy(ptr_wnd->x + WND_HEADER_X_OFFSET, ptr_wnd->y + WND_HEADER_Y_OFFSET, ptr_wnd->header);
-        setcolor(BAR_COLOR);   
+        setcolor(RED);   
     }
 }
 /* ----------------------------------------------------------------
@@ -350,7 +350,7 @@ char* gui_input_wnd(WND* ptr_parent, char* header, char* text, char* defaultValu
 
     gui_draw_wnd_proto(&input_wnd);
     
-    setcolor(BAR_COLOR);
+    setcolor(RED);
     outtextxy(input_wnd.x + 2, input_wnd.y + 20, text);
     outtextxy(input_wnd.x + 2, input_wnd.y + 88, LC_GUI_INPUT_TEXT);
 
@@ -383,9 +383,9 @@ void gui_progress_wnd(WND* ptr_parent, char* header, char* text, int current, in
 
     if (current == 0) {
         gui_draw_wnd_proto(&progress_wnd);
-        setcolor(BAR_COLOR);
+        setcolor(RED);
         outtextxy(progress_wnd.x + 2, progress_wnd.y + 20, text);
-        setcolor(TEXT_COLOR);
+        setcolor(WHITE);
     }
 
     gui_set_progress(&pb, current);
@@ -410,7 +410,7 @@ void gui_draw_status_line(WND* ptr_wnd, char* keys[], char* items[])
         outtextxy(xpos, ptr_wnd->y + 2, keys[i]);
         xpos += textwidth(keys[i]) + 4;
 
-        setcolor(TEXT_COLOR);
+        setcolor(WHITE);
         outtextxy(xpos, ptr_wnd->y + 2, items[i]);
         xpos += textwidth(items[i]) + 5;
 
@@ -434,12 +434,12 @@ void gui_memory_status()
     setfillstyle(SOLID_FILL, BLACK);
     bar(470, STATUSBAR_BOTTOM_Y, 640, STATUSBAR_BOTTOM_Y + STATUSBAR_HEIGHT - 1);
 
-    setcolor(BAR_COLOR);
+    setcolor(RED);
     line(470, STATUSBAR_BOTTOM_Y - 1, 470, STATUSBAR_BOTTOM_Y + STATUSBAR_HEIGHT - 1);
 
     /* Memory */
-    setcolor(BAR_COLOR);
+    setcolor(RED);
     outtextxy(470 + 5, STATUSBAR_BOTTOM_Y + 2, LC_MAP_STATUS_MEM);
-    setcolor(TEXT_COLOR);
+    setcolor(WHITE);
     outtextxy(470 + 35, STATUSBAR_BOTTOM_Y + 2, memMsg);
 }

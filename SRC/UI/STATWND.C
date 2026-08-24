@@ -19,8 +19,8 @@ int system_quest_selected = 0;
 /* ----------------------------------------------------------------
  * Extern game globals (defined in card.c)
  * ---------------------------------------------------------------- */
-extern struct game_state gs;
-extern struct system_solar* sol_list;
+extern GAME_STATE gs;
+extern SYSTEM* sol_list;
 
 extern char* data_factions[FACTIONS_COUNT];
 extern char* data_sectors[SECTORS_COUNT];
@@ -35,8 +35,8 @@ extern QUEST system_quests[5];
 extern WAYPOINT wp;
 
 /* SCREEN NAVIGATION */
-extern enum game_screen cur_screen;
-extern enum game_screen prev_screen;
+extern E_GAME_SCREEN cur_screen;
+extern E_GAME_SCREEN prev_screen;
 
 /* ----------------------------------------------------------------
  * gui_status_bottom_status_line -- bottom shortcut bar

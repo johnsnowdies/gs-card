@@ -1,13 +1,10 @@
-#define SYSTEM struct system_solar
-#define POINT struct point
-#define WAYPOINT struct waypoint
 #define THREAD struct thread
-#define OBJECT struct object
-#define NPC struct npc
-#define QUEST struct quest
-#define GAMESTATE struct game_state
-#define BOUND_LINE struct bound_line
+THREAD {
+  unsigned int value;
+  int cost;
+};
 
+#define SYSTEM struct system_solar
 SYSTEM {
   /* POSITIONING */
   int x;
@@ -27,6 +24,7 @@ SYSTEM {
   unsigned int sector;
 };
 
+#define OBJECT struct object
 OBJECT {
   int x;
   int y;
@@ -35,26 +33,26 @@ OBJECT {
   int type;
 };
 
+#define POINT struct point
 POINT {
   int x;
   int y;
 };
 
+#define BOUND_LINE struct bound_line
 BOUND_LINE {
     POINT* a;
     POINT* b;
 };
 
-THREAD {
-  unsigned int value;
-  int cost;
-};
 
+#define WAYPOINT struct waypoint
 WAYPOINT {
   int way[25];
   int size;
 };
 
+#define NPC struct npc
 NPC {
   char name[100];
   unsigned int faction;
@@ -62,6 +60,7 @@ NPC {
   unsigned int gender;
 };
 
+#define QUEST struct quest
 QUEST {
   unsigned int reward;
   unsigned int penalty;
@@ -72,7 +71,8 @@ QUEST {
   NPC giver;
 };
 
-GAMESTATE {
+#define GAME_STATE struct game_state
+GAME_STATE {
   char captain_name[100];
   long balance;
   int current_system;
@@ -91,7 +91,8 @@ GAMESTATE {
   int visited_bytes;
 };
 
-enum game_screen {
+#define E_GAME_SCREEN enum game_screen
+E_GAME_SCREEN {
     SCR_MAP,
     SCR_MAIN_MENU,
     SCR_GAME_MENU,

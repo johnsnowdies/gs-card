@@ -181,7 +181,7 @@ int load_solar(SYSTEM** list)
 }
 
 
-int load_game_file(GAMESTATE* state, char* filename)
+int load_game_file(GAME_STATE* state, char* filename)
 {
     FILE* fp;
     int i;
@@ -239,7 +239,7 @@ int load_game_file(GAMESTATE* state, char* filename)
     return 1;
 }
 
-int save_game_file(GAMESTATE* state, char* filename)
+int save_game_file(GAME_STATE* state, char* filename)
 {
     FILE* fp;
     int i;

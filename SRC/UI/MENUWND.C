@@ -19,12 +19,11 @@
 extern unsigned int sol_size;
 
 /* SCREEN NAVIGATION */
-extern enum game_screen;
-extern enum game_screen cur_screen;
-extern enum game_screen prev_screen;
+extern E_GAME_SCREEN cur_screen;
+extern E_GAME_SCREEN prev_screen;
 
 extern unsigned char SIG_TERM;
-extern struct game_state gs;
+extern GAME_STATE gs;
 
 char* MAIN_MENU_ITEMS[3] = {
     LC_MENU_NEW_GAME,
@@ -74,7 +73,7 @@ void gui_menu_wnd(WND* ptr_parent, int currentPos, int mode)
         }
         else
         {
-            setcolor(BAR_COLOR);
+            setcolor(RED);
         }
 
         outtextxy(wx+20, wy+5+(20*i), ITEMS[i]);

@@ -1,1 +1,0 @@
-void gui_splash(void);

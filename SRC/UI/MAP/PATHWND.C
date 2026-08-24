@@ -38,6 +38,8 @@ static int pathListFlag = 0;
 
 extern int path_wnd_index;
 
+extern WND map_wnd;
+
 /* ----------------------------------------------------------------
  * Private: drawPathWnd -- background frame of the path panel
  * ---------------------------------------------------------------- */
