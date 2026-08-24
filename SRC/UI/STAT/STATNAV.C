@@ -13,7 +13,7 @@
 
 #include "ui\stat\statnav.h"
 
-extern WND status_wnd, quest_info_wnd;
+extern WND status_wnd, quest_wnd;
 extern int system_quest_selected;
 
 /* ----------------------------------------------------------------
@@ -68,7 +68,7 @@ int gui_status_wnd_key(int ch, WND *parent)
     }
     if (ENTER == ch) {
         cur_screen = SCR_QUEST_LIST_DETAIL;
-        gui_status_quest_info(&quest_info_wnd, system_quest_selected);
+        gui_status_quest_info(&quest_wnd, system_quest_selected);
     }
     return 0;
 }
@@ -76,7 +76,7 @@ int gui_status_wnd_key(int ch, WND *parent)
 /* ----------------------------------------------------------
  * SCR_QUEST_LIST_DETAIL -- quest detail view
  * ---------------------------------------------------------- */
-int gui_quest_detail_key(int ch, WND *parent)
+int gui_status_quest_wnd_key(int ch, WND *parent)
 {
     if (ESC == ch) {
         cur_screen = SCR_STATUS;

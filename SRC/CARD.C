@@ -76,10 +76,10 @@ E_GAME_SCREEN prev_screen = SCR_MAP;
 typedef int (*key_handler)(int ch, WND *parent);
 static key_handler key_handlers[] = {
     gui_map_wnd_key,        /* SCR_MAP */
-    gui_main_menu_key,      /* SCR_MAIN_MENU */
-    gui_game_menu_key,      /* SCR_GAME_MENU */
+    gui_menu_main_wnd_key,      /* SCR_MAIN_MENU */
+    gui_menu_game_wnd_key,      /* SCR_GAME_MENU */
     gui_status_wnd_key,     /* SCR_STATUS */
-    gui_quest_detail_key    /* SCR_QUEST_LIST_DETAIL */
+    gui_status_quest_wnd_key    /* SCR_QUEST_LIST_DETAIL */
 };
 
 
@@ -93,13 +93,13 @@ int main()
 
     srand((unsigned)time(NULL));
 
-    sol_size = load_solar(&sol_list);
-    bnd_size = load_bounds(&bnd_list);
+    sol_size = data_reader_load_systems(&sol_list);
+    bnd_size = data_reader_load_bounds(&bnd_list);
 
     gui_init();
 
     /* Splash screen */
-    draw_4bit_bmp("LOGO.BMP",0,0);
+    data_reader_draw_bmp("LOGO.BMP",0,0);
     setfillstyle(SOLID_FILL, BLACK);
     bar(0, 0, 640, 480);
 

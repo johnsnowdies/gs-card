@@ -7,7 +7,7 @@
 #include "data\structs.h"
 #include "data\reader.h"
 
-int load_bounds(BOUND_LINE** list)
+int data_reader_load_bounds(BOUND_LINE** list)
 {
     FILE* f;
     char buf[256];
@@ -79,7 +79,7 @@ int load_bounds(BOUND_LINE** list)
     return count;
 }
 
-int load_object(OBJECT** list) 
+int data_reader_load_objects(OBJECT** list) 
 {
   FILE* fp;
   char buf[100];
@@ -135,7 +135,7 @@ int load_object(OBJECT** list)
   return counter;
 }
 
-int load_solar(SYSTEM** list) 
+int data_reader_load_systems(SYSTEM** list) 
 {
   FILE* fp;
   char buf[100];
@@ -181,7 +181,7 @@ int load_solar(SYSTEM** list)
 }
 
 
-int load_game_file(GAME_STATE* state, char* filename)
+int data_reader_load_game_file(GAME_STATE* state, char* filename)
 {
     FILE* fp;
     int i;
@@ -195,6 +195,7 @@ int load_game_file(GAME_STATE* state, char* filename)
     }
 
     fread(state->captain_name, sizeof(char), 100, fp);
+
     fread(&state->balance, sizeof(long), 1, fp);
     fread(&state->current_system, sizeof(int), 1, fp);
     fread(&state->ship_type, sizeof(int), 1, fp);
@@ -207,7 +208,7 @@ int load_game_file(GAME_STATE* state, char* filename)
     fread(&state->missions_completed, sizeof(int), 1, fp);
     fread(&state->fuel, sizeof(int), 1, fp);
 
-    /*
+    
     fread(&state->quests_size, sizeof(int), 1, fp);
 
     if (state->quests_size > 5) {
@@ -233,13 +234,13 @@ int load_game_file(GAME_STATE* state, char* filename)
         fread(state->visited, sizeof(unsigned char), state->visited_bytes, fp);
     } else {
         state->visited = NULL;
-    }*/
+    }
 
     fclose(fp);
     return 1;
 }
 
-int save_game_file(GAME_STATE* state, char* filename)
+int data_reader_save_game_file(GAME_STATE* state, char* filename)
 {
     FILE* fp;
     int i;
@@ -248,6 +249,7 @@ int save_game_file(GAME_STATE* state, char* filename)
         return 0;
 
     fwrite(state->captain_name, sizeof(char), 100, fp);
+    
     fwrite(&state->balance, sizeof(long), 1, fp);
     fwrite(&state->current_system, sizeof(int), 1, fp);
     fwrite(&state->ship_type, sizeof(int), 1, fp);
@@ -260,7 +262,7 @@ int save_game_file(GAME_STATE* state, char* filename)
     fwrite(&state->missions_completed, sizeof(int), 1, fp);
     fwrite(&state->fuel, sizeof(int), 1, fp);
 
-    /*
+    
 
     fwrite(&state->quests_size, sizeof(int), 1, fp);
 
@@ -272,13 +274,13 @@ int save_game_file(GAME_STATE* state, char* filename)
     if (state->visited_bytes > 0 && state->visited != NULL) {
         fwrite(state->visited, sizeof(unsigned char), state->visited_bytes, fp);
     }
-*/
+
     fclose(fp);
     return 1;
 }
 
 
-void draw_4bit_bmp(char *filename, int px, int py)
+void data_reader_draw_bmp(char *filename, int px, int py)
 {
     FILE *fp;
     long offbits;

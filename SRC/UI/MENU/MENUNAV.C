@@ -28,9 +28,9 @@ extern unsigned int sol_size;
 /* ----------------------------------------------------------
  * SCR_MAIN_MENU -- main menu on startup
  * ---------------------------------------------------------- */
-int gui_main_menu_key(int ch, WND *parent)
+int gui_menu_main_wnd_key(int ch, WND *parent)
 {
-    char *text_input;
+    char* text_input;
 
     if (mm_select == 0 && ENTER == ch) {
         text_input = gui_input_wnd(parent, LC_CARD_MENU_NEW_WND_HEAD,
@@ -83,7 +83,7 @@ int gui_main_menu_key(int ch, WND *parent)
 /* ----------------------------------------------------------
  * SCR_GAME_MENU -- in-game menu on ESC
  * ---------------------------------------------------------- */
-int gui_game_menu_key(int ch, WND *parent)
+int gui_menu_game_wnd_key(int ch, WND *parent)
 {
     char *text_input;
 
@@ -99,7 +99,7 @@ int gui_game_menu_key(int ch, WND *parent)
         text_input = gui_input_wnd(parent, LC_CARD_MENU_SAVE_WND_HEAD,
                                    LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
         if (text_input != NULL && text_input[0] != '\0') {
-            if (save_game_file(&gs, text_input) == 1) {
+            if (data_reader_save_game_file(&gs, text_input) == 1) {
                 cur_screen = prev_screen;
                 gui_warning_wnd(parent, LC_GEN_SUCCESS_HEAD, LC_CARD_MENU_SAVE_SUCCESS);
                 getch();

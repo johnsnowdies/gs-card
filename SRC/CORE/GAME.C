@@ -134,7 +134,7 @@ void new_game(char *name, int sol_size)
 
     /* Load ads, calculate hyper-threads, load objects */
     core_finder_calc_hyper_threads();
-    obj_size = load_object(&obj_list);
+    obj_size = data_reader_load_objects(&obj_list);
 
     gui_map_nav_move_screen_to(sol_list, gs.current_system);
     gui_map_bottom_status_line();
@@ -147,7 +147,7 @@ void new_game(char *name, int sol_size)
 
     system_quests_size = 0;
 
-    save_game_file(&gs, "USER.SAV");
+    data_reader_save_game_file(&gs, "USER.SAV");
 }
 
 /* ----------------------------------------------------------------
@@ -157,18 +157,13 @@ int load_game(char *filename)
 {
     int result = 0;
 
-    char* buf;
-    result = load_game_file(&gs, filename);
-    sprintf(buf, "READ ERROR: %d", result);
-    setcolor(4);
-
-    outtextxy(0,0,buf);
+    result = data_reader_load_game_file(&gs, filename);
 
     if (result == 1)
     {
         /* Load ads, calculate hyper-threads, load objects */
         core_finder_calc_hyper_threads();
-        obj_size = load_object(&obj_list);
+        obj_size = data_reader_load_objects(&obj_list);
 
         gui_map_nav_move_screen_to(sol_list, gs.current_system);
         core_game_run_event();
@@ -505,7 +500,7 @@ void core_game_gen_quest(QUEST* quest_ptr, int player_rep, unsigned int faction)
 
 }
 
-int accept_quest(unsigned int index)
+int core_game_accept_quest(unsigned int index)
 {
     int i;
 

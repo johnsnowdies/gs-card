@@ -321,7 +321,7 @@ char* gui_input_wnd(WND* ptr_parent, char* header, char* text, char* defaultValu
 {
     WND input_wnd;
     INPUT_FIELD field;
-    static char result[Q_INPUT_LEN];
+    char result[Q_INPUT_LEN];
 
     input_wnd.header = header;
     input_wnd.x = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;

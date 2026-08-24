@@ -13,7 +13,7 @@
 
 #include "ui\stat\statwnd.h"
 
-WND status_wnd, quest_info_wnd;
+WND status_wnd, quest_wnd;
 int system_quest_selected = 0;
 
 /* ----------------------------------------------------------------
@@ -57,19 +57,19 @@ void gui_status_bottom_status_line()
     gui_draw_status_line(&status_line, keys, items);
 }
 
-void gui_status_quest_info(WND *quest_info_wnd, int selected)
+void gui_status_quest_info(WND *quest_wnd, int selected)
 {
     char line_1[100], line_2[100], reward[100], photo[10];
     char *genders[] = {
         "M", "F"
     };
 
-    gui_draw_wnd_proto(quest_info_wnd);
+    gui_draw_wnd_proto(quest_wnd);
 
     setcolor(4);
-    rectangle(quest_info_wnd->x + 9, quest_info_wnd->y + 29, quest_info_wnd->x + 150, quest_info_wnd->y + 200);
+    rectangle(quest_wnd->x + 9, quest_wnd->y + 29, quest_wnd->x + 150, quest_wnd->y + 200);
     settextstyle(SMALL_FONT, HORIZ_DIR, 6);
-    outtextxy(quest_info_wnd->x + 40, quest_info_wnd->y + 100, "NO PHOTO");
+    outtextxy(quest_wnd->x + 40, quest_wnd->y + 100, "NO PHOTO");
 
     switch(system_quests[selected].giver.faction){
         case 1:
@@ -86,22 +86,22 @@ void gui_status_quest_info(WND *quest_info_wnd, int selected)
         break;
     }
 
-    draw_4bit_bmp(photo, quest_info_wnd->x + 10, quest_info_wnd->y + 30);
+    data_reader_draw_bmp(photo, quest_wnd->x + 10, quest_wnd->y + 30);
     
     setcolor(15);
-    outtextxy(quest_info_wnd->x + 160, quest_info_wnd->y + 30, QUEST_TYPES[system_quests[selected].type]);
+    outtextxy(quest_wnd->x + 160, quest_wnd->y + 30, QUEST_TYPES[system_quests[selected].type]);
     setcolor(4);
-    outtextxy(quest_info_wnd->x + 160, quest_info_wnd->y + 50, system_quests[selected].giver.name);
+    outtextxy(quest_wnd->x + 160, quest_wnd->y + 50, system_quests[selected].giver.name);
     setcolor(15);
 
     settextstyle(SMALL_FONT, HORIZ_DIR, 4);
 
     if (system_quests[selected].giver.faction == 1)
-        outtextxy(quest_info_wnd->x + 160, quest_info_wnd->y + 80, LC_QUEST_GREETING_IRISH);
+        outtextxy(quest_wnd->x + 160, quest_wnd->y + 80, LC_QUEST_GREETING_IRISH);
     else if (system_quests[selected].giver.faction == 0)
-        outtextxy(quest_info_wnd->x + 160, quest_info_wnd->y + 80, LC_QUEST_GREETING_ARAB);
+        outtextxy(quest_wnd->x + 160, quest_wnd->y + 80, LC_QUEST_GREETING_ARAB);
     else
-        outtextxy(quest_info_wnd->x + 160, quest_info_wnd->y + 80, LC_QUEST_GREETING_COMMON);
+        outtextxy(quest_wnd->x + 160, quest_wnd->y + 80, LC_QUEST_GREETING_COMMON);
 
     switch(system_quests[selected].type){
     case 1:
@@ -132,21 +132,21 @@ void gui_status_quest_info(WND *quest_info_wnd, int selected)
         break;
     }
 
-    outtextxy(quest_info_wnd->x + 160, quest_info_wnd->y + 95, line_1);
-    outtextxy(quest_info_wnd->x + 160, quest_info_wnd->y + 110, line_2);
-    outtextxy(quest_info_wnd->x + 160, quest_info_wnd->y + 125, reward);
+    outtextxy(quest_wnd->x + 160, quest_wnd->y + 95, line_1);
+    outtextxy(quest_wnd->x + 160, quest_wnd->y + 110, line_2);
+    outtextxy(quest_wnd->x + 160, quest_wnd->y + 125, reward);
 
     setcolor(4);
-    outtextxy(quest_info_wnd->x + 160, quest_info_wnd->y + 140, LC_QUEST_TABLE_6);
-    outtextxy(quest_info_wnd->x + 160, quest_info_wnd->y + 155, LC_QUEST_TABLE_4);
+    outtextxy(quest_wnd->x + 160, quest_wnd->y + 140, LC_QUEST_TABLE_6);
+    outtextxy(quest_wnd->x + 160, quest_wnd->y + 155, LC_QUEST_TABLE_4);
 
     setcolor(15);
 
     sprintf(line_1, "%d $$", system_quests[selected].penalty);
     sprintf(line_2, "%d", system_quests[selected].cargo);
 
-    outtextxy(quest_info_wnd->x + 210, quest_info_wnd->y + 140, line_1);
-    outtextxy(quest_info_wnd->x + 210, quest_info_wnd->y + 155, line_2);
+    outtextxy(quest_wnd->x + 210, quest_wnd->y + 140, line_1);
+    outtextxy(quest_wnd->x + 210, quest_wnd->y + 155, line_2);
 }
 
 void gui_status_quest_list(WND *status_wnd, int selected)
@@ -237,11 +237,11 @@ void gui_status_wnd()
     status_wnd.width = 640;
     status_wnd.height = 459;
 
-    quest_info_wnd.header = QUEST_TYPES[system_quests[system_quest_selected].type];
-    quest_info_wnd.x = 10;
-    quest_info_wnd.y = 60;
-    quest_info_wnd.width = 600;
-    quest_info_wnd.height = 300;
+    quest_wnd.header = QUEST_TYPES[system_quests[system_quest_selected].type];
+    quest_wnd.x = 10;
+    quest_wnd.y = 60;
+    quest_wnd.width = 600;
+    quest_wnd.height = 300;
 
     setfillstyle(SOLID_FILL, BLACK);
     bar(1, 22, status_wnd.width - 1, status_wnd.height - 1);
