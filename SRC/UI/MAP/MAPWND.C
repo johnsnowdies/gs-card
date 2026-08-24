@@ -10,14 +10,13 @@
 #include <graphics.h>
 
 #include "data\structs.h"
-
+#include "data\keys.h"
 #include "core\objects.h"
 
 #include "ui\gui.h"
 #include "ui\ad.h"
 #include "ui\map\mapwnd.h"
 #include "ui\map\pathwnd.h"
-
 #include "ui\locale.h"
 
 /* ----------------------------------------------------------------
@@ -31,6 +30,8 @@ WND map_wnd = {
     639,
     460
 };
+
+int is_coord = 1, is_hyper = 0, mode = 1; 
 
 /* Viewport bounds for clipping (map window only) */
 static struct map_bounds {
@@ -58,6 +59,7 @@ extern unsigned char render_danger_objects;
 extern unsigned char render_bounds;
 extern unsigned char show_danger_hyperthreads;
 extern unsigned char show_danger_path_parts;
+extern WAYPOINT wp;
 
 extern SYSTEM* sol_list;
 extern unsigned int sol_size;
@@ -73,6 +75,13 @@ extern GAMESTATE gs;
 extern char* data_factions[FACTIONS_COUNT];
 extern char* data_sectors[SECTORS_COUNT];
 extern unsigned int data_factions_colors[FACTIONS_COUNT];
+
+/* SCREEN NAVIGATION */
+extern enum game_screen cur_screen;
+extern enum game_screen prev_screen;
+
+extern int path_wnd_index;
+
 
 /* ----------------------------------------------------------------
  * Clipping helpers (safe_*) -- clip against map_bounds
@@ -794,10 +803,11 @@ void gui_map_bottom_status_line()
 /* ----------------------------------------------------------------
  * Public: gui_map_wnd_draw() -- main frame dispatcher
  * ---------------------------------------------------------------- */
-void gui_map_wnd_draw(int mode, int isCoord, int isHyper, WAYPOINT* way, int current_point)
+void gui_map_wnd_draw()
 {
     /* Shrink main view when path panel is open */
-    if (way->size)
+
+    if (wp.size)
         map_wnd.width = 470;
     else
         map_wnd.width = 639;
@@ -806,9 +816,9 @@ void gui_map_wnd_draw(int mode, int isCoord, int isHyper, WAYPOINT* way, int cur
 
     gui_map_wnd_clear();
 
-    if (mode == 1) draw2dwnd(isCoord, isHyper, way);
-    if (mode == 2) draw3dwnd(isCoord, isHyper, way);
-    if (mode == 3) drawyzwnd(isCoord, isHyper, way);
+    if (mode == 1) draw2dwnd(is_coord, is_hyper, &wp);
+    if (mode == 2) draw3dwnd(is_coord, is_hyper, &wp);
+    if (mode == 3) drawyzwnd(is_coord, is_hyper, &wp);
 
     gui_ad_hypersoft();
     gui_memory_status();
@@ -821,4 +831,127 @@ void gui_map_wnd_clear()
 {
     setfillstyle(SOLID_FILL, BLACK);
     bar(1, 21, map_wnd.width - 1, map_wnd.height - 1);
+}
+
+
+int gui_map_wnd_key(int ch, WND *parent)
+{
+    char buf[128];   /* для сообщений */
+
+    if (F1 == ch) {
+        mode = (mode < 3) ? mode + 1 : 1;
+        gui_map_wnd_draw();
+    }
+    if (F2 == ch) {
+        is_coord = !is_coord;
+        gui_map_wnd_draw();
+    }
+    if (F4 == ch) {
+        gui_map_nav_scale_plus();
+        gui_map_wnd_draw();
+    }
+    if (F3 == ch) {
+        gui_map_nav_scale_minus();
+        gui_map_wnd_draw();
+    }
+    if (F5 == ch) {
+        gui_map_nav_goto_system(sol_size, sol_list);
+        gui_map_wnd_draw();
+    }
+    if (F6 == ch) {
+        is_hyper = !is_hyper;
+        gui_map_wnd_draw();
+    }
+    if (F7 == ch) {
+        if (core_finder_get_way(&wp)) {
+            gui_map_wnd_draw();
+            gui_map_path_wnd();
+        }else{
+            gui_map_wnd_draw();
+        }
+    }
+    if (LFT == ch) {
+        gui_map_nav_offset_x_plus();
+        gui_map_wnd_draw();
+    }
+    if (RHT == ch) {
+        gui_map_nav_offset_x_minus();
+        gui_map_wnd_draw();
+    }
+    if (UP == ch) {
+        if (mode == 3 || mode == 2) gui_map_nav_offset_z_minus();
+        if (mode == 1 || mode == 2) gui_map_nav_offset_y_plus();
+        gui_map_wnd_draw();
+    }
+    if (DWN == ch) {
+        if (mode == 3 || mode == 2) gui_map_nav_offset_z_plus();
+        if (mode == 1 || mode == 2) gui_map_nav_offset_y_minus();
+        gui_map_wnd_draw();
+    }
+    if (PUP == ch) {
+        if (wp.size) {
+            if (path_wnd_index == -1 || path_wnd_index == 0)
+                path_wnd_index = (wp.size - 1);
+            else
+                path_wnd_index--;
+            gui_map_nav_move_screen_to(sol_list, wp.way[path_wnd_index]);
+            gui_map_path_wnd();
+            gui_map_wnd_draw();
+        }
+    }
+    if (PDWN == ch) {
+        if (wp.size) {
+            if (path_wnd_index == -1 || path_wnd_index == (wp.size - 1))
+                path_wnd_index = 0;
+            else
+                path_wnd_index++;
+            gui_map_nav_move_screen_to(sol_list, wp.way[path_wnd_index]);
+            gui_map_path_wnd();
+            gui_map_wnd_draw();
+        }
+    }
+    if (KEY_D == ch) {
+        render_danger_objects = (render_danger_objects == 1) ? 0 : 1;
+        show_danger_hyperthreads = (show_danger_hyperthreads == 1) ? 0 : 1;
+        show_danger_path_parts = (show_danger_path_parts == 1) ? 0 : 1;
+        gui_map_wnd_draw();
+    }
+    if (KEY_P == ch) {
+        render_bounds = (render_bounds == 1) ? 0 : 1;
+        gui_map_wnd_draw();
+    }
+    if (TAB == ch) {
+        cur_screen = SCR_STATUS;
+        gui_status_wnd();
+    }
+    if (ENTER == ch) {
+        if (wp.size > 1 && wp.way[0] == gs.current_system) {
+            sprintf(buf, LC_CARD_READY_TO_JUMP, wp.way[0], wp.way[1]);
+            if (gui_confirm_wnd(&map_wnd, LC_CARD_JUMP_WND_HEAD, buf) == 0) {
+                gui_map_top_status_line();
+                core_game_run_event();
+                wp.size = 0;
+                gs.current_system = wp.way[1];
+                sprintf(buf, LC_CARD_JUMP_RESULT_TEXT, gs.current_system);
+
+                gui_warning_wnd(&map_wnd, LC_CARD_JUMP_RESULT_HEAD, buf);
+                gui_map_wnd_draw();
+            } else {
+                wp.size = 0;
+                gui_map_top_status_line();
+                gui_map_wnd_draw();
+            }
+        }
+    }
+    if (ESC == ch) {
+        if (wp.size) {
+            wp.size = 0;
+            gui_map_wnd_draw();
+        } else {
+            prev_screen = cur_screen;
+            cur_screen = SCR_GAME_MENU;
+            gui_menu_wnd(&map_wnd, 0, 1);
+        }
+    }
+    return 0;
 }

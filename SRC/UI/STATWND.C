@@ -4,6 +4,8 @@
 
 #include "data\structs.h"
 #include "data\reader.h"
+#include "data\keys.h"
+
 
 #include "ui\gui.h"
 
@@ -36,6 +38,11 @@ extern char* QUEST_TYPES[];
 
 extern QUEST system_quests[5];
 extern unsigned int system_quest_selected;
+extern WAYPOINT wp;
+
+/* SCREEN NAVIGATION */
+extern enum game_screen cur_screen;
+extern enum game_screen prev_screen;
 
 /* ----------------------------------------------------------------
  * gui_status_bottom_status_line -- bottom shortcut bar
@@ -251,3 +258,49 @@ void gui_status_wnd()
     gui_status_quest_list(&status_wnd, system_quest_selected);
     gui_status_bottom_status_line();
 }
+
+/* ----------------------------------------------------------
+ * SCR_STATUS -- status window
+ * ---------------------------------------------------------- */
+int gui_status_wnd_key(int ch, WND *parent)
+{
+    if (TAB == ch) {
+        if (wp.size > 0)
+            gui_map_path_wnd();
+        cur_screen = SCR_MAP;
+        gui_map_bottom_status_line();
+        gui_map_wnd_draw();
+    }
+    if (ESC == ch) {
+        prev_screen = cur_screen;
+        cur_screen = SCR_GAME_MENU;
+        gui_menu_wnd(parent, 0, 2);
+    }
+    if (UP == ch) {
+        if (system_quest_selected > 0)
+            system_quest_selected--;
+        gui_status_wnd();
+    }
+    if (DWN == ch) {
+        if (system_quest_selected < 4)
+            system_quest_selected++;
+        gui_status_wnd();
+    }
+    if (ENTER == ch) {
+        cur_screen = SCR_QUEST_LIST_DETAIL;
+        gui_status_quest_info(&quest_info_wnd, system_quest_selected);
+    }
+    return 0;
+}
+
+/* ----------------------------------------------------------
+ * SCR_QUEST_LIST_DETAIL -- quest detail view
+ * ---------------------------------------------------------- */
+int gui_quest_detail_key(int ch, WND *parent)
+{
+    if (ESC == ch) {
+        cur_screen = SCR_STATUS;
+        gui_status_wnd();
+    }
+    return 0;
+}

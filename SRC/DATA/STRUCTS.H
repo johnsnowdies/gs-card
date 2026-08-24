@@ -106,4 +106,12 @@ GAMESTATE {
   QUEST quests[5];
   unsigned char *visited;
   int visited_bytes;
+};
+
+enum game_screen {
+    SCR_MAP,
+    SCR_MAIN_MENU,
+    SCR_GAME_MENU,
+    SCR_STATUS,
+    SCR_QUEST_LIST_DETAIL
 };

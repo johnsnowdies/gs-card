@@ -154,10 +154,10 @@ static int gui_handle_input_key(INPUT_FIELD *field, int ch)
         }
         return 0;
     }
-    if (ch == 13) {
+    if (ch == ENTER) {
         return 1;
     }
-    if (ch == 27) {
+    if (ch == ESC) {
         field->buffer[0] = '\0';
         return 1;
     }

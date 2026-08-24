@@ -181,24 +181,7 @@ int load_solar(SYSTEM** list)
 }
 
 
-static long parse_long(const char* token) {
-    return token ? strtol(token, NULL, 10) : 0;
-}
-
-static int parse_int(const char* token) {
-    return token ? atoi(token) : 0;
-}
-
-static void copy_str(char* dest, const char* src, size_t size) {
-    if (src) {
-        strncpy(dest, src, size - 1);
-        dest[size - 1] = '\0';
-    } else {
-        dest[0] = '\0';
-    }
-}
-
-int load_game(GAMESTATE* state, char* filename)
+int load_game_file(GAMESTATE* state, char* filename)
 {
     FILE* fp;
     int i;
@@ -259,7 +242,7 @@ int load_game(GAMESTATE* state, char* filename)
     return 1;
 }
 
-int save_game(GAMESTATE* state, char* filename)
+int save_game_file(GAMESTATE* state, char* filename)
 {
     FILE* fp;
     int i;

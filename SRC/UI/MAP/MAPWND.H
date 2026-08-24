@@ -3,5 +3,6 @@
    and projection functions are static inside mapwnd.c. */
 
 extern WND map_wnd;
-void gui_map_wnd_draw(int mode, int isCoord, int isHyper, WAYPOINT* way, int current_point);
+void gui_map_wnd_draw();
 void gui_map_wnd_clear(void);
+int gui_map_wnd_key(int ch, WND *parent);

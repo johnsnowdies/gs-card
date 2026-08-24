@@ -21,19 +21,27 @@
  * Extern game globals (defined in card.c)
  * ---------------------------------------------------------------- */
 extern struct object* obj_list;
-extern struct game_state gs;
 extern unsigned int obj_size;
+
+extern struct game_state gs;
+
+extern SYSTEM* sol_list;
+extern unsigned int sol_size;
+
 extern unsigned char show_danger_path_parts;
+extern WAYPOINT wp;
 
 /* ----------------------------------------------------------------
  * One-shot flag: only show the Quindett ad once per path calc
  * ---------------------------------------------------------------- */
 static int pathListFlag = 0;
 
+extern int path_wnd_index;
+
 /* ----------------------------------------------------------------
  * Private: drawPathWnd -- background frame of the path panel
  * ---------------------------------------------------------------- */
-static void draw_gui_map_path_wnd(struct waypoint* wp, int oy)
+static void draw_gui_map_path_wnd(int oy)
 {
     setfillstyle(SOLID_FILL, BLACK);
     setcolor(15);
@@ -57,7 +65,7 @@ static void draw_gui_map_path_wnd(struct waypoint* wp, int oy)
     outtextxy(map_wnd.width + 80, oy + 5, LC_PATH_WND_SELECT);
 
     /* Embedded ad (one-shot per path) */
-    if (wp->size < 15 && !pathListFlag) {
+    if (wp.size < 15 && !pathListFlag) {
         gui_ad_quindett();
         pathListFlag = 1;
     }
@@ -66,8 +74,7 @@ static void draw_gui_map_path_wnd(struct waypoint* wp, int oy)
 /* ----------------------------------------------------------------
  * Public: pathWnd -- draw the path waypoint list
  * ---------------------------------------------------------------- */
-void gui_map_path_wnd(struct waypoint* wp, int current_point,
-             struct system_solar* sol_list)
+void gui_map_path_wnd()
 {
     int i, j, oy, yStep = 15, jump_possible = 0;
     int o;
@@ -76,18 +83,18 @@ void gui_map_path_wnd(struct waypoint* wp, int current_point,
 
     pathListFlag = 0;
 
-    oy = 46 + wp->size * yStep;
-    draw_gui_map_path_wnd(wp, oy);
+    oy = 46 + wp.size * yStep;
+    draw_gui_map_path_wnd( oy);
 
     setcolor(15);
     settextstyle(SMALL_FONT, HORIZ_DIR, 4);
 
-    if (gs.current_system == wp->way[0]){
+    if (gs.current_system == wp.way[0]){
         jump_possible = 1;
     }
 
-    for (i = 0, j = (wp->size - 1); i < wp->size; i++, j--) {
-        if (i == current_point) {
+    for (i = 0, j = (wp.size - 1); i < wp.size; i++, j--) {
+        if (i == path_wnd_index) {
             setcolor(0);
             setfillstyle(SOLID_FILL, RED);
             bar(map_wnd.width + 1, 46 + i * yStep,
@@ -99,26 +106,26 @@ void gui_map_path_wnd(struct waypoint* wp, int current_point,
                 638, 46 + i * yStep + 15);
         }
 
-        if (wp->way[i] == gs.current_system){
-            sprintf(buf, "#%d: SA%d %s", i + 1, wp->way[i], LC_PATH_WND_CURRENT);    
+        if (wp.way[i] == gs.current_system){
+            sprintf(buf, "#%d: SA%d %s", i + 1, wp.way[i], LC_PATH_WND_CURRENT);    
         }
         else if (i == 1 && jump_possible){
-            sprintf(buf, "#%d: SA%d %s", i + 1, wp->way[i], LC_PATH_WND_NEXT_JUMP);    
+            sprintf(buf, "#%d: SA%d %s", i + 1, wp.way[i], LC_PATH_WND_NEXT_JUMP);    
         } else {
-            sprintf(buf, "#%d: SA%d", i + 1, wp->way[i]);    
+            sprintf(buf, "#%d: SA%d", i + 1, wp.way[i]);    
         }
 
         /* Mark dangerous segments */
         if (i > 0 && show_danger_path_parts && obj_size) {
-            int prev = wp->way[i - 1];
-            int cur  = wp->way[i];
+            int prev = wp.way[i - 1];
+            int cur  = wp.way[i];
             for (o = 0; o < obj_size; o++) {
                 if (core_objects_sphere_line_intersect(
                         sol_list[prev].x, sol_list[prev].y, sol_list[prev].z,
                         sol_list[cur].x,  sol_list[cur].y,  sol_list[cur].z,
                         obj_list[o].x,  obj_list[o].y,  obj_list[o].z,
                         obj_list[o].r)) {
-                    sprintf(buf, "#%d: SA%d [%s]", i + 1, wp->way[i], LC_PATH_WND_DANGER);
+                    sprintf(buf, "#%d: SA%d [%s]", i + 1, wp.way[i], LC_PATH_WND_DANGER);
                     break;
                 }
             }

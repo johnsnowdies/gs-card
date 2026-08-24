@@ -3,20 +3,31 @@
 #include <string.h>
 #include <math.h>
 #include "data/structs.h"
+#include "data/reader.h"
+
 #include "core/objects.h"
 #include "core/finder.h"
-#include "ui/locale.h" 
 #include "core/game.h"    
+
+
+#include "ui/locale.h" 
 
 /* ----------------------------------------------------------------
  * Extern game globals (defined in card.c)
  * ---------------------------------------------------------------- */
-extern SYSTEM* sol_list;
-extern int sol_size;
 extern struct game_state gs;
 extern char* data_sectors[SECTORS_COUNT];
 extern unsigned int system_quests_size;
 extern QUEST system_quests[5];
+extern WAYPOINT wp;
+
+extern SYSTEM* sol_list;
+extern unsigned int sol_size;
+
+extern OBJECT* obj_list;
+extern unsigned int obj_size;
+
+extern char* data_hyper_fuel;
 
 #define N_SIZE 15
 
@@ -29,6 +40,81 @@ char* QUEST_TYPES[] = {
     LC_QUEST_TYPE_4,
     LC_QUEST_TYPE_5
 };
+
+
+/* ----------------------------------------------------------------
+ * new_game -- initialise game state
+ * ---------------------------------------------------------------- */
+void new_game(char *name, int sol_size)
+{
+    int i;
+
+    strcpy(gs.captain_name, name);
+    gs.balance            = 100;
+    gs.current_system     = 87; /*rand() % sol_size;*/
+    if (gs.current_system < 0) gs.current_system = 0;
+    if (gs.current_system >= sol_size) gs.current_system = 0;
+
+    gs.ship_type         = 0;
+    gs.tonnage           = 50;
+    gs.current_cargo     = 0;
+    gs.cargo_value       = 0;
+    gs.hyper_class       = 0;
+    gs.smuggler_bay      = 0;
+    gs.reputation        = 0;
+    gs.missions_completed = 0;
+    gs.fuel              = 100;
+
+    gs.quests_size = 0;
+
+    gs.visited_bytes = (sol_size + 7) / 8;
+    gs.visited = (unsigned char*)malloc(gs.visited_bytes);
+    if (gs.visited) {
+        memset(gs.visited, 0, gs.visited_bytes);
+    }
+
+    /* Load ads, calculate hyper-threads, load objects */
+    core_finder_calc_hyper_threads();
+    obj_size = load_object(&obj_list);
+
+    gui_map_nav_move_screen_to(sol_list, gs.current_system);
+    gui_map_bottom_status_line();
+    gui_map_top_status_line();
+
+    game_mark_visited(&gs, gs.current_system);
+    core_game_run_event();
+
+    wp.size = 0;
+
+    system_quests_size = 0;
+
+    save_game_file(&gs, "USER.SAV");
+}
+
+/* ----------------------------------------------------------------
+ * load_game -- initialise game state from file
+ * ---------------------------------------------------------------- */
+int load_game(char *filename)
+{
+    int result = 0;
+    result = load_game_file(&gs, filename);
+
+    if (result == 1)
+    {
+        /* Load ads, calculate hyper-threads, load objects */
+        core_finder_calc_hyper_threads();
+        obj_size = load_object(&obj_list);
+
+        gui_map_nav_move_screen_to(sol_list, gs.current_system);
+        core_game_run_event();
+
+        wp.size = 0;
+    }
+
+
+    return result;
+}
+
 
 /*
  * Quests
@@ -374,8 +460,6 @@ int accept_quest(unsigned int index)
 
     system_quests_size--;
 
-    /* Очищаем последний слот, чтобы не осталось мусора */
-
     return 1;
 }
 
@@ -387,6 +471,10 @@ int accept_quest(unsigned int index)
 void core_game_run_event()
 {
     int i = 0;
+    char buf[50];
+    game_mark_visited(&gs, gs.current_system);
+    gs.fuel -= data_hyper_fuel[gs.hyper_class];
+
     system_quests_size = 5;
     /* System quests generator */
     for (i = 0; i < 5; i++) {
