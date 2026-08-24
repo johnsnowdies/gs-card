@@ -38,6 +38,8 @@ extern WAYPOINT wp;
 extern E_GAME_SCREEN cur_screen;
 extern E_GAME_SCREEN prev_screen;
 
+extern int system_quests_size;
+
 /* ----------------------------------------------------------------
  * gui_status_bottom_status_line -- bottom shortcut bar
  * ---------------------------------------------------------------- */
@@ -63,6 +65,12 @@ void gui_status_quest_info(WND *quest_wnd, int selected)
     char *genders[] = {
         "M", "F"
     };
+    BTN btn_yes, btn_no;
+    int choice = 0;   
+
+    int btn_width = 50, btn_height = 20, btn_gap = 10;
+    int btn_y;
+    int total = 2 * btn_width + btn_gap;
 
     gui_draw_wnd_proto(quest_wnd);
 
@@ -147,6 +155,66 @@ void gui_status_quest_info(WND *quest_wnd, int selected)
 
     outtextxy(quest_wnd->x + 210, quest_wnd->y + 140, line_1);
     outtextxy(quest_wnd->x + 210, quest_wnd->y + 155, line_2);
+
+    btn_y = quest_wnd->y  + 300 - btn_height - 10;
+
+    btn_yes.text = LC_GUI_BOOL_YES;
+    btn_yes.x = quest_wnd->x + (quest_wnd->width - total) / 2;
+    btn_yes.y = btn_y;
+    btn_yes.width = btn_width;
+    btn_yes.height = btn_height;
+    btn_yes.selected = (choice == 0) ? 1 : 0;
+    btn_yes.enabled = 1;
+    btn_yes.visible = 1;
+
+    btn_no.text = LC_GUI_BOOL_NO;
+    btn_no.x = btn_yes.x + btn_yes.width + btn_gap;
+    btn_no.y = btn_y;
+    btn_no.width = btn_width;
+    btn_no.height = btn_height;
+    btn_no.selected = (choice == 1) ? 1 : 0;
+    btn_no.enabled = 1;
+    btn_no.visible = 1;
+
+    while (1) {
+        if (choice == 0)
+        {
+            btn_yes.selected = 1;
+            btn_no.selected = 0;
+        }
+
+        if (choice == 1)
+        {
+            btn_yes.selected = 0;
+            btn_no.selected = 1;
+        }
+
+        gui_draw_btn(&btn_yes);
+        gui_draw_btn(&btn_no);
+
+        if (gui_handle_btn_keys(2, &choice) == 1){
+            if(choice == 0){
+                if(core_game_accept_quest(selected)){
+                    cur_screen = SCR_STATUS;
+                    gui_status_wnd();
+                    gui_map_top_status_line();
+                    break;
+                }
+                else{
+                    gui_warning_wnd(&quest_wnd, LC_GEN_ERROR_HEAD, LC_QUEST_ERROR, 1);
+                }
+
+            }
+            else
+            {
+                cur_screen = SCR_STATUS;
+                gui_status_wnd();
+                break;
+            }
+        }
+    }
+
+
 }
 
 void gui_status_quest_list(WND *status_wnd, int selected)
@@ -158,7 +226,7 @@ void gui_status_quest_list(WND *status_wnd, int selected)
     x_pos = status_wnd->x + 10;
 
     setfillstyle(SOLID_FILL, BLACK);
-    bar(x_pos, y_pos, status_wnd->x + status_wnd->width - 11, status_wnd->y + status_wnd->height - 2);
+    bar(x_pos, y_pos, status_wnd->x + status_wnd->width - 11, status_wnd->height - 2);
 
     setfillstyle(SOLID_FILL, RED);
     bar(status_wnd->x, y_pos - 20, status_wnd->x + status_wnd->width, y_pos - 50);
@@ -179,7 +247,7 @@ void gui_status_quest_list(WND *status_wnd, int selected)
     outtextxy(x_pos, y_pos - 15, line);
     setcolor(15);
 
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < system_quests_size; i++) {
         char buf[128], system[16];
         sprintf(system, "SA.%d", system_quests[i].target_system);
         sprintf(buf, 
@@ -196,6 +264,47 @@ void gui_status_quest_list(WND *status_wnd, int selected)
             setfillstyle(SOLID_FILL, RED);
             bar(x_pos, y_pos + (10 * i), status_wnd->x + status_wnd->width - 10, y_pos + (10 * i) + 10);
         }
+        outtextxy(x_pos, y_pos + (10 * i), buf);
+    }
+
+    y_pos += 120;
+
+    /*
+     * my quests
+     */
+
+    setfillstyle(SOLID_FILL, RED);
+    bar(status_wnd->x, y_pos - 20, status_wnd->x + status_wnd->width, y_pos - 50);
+    
+    setcolor(0);
+    settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
+    outtextxy(status_wnd->x + 10, y_pos - 42, LC_QUEST_MY_HEAD);
+
+    sprintf(line, "%-25.25s %-15.15s %-6.6s %6s %6s %6s",  
+            LC_QUEST_TABLE_1,
+            LC_QUEST_TABLE_2,
+            LC_QUEST_TABLE_3,
+            LC_QUEST_TABLE_4,
+            LC_QUEST_TABLE_5,
+            LC_QUEST_TABLE_6);
+    settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
+    setcolor(4);
+    outtextxy(x_pos, y_pos - 15, line);
+    setcolor(15);
+
+    for (i = 0; i < gs.quests_size; i++) {
+        char buf[128], system[16];
+        sprintf(system, "SA.%d", gs.quests[i].target_system);
+        sprintf(buf, 
+            "%-25.25s %-15.15s %-6.6s %6d %6d %6d",
+                QUEST_TYPES[gs.quests[i].type],
+                data_sectors[gs.quests[i].target_sector],
+                system,
+                gs.quests[i].cargo,
+                gs.quests[i].reward,
+                gs.quests[i].penalty
+            );
+
         outtextxy(x_pos, y_pos + (10 * i), buf);
     }
 }

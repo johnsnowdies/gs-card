@@ -209,6 +209,7 @@
  * ---------------------------------------------------------------- */
 
 #define LC_QUEST_NEW_HEAD "НОВЫЕ КОНТРАКТЫ"
+#define LC_QUEST_MY_HEAD "МОИ КОНТРАКТЫ"
 
 #define LC_QUEST_TABLE_1 "Заgача"
 #define LC_QUEST_TABLE_2 "Сектор"
@@ -251,6 +252,8 @@
 #define LC_QUEST_REWARD_3 "Понимаю, лишние сложности, но как насчет %d $$?"
 #define LC_QUEST_REWARD_4 "Если он gоберется в безопасность, оплата: %d $$"
 #define LC_QUEST_REWARD_5 "Как только получим сигнал от маячка перевеgем тебе %d $$"
+
+#define LC_QUEST_ERROR "Невозможно принять этот контракт!"
 
 
 

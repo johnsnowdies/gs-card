@@ -19,6 +19,8 @@
 #include "ui\map\mapnav.h"
 #include "ui\map\mapwnd.h"
 
+#include "music.h"
+
 /* ----------------------------------------------------------------
  * Extern viewport globals (defined in mapwnd.c)
  * ---------------------------------------------------------------- */
@@ -79,7 +81,7 @@ void gui_map_nav_scale_minus()
         ymin = ymin - MAX_VALUE / 10;
         zmin = zmin - MAX_VALUE / 10;
     } else {
-        gui_warning_wnd(&map_wnd, LC_GEN_ERROR_HEAD, LC_NAV_ERROR_1);
+        gui_warning_wnd(&map_wnd, LC_GEN_ERROR_HEAD, LC_NAV_ERROR_1, 1);
         getch();
     }
 }
@@ -95,7 +97,7 @@ void gui_map_nav_scale_plus()
         ymin = ymin + MAX_VALUE / 10;
         zmin = zmin + MAX_VALUE / 10;
     } else {
-        gui_warning_wnd(&map_wnd, LC_GEN_ERROR_HEAD, LC_NAV_ERROR_2);
+        gui_warning_wnd(&map_wnd, LC_GEN_ERROR_HEAD, LC_NAV_ERROR_2, 1);
         getch();
     }
 }
@@ -152,7 +154,7 @@ void gui_map_nav_goto_system(int sol_size, struct system_solar* solar)
     }
 
     if (error) {
-        gui_warning_wnd(&map_wnd, LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE);
+        gui_warning_wnd(&map_wnd, LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE, 1);
         getch();
     }
 }
@@ -248,6 +250,8 @@ int gui_map_wnd_key(int ch, WND *parent)
         gui_map_wnd_draw();
     }
     if (TAB == ch) {
+        sfx_screen_change();
+
         cur_screen = SCR_STATUS;
         gui_status_wnd();
     }
@@ -260,11 +264,12 @@ int gui_map_wnd_key(int ch, WND *parent)
                 
                 wp.size = 0;
                 gs.current_system = wp.way[1];
+                sfx_hyperjump();
                 core_game_run_event();
                 gui_map_top_status_line();
 
                 sprintf(buf, LC_CARD_JUMP_RESULT_TEXT, gs.current_system);
-                gui_warning_wnd(&map_wnd, LC_CARD_JUMP_RESULT_HEAD, buf);
+                gui_warning_wnd(&map_wnd, LC_CARD_JUMP_RESULT_HEAD, buf, 0);
 
                 getch();
 

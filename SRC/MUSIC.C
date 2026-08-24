@@ -100,3 +100,54 @@ void music_shutdown()
         old_timer_isr = NULL;
     }
 }
+
+
+/* ----------------------------------------------------------------
+ * sfx_menu_move -- short double beep (low frequency)
+ * ---------------------------------------------------------------- */
+void sfx_menu_move()
+{
+    static int notes[] = {80, 0};   
+    static int durs[] = {1, 1};       
+    music_play(notes, durs, 2);
+}
+
+/* ----------------------------------------------------------------
+ * sfx_screen_change -- descending sweep 500 Hz -> 50 Hz
+ * ---------------------------------------------------------------- */
+void sfx_screen_change()
+{
+    static int notes[] = {100, 50};   
+    static int durs[] = {1, 1};       
+    music_play(notes, durs, 2);
+}
+
+void sfx_window_open()
+{
+    static int notes[] = {40, 80};   
+    static int durs[] = {1, 1};
+    music_play(notes, durs, 2);
+}
+void sfx_modal()
+{
+    static int notes[] = {100};   /* одиночный тон */
+    static int durs[]  = {2};     /* 2 тика = 110 мс */
+    music_play(notes, durs, 1);
+}
+
+void sfx_hyperjump()
+{
+    static int notes[] = {40, 80, 160, 320};  /* ­¨§ª¨© -> ¢ëè¥ */
+    static int durs[]  = {1, 1, 1, 1};        /* ¯® 55 ¬á ª ¦¤ ï */
+    music_play(notes, durs, 4);
+}
+
+/* ----------------------------------------------------------------
+ * sfx_error -- low double buzz for error indication
+ * ---------------------------------------------------------------- */
+void sfx_error()
+{
+    static int notes[] = {80, 0, 60};   /* низкий гудок, пауза, ещё ниже */
+    static int durs[]  = {2, 1, 2};     /* 110 мс, 55 мс, 110 мс */
+    music_play(notes, durs, 3);
+}

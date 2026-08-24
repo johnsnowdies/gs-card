@@ -25,8 +25,11 @@ int core_game_accept_quest(unsigned int index);
 
 int core_game_load(char *filename);
 int core_game_save(char *filename);
+
+int core_game_accept_quest(unsigned int index);
+
+
 /*
-void core_game_core_game_accept_quest(QUEST* quest);
 int core_game_check_quest_done(QUEST* active_quest, SYSTEM* current_system);
 */
 /* Shopping System */

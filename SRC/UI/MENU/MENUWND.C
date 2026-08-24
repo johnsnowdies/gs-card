@@ -12,6 +12,8 @@
 
 #include "ui\menu\menuwnd.h"
 
+#include "music.h"
+
 
 /* ----------------------------------------------------------------
  * Extern game globals (defined in card.c)
@@ -72,4 +74,8 @@ void gui_menu_wnd(WND* ptr_parent, int currentPos, int mode)
 
         outtextxy(wx+20, wy+5+(20*i), ITEMS[i]);
     }
+
+    sfx_menu_move();
+    
+
 }

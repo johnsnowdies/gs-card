@@ -14,7 +14,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "data\keys.h"
 #include "data\structs.h"
 #include "data\reader.h"
 
@@ -38,6 +37,8 @@
 #include "ui\stat\statnav.h"
 
 #include "ui\locale.h"
+
+#include "music.h"
 
 unsigned _stklen = 16384;
 
@@ -91,12 +92,14 @@ int main()
     char c;
     WND root_wnd = {NULL, 0, 21, 639, 460};
 
+
     srand((unsigned)time(NULL));
 
     sol_size = data_reader_load_systems(&sol_list);
     bnd_size = data_reader_load_bounds(&bnd_list);
 
     gui_init();
+
 
     /* Splash screen */
     data_reader_draw_bmp("LOGO.BMP",0,0);

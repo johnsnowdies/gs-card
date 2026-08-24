@@ -234,7 +234,7 @@ int core_finder_get_way(WAYPOINT* wp) {
     }
 
     if (!gotEnd || !status) {
-      gui_warning_wnd(&map_wnd, LC_GEN_TITLE_GSCARD, LC_FINDER_ERROR_NOWAY);
+      gui_warning_wnd(&map_wnd, LC_GEN_TITLE_GSCARD, LC_FINDER_ERROR_NOWAY, 1);
       getch();
       return 0;
     }
@@ -242,7 +242,7 @@ int core_finder_get_way(WAYPOINT* wp) {
     return 1;
 
   } else {
-    gui_warning_wnd(&map_wnd, LC_GEN_TITLE_GSCARD, LC_GEN_ERROR_INCORRECT_VALUE);
+    gui_warning_wnd(&map_wnd, LC_GEN_TITLE_GSCARD, LC_GEN_ERROR_INCORRECT_VALUE, 1);
     getch();
   }
 

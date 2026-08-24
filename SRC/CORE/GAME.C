@@ -131,21 +131,21 @@ void new_game(char *name, int sol_size)
     if (gs.visited) {
         memset(gs.visited, 0, gs.visited_bytes);
     }
+    system_quests_size = 0;
 
     /* Load ads, calculate hyper-threads, load objects */
     core_finder_calc_hyper_threads();
     obj_size = data_reader_load_objects(&obj_list);
 
+    core_game_run_event();
+
+
     gui_map_nav_move_screen_to(sol_list, gs.current_system);
     gui_map_bottom_status_line();
     gui_map_top_status_line();
 
-    game_mark_visited(&gs, gs.current_system);
-    core_game_run_event();
-
     wp.size = 0;
 
-    system_quests_size = 0;
 
     core_game_save("USER.SAV");
 }
@@ -529,8 +529,14 @@ int core_game_accept_quest(unsigned int index)
         return 0;
     }
 
+    if (gs.current_cargo + system_quests[index].cargo > gs.tonnage)
+        return 0;
+
+
     gs.quests[gs.quests_size] = system_quests[index];
     gs.quests_size++;
+
+    gs.current_cargo += system_quests[index].cargo;
 
     for (i = index; i < system_quests_size - 1; i++) {
         system_quests[i] = system_quests[i + 1];
@@ -550,12 +556,13 @@ void core_game_run_event()
 {
     int i = 0;
     char buf[50];
+    
     game_mark_visited(&gs, gs.current_system);
     gs.fuel -= data_hyper_fuel[gs.hyper_class];
 
     system_quests_size = 5;
     /* System quests generator */
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < system_quests_size; i++) {
         core_game_gen_quest(&system_quests[i], gs.reputation, sol_list[gs.current_system].faction);
     }
 }

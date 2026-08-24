@@ -97,7 +97,7 @@ void gui_init_progress_bar(PROGRESS_BAR *pb, int x, int y, int width, int height
 void gui_draw_progress_bar(PROGRESS_BAR *pb);
 
 /* Modal: simple centred warning dialog */
-void  gui_warning_wnd(WND* ptr_parent, char* header, char* text);
+void  gui_warning_wnd(WND* ptr_parent, char* header, char* text, int play_sound);
 
 /* Modal: yes/no dialog */
 int gui_confirm_wnd(WND* ptr_parent, char* header, char* text);
