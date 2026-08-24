@@ -9,6 +9,8 @@ SCRIPT_DIR := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 DOSBOX_CONF_TEMPLATE := $(SCRIPT_DIR)/dosbox_gs.conf
 DOSBOX_CONF_RUNTIME := /tmp/gs-card-dosbox-XXXXXX.conf
 
+export SDL_VIDEODRIVER=dummy
+
 .PHONY: build run clean
 
 build:
