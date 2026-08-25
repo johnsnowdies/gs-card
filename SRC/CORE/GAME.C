@@ -11,6 +11,7 @@
 #include "ui/locale.h" 
 
 #include "ui/gui.h"
+#include "ui/npc/npcwnd.h"
 
 #include "music.h"
 
@@ -29,6 +30,7 @@ extern OBJECT* obj_list;
 extern unsigned int obj_size;
 
 extern WND map_wnd;
+extern WND root_wnd;
 #define N_SIZE 15
 
 /* ----------------------------------------------------------------
@@ -579,17 +581,31 @@ void core_game_check_gas_station(){
         total = amount * percent_price;
 
         if (total > gs.balance){
-            char* buf[100];
+            char lines[2][100];
             unsigned int diff = 0;
+            int choice = 0;
+            NPC gas_worker;
+            core_game_gen_npc(&gas_worker, sol_list[gs.current_system].faction);
+
             diff = total - gs.balance;
-            sprintf(buf, LC_GAME_GAS_STATION_NO_MONEY_TEXT, gs.current_system, percent_price, total, diff);
-            gui_warning_wnd(&map_wnd, LC_GAME_GAS_STATION_HEAD, buf, SOUND_ERROR);
+            sprintf(lines[1], LC_GAME_GAS_STATION_NO_MONEY_TEXT, gs.current_system, percent_price, total, diff);
+            strcpy(lines[0], LC_GAME_GAS_STATION_HEAD);
+            gui_npc_wnd(&root_wnd, &gas_worker, NPC_DIALOG_WND, lines, 2);
+
             getch();
         } else {
-            char* buf[100];
+            char lines[2][100];
             int choice = 0;
-            sprintf(buf, LC_GAME_GAS_STATION_TEXT, gs.current_system, percent_price, total);
-            choice = gui_confirm_wnd(&map_wnd, LC_GAME_GAS_STATION_HEAD, buf);
+            NPC gas_worker;
+            core_game_gen_npc(&gas_worker, sol_list[gs.current_system].faction);
+
+
+            sprintf(lines[1], LC_GAME_GAS_STATION_TEXT, gs.current_system, percent_price, total);
+            strcpy(lines[0], LC_GAME_GAS_STATION_HEAD);
+            
+
+            choice = gui_npc_wnd(&root_wnd, &gas_worker, NPC_CHOICE_WND, lines, 2);
+
 
             if (choice == 0){
                 gs.fuel = 100;

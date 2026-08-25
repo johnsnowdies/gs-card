@@ -399,7 +399,7 @@ void gui_progress_wnd(WND* ptr_parent, char* header, char* text, int current, in
 
     progress_wnd.header = header;
     progress_wnd.x = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
-    progress_wnd.y = (ptr_parent->height - WND_MODAL_DEFAULT_HEIGHT) / 2;;
+    progress_wnd.y = (ptr_parent->height - WND_MODAL_DEFAULT_HEIGHT) / 2;
     progress_wnd.width = WND_MODAL_DEFAULT_WIDTH;
     progress_wnd.height = WND_MODAL_DEFAULT_HEIGHT;
 
@@ -418,6 +418,43 @@ void gui_progress_wnd(WND* ptr_parent, char* header, char* text, int current, in
 
     gui_set_progress(&pb, current);
     gui_draw_progress_bar(&pb);
+}
+
+/* ----------------------------------------------------------------
+ * Multiline image window
+ * ---------------------------------------------------------------- */
+void gui_image_multiline_wnd(WND* ptr_parent, char* image, char* header, char lines[][100], int lines_count, int width, int height, int play_sound)
+{
+    WND image_wnd;
+    int i;
+
+    image_wnd.header = header;
+    image_wnd.x = (ptr_parent->width - width) / 2;
+    image_wnd.y = (ptr_parent->height - height + 10 + 15 * lines_count) / 2;
+    image_wnd.width = width+1;
+    image_wnd.height = height + 15 * lines_count + WND_HEADER_HEIGHT;
+
+    gui_draw_wnd_proto(&image_wnd);
+
+    data_reader_draw_bmp(image, image_wnd.x+1, image_wnd.y + WND_HEADER_HEIGHT);
+
+    switch(play_sound){
+        case NO_SOUND:
+            break;
+        case SOUND_WARNING:
+            sfx_modal();
+            break;
+        case SOUND_ERROR:
+            sfx_error();
+            break;
+        case SOUND_SUCCESS:
+            sfx_hyperjump();
+            break;
+    }
+
+    for (i = 0; i < lines_count; i++){
+        outtextxy(image_wnd.x + 10, image_wnd.y + height + 10 + (i*15), lines[i]);
+    }
 }
 
 /* ----------------------------------------------------------------

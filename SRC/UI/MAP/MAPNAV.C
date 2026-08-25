@@ -273,16 +273,15 @@ int gui_map_wnd_key(int ch, WND *parent)
                 gui_map_nav_move_screen_to(sol_list, gs.current_system);
 
                 if (!game_over){
+                    char lines[1][100];
                     gui_map_top_status_line();
 
-                    sprintf(buf, LC_CARD_JUMP_RESULT_TEXT, gs.current_system);
-
-                    gui_warning_wnd(&map_wnd, LC_CARD_JUMP_RESULT_HEAD, buf, SOUND_SUCCESS);
+                    sprintf(lines[0], LC_CARD_JUMP_RESULT_TEXT, gs.current_system);
+                    gui_image_multiline_wnd(&map_wnd, "SPACE.BMP", LC_CARD_JUMP_RESULT_HEAD, lines, 0, 320, 180, SOUND_SUCCESS);
                     getch();
-
+                    gui_map_wnd_draw();
                     core_game_check_gas_station();
                     gui_map_top_status_line();
-
                     gui_map_wnd_draw();
                 } else {
                     gui_ad_loading();

@@ -108,8 +108,11 @@ char* gui_input_wnd(WND* ptr_parent, char* header, char* text, char* defaultValu
 /* Modal: progress bar dialog */
 void  gui_progress_wnd(WND* ptr_parent, char* header, char* text, int current, int total);
 
+void gui_image_multiline_wnd(WND* ptr_parent, char* image, char* header, char lines[][100], int lines_count, int width, int height, int play_sound);
+
 /* Universal status line */
 void gui_draw_status_line(WND* ptr_wnd, char* keys[], char* items[]);
 
 /* Memory status (fixed) */
 void gui_memory_status(void);
+

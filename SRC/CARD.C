@@ -103,7 +103,7 @@ int main()
 
 
     /* Splash screen */
-    data_reader_draw_bmp("LOGO.BMP",0,0);
+    if (!DEBUG) data_reader_draw_bmp("LOGO.BMP",0,0);
    
     getch();
     setfillstyle(SOLID_FILL, BLACK);

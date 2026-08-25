@@ -194,7 +194,7 @@
 #define LC_GAME_FACTION_1 "Союз Луны и Звезgы"
 #define LC_GAME_FACTION_2 "Ирланgо-Русалочья Конфеgерация"
 #define LC_GAME_FACTION_3 "Миротворцы Стражей"
-#define LC_GAME_FACTION_4 "Пираты"
+#define LC_GAME_FACTION_4 "Неизвестно"
 
 /* SECTORS */
 #define LC_GAME_SECTOR_1 "Жат"
@@ -636,7 +636,7 @@
 #define LC_GAME_FACTION_1 "Crescent and Star Union"
 #define LC_GAME_FACTION_2 "Ireland-Mermaidian Confederation"
 #define LC_GAME_FACTION_3 "Sentinel Coalition Peacemakers"
-#define LC_GAME_FACTION_4 "Pirates"
+#define LC_GAME_FACTION_4 "Unknown"
 
 /* SECTORS */
 #define LC_GAME_SECTOR_1 "Dhat"

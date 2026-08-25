@@ -121,7 +121,7 @@ void gui_status_quest_info(int selected)
         break;
     }
 
-    result = gui_npc_wnd(&status_wnd, &system_quests[selected].giver, NPC_QUEST_WND, lines, 5);
+    result = gui_npc_wnd(&status_wnd, &system_quests[selected].giver, NPC_CHOICE_WND, lines, 5);
 
     /*
      * QUEST INFO CONTROLLER 

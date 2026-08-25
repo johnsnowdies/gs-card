@@ -79,7 +79,7 @@ int gui_npc_wnd(WND* ptr_parent, NPC* ptr_npc, int wnd_type, char lines[][100], 
     }
 
     /* This is NPC Quest window - YES / NO buttons */
-    if (wnd_type == NPC_QUEST_WND){
+    if (wnd_type == NPC_CHOICE_WND){
         WND btn_holder;
         BTN btn_yes, btn_no;
         int choice = 0;   

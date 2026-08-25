@@ -323,17 +323,15 @@ static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp)
             ey(sol_list[i].y + offsetY) < (map_wnd.height - 15)) {
             
 
-            if (game_is_visited(&gs, i)){
-                if (sol_list[i].is_shipyard){
-                    setcolor(3);
-                    sprintf(c, "SA.%d(%d) [S][F]", i, sol_list[i].threadSize);
-                } else if (sol_list[i].is_gas_station){
-                    setcolor(1);
-                    sprintf(c, "SA.%d(%d) [F]", i, sol_list[i].threadSize);
-                } else {
-                    setcolor(15);
-                    sprintf(c, "SA.%d(%d)", i, sol_list[i].threadSize);
-                }
+            if (sol_list[i].is_shipyard){
+                setcolor(3);
+                sprintf(c, "SA.%d(%d) [S][F]", i, sol_list[i].threadSize);
+            } else if (sol_list[i].is_gas_station && game_is_visited(&gs, i)){
+                setcolor(1);
+                sprintf(c, "SA.%d(%d) [F]", i, sol_list[i].threadSize);
+            } else if (game_is_visited(&gs, i)){
+                setcolor(15);
+                sprintf(c, "SA.%d(%d)", i, sol_list[i].threadSize);
             } else {
                 setcolor(8);
                 sprintf(c, "SA.%d(%d)", i, sol_list[i].threadSize);
@@ -344,7 +342,7 @@ static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp)
             ey(sol_list[i].y + offsetY) + 5, c);
         }
 
-        /** CAPITALS **/
+        /** SECTOR NAMES **/
             if (sol_list[i].is_shipyard && sol_list[i].is_gas_station && render_bounds){
                     setcolor(data_factions_colors[sol_list[i].faction]);
                     settextstyle(SMALL_FONT, HORIZ_DIR, 4);
