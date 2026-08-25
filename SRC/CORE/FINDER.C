@@ -13,6 +13,8 @@
 
 #include "ui\map\mapwnd.h"
 
+#include "music.h"
+
 /* ----------------------------------------------------------------
  * Extern game globals (defined in card.c)
  * ---------------------------------------------------------------- */
@@ -234,7 +236,7 @@ int core_finder_get_way(WAYPOINT* wp) {
     }
 
     if (!gotEnd || !status) {
-      gui_warning_wnd(&map_wnd, LC_GEN_TITLE_GSCARD, LC_FINDER_ERROR_NOWAY, 1);
+      gui_warning_wnd(&map_wnd, LC_GEN_TITLE_GSCARD, LC_FINDER_ERROR_NOWAY, SOUND_ERROR);
       getch();
       return 0;
     }
@@ -242,7 +244,7 @@ int core_finder_get_way(WAYPOINT* wp) {
     return 1;
 
   } else {
-    gui_warning_wnd(&map_wnd, LC_GEN_TITLE_GSCARD, LC_GEN_ERROR_INCORRECT_VALUE, 1);
+    gui_warning_wnd(&map_wnd, LC_GEN_TITLE_GSCARD, LC_GEN_ERROR_INCORRECT_VALUE, SOUND_ERROR);
     getch();
   }
 
@@ -281,12 +283,10 @@ int core_finder_restore_path(WAYPOINT* wp, int start, int end, int reverse) {
         if (prev == c) return 0;
     }
 
-    /* Если цикл завершился из-за cnt >= 25, но мы не дошли до start */
     if (c != start) {
-        return 0;   /* путь слишком длинный */
+        return 0;
     }
 
-    /* Дальше реверс и установка size */
     if (cnt > 1) {
         int buf[25];
         wp->size = cnt;

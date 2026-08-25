@@ -18,6 +18,7 @@
 
 #include "ui\map\mapnav.h"
 #include "ui\map\mapwnd.h"
+#include "ui\menu\menuwnd.h"
 
 #include "music.h"
 
@@ -64,6 +65,7 @@ extern E_GAME_SCREEN cur_screen;
 extern E_GAME_SCREEN prev_screen;
 
 extern WND map_wnd;
+extern WND root_wnd;
 
 
 /* ----------------------------------------------------------------
@@ -81,7 +83,7 @@ void gui_map_nav_scale_minus()
         ymin = ymin - MAX_VALUE / 10;
         zmin = zmin - MAX_VALUE / 10;
     } else {
-        gui_warning_wnd(&map_wnd, LC_GEN_ERROR_HEAD, LC_NAV_ERROR_1, 1);
+        gui_warning_wnd(&map_wnd, LC_GEN_ERROR_HEAD, LC_NAV_ERROR_1, SOUND_ERROR);
         getch();
     }
 }
@@ -97,7 +99,7 @@ void gui_map_nav_scale_plus()
         ymin = ymin + MAX_VALUE / 10;
         zmin = zmin + MAX_VALUE / 10;
     } else {
-        gui_warning_wnd(&map_wnd, LC_GEN_ERROR_HEAD, LC_NAV_ERROR_2, 1);
+        gui_warning_wnd(&map_wnd, LC_GEN_ERROR_HEAD, LC_NAV_ERROR_2, SOUND_ERROR);
         getch();
     }
 }
@@ -154,7 +156,7 @@ void gui_map_nav_goto_system(int sol_size, struct system_solar* solar)
     }
 
     if (error) {
-        gui_warning_wnd(&map_wnd, LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE, 1);
+        gui_warning_wnd(&map_wnd, LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE, SOUND_ERROR);
         getch();
     }
 }
@@ -260,20 +262,24 @@ int gui_map_wnd_key(int ch, WND *parent)
 
             sprintf(buf, LC_CARD_READY_TO_JUMP, wp.way[0], wp.way[1]);
             if (gui_confirm_wnd(&map_wnd, LC_CARD_JUMP_WND_HEAD, buf) == 0) {
-                
+                int game_over = 0;
                 
                 wp.size = 0;
                 gs.current_system = wp.way[1];
-                sfx_hyperjump();
-                core_game_run_event();
-                gui_map_top_status_line();
+                game_over = core_game_run_event();
+                if (!game_over){
+                    gui_map_top_status_line();
+                    sprintf(buf, LC_CARD_JUMP_RESULT_TEXT, gs.current_system);
 
-                sprintf(buf, LC_CARD_JUMP_RESULT_TEXT, gs.current_system);
-                gui_warning_wnd(&map_wnd, LC_CARD_JUMP_RESULT_HEAD, buf, 0);
+                    gui_warning_wnd(&map_wnd, LC_CARD_JUMP_RESULT_HEAD, buf, SOUND_SUCCESS);
+                    getch();
 
-                getch();
-
-                gui_map_wnd_draw();
+                    gui_map_wnd_draw();
+                } else {
+                    gui_ad_loading();
+                    cur_screen = SCR_MAIN_MENU;
+                    gui_menu_wnd(&root_wnd, 0, MAIN_MENU);
+                }
             } else {
                 wp.size = 0;
                 gui_map_top_status_line();

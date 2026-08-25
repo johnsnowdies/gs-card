@@ -20,16 +20,12 @@
 
 void core_game_gen_npc(NPC* npc_ptr, unsigned int faction);
 void core_game_gen_quest(QUEST* quest_ptr, int player_rep, unsigned int faction);
-void core_game_run_event();
+int core_game_run_event();
 int core_game_accept_quest(unsigned int index);
 
 int core_game_load(char *filename);
 int core_game_save(char *filename);
 
 int core_game_accept_quest(unsigned int index);
-
-
-/*
-int core_game_check_quest_done(QUEST* active_quest, SYSTEM* current_system);
-*/
-/* Shopping System */
+int core_game_check_quest_done();
+int core_game_check_fuel_gone();

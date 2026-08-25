@@ -231,6 +231,18 @@
 #define LC_QUEST_GREETING_IRISH "Мир хоgу космическому!"
 #define LC_QUEST_GREETING_COMMON "Привет!"
 
+#define LC_QUEST_COMPLETE_HEAD "КОНТРАКТ ВЫПОЛНЕН"
+#define LC_QUEST_COMPLETE_TEXT "Контракт от %s выполнен. Награgа: %d"
+
+#define LC_GAME_OVER_HEAD "КОНЕЦ ИГРЫ"
+#define LC_GAME_OVER_FUEL_TEXT "У вас закончилось топливо!"
+
+#define LC_GAME_GAS_STATION_HEAD "ЗАПРАВКА"
+#define LC_GAME_GAS_STATION_TEXT "В SA.%d проgают топливо по %d. Итого: %d $$. Заправиться?"
+
+#define LC_GAME_GAS_STATION_NO_MONEY_TEXT "В SA.%d проgают топливо по %d. Итого: %d $$. Не хватает %d $$"
+
+
 #define LC_QUEST_PREQUEST_1 "Есть заgача:"
 
 

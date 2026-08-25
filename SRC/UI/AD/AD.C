@@ -169,6 +169,9 @@ void gui_ad_legals() {
 }
 
 void gui_ad_loading() {
+    setfillstyle(SOLID_FILL, BLACK);
+    bar(0,0,640, 480);
+  
   gui_ad_hypersoft();
   gui_ad_upgrade();
   gui_ad_legion();

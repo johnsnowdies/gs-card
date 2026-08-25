@@ -83,6 +83,7 @@ static key_handler key_handlers[] = {
     gui_status_quest_wnd_key    /* SCR_QUEST_LIST_DETAIL */
 };
 
+WND root_wnd = {NULL, 0, 21, 639, 460};
 
 /* ----------------------------------------------------------------
  * main
@@ -90,7 +91,7 @@ static key_handler key_handlers[] = {
 int main()
 {
     char c;
-    WND root_wnd = {NULL, 0, 21, 639, 460};
+    
 
 
     srand((unsigned)time(NULL));

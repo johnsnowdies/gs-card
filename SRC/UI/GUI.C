@@ -252,9 +252,19 @@ void gui_warning_wnd(WND* ptr_parent, char* header, char* text, int play_sound)
     setcolor(RED);
     outtextxy(warning_wnd.x + 2, warning_wnd.y + 20, text);
 
-    if (play_sound)
+    switch(play_sound){
+    case NO_SOUND:
+        break;
+    case SOUND_WARNING:
+        sfx_modal();
+        break;
+    case SOUND_ERROR:
         sfx_error();
-
+        break;
+    case SOUND_SUCCESS:
+        sfx_hyperjump();
+        break;
+    }
 }
 
 /* ----------------------------------------------------------------
@@ -459,3 +469,9 @@ void gui_memory_status()
     setcolor(WHITE);
     outtextxy(470 + 35, STATUSBAR_BOTTOM_Y + 2, memMsg);
 }
+
+
+void gui_game_over(WND* parent)
+{
+    
+}

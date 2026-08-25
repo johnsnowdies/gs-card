@@ -13,6 +13,8 @@
 
 #include "ui\stat\statwnd.h"
 
+#include "music.h"
+
 WND status_wnd, quest_wnd;
 int system_quest_selected = 0;
 
@@ -208,6 +210,9 @@ void gui_status_quest_info(WND *quest_wnd, int selected)
     btn_no.enabled = 1;
     btn_no.visible = 1;
 
+    /*
+     * QUEST INFO CONTROLLER 
+     */
     while (1) {
         if (choice == 0)
         {
@@ -231,15 +236,17 @@ void gui_status_quest_info(WND *quest_wnd, int selected)
                     system_quest_selected = 0;                    
                     gui_status_wnd();
                     gui_map_top_status_line();
+                    sfx_hyperjump();
                     break;
                 }
                 else{
-                    gui_warning_wnd(&status_wnd, LC_GEN_ERROR_HEAD, LC_QUEST_ERROR, 1);
+                    gui_warning_wnd(&status_wnd, LC_GEN_ERROR_HEAD, LC_QUEST_ERROR, SOUND_ERROR);
                     getch();
                     cur_screen = SCR_STATUS;
                     system_quest_selected = 0;
                     gui_status_wnd();
                     gui_map_top_status_line();
+                    sfx_screen_change();
                     break;
                 }
             }
@@ -247,6 +254,7 @@ void gui_status_quest_info(WND *quest_wnd, int selected)
             {
                 cur_screen = SCR_STATUS;
                 gui_status_wnd();
+                sfx_screen_change();
                 system_quest_selected = 0;
                 break;
             }

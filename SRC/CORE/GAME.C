@@ -8,8 +8,11 @@
 #include "core/finder.h"
 #include "core/game.h"
 
-
 #include "ui/locale.h" 
+
+#include "ui/gui.h"
+
+#include "music.h"
 
 /* ----------------------------------------------------------------
  * Extern game globals (defined in card.c)
@@ -25,6 +28,7 @@ extern unsigned int sol_size;
 extern OBJECT* obj_list;
 extern unsigned int obj_size;
 
+extern WND map_wnd;
 #define N_SIZE 15
 
 /* ----------------------------------------------------------------
@@ -538,14 +542,71 @@ int core_game_accept_quest(unsigned int index)
     return 1;
 }
 
+int core_game_check_quest_done()
+{
+    int i, j;
+    char* text[100];
+    for (i = 0; i < gs.quests_size; i++)
+    {
+        if (gs.quests[i].target_system == gs.current_system)
+        {
+            sprintf(text, LC_QUEST_COMPLETE_TEXT, gs.quests[i].giver.name, gs.quests[i].reward);
+            /* Set quest done */
+            gs.current_cargo -= gs.quests[i].cargo;
+            gs.balance += gs.quests[i].reward;
+
+            /* Remove Quest from user log */
+            for (j = i; j < gs.quests_size; j++){
+                gs.quests[j] = gs.quests[j +1];
+            }
+
+            gs.quests_size--;
+            gui_warning_wnd(&map_wnd, LC_QUEST_COMPLETE_HEAD, text, SOUND_SUCCESS);
+            getch();
+
+            if (i >= gs.quests_size)
+                break;
+        }
+    }
+}
+
+void core_game_check_gas_station(){
+    int percent_price, amount, total;
+
+    if(sol_list[gs.current_system].is_gas_station && gs.fuel < 100){
+        percent_price = (rand() + 1) % 3;
+        amount = 100 - gs.fuel;
+        total = amount * percent_price;
+
+        if (total > gs.balance){
+            char* buf[100];
+            int diff = 0;
+            diff = total - gs.balance;
+            sprintf(buf, LC_GAME_GAS_STATION_NO_MONEY_TEXT, gs.current_system, percent_price, total, diff);
+            gui_warning_wnd(&map_wnd, LC_GAME_GAS_STATION_HEAD, buf, SOUND_ERROR);
+            getch();
+        } else {
+            char* buf[100];
+            int choice = 0;
+            sprintf(buf, LC_GAME_GAS_STATION_TEXT, gs.current_system, percent_price, total);
+            choice = gui_confirm_wnd(&map_wnd, LC_GAME_GAS_STATION_HEAD, buf);
+
+            if (choice == 0){
+                gs.fuel = 100;
+                gs.balance -= total;
+            }
+        }
+    }
+}
+
 
 /*
  * Arriving to new system events
  */
 
-void core_game_run_event()
+int core_game_run_event()
 {
-    int i = 0;
+    int i = 0, game_over = 0;
     char buf[50];
     
     game_mark_visited(&gs, gs.current_system);
@@ -556,4 +617,21 @@ void core_game_run_event()
     for (i = 0; i < system_quests_size; i++) {
         core_game_gen_quest(&system_quests[i], gs.reputation, sol_list[gs.current_system].faction);
     }
+
+    core_game_check_quest_done();
+    core_game_check_gas_station();
+    game_over = core_game_check_fuel_gone();
+
+    return game_over;
+}
+
+
+
+int core_game_check_fuel_gone(){
+    if (gs.fuel <= 0){
+        gui_warning_wnd(&map_wnd, LC_GAME_OVER_HEAD, LC_GAME_OVER_FUEL_TEXT, SOUND_ERROR);
+        getch();
+        return 1;
+    }
+    return 0;
 }
