@@ -86,8 +86,12 @@ echo Compiling UI\STAT\STATNAV.C...                     >> %BLD%\build.log
 tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\STAT\STATNAV.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
+echo Compiling UI\NPC\NPCWND.C...                     >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\NPC\NPCWND.C >> %BLD%\build.log
+if errorlevel 1 goto err
 
-echo Compiling UI\MUSIC.C...                     >> %BLD%\build.log
+
+echo Compiling MUSIC.C...                     >> %BLD%\build.log
 tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\MUSIC.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
@@ -119,6 +123,7 @@ echo GAME.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo MENUNAV.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo STATNAV.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo MUSIC.OBJ+                                    >> %BLD%\GS-LINK.RSP
+echo NPCWND.OBJ+ >> %BLD%\GS-LINK.RSP
 echo PATHWND.OBJ, GSCARD.EXE, GSCARD.MAP, %LIB%\EMU.LIB %LIB%\MATHL.LIB %LIB%\GRAPHICS.LIB %LIB%\CL.LIB >> %BLD%\GS-LINK.RSP
 
 cd %BLD%

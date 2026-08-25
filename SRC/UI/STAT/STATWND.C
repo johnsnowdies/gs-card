@@ -15,7 +15,9 @@
 
 #include "music.h"
 
-WND status_wnd, quest_wnd;
+#include "ui\npc\npcwnd.h"
+
+WND status_wnd;
 int system_quest_selected = 0;
 
 /* ----------------------------------------------------------------
@@ -62,206 +64,93 @@ void gui_status_bottom_status_line()
     gui_draw_status_line(&status_line, keys, items);
 }
 
-void gui_status_quest_info(WND *quest_wnd, int selected)
+void gui_status_quest_info(int selected)
 {
-    WND btn_holder;
-    char line_1[100], line_2[100], reward[100], photo[10];
-    char *genders[] = {
-        "M", "F"
-    };
-    BTN btn_yes, btn_no;
-    int choice = 0;   
+    int result, i;
 
-    int btn_width = 80, btn_height = 20, btn_gap = 15;
-    int btn_y;
-    int total = 2 * btn_width + btn_gap;
+    char lines[5][100];
+    for (i = 0; i < 5; i++) {
+        lines[i][0] = '\0';
+    }
 
-    int line_1_width, line_2_width, line_3_width, max_line;
+    strcpy(lines[0], QUEST_TYPES[system_quests[selected].type]);
+
+    if (system_quests[selected].giver.faction == 1)
+        strcpy(lines[1], LC_QUEST_GREETING_IRISH);
+    else if (system_quests[selected].giver.faction == 0)
+        strcpy(lines[1], LC_QUEST_GREETING_ARAB);
+    else
+        strcpy(lines[1],LC_QUEST_GREETING_COMMON);
 
     switch (system_quests[selected].type) {
       case 1:
-        sprintf(line_1, LC_QUEST_TYPE_1_LINE_1,
+        sprintf(lines[2], LC_QUEST_TYPE_1_LINE_1,
                 system_quests[selected].target_system,
                 data_sectors[system_quests[selected].target_sector]);
-        sprintf(line_2, LC_QUEST_TYPE_1_LINE_2);
-        sprintf(reward, LC_QUEST_REWARD_1, system_quests[selected].reward);
+        sprintf(lines[3], LC_QUEST_TYPE_1_LINE_2);
+        sprintf(lines[4], LC_QUEST_REWARD_1, system_quests[selected].reward);
         break;
       case 2:
-        sprintf(line_1, LC_QUEST_TYPE_2_LINE_1,
+        sprintf(lines[2], LC_QUEST_TYPE_2_LINE_1,
                 system_quests[selected].target_system,
                 data_sectors[system_quests[selected].target_sector]);
-        sprintf(line_2, LC_QUEST_TYPE_2_LINE_2);
-        sprintf(reward, LC_QUEST_REWARD_2, system_quests[selected].reward);
+        sprintf(lines[3], LC_QUEST_TYPE_2_LINE_2);
+        sprintf(lines[4], LC_QUEST_REWARD_2, system_quests[selected].reward);
         break;
       case 3:
-        sprintf(line_1, LC_QUEST_TYPE_3_LINE_1,
+        sprintf(lines[2], LC_QUEST_TYPE_3_LINE_1,
                 system_quests[selected].target_system,
                 data_sectors[system_quests[selected].target_sector]);
-        sprintf(line_2, LC_QUEST_TYPE_3_LINE_2);
-        sprintf(reward, LC_QUEST_REWARD_3, system_quests[selected].reward);
+        sprintf(lines[3], LC_QUEST_TYPE_3_LINE_2);
+        sprintf(lines[4], LC_QUEST_REWARD_3, system_quests[selected].reward);
         break;
       case 4:
-        sprintf(line_1, LC_QUEST_TYPE_4_LINE_1,
+        sprintf(lines[2], LC_QUEST_TYPE_4_LINE_1,
                 system_quests[selected].target_system,
                 data_sectors[system_quests[selected].target_sector]);
-        sprintf(line_2, LC_QUEST_TYPE_4_LINE_2);
+        sprintf(lines[3], LC_QUEST_TYPE_4_LINE_2);
 
-        sprintf(reward, LC_QUEST_REWARD_4, system_quests[selected].reward);
+        sprintf(lines[4], LC_QUEST_REWARD_4, system_quests[selected].reward);
         break;
       case 5:
-        sprintf(line_1, LC_QUEST_TYPE_5_LINE_1,
+        sprintf(lines[2], LC_QUEST_TYPE_5_LINE_1,
                 system_quests[selected].target_system,
                 data_sectors[system_quests[selected].target_sector]);
-        sprintf(line_2, LC_QUEST_TYPE_5_LINE_2);
-        sprintf(reward, LC_QUEST_REWARD_5, system_quests[selected].reward);
-        break;
-    }
-    settextstyle(SMALL_FONT, HORIZ_DIR, 4);
-    line_1_width = textwidth(line_1);
-    line_2_width = textwidth(line_1);
-    line_3_width = textwidth(reward);
-    
-    max_line = line_1_width;
-    if (line_2_width > max_line) max_line = line_2_width;
-    if (line_3_width > max_line) max_line = line_3_width;
-
-    quest_wnd->width = quest_wnd->x + 160 + max_line + 10;
-    quest_wnd->x = (status_wnd.width - quest_wnd->width) / 2;
-
-
-
-    gui_draw_wnd_proto(quest_wnd);
-
-    setcolor(4);
-    rectangle(quest_wnd->x + 9, quest_wnd->y + 29, quest_wnd->x + 150, quest_wnd->y + 200);
-    settextstyle(SMALL_FONT, HORIZ_DIR, 6);
-    outtextxy(quest_wnd->x + 40, quest_wnd->y + 100, "NO PHOTO");
-
-    switch(system_quests[selected].giver.faction){
-        case 1:
-        case 3:
-            sprintf(photo, "NPC/R%s%d.BMP", genders[system_quests[selected].giver.gender], system_quests[selected].giver.portrait + 1);
-        break;
-
-        case 0:
-            sprintf(photo, "NPC/A%s%d.BMP", genders[system_quests[selected].giver.gender], system_quests[selected].giver.portrait + 1);
-        break;
-
-        default:
-            sprintf(photo, "NPC/S%s%d.BMP", genders[system_quests[selected].giver.gender], system_quests[selected].giver.portrait + 1);
+        sprintf(lines[3], LC_QUEST_TYPE_5_LINE_2);
+        sprintf(lines[4], LC_QUEST_REWARD_5, system_quests[selected].reward);
         break;
     }
 
-    data_reader_draw_bmp(photo, quest_wnd->x + 10, quest_wnd->y + 30);
-    
-    setcolor(15);
-    outtextxy(quest_wnd->x + 160, quest_wnd->y + 30, QUEST_TYPES[system_quests[selected].type]);
-    setcolor(4);
-    outtextxy(quest_wnd->x + 160, quest_wnd->y + 50, system_quests[selected].giver.name);
-    setcolor(15);
-
-    settextstyle(SMALL_FONT, HORIZ_DIR, 4);
-
-    if (system_quests[selected].giver.faction == 1)
-        outtextxy(quest_wnd->x + 160, quest_wnd->y + 80, LC_QUEST_GREETING_IRISH);
-    else if (system_quests[selected].giver.faction == 0)
-        outtextxy(quest_wnd->x + 160, quest_wnd->y + 80, LC_QUEST_GREETING_ARAB);
-    else
-        outtextxy(quest_wnd->x + 160, quest_wnd->y + 80, LC_QUEST_GREETING_COMMON);
-
-
-    outtextxy(quest_wnd->x + 160, quest_wnd->y + 95, line_1);
-    outtextxy(quest_wnd->x + 160, quest_wnd->y + 110, line_2);
-    outtextxy(quest_wnd->x + 160, quest_wnd->y + 125, reward);
-
-    setcolor(4);
-    outtextxy(quest_wnd->x + 160, quest_wnd->y + 140, LC_QUEST_TABLE_6);
-    outtextxy(quest_wnd->x + 160, quest_wnd->y + 155, LC_QUEST_TABLE_4);
-
-    setcolor(15);
-
-    
-    sprintf(line_1, "%d $$", system_quests[selected].penalty);
-    sprintf(line_2, "%d", system_quests[selected].cargo);
-
-    outtextxy(quest_wnd->x + 210, quest_wnd->y + 140, line_1);
-    outtextxy(quest_wnd->x + 210, quest_wnd->y + 155, line_2);
-
-    btn_holder.y = quest_wnd->y + 180;
-    btn_holder.x = quest_wnd->x + 150;
-
-    btn_holder.width = 10 + max_line + 10;
-    btn_holder.height = 20;
-
-    btn_yes.text = LC_GUI_BOOL_YES;
-    btn_yes.x = btn_holder.x + (btn_holder.width - total) / 2;
-    btn_yes.y = btn_holder.y;
-    btn_yes.width = btn_width;
-    btn_yes.height = btn_height;
-    btn_yes.selected = (choice == 0) ? 1 : 0;
-    btn_yes.enabled = 1;
-    btn_yes.visible = 1;
-
-    btn_no.text = LC_GUI_BOOL_NO;
-    btn_no.x = btn_yes.x + btn_yes.width + btn_gap;
-    btn_no.y = btn_holder.y;
-    btn_no.width = btn_width;
-    btn_no.height = btn_height;
-    btn_no.selected = (choice == 1) ? 1 : 0;
-    btn_no.enabled = 1;
-    btn_no.visible = 1;
+    result = gui_npc_wnd(&status_wnd, &system_quests[selected].giver, NPC_QUEST_WND, lines, 5);
 
     /*
      * QUEST INFO CONTROLLER 
      */
-    while (1) {
-        if (choice == 0)
-        {
-            btn_yes.selected = 1;
-            btn_no.selected = 0;
+    
+    if(result == 0){
+        if(core_game_accept_quest(selected)){
+            cur_screen = SCR_STATUS;
+            system_quest_selected = 0;                    
+            gui_status_wnd();
+            gui_map_top_status_line();
+            sfx_hyperjump();
         }
-
-        if (choice == 1)
-        {
-            btn_yes.selected = 0;
-            btn_no.selected = 1;
-        }
-
-        gui_draw_btn(&btn_yes);
-        gui_draw_btn(&btn_no);
-
-        if (gui_handle_btn_keys(2, &choice) == 1){
-            if(choice == 0){
-                if(core_game_accept_quest(selected)){
-                    cur_screen = SCR_STATUS;
-                    system_quest_selected = 0;                    
-                    gui_status_wnd();
-                    gui_map_top_status_line();
-                    sfx_hyperjump();
-                    break;
-                }
-                else{
-                    gui_warning_wnd(&status_wnd, LC_GEN_ERROR_HEAD, LC_QUEST_ERROR, SOUND_ERROR);
-                    getch();
-                    cur_screen = SCR_STATUS;
-                    system_quest_selected = 0;
-                    gui_status_wnd();
-                    gui_map_top_status_line();
-                    sfx_screen_change();
-                    break;
-                }
-            }
-            else
-            {
-                cur_screen = SCR_STATUS;
-                gui_status_wnd();
-                sfx_screen_change();
-                break;
-            }
+        else{
+            gui_warning_wnd(&status_wnd, LC_GEN_ERROR_HEAD, LC_QUEST_ERROR, SOUND_ERROR);
+            getch();
+            cur_screen = SCR_STATUS;
+            system_quest_selected = 0;
+            gui_status_wnd();
+            gui_map_top_status_line();
+            sfx_screen_change();
         }
     }
-
-
+    else
+    {
+        cur_screen = SCR_STATUS;
+        gui_status_wnd();
+        sfx_screen_change();
+    }
 }
 
 void gui_status_quest_list(WND *status_wnd, int selected)
@@ -397,13 +286,6 @@ void gui_status_wnd()
     status_wnd.y = 21;
     status_wnd.width = 639;
     status_wnd.height = 459;
-
-    quest_wnd.header = QUEST_TYPES[system_quests[system_quest_selected].type];
-
-    quest_wnd.width = 600;
-    quest_wnd.height = 220;
-    quest_wnd.x = (status_wnd.width - quest_wnd.width) / 2;
-    quest_wnd.y = (status_wnd.height - quest_wnd.height) / 2;;
 
     setfillstyle(SOLID_FILL, BLACK);
     bar(1, 22, status_wnd.width - 1, status_wnd.height - 1);

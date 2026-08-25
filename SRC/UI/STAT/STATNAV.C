@@ -78,7 +78,7 @@ int gui_status_wnd_key(int ch, WND *parent)
     if (ENTER == ch) {
         sfx_window_open();
         cur_screen = SCR_QUEST_LIST_DETAIL;
-        gui_status_quest_info(&quest_wnd, system_quest_selected);
+        gui_status_quest_info(system_quest_selected);
     }
     return 0;
 }
