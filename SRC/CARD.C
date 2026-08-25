@@ -57,7 +57,7 @@ QUEST system_quests[5];
 unsigned int sol_size;
 unsigned int obj_size;
 unsigned int bnd_size;
-unsigned int system_quests_size = 0;
+int system_quests_size = 0;
 
 WAYPOINT wp;
 

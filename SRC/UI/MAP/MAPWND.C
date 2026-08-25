@@ -31,7 +31,7 @@ int is_coord = 1, is_hyper = 0, mode = 1;
 int path_wnd_index = 0;
 
 unsigned char render_danger_objects;
-unsigned char render_bounds;
+unsigned char render_bounds = 1;
 unsigned char show_danger_hyperthreads;
 unsigned char show_danger_path_parts;
 

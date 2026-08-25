@@ -15,7 +15,7 @@
  * Extern game globals (defined in card.c)
  * ---------------------------------------------------------------- */
 extern GAME_STATE gs;
-extern unsigned int system_quests_size;
+extern int system_quests_size;
 extern QUEST system_quests[5];
 extern WAYPOINT wp;
 
@@ -159,16 +159,7 @@ int core_game_load(char *filename)
     int result = 0;
     char* debug_buf;
    
-
     result = data_reader_load_game_file(&gs, filename);
-
-    sprintf(debug_buf, "Result: %d Filename [%s]", result, filename );
-
-
-     clrscr();
-    setcolor(15);
-    outtextxy(0,0, debug_buf);
-        getch();
 
     if (result == 1)
     {
@@ -542,7 +533,7 @@ int core_game_accept_quest(unsigned int index)
         system_quests[i] = system_quests[i + 1];
     }
 
-    system_quests_size--;
+    system_quests_size = system_quests_size - 1;
 
     return 1;
 }

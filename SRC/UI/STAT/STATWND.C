@@ -27,6 +27,7 @@ extern char* data_sectors[SECTORS_COUNT];
 extern char* data_ship_names[SHIP_COUNT];
 extern int   data_ship_tonnages[SHIP_COUNT];
 extern char* data_hyper_names[HYPER_COUNT];
+extern int   data_hyper_fuel[HYPER_COUNT];
 
 extern char* QUEST_TYPES[];
 
@@ -61,6 +62,7 @@ void gui_status_bottom_status_line()
 
 void gui_status_quest_info(WND *quest_wnd, int selected)
 {
+    WND btn_holder;
     char line_1[100], line_2[100], reward[100], photo[10];
     char *genders[] = {
         "M", "F"
@@ -68,9 +70,62 @@ void gui_status_quest_info(WND *quest_wnd, int selected)
     BTN btn_yes, btn_no;
     int choice = 0;   
 
-    int btn_width = 50, btn_height = 20, btn_gap = 10;
+    int btn_width = 80, btn_height = 20, btn_gap = 15;
     int btn_y;
     int total = 2 * btn_width + btn_gap;
+
+    int line_1_width, line_2_width, line_3_width, max_line;
+
+    switch (system_quests[selected].type) {
+      case 1:
+        sprintf(line_1, LC_QUEST_TYPE_1_LINE_1,
+                system_quests[selected].target_system,
+                data_sectors[system_quests[selected].target_sector]);
+        sprintf(line_2, LC_QUEST_TYPE_1_LINE_2);
+        sprintf(reward, LC_QUEST_REWARD_1, system_quests[selected].reward);
+        break;
+      case 2:
+        sprintf(line_1, LC_QUEST_TYPE_2_LINE_1,
+                system_quests[selected].target_system,
+                data_sectors[system_quests[selected].target_sector]);
+        sprintf(line_2, LC_QUEST_TYPE_2_LINE_2);
+        sprintf(reward, LC_QUEST_REWARD_2, system_quests[selected].reward);
+        break;
+      case 3:
+        sprintf(line_1, LC_QUEST_TYPE_3_LINE_1,
+                system_quests[selected].target_system,
+                data_sectors[system_quests[selected].target_sector]);
+        sprintf(line_2, LC_QUEST_TYPE_3_LINE_2);
+        sprintf(reward, LC_QUEST_REWARD_3, system_quests[selected].reward);
+        break;
+      case 4:
+        sprintf(line_1, LC_QUEST_TYPE_4_LINE_1,
+                system_quests[selected].target_system,
+                data_sectors[system_quests[selected].target_sector]);
+        sprintf(line_2, LC_QUEST_TYPE_4_LINE_2);
+
+        sprintf(reward, LC_QUEST_REWARD_4, system_quests[selected].reward);
+        break;
+      case 5:
+        sprintf(line_1, LC_QUEST_TYPE_5_LINE_1,
+                system_quests[selected].target_system,
+                data_sectors[system_quests[selected].target_sector]);
+        sprintf(line_2, LC_QUEST_TYPE_5_LINE_2);
+        sprintf(reward, LC_QUEST_REWARD_5, system_quests[selected].reward);
+        break;
+    }
+    settextstyle(SMALL_FONT, HORIZ_DIR, 4);
+    line_1_width = textwidth(line_1);
+    line_2_width = textwidth(line_1);
+    line_3_width = textwidth(reward);
+    
+    max_line = line_1_width;
+    if (line_2_width > max_line) max_line = line_2_width;
+    if (line_3_width > max_line) max_line = line_3_width;
+
+    quest_wnd->width = quest_wnd->x + 160 + max_line + 10;
+
+
 
     gui_draw_wnd_proto(quest_wnd);
 
@@ -111,34 +166,6 @@ void gui_status_quest_info(WND *quest_wnd, int selected)
     else
         outtextxy(quest_wnd->x + 160, quest_wnd->y + 80, LC_QUEST_GREETING_COMMON);
 
-    switch(system_quests[selected].type){
-    case 1:
-        sprintf(line_1, LC_QUEST_TYPE_1_LINE_1, system_quests[selected].target_system, data_sectors[system_quests[selected].target_sector]);
-        sprintf(line_2, LC_QUEST_TYPE_1_LINE_2);
-        sprintf(reward, LC_QUEST_REWARD_1, system_quests[selected].reward);
-        break;
-    case 2:
-        sprintf(line_1, LC_QUEST_TYPE_2_LINE_1, system_quests[selected].target_system, data_sectors[system_quests[selected].target_sector]);
-        sprintf(line_2, LC_QUEST_TYPE_2_LINE_2);
-        sprintf(reward, LC_QUEST_REWARD_2, system_quests[selected].reward);
-        break;
-    case 3: 
-        sprintf(line_1, LC_QUEST_TYPE_3_LINE_1, system_quests[selected].target_system, data_sectors[system_quests[selected].target_sector]);
-        sprintf(line_2, LC_QUEST_TYPE_3_LINE_2);
-        sprintf(reward, LC_QUEST_REWARD_3, system_quests[selected].reward);
-        break;
-    case 4:
-        sprintf(line_1, LC_QUEST_TYPE_4_LINE_1, system_quests[selected].target_system, data_sectors[system_quests[selected].target_sector]);
-        sprintf(line_2, LC_QUEST_TYPE_4_LINE_2);
-        
-        sprintf(reward, LC_QUEST_REWARD_4, system_quests[selected].reward);
-        break;
-    case 5:
-        sprintf(line_1, LC_QUEST_TYPE_5_LINE_1, system_quests[selected].target_system, data_sectors[system_quests[selected].target_sector]);
-        sprintf(line_2, LC_QUEST_TYPE_5_LINE_2);
-        sprintf(reward, LC_QUEST_REWARD_5, system_quests[selected].reward);
-        break;
-    }
 
     outtextxy(quest_wnd->x + 160, quest_wnd->y + 95, line_1);
     outtextxy(quest_wnd->x + 160, quest_wnd->y + 110, line_2);
@@ -150,17 +177,22 @@ void gui_status_quest_info(WND *quest_wnd, int selected)
 
     setcolor(15);
 
+    
     sprintf(line_1, "%d $$", system_quests[selected].penalty);
     sprintf(line_2, "%d", system_quests[selected].cargo);
 
     outtextxy(quest_wnd->x + 210, quest_wnd->y + 140, line_1);
     outtextxy(quest_wnd->x + 210, quest_wnd->y + 155, line_2);
 
-    btn_y = quest_wnd->y  + 300 - btn_height - 10;
+    btn_holder.y = quest_wnd->y + 180;
+    btn_holder.x = quest_wnd->x + 150;
+
+    btn_holder.width = 10 + max_line + 10;
+    btn_holder.height = 20;
 
     btn_yes.text = LC_GUI_BOOL_YES;
-    btn_yes.x = quest_wnd->x + (quest_wnd->width - total) / 2;
-    btn_yes.y = btn_y;
+    btn_yes.x = btn_holder.x + (btn_holder.width - total) / 2;
+    btn_yes.y = btn_holder.y;
     btn_yes.width = btn_width;
     btn_yes.height = btn_height;
     btn_yes.selected = (choice == 0) ? 1 : 0;
@@ -169,7 +201,7 @@ void gui_status_quest_info(WND *quest_wnd, int selected)
 
     btn_no.text = LC_GUI_BOOL_NO;
     btn_no.x = btn_yes.x + btn_yes.width + btn_gap;
-    btn_no.y = btn_y;
+    btn_no.y = btn_holder.y;
     btn_no.width = btn_width;
     btn_no.height = btn_height;
     btn_no.selected = (choice == 1) ? 1 : 0;
@@ -196,19 +228,26 @@ void gui_status_quest_info(WND *quest_wnd, int selected)
             if(choice == 0){
                 if(core_game_accept_quest(selected)){
                     cur_screen = SCR_STATUS;
+                    system_quest_selected = 0;                    
                     gui_status_wnd();
                     gui_map_top_status_line();
                     break;
                 }
                 else{
-                    gui_warning_wnd(&quest_wnd, LC_GEN_ERROR_HEAD, LC_QUEST_ERROR, 1);
+                    gui_warning_wnd(&status_wnd, LC_GEN_ERROR_HEAD, LC_QUEST_ERROR, 1);
+                    getch();
+                    cur_screen = SCR_STATUS;
+                    system_quest_selected = 0;
+                    gui_status_wnd();
+                    gui_map_top_status_line();
+                    break;
                 }
-
             }
             else
             {
                 cur_screen = SCR_STATUS;
                 gui_status_wnd();
+                system_quest_selected = 0;
                 break;
             }
         }
@@ -226,7 +265,7 @@ void gui_status_quest_list(WND *status_wnd, int selected)
     x_pos = status_wnd->x + 10;
 
     setfillstyle(SOLID_FILL, BLACK);
-    bar(x_pos, y_pos, status_wnd->x + status_wnd->width - 11, status_wnd->height - 2);
+    bar(x_pos, y_pos, status_wnd->x + status_wnd->width - 11, y_pos + 50);
 
     setfillstyle(SOLID_FILL, RED);
     bar(status_wnd->x, y_pos - 20, status_wnd->x + status_wnd->width, y_pos - 50);
@@ -260,7 +299,7 @@ void gui_status_quest_list(WND *status_wnd, int selected)
                 system_quests[i].penalty
             );
 
-        if (i == selected) {
+        if (i == system_quest_selected) {
             setfillstyle(SOLID_FILL, RED);
             bar(x_pos, y_pos + (10 * i), status_wnd->x + status_wnd->width - 10, y_pos + (10 * i) + 10);
         }
@@ -318,8 +357,8 @@ void draw_player_status(WND *status_wnd)
     char sector[50];
 
     sprintf(captain_name, "%s: %s", LC_STATUS_WND_CAPTAIN, gs.captain_name);
-    sprintf(ship_name, "%s: %s", LC_STATUS_WND_SHIP, data_ship_names[gs.ship_type]);
-    sprintf(hyper_class, "%s: %s", LC_STATUS_WND_HYPER, data_hyper_names[gs.hyper_class]);
+    sprintf(ship_name, "%s: %s | %s %d", LC_STATUS_WND_SHIP, data_ship_names[gs.ship_type], LC_STATUS_WND_SHIP_CARGO, data_ship_tonnages[gs.ship_type]);
+    sprintf(hyper_class, "%s: %s | %s %d%%", LC_STATUS_WND_HYPER, data_hyper_names[gs.hyper_class], LC_STATUS_WND_HYPER_FUEL, data_hyper_fuel[gs.hyper_class]);
     sprintf(current_system, "%s: SA.%d", LC_STATUS_WND_SYSTEM, gs.current_system);
     sprintf(sector, "%s: %s", LC_STATUS_WND_SECTOR, data_sectors[sol_list[gs.current_system].sector]);
 
@@ -350,7 +389,7 @@ void gui_status_wnd()
     quest_wnd.x = 10;
     quest_wnd.y = 60;
     quest_wnd.width = 600;
-    quest_wnd.height = 300;
+    quest_wnd.height = 220;
 
     setfillstyle(SOLID_FILL, BLACK);
     bar(1, 22, status_wnd.width - 1, status_wnd.height - 1);

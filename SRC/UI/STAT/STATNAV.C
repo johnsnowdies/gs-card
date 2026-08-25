@@ -33,6 +33,7 @@ extern char* data_hyper_names[HYPER_COUNT];
 extern char* QUEST_TYPES[];
 
 extern QUEST system_quests[5];
+extern int system_quests_size;
 
 extern WAYPOINT wp;
 
@@ -64,15 +65,15 @@ int gui_status_wnd_key(int ch, WND *parent)
         if (system_quest_selected > 0){
             sfx_menu_move();
             system_quest_selected--;
+            gui_status_quest_list(&status_wnd, system_quest_selected);
         }
-        gui_status_quest_list(&status_wnd, system_quest_selected);
     }
     if (DWN == ch) {
-        if (system_quest_selected < 4){
+        if (system_quest_selected < system_quests_size-1){
             sfx_menu_move();
             system_quest_selected++;
+            gui_status_quest_list(&status_wnd, system_quest_selected);
         }
-        gui_status_quest_list(&status_wnd, system_quest_selected);
     }
     if (ENTER == ch) {
         sfx_window_open();

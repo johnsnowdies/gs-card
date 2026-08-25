@@ -97,6 +97,9 @@
 #define LC_STATUS_WND_HYPER "Двигатель"
 #define LC_STATUS_WND_SYSTEM "Система"
 #define LC_STATUS_WND_SECTOR "Сектор"
+#define LC_STATUS_WND_SHIP_CARGO "Грузовой отсек:"
+#define LC_STATUS_WND_HYPER_FUEL "Расхоg топлива:"
+
 
 /* ----------------------------------------------------------------
  * MAPWND.C

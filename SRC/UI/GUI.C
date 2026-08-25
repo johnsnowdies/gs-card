@@ -86,6 +86,8 @@ void gui_draw_btn(BTN *btn)
             setcolor(BLACK);
         } else {
             setcolor(RED);
+            setfillstyle(SOLID_FILL, BLACK);
+            bar(btn->x, btn->y, btn->x + btn->width, btn->y + btn->height);
             rectangle(btn->x, btn->y, btn->x + btn->width, btn->y + btn->height);
             setcolor(RED);
         }
