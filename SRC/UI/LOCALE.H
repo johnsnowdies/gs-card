@@ -177,8 +177,8 @@
  * ---------------------------------------------------------------- */
 
 /* SHIP NAMES */
-#define LC_GAME_SHIP_1 "Лоgка Всемогущего"
-#define LC_GAME_SHIP_2 "Бэтси"
+#define LC_GAME_SHIP_2 "Лоgка Всемогущего"
+#define LC_GAME_SHIP_1 "Бэтси"
 #define LC_GAME_SHIP_3 "Старый Имперскй торговый корабль"
 #define LC_GAME_SHIP_4 "Га-Болг"
 #define LC_GAME_SHIP_5 "Торговый Корабль НОВА"
@@ -238,9 +238,9 @@
 #define LC_GAME_OVER_FUEL_TEXT "У вас закончилось топливо!"
 
 #define LC_GAME_GAS_STATION_HEAD "ЗАПРАВКА"
-#define LC_GAME_GAS_STATION_TEXT "В SA.%d проgают топливо по %d. Итого: %d $$. Заправиться?"
+#define LC_GAME_GAS_STATION_TEXT "В SA.%d проgают топливо по %d. Итого: %d $$. Заправка?"
 
-#define LC_GAME_GAS_STATION_NO_MONEY_TEXT "В SA.%d проgают топливо по %d. Итого: %d $$. Не хватает %d $$"
+#define LC_GAME_GAS_STATION_NO_MONEY_TEXT "В SA.%d проgают топливо по %d. Итого: %d $$. Не хватает!"
 
 
 #define LC_QUEST_PREQUEST_1 "Есть заgача:"

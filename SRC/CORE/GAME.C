@@ -574,7 +574,7 @@ void core_game_check_gas_station(){
     int percent_price, amount, total;
 
     if(sol_list[gs.current_system].is_gas_station && gs.fuel < 100){
-        percent_price = (rand() + 1) % 3;
+        percent_price = (rand() % 3) + 1;
         amount = 100 - gs.fuel;
         total = amount * percent_price;
 

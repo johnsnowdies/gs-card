@@ -140,8 +140,11 @@ void gui_map_nav_goto_system(int sol_size, struct system_solar* solar)
     char* input;
     int value;
     int error = 0;
+    char buf[50];
 
-    input = (char*)gui_input_wnd(&map_wnd, LC_NAV_NORMAL_HEAD, LC_NAV_INPUT_COORD, NULL);
+    sprintf(buf, "%d", gs.current_system);
+
+    input = (char*)gui_input_wnd(&map_wnd, LC_NAV_NORMAL_HEAD, LC_NAV_INPUT_COORD, buf);
     value = atoi(input);
     free(input);
 
@@ -267,6 +270,8 @@ int gui_map_wnd_key(int ch, WND *parent)
                 wp.size = 0;
                 gs.current_system = wp.way[1];
                 game_over = core_game_run_event();
+                gui_map_nav_move_screen_to(sol_list, gs.current_system);
+
                 if (!game_over){
                     gui_map_top_status_line();
                     sprintf(buf, LC_CARD_JUMP_RESULT_TEXT, gs.current_system);

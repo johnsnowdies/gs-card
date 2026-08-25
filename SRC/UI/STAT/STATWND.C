@@ -126,6 +126,7 @@ void gui_status_quest_info(WND *quest_wnd, int selected)
     if (line_3_width > max_line) max_line = line_3_width;
 
     quest_wnd->width = quest_wnd->x + 160 + max_line + 10;
+    quest_wnd->x = (status_wnd.width - quest_wnd->width) / 2;
 
 
 
@@ -255,7 +256,6 @@ void gui_status_quest_info(WND *quest_wnd, int selected)
                 cur_screen = SCR_STATUS;
                 gui_status_wnd();
                 sfx_screen_change();
-                system_quest_selected = 0;
                 break;
             }
         }
@@ -309,7 +309,7 @@ void gui_status_quest_list(WND *status_wnd, int selected)
 
         if (i == system_quest_selected) {
             setfillstyle(SOLID_FILL, RED);
-            bar(x_pos, y_pos + (10 * i), status_wnd->x + status_wnd->width - 10, y_pos + (10 * i) + 10);
+            bar(x_pos, y_pos + (10 * i), status_wnd->x + status_wnd->width - 11, y_pos + (10 * i) + 10);
         }
         outtextxy(x_pos, y_pos + (10 * i), buf);
     }
@@ -364,11 +364,16 @@ void draw_player_status(WND *status_wnd)
     char current_system[50];
     char sector[50];
 
+    char ship_image[50];
+
     sprintf(captain_name, "%s: %s", LC_STATUS_WND_CAPTAIN, gs.captain_name);
-    sprintf(ship_name, "%s: %s | %s %d", LC_STATUS_WND_SHIP, data_ship_names[gs.ship_type], LC_STATUS_WND_SHIP_CARGO, data_ship_tonnages[gs.ship_type]);
-    sprintf(hyper_class, "%s: %s | %s %d%%", LC_STATUS_WND_HYPER, data_hyper_names[gs.hyper_class], LC_STATUS_WND_HYPER_FUEL, data_hyper_fuel[gs.hyper_class]);
+    sprintf(ship_name, "%s",  data_ship_names[gs.ship_type]);
+    sprintf(hyper_class, "%s", data_hyper_names[gs.hyper_class]);
     sprintf(current_system, "%s: SA.%d", LC_STATUS_WND_SYSTEM, gs.current_system);
     sprintf(sector, "%s: %s", LC_STATUS_WND_SECTOR, data_sectors[sol_list[gs.current_system].sector]);
+    sprintf(ship_image, "SHIPS/SHIP_%u.BMP", gs.ship_type+1);
+
+    data_reader_draw_bmp(ship_image, 339,22);
 
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
     setcolor(15);
@@ -390,14 +395,15 @@ void gui_status_wnd()
     status_wnd.header = "";
     status_wnd.x = 0;
     status_wnd.y = 21;
-    status_wnd.width = 640;
+    status_wnd.width = 639;
     status_wnd.height = 459;
 
     quest_wnd.header = QUEST_TYPES[system_quests[system_quest_selected].type];
-    quest_wnd.x = 10;
-    quest_wnd.y = 60;
+
     quest_wnd.width = 600;
     quest_wnd.height = 220;
+    quest_wnd.x = (status_wnd.width - quest_wnd.width) / 2;
+    quest_wnd.y = (status_wnd.height - quest_wnd.height) / 2;;
 
     setfillstyle(SOLID_FILL, BLACK);
     bar(1, 22, status_wnd.width - 1, status_wnd.height - 1);

@@ -51,6 +51,8 @@ void gui_draw_wnd_proto(WND* ptr_wnd)
     int width = ptr_wnd->x + ptr_wnd->width,
         height = ptr_wnd->y + ptr_wnd->height;
 
+    setlinestyle(0, 0, 1);
+    
     /* Fill window space with BLACK */
     setfillstyle(SOLID_FILL, BLACK);
     bar(ptr_wnd->x, ptr_wnd->y, width, height);
@@ -474,4 +476,4 @@ void gui_memory_status()
 void gui_game_over(WND* parent)
 {
     
-}
+}

@@ -216,12 +216,17 @@ int core_finder_get_way(WAYPOINT* wp) {
 
   S = 1;
   gotEnd = 0;
+  
+  /*
   sprintf(current, "%d", gs.current_system);
   input = (char*)gui_input_wnd(&map_wnd, LC_GEN_TITLE_GSCARD, LC_FINDER_START_TEXT_1, current);
   if(input[0] == '\0')
     return 0;
   start = atoi(input);
+  */
 
+  start = gs.current_system;
+  
   input = (char*)gui_input_wnd(&map_wnd, LC_GEN_TITLE_GSCARD, LC_FINDER_END_TEXT, NULL);
   if(input[0] == '\0')
     return 0;
