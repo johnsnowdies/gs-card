@@ -238,9 +238,9 @@
 #define LC_GAME_OVER_FUEL_TEXT "У вас закончилось топливо!"
 
 #define LC_GAME_GAS_STATION_HEAD "ЗАПРАВКА"
-#define LC_GAME_GAS_STATION_TEXT "В SA.%d проgают топливо по %d. Итого: %d $$. Заправка?"
+#define LC_GAME_GAS_STATION_TEXT "В SA.%d проgают топливо по %u. Итого: %u $$. Заправка?"
 
-#define LC_GAME_GAS_STATION_NO_MONEY_TEXT "В SA.%d проgают топливо по %d. Итого: %d $$. Не хватает!"
+#define LC_GAME_GAS_STATION_NO_MONEY_TEXT "В SA.%d проgают топливо по %u. Итого: %u $$. Не хватает!"
 
 
 #define LC_QUEST_PREQUEST_1 "Есть заgача:"

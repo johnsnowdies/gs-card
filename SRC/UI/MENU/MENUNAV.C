@@ -106,10 +106,9 @@ int gui_menu_game_wnd_key(int ch, WND *parent)
     }
     if (mm_select == 0 && ENTER == ch) {
         char *text_input;
-        text_input = (char*)gui_input_wnd(parent, LC_CARD_MENU_SAVE_WND_HEAD,
-                                   LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
+         text_input = (char*)gui_input_wnd(parent, LC_CARD_MENU_LOAD_WND_HEAD, LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
         if (text_input != NULL && text_input[0] != '\0') {
-            if (core_game_save(text_input) == 1) {
+            if (core_game_load(text_input) == 1) {
                 cur_screen = prev_screen;
                 gui_warning_wnd(parent, LC_GEN_SUCCESS_HEAD, LC_CARD_MENU_SAVE_SUCCESS, SOUND_SUCCESS);
                 getch();

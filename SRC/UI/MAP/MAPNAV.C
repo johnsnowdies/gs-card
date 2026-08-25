@@ -274,10 +274,14 @@ int gui_map_wnd_key(int ch, WND *parent)
 
                 if (!game_over){
                     gui_map_top_status_line();
+
                     sprintf(buf, LC_CARD_JUMP_RESULT_TEXT, gs.current_system);
 
                     gui_warning_wnd(&map_wnd, LC_CARD_JUMP_RESULT_HEAD, buf, SOUND_SUCCESS);
                     getch();
+
+                    core_game_check_gas_station();
+                    gui_map_top_status_line();
 
                     gui_map_wnd_draw();
                 } else {

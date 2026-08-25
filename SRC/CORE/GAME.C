@@ -118,8 +118,8 @@ void new_game(char *name, int sol_size)
     if (gs.current_system < 0) gs.current_system = 0;
     if (gs.current_system >= sol_size) gs.current_system = 0;
 
-    gs.ship_type         = 0;
-    gs.tonnage           = 50;
+    gs.ship_type         = rand()%6;
+    gs.tonnage           = data_ship_tonnages[gs.ship_type];
     gs.current_cargo     = 0;
     gs.cargo_value       = 0;
     gs.hyper_class       = 0;
@@ -571,7 +571,7 @@ int core_game_check_quest_done()
 }
 
 void core_game_check_gas_station(){
-    int percent_price, amount, total;
+    unsigned int percent_price, amount, total;
 
     if(sol_list[gs.current_system].is_gas_station && gs.fuel < 100){
         percent_price = (rand() % 3) + 1;
@@ -580,7 +580,7 @@ void core_game_check_gas_station(){
 
         if (total > gs.balance){
             char* buf[100];
-            int diff = 0;
+            unsigned int diff = 0;
             diff = total - gs.balance;
             sprintf(buf, LC_GAME_GAS_STATION_NO_MONEY_TEXT, gs.current_system, percent_price, total, diff);
             gui_warning_wnd(&map_wnd, LC_GAME_GAS_STATION_HEAD, buf, SOUND_ERROR);
@@ -619,7 +619,6 @@ int core_game_run_event()
     }
 
     core_game_check_quest_done();
-    core_game_check_gas_station();
     game_over = core_game_check_fuel_gone();
 
     return game_over;
