@@ -12,10 +12,10 @@
 #include "core\game.h"
 
 #include "ui\stat\statwnd.h"
+#include "ui\npc\npcwnd.h"
 
 #include "music.h"
 
-#include "ui\npc\npcwnd.h"
 
 WND status_wnd;
 int system_quest_selected = 0;
@@ -142,14 +142,12 @@ void gui_status_quest_info(int selected)
             system_quest_selected = 0;
             gui_status_wnd();
             gui_map_top_status_line();
-            sfx_screen_change();
         }
     }
     else
     {
         cur_screen = SCR_STATUS;
         gui_status_wnd();
-        sfx_screen_change();
     }
 }
 

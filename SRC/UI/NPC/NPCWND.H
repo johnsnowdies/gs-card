@@ -5,7 +5,8 @@
 
 E_NPC_WND_TYPE {
     NPC_CHOICE_WND,
-    NPC_DIALOG_WND
+    NPC_DIALOG_WND,
+    NPC_GAS_WND
 };
 
 int gui_npc_wnd(WND* ptr_parent, NPC* ptr_npc, int wnd_type, char lines[][100], int lines_count);

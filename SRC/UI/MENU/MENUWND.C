@@ -76,6 +76,4 @@ void gui_menu_wnd(WND* ptr_parent, int currentPos, int mode)
     }
 
     sfx_menu_move();
-    
-
 }

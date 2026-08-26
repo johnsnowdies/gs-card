@@ -29,4 +29,4 @@ int core_game_save(char *filename);
 int core_game_accept_quest(unsigned int index);
 int core_game_check_quest_done();
 int core_game_check_fuel_gone();
-void core_game_check_gas_station();
+void core_game_check_gas_station();

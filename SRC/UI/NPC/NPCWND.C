@@ -14,6 +14,10 @@ int gui_npc_wnd(WND* ptr_parent, NPC* ptr_npc, int wnd_type, char lines[][100], 
         "M", "F"
     };
 
+    char gas_faction[] = {
+        'A', 'R', 'S', 'R'
+    };
+
     settextstyle(SMALL_FONT, HORIZ_DIR, 4);
     for( i = 0; i < lines_count; i++ )
     {
@@ -46,15 +50,24 @@ int gui_npc_wnd(WND* ptr_parent, NPC* ptr_npc, int wnd_type, char lines[][100], 
     switch(ptr_npc->faction){
         case 1:
         case 3:
-            sprintf(photo, "NPC/R%s%d.BMP", genders[ptr_npc->gender], ptr_npc->portrait + 1);
+            if (wnd_type == NPC_GAS_WND)
+                sprintf(photo, "NPC/GAS%c.BMP", gas_faction[ptr_npc->faction]);
+            else
+                sprintf(photo, "NPC/R%s%d.BMP", genders[ptr_npc->gender], ptr_npc->portrait + 1);
         break;
 
         case 0:
-            sprintf(photo, "NPC/A%s%d.BMP", genders[ptr_npc->gender], ptr_npc->portrait + 1);
+            if (wnd_type == NPC_GAS_WND)
+                sprintf(photo, "NPC/GAS%c.BMP", gas_faction[ptr_npc->faction]);
+            else
+                sprintf(photo, "NPC/A%s%d.BMP", genders[ptr_npc->gender], ptr_npc->portrait + 1);
         break;
 
         default:
-            sprintf(photo, "NPC/S%s%d.BMP", genders[ptr_npc->gender], ptr_npc->portrait + 1);
+            if (wnd_type == NPC_GAS_WND)
+                sprintf(photo, "NPC/GAS%c.BMP", gas_faction[ptr_npc->faction]);
+            else
+                sprintf(photo, "NPC/S%s%d.BMP", genders[ptr_npc->gender], ptr_npc->portrait + 1);
         break;
     }
 
@@ -79,7 +92,7 @@ int gui_npc_wnd(WND* ptr_parent, NPC* ptr_npc, int wnd_type, char lines[][100], 
     }
 
     /* This is NPC Quest window - YES / NO buttons */
-    if (wnd_type == NPC_CHOICE_WND){
+    if (wnd_type == NPC_CHOICE_WND || wnd_type == NPC_GAS_WND){
         WND btn_holder;
         BTN btn_yes, btn_no;
         int choice = 0;   

@@ -48,8 +48,6 @@ extern E_GAME_SCREEN prev_screen;
 int gui_status_wnd_key(int ch, WND *parent)
 {
     if (TAB == ch) {
-        sfx_screen_change();
-
         if (wp.size > 0)
             gui_map_path_wnd();
         cur_screen = SCR_MAP;
@@ -63,20 +61,17 @@ int gui_status_wnd_key(int ch, WND *parent)
     }
     if (UP == ch) {
         if (system_quest_selected > 0){
-            sfx_menu_move();
             system_quest_selected--;
             gui_status_quest_list(&status_wnd, system_quest_selected);
         }
     }
     if (DWN == ch) {
         if (system_quest_selected < system_quests_size-1){
-            sfx_menu_move();
             system_quest_selected++;
             gui_status_quest_list(&status_wnd, system_quest_selected);
         }
     }
     if (ENTER == ch) {
-        sfx_window_open();
         cur_screen = SCR_QUEST_LIST_DETAIL;
         gui_status_quest_info(system_quest_selected);
     }

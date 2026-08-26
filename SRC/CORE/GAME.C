@@ -368,8 +368,6 @@ void core_game_gen_npc(NPC* npc_ptr, unsigned int faction)
     };
 
     npc_ptr->faction = faction;
-        /* 0 - Male 1 - Female */
-    npc_ptr->gender = rand() % 3 == 2 ? 1: 0;
 
     if (npc_ptr->gender == 0)
         npc_ptr->portrait = rand() % 6;
@@ -504,6 +502,7 @@ void core_game_gen_quest(QUEST* quest_ptr, int player_rep, unsigned int faction)
     if (penalty < (int)(reward * 0.1)) penalty = (int)(reward * 0.1);
     if (penalty < 0) penalty = 0;
 
+    quest_ptr->giver.gender = rand() % 3 == 2 ? 1: 0;
     core_game_gen_npc(&quest_ptr->giver, faction);
 
     quest_ptr->reward = reward;
@@ -548,14 +547,19 @@ int core_game_check_quest_done()
 {
     int i, j;
     char* text[100];
+    char lines[2][100];
     for (i = 0; i < gs.quests_size; i++)
     {
         if (gs.quests[i].target_system == gs.current_system)
         {
-            sprintf(text, LC_QUEST_COMPLETE_TEXT, gs.quests[i].giver.name, gs.quests[i].reward);
+            strcpy(lines[0], LC_QUEST_COMPLETE_HEAD);
+
+            sprintf(lines[1], LC_QUEST_COMPLETE_TEXT, gs.quests[i].giver.name, gs.quests[i].reward);
             /* Set quest done */
             gs.current_cargo -= gs.quests[i].cargo;
             gs.balance += gs.quests[i].reward;
+
+            gui_npc_wnd(&root_wnd, &gs.quests[i].giver, NPC_DIALOG_WND, lines, 2);
 
             /* Remove Quest from user log */
             for (j = i; j < gs.quests_size; j++){
@@ -563,7 +567,7 @@ int core_game_check_quest_done()
             }
 
             gs.quests_size--;
-            gui_warning_wnd(&map_wnd, LC_QUEST_COMPLETE_HEAD, text, SOUND_SUCCESS);
+            
             getch();
 
             if (i >= gs.quests_size)
@@ -574,6 +578,9 @@ int core_game_check_quest_done()
 
 void core_game_check_gas_station(){
     unsigned int percent_price, amount, total;
+    char faction_char[] = {
+        'A', 'R', 'S', 'R' 
+    };
 
     if(sol_list[gs.current_system].is_gas_station && gs.fuel < 100){
         percent_price = (rand() % 3) + 1;
@@ -584,13 +591,16 @@ void core_game_check_gas_station(){
             char lines[2][100];
             unsigned int diff = 0;
             int choice = 0;
+            
+
             NPC gas_worker;
+            gas_worker.gender = sol_list[gs.current_system].faction == 3 || sol_list[gs.current_system].faction == 1 ? 1 : 0; 
             core_game_gen_npc(&gas_worker, sol_list[gs.current_system].faction);
 
             diff = total - gs.balance;
             sprintf(lines[1], LC_GAME_GAS_STATION_NO_MONEY_TEXT, gs.current_system, percent_price, total, diff);
             strcpy(lines[0], LC_GAME_GAS_STATION_HEAD);
-            gui_npc_wnd(&root_wnd, &gas_worker, NPC_DIALOG_WND, lines, 2);
+            gui_npc_wnd(&map_wnd, &gas_worker, NPC_GAS_WND, lines, 2);
 
             getch();
         } else {
@@ -599,13 +609,10 @@ void core_game_check_gas_station(){
             NPC gas_worker;
             core_game_gen_npc(&gas_worker, sol_list[gs.current_system].faction);
 
-
             sprintf(lines[1], LC_GAME_GAS_STATION_TEXT, gs.current_system, percent_price, total);
             strcpy(lines[0], LC_GAME_GAS_STATION_HEAD);
-            
 
-            choice = gui_npc_wnd(&root_wnd, &gas_worker, NPC_CHOICE_WND, lines, 2);
-
+            choice = gui_npc_wnd(&map_wnd, &gas_worker, NPC_GAS_WND, lines, 2);
 
             if (choice == 0){
                 gs.fuel = 100;

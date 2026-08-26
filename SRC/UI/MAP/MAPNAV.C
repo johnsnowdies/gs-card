@@ -255,8 +255,6 @@ int gui_map_wnd_key(int ch, WND *parent)
         gui_map_wnd_draw();
     }
     if (TAB == ch) {
-        sfx_screen_change();
-
         cur_screen = SCR_STATUS;
         gui_status_wnd();
     }
@@ -266,20 +264,28 @@ int gui_map_wnd_key(int ch, WND *parent)
             sprintf(buf, LC_CARD_READY_TO_JUMP, wp.way[0], wp.way[1]);
             if (gui_confirm_wnd(&map_wnd, LC_CARD_JUMP_WND_HEAD, buf) == 0) {
                 int game_over = 0;
-                
-                wp.size = 0;
+                int i;
+
                 gs.current_system = wp.way[1];
+                                
+                /* Keep Path Window open until reached end */
+                if (wp.size != 2
+                    ){
+                    for(i = 0; i <= wp.size - 1; i++)
+                        wp.way[i] = wp.way[i+1];
+                    wp.size--;
+                    gui_map_path_wnd();
+                }else{
+                    wp.size = 0;
+                    gui_map_wnd_draw();
+                }
+
                 game_over = core_game_run_event();
                 gui_map_nav_move_screen_to(sol_list, gs.current_system);
 
                 if (!game_over){
                     char lines[1][100];
                     gui_map_top_status_line();
-
-                    sprintf(lines[0], LC_CARD_JUMP_RESULT_TEXT, gs.current_system);
-                    gui_image_multiline_wnd(&map_wnd, "SPACE.BMP", LC_CARD_JUMP_RESULT_HEAD, lines, 0, 320, 180, SOUND_SUCCESS);
-                    getch();
-                    gui_map_wnd_draw();
                     core_game_check_gas_station();
                     gui_map_top_status_line();
                     gui_map_wnd_draw();

@@ -276,13 +276,12 @@ int gui_confirm_wnd(WND* ptr_parent, char* header, char* text)
 {
     WND confirm_wnd;
     BTN btn_yes, btn_no;
+    int sound_played = 0;
     int selected = 0;   
 
     int btn_width = 50, btn_height = 20, btn_gap = 10;
     int btn_y;
     int total = 2 * btn_width + btn_gap;
-
-    sfx_modal();
 
     confirm_wnd.header = header;
     confirm_wnd.x = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
@@ -329,6 +328,11 @@ int gui_confirm_wnd(WND* ptr_parent, char* header, char* text)
         gui_draw_btn(&btn_yes);
         gui_draw_btn(&btn_no);
 
+        if (sound_played == 0){
+            sfx_modal();
+            sound_played = 1;
+        }
+
         if (gui_handle_btn_keys(2, &selected) == 1){
             return selected;
         }
@@ -345,9 +349,6 @@ char* gui_input_wnd(WND* ptr_parent, char* header, char* text, char* defaultValu
     WND input_wnd;
     INPUT_FIELD field;
     char* result;
-
-    sfx_modal();
-    
 
     input_wnd.header = header;
     input_wnd.x = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
@@ -380,6 +381,7 @@ char* gui_input_wnd(WND* ptr_parent, char* header, char* text, char* defaultValu
     outtextxy(input_wnd.x + 2, input_wnd.y + 20, text);
     outtextxy(input_wnd.x + 2, input_wnd.y + 88, LC_GUI_INPUT_TEXT);
 
+    sfx_modal();
     gui_run_input_field(&field);
     result = (char*)malloc(Q_INPUT_LEN);
 

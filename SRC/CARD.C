@@ -102,10 +102,11 @@ int main()
     gui_init();
 
 
-    /* Splash screen */
-    if (!DEBUG) data_reader_draw_bmp("LOGO.BMP",0,0);
-   
-    getch();
+    if (!DEBUG){
+        /* Splash screen */
+        data_reader_draw_bmp("LOGO.BMP",0,0);
+        getch();
+    }
     setfillstyle(SOLID_FILL, BLACK);
     bar(0, 0, 640, 480);
 
