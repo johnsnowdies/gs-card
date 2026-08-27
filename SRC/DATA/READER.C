@@ -213,7 +213,6 @@ int data_reader_load_game_file(GAME_STATE* state, char* filename)
     fread(&state->tonnage, sizeof(int), 1, fp);
     fread(&state->current_cargo, sizeof(int), 1, fp);
     fread(&state->hyper_class, sizeof(int), 1, fp);
-    fread(&state->smuggler_bay, sizeof(unsigned char), 1, fp);
     fread(&state->reputation, sizeof(int), 1, fp);
     fread(&state->missions_completed, sizeof(int), 1, fp);
     fread(&state->fuel, sizeof(int), 1, fp);
@@ -266,7 +265,6 @@ int data_reader_save_game_file(GAME_STATE* state, char* filename)
     fwrite(&state->tonnage, sizeof(int), 1, fp);
     fwrite(&state->current_cargo, sizeof(int), 1, fp);
     fwrite(&state->hyper_class, sizeof(int), 1, fp);
-    fwrite(&state->smuggler_bay, sizeof(unsigned char), 1, fp);
     fwrite(&state->reputation, sizeof(int), 1, fp);
     fwrite(&state->missions_completed, sizeof(int), 1, fp);
     fwrite(&state->fuel, sizeof(int), 1, fp);

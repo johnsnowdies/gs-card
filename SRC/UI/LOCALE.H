@@ -296,6 +296,16 @@
 #define LC_QUEST_ERROR "Невозможно принять этот контракт!"
 
 
+/* ----------------------------------------------------------------
+ * Names
+ * ---------------------------------------------------------------- */
+
+#define LC_UPGRADE_SMUGGLER_BAY "Отсек для контрабанgы"
+#define LC_UPGRADE_CONTINUOUS_JUMP_SYSTEM "Система непрерывных прыжков"
+#define LC_UPGRADE_EMERGENCY_JUMP_SYSTEM "Экстренный прыжок"
+#define LC_UPGRADE_OBJECTS_MAP "Карта опасных объектов"
+#define LC_UPGRADE_POLITICAL_MAP "Карта секторов"
+
 
 /* ----------------------------------------------------------------
  * Names

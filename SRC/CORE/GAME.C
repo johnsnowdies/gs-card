@@ -95,6 +95,14 @@ char* QUEST_TYPES[] = {
     LC_QUEST_TYPE_5
 };
 
+char* UPGRADES[] = {
+    LC_UPGRADE_SMUGGLER_BAY,
+    LC_UPGRADE_CONTINUOUS_JUMP_SYSTEM,
+    LC_UPGRADE_EMERGENCY_JUMP_SYSTEM,
+    LC_UPGRADE_OBJECTS_MAP,
+    LC_UPGRADE_POLITICAL_MAP
+};
+
 void game_mark_visited(GAME_STATE *gs, int system) {
     if (system < 0 || system >= sol_size || !gs->visited) return;
     gs->visited[system >> 3] |= (1 << (system & 7));
@@ -124,7 +132,7 @@ void new_game(char *name, int sol_size)
     gs.tonnage           = data_ship_tonnages[gs.ship_type];
     gs.current_cargo     = 0;
     gs.hyper_class       = 0;
-    gs.smuggler_bay      = 0;
+    /*gs.smuggler_bay      = 0;*/
     gs.reputation        = 0;
     gs.missions_completed = 0;
     gs.fuel              = 100;
