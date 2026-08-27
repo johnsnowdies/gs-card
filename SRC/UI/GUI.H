@@ -114,7 +114,7 @@ void gui_progress_wnd(WND* ptr_parent, char* header, char* text, int current,
 /* Multiline dialog window with portrait */
 int gui_dialog_wnd(WND* parent, char* header, char* title, char* photo_file,
                    char lines[][100], int lines_count, char buttons[][100],
-                   int buttons_count);
+                   int buttons_count, int play_sound);
 
 /* Universal status line */
 void gui_draw_status_line(WND* ptr_wnd, char* keys[], char* items[]);

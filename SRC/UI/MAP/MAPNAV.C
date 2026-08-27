@@ -290,6 +290,7 @@ int gui_map_wnd_key(int ch, WND *parent)
                     gui_map_top_status_line();
                     gui_map_wnd_draw();
                 } else {
+                    gui_map_top_status_line();
                     gui_ad_loading();
                     cur_screen = SCR_MAIN_MENU;
                     gui_menu_wnd(&root_wnd, 0, MAIN_MENU);

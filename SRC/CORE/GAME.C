@@ -390,7 +390,7 @@ void core_game_gen_npc(NPC* ptr_npc, unsigned int faction, E_GENDER gender, E_NP
         photo_id = (rand() % FEMALE_PORTRAITS_COUNT) + 1;
 
     if (npc_type == QUEST_NPC)
-        sprintf(ptr_npc->photo, "NPC/S%c%d.BMP", GENDER_SYMBOL[ptr_npc->gender], photo_id);
+        sprintf(ptr_npc->photo, "NPC/%c%c%d.BMP",FACTION_SYMBOL[ptr_npc->faction], GENDER_SYMBOL[ptr_npc->gender], photo_id);
     else if (npc_type == GAS_NPC)
         sprintf(ptr_npc->photo, "NPC/GAS%c.BMP", FACTION_SYMBOL[ptr_npc->faction]);    
 
@@ -609,6 +609,7 @@ int core_game_check_quest_done() {
       }
 
       gs.quests_size--;
+      gs.missions_completed++;
       if (i >= gs.quests_size) break;
     }
   }
@@ -646,7 +647,7 @@ void core_game_check_gas_station() {
       /* Not enough money! */
       sprintf(lines[2], LC_GAME_GAS_STATION_NO_MONEY_TEXT, total);
       gui_npc_wnd(&map_wnd, &gas_worker, NPC_DIALOG_WND,
-                  LC_GAME_GAS_STATION_HEAD, lines, 3, buttons, 2);
+                  LC_GAME_GAS_STATION_HEAD, lines, 3, NULL, 0);
 
     } else {
       sprintf(lines[2], LC_GAME_GAS_STATION_TEXT_3, total);
@@ -686,11 +687,28 @@ int core_game_run_event()
 }
 
 
-
 int core_game_check_fuel_gone(){
+
+
     if (gs.fuel <= 0){
-        gui_warning_wnd(&map_wnd, LC_GAME_OVER_HEAD, LC_GAME_OVER_FUEL_TEXT, SOUND_ERROR);
-        getch();
+        char lines[9][100];
+        int i;
+
+        for (i = 0; i < 9; i++) {
+          lines[i][0] = '\0';
+        }
+        
+        sprintf(lines[0], LC_GAME_OVER_FUEL_TEXT_1);
+        sprintf(lines[1], LC_GAME_OVER_FUEL_TEXT_2);
+        sprintf(lines[2], "   ");
+        sprintf(lines[3], LC_GAME_OVER_STATS_HEAD);
+        sprintf(lines[4], LC_GAME_OVER_STATS_TEXT_1, gs.visited);
+        sprintf(lines[5], LC_GAME_OVER_STATS_TEXT_2, gs.missions_completed);
+        sprintf(lines[6], LC_GAME_OVER_STATS_TEXT_3, gs.balance);
+        sprintf(lines[7], "   ");
+        sprintf(lines[8], LC_GAME_OVER_STATS_TEXT_4);
+        gui_dialog_wnd(&map_wnd, LC_GAME_OVER_HEAD, LC_GAME_OVER_HEAD, NULL, lines, 9, NULL, 0, SOUND_ERROR);
+
         return 1;
     }
     return 0;

@@ -430,7 +430,7 @@ void gui_progress_wnd(WND* ptr_parent, char* header, char* text, int current, in
 
 int gui_dialog_wnd(WND* parent, char* header, char* title, char* photo_file,
                    char lines[][100], int lines_count, char buttons[][100],
-                   int buttons_count) {
+                   int buttons_count, int play_sound) {
   WND dialog;
   int i, max_line_width = 0, btn_width = 0, btn_height = 0, btn_gap = 15;
   int btn_total_width = 0, max_content_width, content_height, btn_holder_y;
@@ -500,11 +500,20 @@ int gui_dialog_wnd(WND* parent, char* header, char* title, char* photo_file,
               lines[i]);
   }
 
-  if (buttons_count == 0) {
-    while (kbhit()) getch();
-    getch();
-    return -1;
+  switch (play_sound) {
+    case NO_SOUND:
+      break;
+    case SOUND_WARNING:
+      sfx_modal();
+      break;
+    case SOUND_ERROR:
+      sfx_error();
+      break;
+    case SOUND_SUCCESS:
+      sfx_hyperjump();
+      break;
   }
+
 
   {
     WND btn_holder;
@@ -544,6 +553,9 @@ int gui_dialog_wnd(WND* parent, char* header, char* title, char* photo_file,
       }
     }
   }
+
+
+
 }
 
 /* ----------------------------------------------------------------

@@ -235,7 +235,14 @@
 #define LC_QUEST_COMPLETE_TEXT "Контракт от %s выполнен. Награgа: %d"
 
 #define LC_GAME_OVER_HEAD "КОНЕЦ ИГРЫ"
-#define LC_GAME_OVER_FUEL_TEXT "У вас закончилось топливо!"
+#define LC_GAME_OVER_FUEL_TEXT_1 "У вас закончилось топливо! Вы включили аварийный маяк"
+#define LC_GAME_OVER_FUEL_TEXT_2 "в наgежgе, что вас спасут..."
+
+#define LC_GAME_OVER_STATS_HEAD "СТАТИСТИКА"
+#define LC_GAME_OVER_STATS_TEXT_1 "Посещено систем: %d"
+#define LC_GAME_OVER_STATS_TEXT_2 "Закрыто контрактов: %d"
+#define LC_GAME_OVER_STATS_TEXT_3 "Баланс креgитов: %d"
+#define LC_GAME_OVER_STATS_TEXT_4 "[ENTER] - Главное меню"
 
 #define LC_GAME_GAS_STATION_HEAD "ЗАПРАВКА"
 #define LC_GAME_GAS_STATION_TEXT_1 "Привет! У нас в SA.%d можно заправить топливо."
