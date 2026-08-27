@@ -122,8 +122,6 @@ void new_game(char *name, int sol_size)
     system_quests_size = 0;
     system_upgrades_size = 0;
 
-    core_finder_calc_hyper_threads();
-    obj_size = data_reader_load_objects(&obj_list);
 
     core_game_run_event();
     wp.size = 0;
@@ -149,8 +147,6 @@ int core_game_load(char *filename)
 
     if (result == 1)
     {
-        core_finder_calc_hyper_threads();
-        obj_size = data_reader_load_objects(&obj_list);
         gui_map_nav_move_screen_to(sol_list, gs.current_system);
         core_game_run_event();
         wp.size = 0;
@@ -651,6 +647,14 @@ void core_game_gen_upgrades(void) {
 
     for (i = 0; i < 5; i++) {
       if (*(flags[i]) == 0 && (rand() % 100) < 70) {
+        /* No smuggler bay in Sentinel system */
+        if (sol_list[gs.current_system].faction == 2 && i == 0)
+            continue;
+
+        /* No emergency jump in Irish systems, yo-ho-ho */
+        if (sol_list[gs.current_system].faction == 0 && i == 2)
+            continue;
+
         system_upgrades[count].name = names[i];
         system_upgrades[count].base_price = custom_prices[i];
         system_upgrades[count].type = 1;

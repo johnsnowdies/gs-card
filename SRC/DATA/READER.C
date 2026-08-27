@@ -213,15 +213,20 @@ int data_reader_load_game_file(GAME_STATE* state, char* filename)
     fread(&state->tonnage, sizeof(int), 1, fp);
     fread(&state->current_cargo, sizeof(int), 1, fp);
     fread(&state->hyper_class, sizeof(int), 1, fp);
+
+    fread(&state->upgrade_smuggler_bay, sizeof(unsigned char), 1, fp);
+    fread(&state->upgrade_continuous_jump, sizeof(unsigned char), 1, fp);
+    fread(&state->upgrade_emergency_jump, sizeof(unsigned char), 1, fp);
+    fread(&state->upgrade_objects_map, sizeof(unsigned char), 1, fp);
+    fread(&state->upgrade_political_map, sizeof(unsigned char), 1, fp);
+
     fread(&state->reputation, sizeof(int), 1, fp);
     fread(&state->missions_completed, sizeof(int), 1, fp);
     fread(&state->fuel, sizeof(int), 1, fp);
 
-    
     fread(&state->quests_size, sizeof(int), 1, fp);
-
     if (state->quests_size > 5) {
-        state->quests_size = 5;   
+        state->quests_size = 5;
     }
 
     for (i = 0; i < state->quests_size; i++) {
@@ -258,21 +263,25 @@ int data_reader_save_game_file(GAME_STATE* state, char* filename)
         return 0;
 
     fwrite(state->captain_name, sizeof(char), 100, fp);
-    
+
     fwrite(&state->balance, sizeof(long), 1, fp);
     fwrite(&state->current_system, sizeof(int), 1, fp);
     fwrite(&state->ship_type, sizeof(int), 1, fp);
     fwrite(&state->tonnage, sizeof(int), 1, fp);
     fwrite(&state->current_cargo, sizeof(int), 1, fp);
     fwrite(&state->hyper_class, sizeof(int), 1, fp);
+
+    fwrite(&state->upgrade_smuggler_bay, sizeof(unsigned char), 1, fp);
+    fwrite(&state->upgrade_continuous_jump, sizeof(unsigned char), 1, fp);
+    fwrite(&state->upgrade_emergency_jump, sizeof(unsigned char), 1, fp);
+    fwrite(&state->upgrade_objects_map, sizeof(unsigned char), 1, fp);
+    fwrite(&state->upgrade_political_map, sizeof(unsigned char), 1, fp);
+
     fwrite(&state->reputation, sizeof(int), 1, fp);
     fwrite(&state->missions_completed, sizeof(int), 1, fp);
     fwrite(&state->fuel, sizeof(int), 1, fp);
 
-    
-
     fwrite(&state->quests_size, sizeof(int), 1, fp);
-
     for (i = 0; i < state->quests_size; i++) {
         fwrite(&state->quests[i], sizeof(QUEST), 1, fp);
     }

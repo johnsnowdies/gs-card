@@ -101,6 +101,7 @@ int main() {
 
   sol_size = data_reader_load_systems(&sol_list);
   bnd_size = data_reader_load_bounds(&bnd_list);
+  obj_size = data_reader_load_objects(&obj_list);
 
   gui_init();
 
@@ -109,6 +110,9 @@ int main() {
     data_reader_draw_bmp("LOGO.BMP", 0, 0);
     getch();
   }
+
+  core_finder_calc_hyper_threads();
+  
   setfillstyle(SOLID_FILL, BLACK);
   bar(0, 0, 640, 480);
 

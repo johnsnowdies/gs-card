@@ -51,36 +51,36 @@ static void draw_upgrade_status_table(void)
     int x = upgrade_wnd.x + 10;
     int y_start = upgrade_wnd.y + 105;
     int i, max_label_width = 0;
-    int step = 15;  /* вертикальный шаг между строками */
+    int step = 15;
 
     char *labels[5];
     unsigned char values[5];
 
     labels[0] = LC_UPGRADE_SMUGGLER_BAY;
-    labels[1] = LC_UPGRADE_CONTIN_JUMP_SYSTEM;
-    labels[2] = LC_UPGRADE_EMERGENCY_JUMP_SYSTEM;
+    labels[1] = LC_UPGRADE_EMERGENCY_JUMP_SYSTEM;
+    labels[2] = LC_UPGRADE_CONTIN_JUMP_SYSTEM;
     labels[3] = LC_UPGRADE_OBJECTS_MAP;
     labels[4] = LC_UPGRADE_POLITICAL_MAP;
 
     values[0] = gs.upgrade_smuggler_bay;
-    values[1] = gs.upgrade_continuous_jump;
-    values[2] = gs.upgrade_emergency_jump;
+    values[1] = gs.upgrade_emergency_jump;
+    values[2] = gs.upgrade_continuous_jump;
     values[3] = gs.upgrade_objects_map;
     values[4] = gs.upgrade_political_map;
 
-    /* Вычисляем максимальную ширину названий */
+    
     for (i = 0; i < 5; i++) {
         int w = textwidth(labels[i]);
         if (w > max_label_width) max_label_width = w;
     }
 
-    /* Отрисовка строк с выравниванием значений по одному X */
+    
     for (i = 0; i < 5; i++) {
         int y = y_start + i * step;
-        setcolor(15);  /* белый для названия */
+        setcolor(15);  
         outtextxy(x, y, labels[i]);
 
-        setcolor(values[i] ? 2 : 4);  /* 2 = GREEN, 4 = RED */
+        setcolor(values[i] ? 2 : 4);  
         outtextxy(x + max_label_width + 10, y,
                   values[i] ? LC_UPGRADE_YES : LC_UPGRADE_NO);
     }
