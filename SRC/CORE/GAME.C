@@ -123,7 +123,6 @@ void new_game(char *name, int sol_size)
     gs.ship_type         = rand()%6;
     gs.tonnage           = data_ship_tonnages[gs.ship_type];
     gs.current_cargo     = 0;
-    gs.cargo_value       = 0;
     gs.hyper_class       = 0;
     gs.smuggler_bay      = 0;
     gs.reputation        = 0;
@@ -392,7 +391,7 @@ void core_game_gen_npc(NPC* ptr_npc, unsigned int faction, E_GENDER gender, E_NP
     if (npc_type == QUEST_NPC)
         sprintf(ptr_npc->photo, "NPC/%c%c%d.BMP",FACTION_SYMBOL[ptr_npc->faction], GENDER_SYMBOL[ptr_npc->gender], photo_id);
     else if (npc_type == GAS_NPC)
-        sprintf(ptr_npc->photo, "NPC/GAS%c.BMP", FACTION_SYMBOL[ptr_npc->faction]);    
+        sprintf(ptr_npc->photo, "NPC/GAS%c.BMP", FACTION_SYMBOL[ptr_npc->faction]);
 
     switch(faction){
         case 0:

@@ -79,9 +79,10 @@ GAME_STATE {
   unsigned int ship_type;
   unsigned int tonnage;
   unsigned int current_cargo;
-  long cargo_value;
   unsigned int hyper_class;
   unsigned char smuggler_bay;
+  unsigned char continuous_jump_system;
+  unsigned char emergency_jump_system;
   unsigned int reputation;
   unsigned int missions_completed;
   unsigned int fuel;
