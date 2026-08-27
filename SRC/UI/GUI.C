@@ -423,40 +423,127 @@ void gui_progress_wnd(WND* ptr_parent, char* header, char* text, int current, in
 }
 
 /* ----------------------------------------------------------------
- * Multiline image window
+ * Multiline dialog window with portrait
  * ---------------------------------------------------------------- */
-void gui_image_multiline_wnd(WND* ptr_parent, char* image, char* header, char lines[][100], int lines_count, int width, int height, int play_sound)
-{
-    WND image_wnd;
-    int i;
 
-    image_wnd.header = header;
-    image_wnd.x = (ptr_parent->width - width) / 2;
-    image_wnd.y = (ptr_parent->height - height + 10 + 15 * lines_count) / 2;
-    image_wnd.width = width+1;
-    image_wnd.height = height + 15 * lines_count + WND_HEADER_HEIGHT;
+#define MAX_BTNS 5
 
-    gui_draw_wnd_proto(&image_wnd);
+int gui_dialog_wnd(WND* parent, char* header, char* title, char* photo_file,
+                   char lines[][100], int lines_count, char buttons[][100],
+                   int buttons_count) {
+  WND dialog;
+  int i, max_line_width = 0, btn_width = 0, btn_height = 0, btn_gap = 15;
+  int btn_total_width = 0, max_content_width, content_height, btn_holder_y;
+  int photo_present = (photo_file != NULL && photo_file[0] != '\0');
 
-    data_reader_draw_bmp(image, image_wnd.x+1, image_wnd.y + WND_HEADER_HEIGHT);
+  settextstyle(SMALL_FONT, HORIZ_DIR, 4);
+  for (i = 0; i < lines_count; i++) {
+    int w = textwidth(lines[i]);
+    if (w > max_line_width) max_line_width = w;
+  }
 
-    switch(play_sound){
-        case NO_SOUND:
-            break;
-        case SOUND_WARNING:
-            sfx_modal();
-            break;
-        case SOUND_ERROR:
-            sfx_error();
-            break;
-        case SOUND_SUCCESS:
-            sfx_hyperjump();
-            break;
+  settextstyle(SMALL_FONT, HORIZ_DIR, 6);
+  if (textwidth(title) > max_line_width)
+    max_line_width = textwidth(title);
+
+  if (buttons_count > 0) {
+    if (buttons_count > MAX_BTNS) buttons_count = MAX_BTNS;
+    for (i = 0; i < buttons_count; i++) {
+      int w = textwidth(buttons[i]);
+      int h = textheight(buttons[i]);
+      if (w > btn_width) btn_width = w;
+      if (h > btn_height) btn_height = h;
+    }
+    btn_width += 20;
+    btn_height += 10;
+    btn_total_width = buttons_count * btn_width + (buttons_count - 1) * btn_gap;
+  }
+
+  max_content_width = max_line_width;
+  if (btn_total_width > max_content_width) max_content_width = btn_total_width;
+
+  if (photo_present) {
+    dialog.width = 10 + 160 + 10 + max_content_width + 10;
+  } else {
+    dialog.width = 10 + max_content_width + 10;
+  }
+
+  content_height = 65 + (lines_count * 15);
+  if (buttons_count > 0) {
+    content_height += 20 + btn_height + 10;
+  }
+  dialog.height = (content_height > WND_DIALOG_DEFAULT_HEIGHT)
+                      ? content_height
+                      : WND_DIALOG_DEFAULT_HEIGHT;
+
+  dialog.x = parent->x + (parent->width - dialog.width) / 2;
+  dialog.y = parent->y + (parent->height - dialog.height) / 2;
+  dialog.header = header;
+
+  gui_draw_wnd_proto(&dialog);
+
+  if (photo_present) {
+    setcolor(4);
+    rectangle(dialog.x + 9, dialog.y + 29, dialog.x + 150, dialog.y + 200);
+    settextstyle(SMALL_FONT, HORIZ_DIR, 6);
+    outtextxy(dialog.x + 40, dialog.y + 100, "NO PHOTO");
+    data_reader_draw_bmp(photo_file, dialog.x + 10, dialog.y + 30);
+  }
+
+  setcolor(15);
+  settextstyle(SMALL_FONT, HORIZ_DIR, 6);
+  outtextxy(dialog.x + (photo_present ? 160 : 10), dialog.y + 30, title);
+
+  settextstyle(SMALL_FONT, HORIZ_DIR, 4);
+  for (i = 0; i < lines_count; i++) {
+    outtextxy(dialog.x + (photo_present ? 160 : 10), dialog.y + 65 + (i * 15),
+              lines[i]);
+  }
+
+  if (buttons_count == 0) {
+    while (kbhit()) getch();
+    getch();
+    return -1;
+  }
+
+  {
+    WND btn_holder;
+    BTN btn_list[MAX_BTNS];
+    int choice = 0;
+    int total = btn_total_width;
+
+    btn_holder.y = dialog.y + 65 + (lines_count + 1) * 15;
+    btn_holder.x = dialog.x + (photo_present ? 160 : 10);
+    btn_holder.width = max_content_width;
+    btn_holder.height = btn_height;
+
+    for (i = 0; i < buttons_count; i++) {
+      btn_list[i].text = buttons[i];
+      btn_list[i].width = btn_width;
+      btn_list[i].height = btn_height;
+      btn_list[i].y = btn_holder.y;
+      btn_list[i].enabled = 1;
+      btn_list[i].visible = 1;
+      btn_list[i].selected = 0;
+      if (i == 0) {
+        btn_list[i].x = btn_holder.x + (btn_holder.width - total) / 2;
+      } else {
+        btn_list[i].x = btn_list[i - 1].x + btn_list[i - 1].width + btn_gap;
+      }
     }
 
-    for (i = 0; i < lines_count; i++){
-        outtextxy(image_wnd.x + 10, image_wnd.y + height + 10 + (i*15), lines[i]);
+    while (kbhit()) getch();
+
+    while (1) {
+      for (i = 0; i < buttons_count; i++) {
+        btn_list[i].selected = (i == choice) ? 1 : 0;
+        gui_draw_btn(&btn_list[i]);
+      }
+      if (gui_handle_btn_keys(buttons_count, &choice) == 1) {
+        return choice;
+      }
     }
+  }
 }
 
 /* ----------------------------------------------------------------
@@ -510,7 +597,6 @@ void gui_memory_status()
     setcolor(WHITE);
     outtextxy(470 + 35, STATUSBAR_BOTTOM_Y + 2, memMsg);
 }
-
 
 void gui_game_over(WND* parent)
 {

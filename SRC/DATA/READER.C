@@ -178,6 +178,7 @@ int data_reader_load_systems(SYSTEM** list)
 
   fclose(fp);
 
+  /* Set gas stations and abandoned systems */
   for(count = 0; count < counter; count++)
   {
     if (count%7 == 0){
@@ -332,9 +333,9 @@ void data_reader_draw_bmp(char *filename, int px, int py)
             unsigned char byte = row[x / 2];
             unsigned char idx;
             if (x % 2 == 0)
-                idx = byte >> 4;      /* левый пиксель — старший полубайт */
+                idx = byte >> 4;
             else
-                idx = byte & 0x0F;    /* правый пиксель — младший полубайт */
+                idx = byte & 0x0F;
             putpixel(px + x, py + y, idx);
         }
     }

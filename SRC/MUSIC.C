@@ -130,15 +130,15 @@ void sfx_window_open()
 }
 void sfx_modal()
 {
-    static int notes[] = {100};   /* одиночный тон */
-    static int durs[]  = {2};     /* 2 тика = 110 мс */
+    static int notes[] = {100};
+    static int durs[]  = {2};
     music_play(notes, durs, 1);
 }
 
 void sfx_hyperjump()
 {
-    static int notes[] = {40, 80, 160, 320};  /* ­¨§ª¨© -> ¢ëè¥ */
-    static int durs[]  = {1, 1, 1, 1};        /* ¯® 55 ¬á ª ¦¤ ï */
+    static int notes[] = {40, 80, 160, 320};
+    static int durs[]  = {1, 1, 1, 1};
     music_play(notes, durs, 4);
 }
 
@@ -147,7 +147,7 @@ void sfx_hyperjump()
  * ---------------------------------------------------------------- */
 void sfx_error()
 {
-    static int notes[] = {80, 0, 60};   /* низкий гудок, пауза, ещё ниже */
-    static int durs[]  = {2, 1, 2};     /* 110 мс, 55 мс, 110 мс */
+    static int notes[] = {80, 0, 60};
+    static int durs[]  = {2, 1, 2};
     music_play(notes, durs, 3);
 }

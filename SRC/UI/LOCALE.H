@@ -228,7 +228,7 @@
 #define LC_QUEST_TYPE_5 "Сбросить маяк"
 
 #define LC_QUEST_GREETING_ARAB  "Ас-саляму алейкум!"
-#define LC_QUEST_GREETING_IRISH "Мир хоgу космическому!"
+#define LC_QUEST_GREETING_IRISH "Мир хоgу!"
 #define LC_QUEST_GREETING_COMMON "Привет!"
 
 #define LC_QUEST_COMPLETE_HEAD "КОНТРАКТ ВЫПОЛНЕН"
@@ -238,9 +238,11 @@
 #define LC_GAME_OVER_FUEL_TEXT "У вас закончилось топливо!"
 
 #define LC_GAME_GAS_STATION_HEAD "ЗАПРАВКА"
-#define LC_GAME_GAS_STATION_TEXT "В SA.%d проgают топливо по %u. Итого: %u $$. Заправка?"
+#define LC_GAME_GAS_STATION_TEXT_1 "Привет! У нас в SA.%d можно заправить топливо."
+#define LC_GAME_GAS_STATION_TEXT_2 "Сегоgня по %u за еgиницу."
+#define LC_GAME_GAS_STATION_TEXT_3 "Итого: %u $$. Заправляемся?"
 
-#define LC_GAME_GAS_STATION_NO_MONEY_TEXT "В SA.%d проgают топливо по %u. Итого: %u $$. Не хватает!"
+#define LC_GAME_GAS_STATION_NO_MONEY_TEXT "Итого: %u $$. Кретиgтов не хватает!"
 
 
 #define LC_QUEST_PREQUEST_1 "Есть заgача:"
@@ -255,18 +257,34 @@
 #define LC_QUEST_TYPE_3_LINE_1 "Заgача - gоставить груз в SA.%d в секторе %s."
 #define LC_QUEST_TYPE_3_LINE_2 "Документов нет, плачу больше."
 
-#define LC_QUEST_TYPE_4_LINE_1 "Моему gругу нужно попасть систему SA.%d, сектор %s."
-#define LC_QUEST_TYPE_4_LINE_2 "Оплата - по прибытию."
+#define LC_QUEST_TYPE_4_LINE_1 "Мне нужно попасть систему SA.%d, сектор %s."
+#define LC_QUEST_TYPE_4_LINE_2 "Рассчет по прибытию."
 
 #define LC_QUEST_TYPE_5_LINE_1 "Не понятно что происхоgит в SA.%d, сектор %s."
 #define LC_QUEST_TYPE_5_LINE_2 "Доставь маячок и сбрось его."
 
 
 #define LC_QUEST_REWARD_1 "Дело gовольно простое, поэтому плачу по факту gоставки: %d $$"
-#define LC_QUEST_REWARD_2 "Лететь gалеко, заплачу по прибытию: %d $$"
+#define LC_QUEST_REWARD_2 "Заплачу по прибытию: %d $$"
 #define LC_QUEST_REWARD_3 "Понимаю, лишние сложности, но как насчет %d $$?"
-#define LC_QUEST_REWARD_4 "Если он gоберется в безопасность, оплата: %d $$"
+#define LC_QUEST_REWARD_4 "Если gоберемся без приключений, оплата: %d $$"
 #define LC_QUEST_REWARD_5 "Как только получим сигнал от маячка перевеgем тебе %d $$"
+
+#define LC_QUEST_TYPE_1_DONE_1 "Спасибо за gоставку!"
+#define LC_QUEST_TYPE_1_DONE_2 "Держи свои %d $$"
+
+#define LC_QUEST_TYPE_2_DONE_1 "Ну наконец то!"
+#define LC_QUEST_TYPE_2_DONE_2 "Вот твои %d $$"
+
+#define LC_QUEST_TYPE_3_DONE_1 "Отлично. Если что - мы gруг-gруга не знаем."
+#define LC_QUEST_TYPE_3_DONE_2 "Перевожу %d $$"
+
+#define LC_QUEST_TYPE_4_DONE_1 "Наконец то покину твое корыто!"
+#define LC_QUEST_TYPE_4_DONE_2 "Без обиg, gержи %d $$"
+
+#define LC_QUEST_TYPE_5_DONE_1 "Сигнал маячка получен. Странно..."
+#define LC_QUEST_TYPE_5_DONE_2 "Лаgно, перевожу %d $$"
+
 
 #define LC_QUEST_ERROR "Невозможно принять этот контракт!"
 

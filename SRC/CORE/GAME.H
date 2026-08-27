@@ -16,10 +16,28 @@
 #define FACTIONS_COUNT 4
 #define SECTORS_COUNT  9
 
-/* Quest System */
+#define MALE_PORTRAITS_COUNT 6
+#define FEMALE_PORTRAITS_COUNT 3
 
-void core_game_gen_npc(NPC* npc_ptr, unsigned int faction);
-void core_game_gen_quest(QUEST* quest_ptr, int player_rep, unsigned int faction);
+#define E_NPC_TYPE enum npc_type
+E_NPC_TYPE {
+    QUEST_NPC,
+    GAS_NPC
+};
+
+
+#define E_GENDER enum gender_type
+
+E_GENDER {
+    MALE,
+    FEMALE,
+    RANDOM_GENDER
+};
+
+
+void core_game_gen_npc(NPC* ptr_npc, unsigned int faction, E_GENDER gender, E_NPC_TYPE npc_type);
+
+void core_game_gen_quest(QUEST* ptr_quest, int player_rep, unsigned int faction);
 int core_game_run_event();
 int core_game_accept_quest(unsigned int index);
 

@@ -3,18 +3,18 @@
  * ---------------------------------------------------------------- */
 
 /* VGA Screen */
-#define SCREEN_W      640
-#define SCREEN_H      480
+#define SCREEN_W 640
+#define SCREEN_H 480
 
 /* Status Bar constants */
 #define STATUSBAR_WIDTH 640
 #define STATUSBAR_HEIGHT 20
-#define STATUSBAR_BOTTOM_Y   461
-
+#define STATUSBAR_BOTTOM_Y 461
 
 /* Modal windows width */
 #define WND_MODAL_DEFAULT_WIDTH 320
 #define WND_MODAL_DEFAULT_HEIGHT 100
+#define WND_DIALOG_DEFAULT_HEIGHT 220
 
 /* Window header constants*/
 #define WND_HEADER_FONT SMALL_FONT, HORIZ_DIR, 4
@@ -31,47 +31,47 @@
 
 #define INPUT_FIELD struct input_field
 INPUT_FIELD {
-    char buffer[Q_INPUT_LEN];
-    int max_len;
-    int cursor_pos;
-    int x, y, width, height;
-    int border_color;
-    int text_color;
-    int fill_color;
-    unsigned char active;
-    unsigned char visible;
+  char buffer[Q_INPUT_LEN];
+  int max_len;
+  int cursor_pos;
+  int x, y, width, height;
+  int border_color;
+  int text_color;
+  int fill_color;
+  unsigned char active;
+  unsigned char visible;
 };
 
 #define PROGRESS_BAR struct progress_bar
 PROGRESS_BAR {
-    int x, y, width, height;
-    int current;
-    int total;
-    int border_color;
-    int fill_color;
-    int bg_color;
-    unsigned char visible;
+  int x, y, width, height;
+  int current;
+  int total;
+  int border_color;
+  int fill_color;
+  int bg_color;
+  unsigned char visible;
 };
 
 #define WND struct gui_proto_window
 WND {
-    char* header;
-    int x;
-    int y;
-    int width;
-    int height;
+  char* header;
+  int x;
+  int y;
+  int width;
+  int height;
 };
 
 #define BTN struct gui_proto_button
 BTN {
-    char *text;
-    int x;
-    int y;
-    int width;
-    int height;
-    unsigned char selected;
-    unsigned char enabled;
-    unsigned char visible;
+  char* text;
+  int x;
+  int y;
+  int width;
+  int height;
+  unsigned char selected;
+  unsigned char enabled;
+  unsigned char visible;
 };
 
 /* ----------------------------------------------------------------
@@ -84,35 +84,40 @@ void gui_init(void);
 void gui_draw_wnd_proto(WND* ptr_wnd);
 
 /* Element: Button */
-void gui_draw_btn(BTN *btn);
-int gui_handle_btn_keys(int num_btns, int *current);
+void gui_draw_btn(BTN* btn);
+int gui_handle_btn_keys(int num_btns, int* current);
 
 /* Element: Input Field */
-void gui_draw_input_field(INPUT_FIELD *field);
-void gui_run_input_field(INPUT_FIELD *field);
+void gui_draw_input_field(INPUT_FIELD* field);
+void gui_run_input_field(INPUT_FIELD* field);
 
 /* Element: Progress Bar */
-void gui_init_progress_bar(PROGRESS_BAR *pb, int x, int y, int width, int height,
-                           int total, int border_color, int fill_color, int bg_color);
-void gui_draw_progress_bar(PROGRESS_BAR *pb);
+void gui_init_progress_bar(PROGRESS_BAR* pb, int x, int y, int width,
+                           int height, int total, int border_color,
+                           int fill_color, int bg_color);
+void gui_draw_progress_bar(PROGRESS_BAR* pb);
 
 /* Modal: simple centred warning dialog */
-void  gui_warning_wnd(WND* ptr_parent, char* header, char* text, int play_sound);
+void gui_warning_wnd(WND* ptr_parent, char* header, char* text, int play_sound);
 
 /* Modal: yes/no dialog */
 int gui_confirm_wnd(WND* ptr_parent, char* header, char* text);
 
 /* Modal: input dialog */
-char* gui_input_wnd(WND* ptr_parent, char* header, char* text, char* defaultValue);
+char* gui_input_wnd(WND* ptr_parent, char* header, char* text,
+                    char* defaultValue);
 
 /* Modal: progress bar dialog */
-void  gui_progress_wnd(WND* ptr_parent, char* header, char* text, int current, int total);
+void gui_progress_wnd(WND* ptr_parent, char* header, char* text, int current,
+                      int total);
 
-void gui_image_multiline_wnd(WND* ptr_parent, char* image, char* header, char lines[][100], int lines_count, int width, int height, int play_sound);
+/* Multiline dialog window with portrait */
+int gui_dialog_wnd(WND* parent, char* header, char* title, char* photo_file,
+                   char lines[][100], int lines_count, char buttons[][100],
+                   int buttons_count);
 
 /* Universal status line */
 void gui_draw_status_line(WND* ptr_wnd, char* keys[], char* items[]);
 
 /* Memory status (fixed) */
 void gui_memory_status(void);
-

@@ -55,8 +55,8 @@ WAYPOINT {
 #define NPC struct npc
 NPC {
   char name[100];
+  char photo[30];
   unsigned int faction;
-  unsigned int portrait;
   unsigned int gender;
 };
 

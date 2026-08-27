@@ -195,7 +195,7 @@ int core_game_save(char *filename)
  * Quests
  */
 
-void core_game_gen_npc(NPC* npc_ptr, unsigned int faction)
+void core_game_gen_npc(NPC* ptr_npc, unsigned int faction, E_GENDER gender, E_NPC_TYPE npc_type)
 {
 /*
     * Name constants
@@ -367,35 +367,54 @@ void core_game_gen_npc(NPC* npc_ptr, unsigned int faction)
         LC_GEN_LNAME_COMMON_15
     };
 
-    npc_ptr->faction = faction;
+    const char GENDER_SYMBOL[] = {
+        'M', 'F'
+    };
 
-    if (npc_ptr->gender == 0)
-        npc_ptr->portrait = rand() % 6;
+    const char FACTION_SYMBOL[] = {
+        'A', 'R', 'S', 'R'
+    };
+
+    int photo_id = 0;
+
+    ptr_npc->faction = faction;
+
+    if (gender == RANDOM_GENDER)
+        ptr_npc->gender = rand() % 3 == 2 ? 1: 0;
     else
-        npc_ptr->portrait = rand() % 3;
-    
+        ptr_npc->gender = gender;
+
+    if (ptr_npc->gender == 0)
+        photo_id = (rand() % MALE_PORTRAITS_COUNT) + 1;
+    else
+        photo_id = (rand() % FEMALE_PORTRAITS_COUNT) + 1;
+
+    if (npc_type == QUEST_NPC)
+        sprintf(ptr_npc->photo, "NPC/S%c%d.BMP", GENDER_SYMBOL[ptr_npc->gender], photo_id);
+    else if (npc_type == GAS_NPC)
+        sprintf(ptr_npc->photo, "NPC/GAS%c.BMP", FACTION_SYMBOL[ptr_npc->faction]);    
 
     switch(faction){
         case 1:
         case 3:
-            if (npc_ptr->gender == 0)
-                sprintf(npc_ptr->name, "%s %s", IRISH_MALE_FIRST[rand()%N_SIZE], IRISH_LAST[rand()%N_SIZE]);
+            if (ptr_npc->gender == 0)
+                sprintf(ptr_npc->name, "%s %s", IRISH_MALE_FIRST[rand()%N_SIZE], IRISH_LAST[rand()%N_SIZE]);
             else
-                sprintf(npc_ptr->name, "%s %s", IRISH_FEMALE_FIRST[rand()%N_SIZE], IRISH_LAST[rand()%N_SIZE]);
+                sprintf(ptr_npc->name, "%s %s", IRISH_FEMALE_FIRST[rand()%N_SIZE], IRISH_LAST[rand()%N_SIZE]);
         break;
 
         case 0:
-            if (npc_ptr->gender == 0)
-                sprintf(npc_ptr->name, "%s %s", ARAB_MALE_FIRST[rand()%N_SIZE], ARAB_LAST[rand()%N_SIZE]);
+            if (ptr_npc->gender == 0)
+                sprintf(ptr_npc->name, "%s %s", ARAB_MALE_FIRST[rand()%N_SIZE], ARAB_LAST[rand()%N_SIZE]);
             else
-                sprintf(npc_ptr->name, "%s %s", ARAB_FEMALE_FIRST[rand()%N_SIZE], ARAB_LAST[rand()%N_SIZE]);
+                sprintf(ptr_npc->name, "%s %s", ARAB_FEMALE_FIRST[rand()%N_SIZE], ARAB_LAST[rand()%N_SIZE]);
         break;
 
         default:
-            if (npc_ptr->gender == 0)
-                sprintf(npc_ptr->name, "%s %s", COMMON_MALE_FIRST[rand()%N_SIZE], COMMON_LAST[rand()%N_SIZE]);
+            if (ptr_npc->gender == 0)
+                sprintf(ptr_npc->name, "%s %s", COMMON_MALE_FIRST[rand()%N_SIZE], COMMON_LAST[rand()%N_SIZE]);
             else
-                sprintf(npc_ptr->name, "%s %s", COMMON_FEMALE_FIRST[rand()%N_SIZE], COMMON_LAST[rand()%N_SIZE]);
+                sprintf(ptr_npc->name, "%s %s", COMMON_FEMALE_FIRST[rand()%N_SIZE], COMMON_LAST[rand()%N_SIZE]);
         break;
     }
 }
@@ -462,11 +481,10 @@ static int calc_reward(int type, int cargo, int distance) {
     }
 }
 
-void core_game_gen_quest(QUEST* quest_ptr, int player_rep, unsigned int faction)
+void core_game_gen_quest(QUEST* ptr_quest, int player_rep, unsigned int faction)
 {
     int type, target, cargo, distance, reward, penalty, r;
     int* dist_arr;
-
     r = rand() % 100;
     if (r < 50) type = 1;
     else if (r < 75) type = 2;
@@ -502,15 +520,14 @@ void core_game_gen_quest(QUEST* quest_ptr, int player_rep, unsigned int faction)
     if (penalty < (int)(reward * 0.1)) penalty = (int)(reward * 0.1);
     if (penalty < 0) penalty = 0;
 
-    quest_ptr->giver.gender = rand() % 3 == 2 ? 1: 0;
-    core_game_gen_npc(&quest_ptr->giver, faction);
+    core_game_gen_npc(&ptr_quest->giver, faction, RANDOM_GENDER, QUEST_NPC);
 
-    quest_ptr->reward = reward;
-    quest_ptr->penalty = penalty;
-    quest_ptr->target_system = target;
-    quest_ptr->target_sector = sol_list[target].sector;
-    quest_ptr->cargo = cargo;
-    quest_ptr->type = type;
+    ptr_quest->reward = reward;
+    ptr_quest->penalty = penalty;
+    ptr_quest->target_system = target;
+    ptr_quest->target_sector = sol_list[target].sector;
+    ptr_quest->cargo = cargo;
+    ptr_quest->type = type;
 
 }
 
@@ -543,85 +560,101 @@ int core_game_accept_quest(unsigned int index)
     return 1;
 }
 
-int core_game_check_quest_done()
-{
+int core_game_check_quest_done() {
+  int i, j;
+  char lines[2][100];
+
+
+  for (i = 0; i < gs.quests_size; i++) {
+    if (gs.quests[i].target_system == gs.current_system) {
+      /* Set quest done */
+      gs.current_cargo -= gs.quests[i].cargo;
+      gs.balance += gs.quests[i].reward;
+
+      switch(gs.quests[i].type){
+          case 1:
+            sprintf(lines[0], LC_QUEST_TYPE_1_DONE_1);
+            sprintf(lines[1], LC_QUEST_TYPE_1_DONE_2, gs.quests[i].reward);
+            break;
+          case 2:
+            sprintf(lines[0], LC_QUEST_TYPE_2_DONE_1);
+            sprintf(lines[1], LC_QUEST_TYPE_2_DONE_2, gs.quests[i].reward);
+            break;
+          case 3:
+            sprintf(lines[0], LC_QUEST_TYPE_3_DONE_1);
+            sprintf(lines[1], LC_QUEST_TYPE_3_DONE_2, gs.quests[i].reward);
+            break;
+          case 4:
+            sprintf(lines[0], LC_QUEST_TYPE_4_DONE_1);
+            sprintf(lines[1], LC_QUEST_TYPE_4_DONE_2, gs.quests[i].reward);
+            break;
+          case 5:
+            sprintf(lines[0], LC_QUEST_TYPE_5_DONE_1);
+            sprintf(lines[1], LC_QUEST_TYPE_5_DONE_2, gs.quests[i].reward);
+            break;
+      }
+
+      gui_npc_wnd(&map_wnd, &gs.quests[i].giver, NPC_DIALOG_WND,
+                  LC_QUEST_COMPLETE_HEAD, lines, 2, NULL, 0);
+
+      /* Remove Quest from user log */
+      for (j = i; j < gs.quests_size; j++) {
+        gs.quests[j] = gs.quests[j + 1];
+      }
+
+      gs.quests_size--;
+      if (i >= gs.quests_size) break;
+    }
+  }
+}
+
+void core_game_check_gas_station() {
+  if (sol_list[gs.current_system].is_gas_station && gs.fuel < 100) {
+    unsigned int percent_price, amount, total;
+    char faction_char[] = {'A', 'R', 'S', 'R'};
+
     int i, j;
     char* text[100];
-    char lines[2][100];
-    for (i = 0; i < gs.quests_size; i++)
-    {
-        if (gs.quests[i].target_system == gs.current_system)
-        {
-            strcpy(lines[0], LC_QUEST_COMPLETE_HEAD);
 
-            sprintf(lines[1], LC_QUEST_COMPLETE_TEXT, gs.quests[i].giver.name, gs.quests[i].reward);
-            /* Set quest done */
-            gs.current_cargo -= gs.quests[i].cargo;
-            gs.balance += gs.quests[i].reward;
+    char lines[3][100];
+    char buttons[2][100] = {LC_GUI_BOOL_YES, LC_GUI_BOOL_NO};
 
-            gui_npc_wnd(&root_wnd, &gs.quests[i].giver, NPC_DIALOG_WND, lines, 2);
+    int choice = 0, gender = 0, faction = 0;
+    NPC gas_worker;
 
-            /* Remove Quest from user log */
-            for (j = i; j < gs.quests_size; j++){
-                gs.quests[j] = gs.quests[j +1];
-            }
-
-            gs.quests_size--;
-            
-            getch();
-
-            if (i >= gs.quests_size)
-                break;
-        }
+    for (i = 0; i < 3; i++) {
+      lines[i][0] = '\0';
     }
-}
 
-void core_game_check_gas_station(){
-    unsigned int percent_price, amount, total;
-    char faction_char[] = {
-        'A', 'R', 'S', 'R' 
-    };
+    percent_price = (rand() % 3) + 1;
+    amount = 100 - gs.fuel;
+    total = amount * percent_price;
+    faction = sol_list[gs.current_system].faction;
+    gender = faction == 3 || faction == 1 ? 1 : 0;
 
-    if(sol_list[gs.current_system].is_gas_station && gs.fuel < 100){
-        percent_price = (rand() % 3) + 1;
-        amount = 100 - gs.fuel;
-        total = amount * percent_price;
+    core_game_gen_npc(&gas_worker, faction, gender, GAS_NPC);
 
-        if (total > gs.balance){
-            char lines[2][100];
-            unsigned int diff = 0;
-            int choice = 0;
-            
+    sprintf(lines[0], LC_GAME_GAS_STATION_TEXT_1, gs.current_system);
+    sprintf(lines[1], LC_GAME_GAS_STATION_TEXT_2, percent_price);
 
-            NPC gas_worker;
-            gas_worker.gender = sol_list[gs.current_system].faction == 3 || sol_list[gs.current_system].faction == 1 ? 1 : 0; 
-            core_game_gen_npc(&gas_worker, sol_list[gs.current_system].faction);
+    if (total > gs.balance) {
+      /* Not enough money! */
+      sprintf(lines[2], LC_GAME_GAS_STATION_NO_MONEY_TEXT, total);
+      gui_npc_wnd(&map_wnd, &gas_worker, NPC_DIALOG_WND,
+                  LC_GAME_GAS_STATION_HEAD, lines, 3, buttons, 2);
 
-            diff = total - gs.balance;
-            sprintf(lines[1], LC_GAME_GAS_STATION_NO_MONEY_TEXT, gs.current_system, percent_price, total, diff);
-            strcpy(lines[0], LC_GAME_GAS_STATION_HEAD);
-            gui_npc_wnd(&map_wnd, &gas_worker, NPC_GAS_WND, lines, 2);
+    } else {
+      sprintf(lines[2], LC_GAME_GAS_STATION_TEXT_3, total);
+      choice = gui_npc_wnd(&map_wnd, &gas_worker, NPC_CHOICE_WND,
+                           LC_GAME_GAS_STATION_HEAD, lines, 3, buttons, 2);
 
-            getch();
-        } else {
-            char lines[2][100];
-            int choice = 0;
-            NPC gas_worker;
-            core_game_gen_npc(&gas_worker, sol_list[gs.current_system].faction);
-
-            sprintf(lines[1], LC_GAME_GAS_STATION_TEXT, gs.current_system, percent_price, total);
-            strcpy(lines[0], LC_GAME_GAS_STATION_HEAD);
-
-            choice = gui_npc_wnd(&map_wnd, &gas_worker, NPC_GAS_WND, lines, 2);
-
-            if (choice == 0){
-                gs.fuel = 100;
-                gs.balance -= total;
-            }
-        }
+      if (choice == 0) {
+        gs.fuel = 100;
+        gs.balance -= total;
+      }
     }
+  }
 }
-
 
 /*
  * Arriving to new system events
