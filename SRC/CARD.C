@@ -36,6 +36,9 @@
 #include "ui\stat\statwnd.h"
 #include "ui\stat\statnav.h"
 
+#include "ui\upgrade\upgrwnd.h"
+#include "ui\upgrade\upgrnav.h"
+
 #include "ui\locale.h"
 
 #include "music.h"
@@ -53,11 +56,14 @@ SYSTEM* sol_list;
 OBJECT* obj_list;
 BOUND_LINE* bnd_list;
 QUEST system_quests[5];
+UPGRADE system_upgrades[8];
+NPC black_market_npc;
 
 unsigned int sol_size;
 unsigned int obj_size;
 unsigned int bnd_size;
 int system_quests_size = 0;
+int system_upgrades_size = 0;
 
 WAYPOINT wp;
 
@@ -74,13 +80,13 @@ E_GAME_SCREEN prev_screen = SCR_MAP;
 /* ----------------------------------------------------------------
  * Handlers table
  * ---------------------------------------------------------------- */
-typedef int (*key_handler)(int ch, WND *parent);
+typedef int (*key_handler)(int ch, WND* parent);
 static key_handler key_handlers[] = {
-    gui_map_wnd_key,        /* SCR_MAP */
-    gui_menu_main_wnd_key,      /* SCR_MAIN_MENU */
-    gui_menu_game_wnd_key,      /* SCR_GAME_MENU */
-    gui_status_wnd_key,     /* SCR_STATUS */
-    gui_status_quest_wnd_key    /* SCR_QUEST_LIST_DETAIL */
+    gui_map_wnd_key,          /* SCR_MAP */
+    gui_menu_main_wnd_key,    /* SCR_MAIN_MENU */
+    gui_menu_game_wnd_key,    /* SCR_GAME_MENU */
+    gui_status_wnd_key,       /* SCR_STATUS */
+    gui_upgrade_wnd_key       /* SCR_UPGRADE */
 };
 
 WND root_wnd = {NULL, 0, 21, 639, 460};
@@ -88,44 +94,40 @@ WND root_wnd = {NULL, 0, 21, 639, 460};
 /* ----------------------------------------------------------------
  * main
  * ---------------------------------------------------------------- */
-int main()
-{
-    char c;
-    
+int main() {
+  char c;
 
+  srand((unsigned)time(NULL));
 
-    srand((unsigned)time(NULL));
+  sol_size = data_reader_load_systems(&sol_list);
+  bnd_size = data_reader_load_bounds(&bnd_list);
 
-    sol_size = data_reader_load_systems(&sol_list);
-    bnd_size = data_reader_load_bounds(&bnd_list);
+  gui_init();
 
-    gui_init();
+  if (!DEBUG) {
+    /* Splash screen */
+    data_reader_draw_bmp("LOGO.BMP", 0, 0);
+    getch();
+  }
+  setfillstyle(SOLID_FILL, BLACK);
+  bar(0, 0, 640, 480);
 
+  /* Show ads */
+  gui_ad_loading();
 
-    if (!DEBUG){
-        /* Splash screen */
-        data_reader_draw_bmp("LOGO.BMP",0,0);
-        getch();
+  /* Draw Main Menu */
+  gui_menu_wnd(&root_wnd, 0, MAIN_MENU);
+
+  while (!SIG_TERM) {
+    c = getch();
+    if (cur_screen >= 0 && cur_screen < 5) {
+      key_handlers[cur_screen](c, &root_wnd);
     }
-    setfillstyle(SOLID_FILL, BLACK);
-    bar(0, 0, 640, 480);
+  }
 
-    /* Show ads */
-    gui_ad_loading();
-    
-    /* Draw Main Menu */
-    gui_menu_wnd(&root_wnd, 0, MAIN_MENU);
-
-    while (!SIG_TERM) {
-        c = getch();
-        if (cur_screen >= 0 && cur_screen < 5) {
-            key_handlers[cur_screen](c, &root_wnd);
-        }
-    }
-
-    /* Cleanup */
-    free(sol_list);
-    if (obj_list) free(obj_list);
-    closegraph();
-    return 0;
+  /* Cleanup */
+  free(sol_list);
+  if (obj_list) free(obj_list);
+  closegraph();
+  return 0;
 }

@@ -558,31 +558,6 @@ int gui_dialog_wnd(WND* parent, char* header, char* title, char* photo_file,
 
 }
 
-/* ----------------------------------------------------------------
- * Universal status line
- * ---------------------------------------------------------------- */
-void gui_draw_status_line(WND* ptr_wnd, char* keys[], char* items[])
-{
-    int xpos = ptr_wnd->x + 5;
-    int width = ptr_wnd->x + ptr_wnd->width,
-        height = ptr_wnd->y + ptr_wnd->height;
-    int i = 0;
-
-    setfillstyle(SOLID_FILL, RED);
-    bar(ptr_wnd->x, ptr_wnd->y, width, height);
-
-    while (keys[i] != NULL && items[i] != NULL) {
-        setcolor(BLACK);
-        outtextxy(xpos, ptr_wnd->y + 2, keys[i]);
-        xpos += textwidth(keys[i]) + 4;
-
-        setcolor(WHITE);
-        outtextxy(xpos, ptr_wnd->y + 2, items[i]);
-        xpos += textwidth(items[i]) + 5;
-
-        i++;
-    }
-}
 
 /* ----------------------------------------------------------------
  * Memory status (fixed)
@@ -609,6 +584,49 @@ void gui_memory_status()
     setcolor(WHITE);
     outtextxy(470 + 35, STATUSBAR_BOTTOM_Y + 2, memMsg);
 }
+
+/* ----------------------------------------------------------------
+ * Universal status line
+ * ---------------------------------------------------------------- */
+void gui_draw_status_line(WND* ptr_wnd, char* keys[], char* items[], int highlight)
+{
+    int xpos = ptr_wnd->x + 5;
+    int width = ptr_wnd->x + ptr_wnd->width,
+        height = ptr_wnd->y + ptr_wnd->height;
+    int i = 0;
+
+    settextstyle(SMALL_FONT, HORIZ_DIR, 5);
+    setfillstyle(SOLID_FILL, BLACK);
+    bar(ptr_wnd->x, ptr_wnd->y, width, height);
+
+    while (keys[i] != NULL && items[i] != NULL) {
+
+        if (i != highlight){
+            setcolor(RED);
+            outtextxy(xpos, ptr_wnd->y + 2, keys[i]);
+            xpos += textwidth(keys[i]) + 4;
+
+            setcolor(WHITE);
+            outtextxy(xpos, ptr_wnd->y + 2, items[i]);
+            xpos += textwidth(items[i]) + 5;
+        } else {
+            setfillstyle(SOLID_FILL, RED);
+            bar(xpos-5, ptr_wnd->y, xpos + textwidth(keys[i]) + 4 + textwidth(items[i]) , height);
+            setcolor(BLACK);
+            outtextxy(xpos, ptr_wnd->y + 2, keys[i]);
+            xpos += textwidth(keys[i]) + 4;
+
+            setcolor(WHITE);
+            outtextxy(xpos, ptr_wnd->y + 2, items[i]);
+            xpos += textwidth(items[i]) + 5;
+
+        }
+
+        i++;
+    }
+    gui_memory_status();
+}
+
 
 void gui_game_over(WND* parent)
 {

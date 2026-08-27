@@ -19,6 +19,10 @@
 #define MALE_PORTRAITS_COUNT 6
 #define FEMALE_PORTRAITS_COUNT 3
 
+#define HYPER_UPGRADE_BASE_PRICES {0, 1000, 3000, 8000}
+#define CUSTOM_UPGRADE_BASE_PRICES {500, 1500, 1200, 800, 1000}
+
+
 #define E_NPC_TYPE enum npc_type
 E_NPC_TYPE {
     QUEST_NPC,
@@ -35,8 +39,6 @@ E_GENDER {
 };
 
 
-void core_game_gen_npc(NPC* ptr_npc, unsigned int faction, E_GENDER gender, E_NPC_TYPE npc_type);
-
 void core_game_gen_quest(QUEST* ptr_quest, int player_rep, unsigned int faction);
 int core_game_run_event();
 int core_game_accept_quest(unsigned int index);
@@ -46,5 +48,5 @@ int core_game_save(char *filename);
 
 int core_game_accept_quest(unsigned int index);
 int core_game_check_quest_done();
-int core_game_check_fuel_gone();
 void core_game_check_gas_station();
+void core_game_gen_upgrades(void);

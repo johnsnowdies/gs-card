@@ -32,10 +32,6 @@ extern float xdens, ydens;
 extern int is_coord, is_hyper, mode;
 extern int path_wnd_index;
 
-extern unsigned char render_danger_objects;
-extern unsigned char render_bounds;
-extern unsigned char show_danger_hyperthreads;
-extern unsigned char show_danger_path_parts;
 extern float xmin, xmax;
 extern float ymin, ymax;
 extern float zmin, zmax;
@@ -244,16 +240,7 @@ int gui_map_wnd_key(int ch, WND *parent)
             gui_map_wnd_draw();
         }
     }
-    if (KEY_D == ch) {
-        render_danger_objects = (render_danger_objects == 1) ? 0 : 1;
-        show_danger_hyperthreads = (show_danger_hyperthreads == 1) ? 0 : 1;
-        show_danger_path_parts = (show_danger_path_parts == 1) ? 0 : 1;
-        gui_map_wnd_draw();
-    }
-    if (KEY_P == ch) {
-        render_bounds = (render_bounds == 1) ? 0 : 1;
-        gui_map_wnd_draw();
-    }
+
     if (TAB == ch) {
         cur_screen = SCR_STATUS;
         gui_status_wnd();
@@ -269,7 +256,7 @@ int gui_map_wnd_key(int ch, WND *parent)
                 gs.current_system = wp.way[1];
                                 
                 /* Keep Path Window open until reached end */
-                if (wp.size != 2
+                if (wp.size != 2 && gs.upgrade_continuous_jump
                     ){
                     for(i = 0; i <= wp.size - 1; i++)
                         wp.way[i] = wp.way[i+1];
@@ -285,19 +272,19 @@ int gui_map_wnd_key(int ch, WND *parent)
 
                 if (!game_over){
                     char lines[1][100];
-                    gui_map_top_status_line();
+                    gui_bars_common_top();
                     core_game_check_gas_station();
-                    gui_map_top_status_line();
+                    gui_bars_common_top();
                     gui_map_wnd_draw();
                 } else {
-                    gui_map_top_status_line();
+                    gui_bars_common_top();
                     gui_ad_loading();
                     cur_screen = SCR_MAIN_MENU;
                     gui_menu_wnd(&root_wnd, 0, MAIN_MENU);
                 }
             } else {
                 wp.size = 0;
-                gui_map_top_status_line();
+                gui_bars_common_top();
                 gui_map_wnd_draw();
             }
         }

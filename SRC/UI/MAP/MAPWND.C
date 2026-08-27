@@ -31,7 +31,6 @@ int is_coord = 1, is_hyper = 0, mode = 1;
 int path_wnd_index = 0;
 
 unsigned char render_danger_objects;
-unsigned char render_bounds = 1;
 unsigned char show_danger_hyperthreads;
 unsigned char show_danger_path_parts;
 
@@ -200,7 +199,7 @@ static void drawObjects(int mode)
 {
     int i, color;
 
-    if (!obj_size || !obj_list || !render_danger_objects) return;
+    if (!obj_size || !obj_list || !gs.upgrade_objects_map) return;
 
     for (i = 0; i < obj_size; i++) {
         int cx, cy, rx, ry;
@@ -239,7 +238,7 @@ static void drawObjects(int mode)
 static void draw_bounds()
 {
     int i;
-    if (!bnd_size || !bnd_list || !render_bounds) return;
+    if (!bnd_size || !bnd_list || !gs.upgrade_political_map) return;
 
     setlinestyle(1, 0, 1);
     setcolor(6);
@@ -298,7 +297,7 @@ static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp)
                           ex(buf.x + offsetX), ey(buf.y + offsetY));
 
                 /* unsafe thread */
-                if (show_danger_hyperthreads && obj_size) {
+                if (gs.upgrade_objects_map && obj_size) {
                     for (o = 0; o < obj_size; o++) {
                         if (core_objects_sphere_line_intersect(
                                 sol_list[i].x, sol_list[i].y, sol_list[i].z,
@@ -343,7 +342,7 @@ static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp)
         }
 
         /** SECTOR NAMES **/
-            if (sol_list[i].is_shipyard && sol_list[i].is_gas_station && render_bounds){
+            if (sol_list[i].is_shipyard && sol_list[i].is_gas_station && gs.upgrade_political_map){
                     setcolor(data_factions_colors[sol_list[i].faction]);
                     settextstyle(SMALL_FONT, HORIZ_DIR, 4);
                     
@@ -437,7 +436,7 @@ static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp)
     }
 
     /* Dangerous path segments */
-    if (show_danger_path_parts && obj_size && wp->size) {
+    if (gs.upgrade_objects_map && obj_size && wp->size) {
         for (i = 1; i < wp->size; i++) {
             int a_idx = wp->way[i - 1];
             int b_idx = wp->way[i];
@@ -521,7 +520,7 @@ static void draw3dwnd(int isCoord, int isHyper, WAYPOINT* wp)
                         safe_line(A1.x, A1.y, A8.x, A8.y);
 
                     /* unsafe thread */
-                    if (show_danger_hyperthreads && obj_size) {
+                    if (gs.upgrade_objects_map && obj_size) {
                         int o;
                         for (o = 0; o < obj_size; o++) {
                             if (core_objects_sphere_line_intersect(
@@ -581,7 +580,7 @@ static void draw3dwnd(int isCoord, int isHyper, WAYPOINT* wp)
     }
 
     /* Dangerous path segments */
-    if (show_danger_path_parts && obj_size && wp->size) {
+    if (gs.upgrade_objects_map && obj_size && wp->size) {
         for (i = 1; i < wp->size; i++) {
             int a_idx = wp->way[i - 1];
             int b_idx = wp->way[i];
@@ -653,7 +652,7 @@ static void drawyzwnd(int isCoord, int isHyper, WAYPOINT* wp)
                           ey(-1 * (buf.z + offsetZ)));
 
                 /* unsafe thread */
-                if (show_danger_hyperthreads && obj_size) {
+                if (gs.upgrade_objects_map && obj_size) {
                     int o;
                     for (o = 0; o < obj_size; o++) {
                         if (core_objects_sphere_line_intersect(
@@ -712,7 +711,7 @@ static void drawyzwnd(int isCoord, int isHyper, WAYPOINT* wp)
     }
 
     /* Dangerous path segments */
-    if (show_danger_path_parts && obj_size && wp->size) {
+    if (gs.upgrade_objects_map && obj_size && wp->size) {
         for (i = 1; i < wp->size; i++) {
             int a_idx = wp->way[i - 1];
             int b_idx = wp->way[i];
@@ -735,64 +734,6 @@ static void drawyzwnd(int isCoord, int isHyper, WAYPOINT* wp)
     drawObjects(3);
     setcolor(4);
     rectangle(0, 21, map_wnd.width, map_wnd.height);
-}
-
-/* ----------------------------------------------------------------
- * Status lines
- * ---------------------------------------------------------------- */
-void gui_map_top_status_line()
-{
-    WND status_line;
-    char buf[100];
-    char *keys[3];
-    char *items[3];
-
-    sprintf(buf, "SA.%d (%d) | %s: %ld$$ | %s: %d%% | %s: %d/%d",
-        gs.current_system,
-        sol_list[gs.current_system].threadSize,
-        LC_GUI_STATUS_BALANCE, gs.balance,
-        LC_GUI_STATUS_FUEL, gs.fuel,
-        LC_GUI_STATUS_CARGO, gs.current_cargo, gs.tonnage);
-
-    keys[0] = "TAB";
-    items[0] = LC_GUI_STATUS_MODE;
-    keys[1] = "INFO";
-    items[1] = buf;
-    keys[2] = NULL;
-    items[2] = NULL;
-
-    status_line.x = 0;
-    status_line.y = 0;
-    status_line.width = STATUSBAR_WIDTH;
-    status_line.height = STATUSBAR_HEIGHT;
-    status_line.header = NULL;
-
-    settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-    gui_draw_status_line(&status_line, keys, items);
-}
-
-void gui_map_bottom_status_line()
-{
-    WND status_line;
-    char *keys[] = { "F1", "F2", "F3/F4", "F5", "F6", "F7", NULL };
-    char *items[] = {
-        LC_MAP_STATUS_VIEW,
-        LC_MAP_STATUS_AXIS,
-        LC_MAP_STATUS_ZOOM,
-        LC_MAP_STATUS_GOTO,
-        LC_MAP_STATUS_THREADS,
-        LC_MAP_STATUS_RUN,
-        NULL
-    };
-
-    status_line.x = 0;
-    status_line.y = STATUSBAR_BOTTOM_Y;
-    status_line.width = STATUSBAR_WIDTH;
-    status_line.height = STATUSBAR_HEIGHT;
-    status_line.header = NULL;
-
-    settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-    gui_draw_status_line(&status_line, keys, items);
 }
 
 void gui_map_wnd_clear()
@@ -823,6 +764,6 @@ void gui_map_wnd_draw()
     if (mode == 3) drawyzwnd(is_coord, is_hyper, &wp);
 
     gui_ad_hypersoft();
-    gui_memory_status();
+    gui_bars_map_bottom();
 }
 

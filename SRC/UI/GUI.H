@@ -117,7 +117,7 @@ int gui_dialog_wnd(WND* parent, char* header, char* title, char* photo_file,
                    int buttons_count, int play_sound);
 
 /* Universal status line */
-void gui_draw_status_line(WND* ptr_wnd, char* keys[], char* items[]);
+void gui_draw_status_line(WND* ptr_wnd, char* keys[], char* items[], int highlight);
 
 /* Memory status (fixed) */
 void gui_memory_status(void);

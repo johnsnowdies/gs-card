@@ -80,11 +80,13 @@ GAME_STATE {
   unsigned int tonnage;
   unsigned int current_cargo;
   unsigned int hyper_class;
+
   unsigned char upgrade_smuggler_bay;
   unsigned char upgrade_continuous_jump;
   unsigned char upgrade_emergency_jump;
   unsigned char upgrade_objects_map;
   unsigned char upgrade_political_map;
+  
   unsigned int reputation;
   unsigned int missions_completed;
   unsigned int fuel;
@@ -100,5 +102,14 @@ E_GAME_SCREEN {
     SCR_MAIN_MENU,
     SCR_GAME_MENU,
     SCR_STATUS,
-    SCR_QUEST_LIST_DETAIL
+    SCR_UPGRADE
+};
+
+
+#define UPGRADE struct upgrade
+UPGRADE {
+    char *name;
+    int base_price;
+    int type; 
+    int id;
 };

@@ -1,21 +1,17 @@
 #include <graphics.h>
 #include <stdio.h>
-#include <conio.h>
+
+#include "ui\stat\statwnd.h"
 
 #include "data\structs.h"
-#include "data\reader.h"
-#include "data\keys.h"
-
-#include "ui\gui.h"
-#include "ui\locale.h"
 
 #include "core\game.h"
 
-#include "ui\stat\statwnd.h"
+#include "ui\gui.h"
+#include "ui\locale.h"
 #include "ui\npc\npcwnd.h"
 
 #include "music.h"
-
 
 WND status_wnd;
 int system_quest_selected = 0;
@@ -29,39 +25,12 @@ extern SYSTEM* sol_list;
 extern char* data_factions[FACTIONS_COUNT];
 extern char* data_sectors[SECTORS_COUNT];
 extern char* data_ship_names[SHIP_COUNT];
-extern int   data_ship_tonnages[SHIP_COUNT];
 extern char* data_hyper_names[HYPER_COUNT];
-extern int   data_hyper_fuel[HYPER_COUNT];
 
 extern char* QUEST_TYPES[];
-
 extern QUEST system_quests[5];
 
-extern WAYPOINT wp;
-
-/* SCREEN NAVIGATION */
-extern E_GAME_SCREEN cur_screen;
-extern E_GAME_SCREEN prev_screen;
-
 extern int system_quests_size;
-
-/* ----------------------------------------------------------------
- * gui_status_bottom_status_line -- bottom shortcut bar
- * ---------------------------------------------------------------- */
-void gui_status_bottom_status_line() {
-  WND status_line;
-  char* keys[] = {"F1", NULL};
-  char* items[] = {"-HELP", NULL};
-
-  status_line.x = 0;
-  status_line.y = STATUSBAR_BOTTOM_Y;
-  status_line.width = STATUSBAR_WIDTH;
-  status_line.height = STATUSBAR_HEIGHT;
-  status_line.header = NULL;
-
-  settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-  gui_draw_status_line(&status_line, keys, items);
-}
 
 void gui_status_quest_info(int selected) {
   int result, i;
@@ -121,47 +90,59 @@ void gui_status_quest_info(int selected) {
       &status_wnd, &system_quests[selected].giver, NPC_CHOICE_WND,
       QUEST_TYPES[system_quests[selected].type], lines, 4, buttons, 2);
 
-  /*
-   * QUEST INFO CONTROLLER
-   */
-
+  /* Quest info controller */
   if (result == 0) {
     if (core_game_accept_quest(selected)) {
-      cur_screen = SCR_STATUS;
       system_quest_selected = 0;
       gui_status_wnd();
-      gui_map_top_status_line();
-      sfx_hyperjump();
+      gui_bars_common_top();
     } else {
       gui_warning_wnd(&status_wnd, LC_GEN_ERROR_HEAD, LC_QUEST_ERROR,
                       SOUND_ERROR);
       getch();
-      cur_screen = SCR_STATUS;
       system_quest_selected = 0;
       gui_status_wnd();
-      gui_map_top_status_line();
+      gui_bars_common_top();
     }
   } else {
-    cur_screen = SCR_STATUS;
     gui_status_wnd();
   }
 }
 
-void gui_status_quest_list(WND* status_wnd, int selected) {
+void gui_status_quest_list(WND* status_wnd) {
   char line[100];
+  int points[6];
   int i = 0, y_pos, x_pos;
+
+  int tx, ty;
 
   y_pos = status_wnd->y + 220;
   x_pos = status_wnd->x + 10;
 
+  settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
+  
   setfillstyle(SOLID_FILL, BLACK);
-  bar(x_pos, y_pos, status_wnd->x + status_wnd->width - 11, y_pos + 50);
+  bar(x_pos, y_pos -15, status_wnd->x + status_wnd->width - 11, y_pos + 50);
 
   setfillstyle(SOLID_FILL, RED);
   bar(status_wnd->x, y_pos - 20, status_wnd->x + status_wnd->width, y_pos - 50);
 
+  setfillstyle(BKSLASH_FILL, RED);
+  tx = status_wnd->x + textwidth(LC_QUEST_NEW_HEAD) + 20;
+  ty = y_pos - 20;
+  bar(tx, ty, status_wnd->x + status_wnd->width, y_pos - 50);
+
+  points[0] = tx;        points[1] = ty - 30;
+  points[2] = tx + 30;   points[3] = ty;
+  points[4] = tx;        points[5] = ty;
+
+  setcolor(RED);             
+  setfillstyle(SOLID_FILL, RED);
+  fillpoly(3, points);       
+
+
+  /* New Contracts Section */
   setcolor(0);
-  settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
   outtextxy(status_wnd->x + 10, y_pos - 42, LC_QUEST_NEW_HEAD);
 
   sprintf(line, "%-25.25s %-15.15s %-6.6s %6s %6s %6s", LC_QUEST_TABLE_1,
@@ -190,16 +171,29 @@ void gui_status_quest_list(WND* status_wnd, int selected) {
   }
 
   y_pos += 120;
-
-  /*
-   * my quests
-   */
+  
+  /* My Contracts Section */
+  settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
 
   setfillstyle(SOLID_FILL, RED);
   bar(status_wnd->x, y_pos - 20, status_wnd->x + status_wnd->width, y_pos - 50);
 
+  setfillstyle(BKSLASH_FILL, RED);
+
+  tx = status_wnd->x + textwidth(LC_QUEST_MY_HEAD) + 20;
+  ty = y_pos - 20;
+  bar(tx, ty, status_wnd->x + status_wnd->width, y_pos - 50);
+
+  points[0] = tx;        points[1] = ty - 30;
+  points[2] = tx + 30;   points[3] = ty;
+  points[4] = tx;        points[5] = ty;
+
+  setcolor(RED);             
+  setfillstyle(SOLID_FILL, RED);
+  fillpoly(3, points);       
+
   setcolor(0);
-  settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
+  
   outtextxy(status_wnd->x + 10, y_pos - 42, LC_QUEST_MY_HEAD);
 
   sprintf(line, "%-25.25s %-15.15s %-6.6s %6s %6s %6s", LC_QUEST_TABLE_1,
@@ -224,45 +218,47 @@ void gui_status_quest_list(WND* status_wnd, int selected) {
 
 void draw_player_status(WND* status_wnd) {
   char captain_name[100];
-  char ship_name[100];
-  char hyper_class[100];
   char current_system[50];
   char sector[50];
 
-  char ship_image[50];
+  char systems_visited[100];
+  char quests_done[100];
+
 
   sprintf(captain_name, "%s: %s", LC_STATUS_WND_CAPTAIN, gs.captain_name);
-  sprintf(ship_name, "%s", data_ship_names[gs.ship_type]);
-  sprintf(hyper_class, "%s", data_hyper_names[gs.hyper_class]);
+
   sprintf(current_system, "%s: SA.%d", LC_STATUS_WND_SYSTEM, gs.current_system);
   sprintf(sector, "%s: %s", LC_STATUS_WND_SECTOR,
           data_sectors[sol_list[gs.current_system].sector]);
-  sprintf(ship_image, "SHIPS/SHIP_%u.BMP", gs.ship_type + 1);
+  sprintf(systems_visited, LC_GAME_OVER_STATS_TEXT_1, *gs.visited);
+  sprintf(quests_done, LC_GAME_OVER_STATS_TEXT_2, gs.missions_completed);
+  {
+    char ship_image[50];
+    sprintf(ship_image, "SHIPS/SHIP_%u.BMP", gs.ship_type + 1);
+    data_reader_draw_bmp(ship_image, 339, 22);
+  }
 
-  data_reader_draw_bmp(ship_image, 339, 22);
-
+  
   settextstyle(SMALL_FONT, HORIZ_DIR, 5);
   setcolor(15);
 
-  outtextxy(status_wnd->x + 80, status_wnd->y + 20, captain_name);
-  outtextxy(status_wnd->x + 80, status_wnd->y + 40, ship_name);
-  outtextxy(status_wnd->x + 80, status_wnd->y + 60, hyper_class);
+  outtextxy(status_wnd->x + 80, status_wnd->y + 20, current_system);
+  outtextxy(status_wnd->x + 80, status_wnd->y + 40, data_factions[sol_list[gs.current_system].faction]);
+  outtextxy(status_wnd->x + 80, status_wnd->y + 60, sector);
 
-  settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-
-  outtextxy(status_wnd->x + 10, status_wnd->y + 100, current_system);
-  settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-  outtextxy(status_wnd->x + 10, status_wnd->y + 120,
-            data_factions[sol_list[gs.current_system].faction]);
-  outtextxy(status_wnd->x + 10, status_wnd->y + 140, sector);
+  outtextxy(status_wnd->x + 10, status_wnd->y + 100, captain_name);
+  outtextxy(status_wnd->x + 10, status_wnd->y + 120, systems_visited);
+  outtextxy(status_wnd->x + 10, status_wnd->y + 140, quests_done);
 }
 
 void gui_status_wnd() {
-  status_wnd.header = "";
+  status_wnd.header = NULL;
   status_wnd.x = 0;
-  status_wnd.y = 21;
+  status_wnd.y = 22;
   status_wnd.width = 639;
-  status_wnd.height = 459;
+  status_wnd.height = 438;
+
+  gui_draw_wnd_proto(&status_wnd);
 
   setfillstyle(SOLID_FILL, BLACK);
   bar(1, 22, status_wnd.width - 1, status_wnd.height - 1);
@@ -270,6 +266,6 @@ void gui_status_wnd() {
   gui_ad_hypersoft();
   draw_player_status(&status_wnd);
 
-  gui_status_quest_list(&status_wnd, system_quest_selected);
-  gui_status_bottom_status_line();
+  gui_status_quest_list(&status_wnd);
+  gui_bars_status_bottom();
 }

@@ -63,10 +63,6 @@
  * GUI.C
  * ---------------------------------------------------------------- */
 
-/* gui_top_status_line */
-#define LC_GUI_STATUS_MODE "-ЭКРАН"
-#define LC_GUI_STATUS_INFO "ИНФО:"
-
 #define LC_GUI_STATUS_BALANCE "Баланс"
 #define LC_GUI_STATUS_FUEL "Топливо"
 #define LC_GUI_STATUS_CARGO "Груз"
@@ -107,14 +103,22 @@
 
 /* map_bottom_status_line */
 
-#define LC_MAP_STATUS_VIEW "-ВИД"
-#define LC_MAP_STATUS_AXIS "-ОСЬ"
-#define LC_MAP_STATUS_ZOOM "-ЗУМ"
-#define LC_MAP_STATUS_GOTO "-ПЕР"
-#define LC_MAP_STATUS_THREADS "-Г.НИТИ"
-#define LC_MAP_STATUS_RUN "-ПРЫЖОК"
-
+#define LC_MAP_STATUS_VIEW "ВИД"
+#define LC_MAP_STATUS_AXIS "ОСЬ"
+#define LC_MAP_STATUS_ZOOM "ЗУМ"
+#define LC_MAP_STATUS_GOTO "ПЕР"
+#define LC_MAP_STATUS_THREADS "Г.НИТИ"
+#define LC_MAP_STATUS_RUN "ПРЫЖОК"
 #define LC_MAP_STATUS_MEM "ОЗУ:"
+
+/* Status window bottom bar */
+#define LC_STATUS_F1 "СИСТЕМА"
+#define LC_STATUS_F2 "КОРАБЛЬ"
+#define LC_STATUS_F3 "ПОКУПКА"
+
+/* Common top bar */
+#define LC_GUI_STATUS_MODE "ЭКРАН"
+#define LC_GUI_STATUS_INFO "ИНФО:"
 
 
 /* ----------------------------------------------------------------
@@ -241,7 +245,7 @@
 #define LC_GAME_OVER_STATS_HEAD "СТАТИСТИКА"
 #define LC_GAME_OVER_STATS_TEXT_1 "Посещено систем: %d"
 #define LC_GAME_OVER_STATS_TEXT_2 "Закрыто контрактов: %d"
-#define LC_GAME_OVER_STATS_TEXT_3 "Баланс креgитов: %d"
+#define LC_GAME_OVER_STATS_TEXT_3 "Баланс креgитов: %ld"
 #define LC_GAME_OVER_STATS_TEXT_4 "[ENTER] - Главное меню"
 
 #define LC_GAME_GAS_STATION_HEAD "ЗАПРАВКА"
@@ -300,11 +304,55 @@
  * Names
  * ---------------------------------------------------------------- */
 
-#define LC_UPGRADE_SMUGGLER_BAY "Отсек для контрабанgы"
-#define LC_UPGRADE_CONTINUOUS_JUMP_SYSTEM "Система непрерывных прыжков"
+#define LC_UPGRADE_SMUGGLER_BAY "Отсек gля контрабанgы"
+#define LC_UPGRADE_CONTIN_JUMP_SYSTEM "Система непрерывных прыжков"
 #define LC_UPGRADE_EMERGENCY_JUMP_SYSTEM "Экстренный прыжок"
 #define LC_UPGRADE_OBJECTS_MAP "Карта опасных объектов"
 #define LC_UPGRADE_POLITICAL_MAP "Карта секторов"
+
+#define LC_UPGRADE_YES "УСТАНОВЛЕНО"
+#define LC_UPGRADE_NO "НЕТ"
+
+#define LC_UPGRADE_HEAD "Апгрейgы"
+#define LC_UPGRADE_BLACK_MARKET "ЧЕРНЫЙ РЫНОК"
+#define LC_UPGRADE_SHIP "Корабль"
+#define LC_UPGRADE_TONNAGE "Грузопоgъёмность"
+#define LC_UPGRADE_ENGINE "Двигатель"
+#define LC_UPGRADE_FUEL_PER_JUMP "Расхоg топлива на прыжок"
+#define LC_UPGRADE_TABLE_1 "Апгрейg"
+#define LC_UPGRADE_TABLE_2 "Стоимость"
+#define LC_UPGRADE_NPC_NAME "Торговец"
+#define LC_UPGRADE_PRICE_TEXT "Цена: %d кр."
+#define LC_UPGRADE_NO_MONEY "Неgостаточно среgств"
+
+#define LC_UPGRADE_ENGINE_TEXT_1 "LC_UPGRADE_ENGINE_TEXT_1"
+#define LC_UPGRADE_ENGINE_TEXT_2 "LC_UPGRADE_ENGINE_TEXT_1"
+#define LC_UPGRADE_ENGINE_TEXT_3 "LC_UPGRADE_ENGINE_TEXT_1"
+
+#define LC_UPGRADE_SMUGGLER_BAY_TEXT_1 "LC_UPGRADE_SMUGGLER_BAY_TEXT_1"
+#define LC_UPGRADE_SMUGGLER_BAY_TEXT_2 "LC_UPGRADE_SMUGGLER_BAY_TEXT_2"
+#define LC_UPGRADE_SMUGGLER_BAY_TEXT_3 "LC_UPGRADE_SMUGGLER_BAY_TEXT_3"
+#define LC_UPGRADE_SMUGGLER_BAY_TEXT_4 "LC_UPGRADE_SMUGGLER_BAY_TEXT_4"
+
+#define LC_UPGRADE_CONTIN_JUMP_TEXT_1 "Привет кэп. Тут ко мне попал интересый апgейт"
+#define LC_UPGRADE_CONTIN_JUMP_TEXT_2 "Заgолбался после прыжка кажgый раз ввоgить коорgинаты?"
+#define LC_UPGRADE_CONTIN_JUMP_TEXT_3 "Вот оно - 'СИСТЕМА НЕПРИРЫВНЫХ ПРЫЖКОВ'"
+#define LC_UPGRADE_CONTIN_JUMP_TEXT_4 "Вбил оgин раз и стучи по [ENTER]. Берешь?"
+
+#define LC_UPGRADE_EMERGENCY_JUMP_TEXT_1 "LC_UPGRADE_EMERGENCY_JUMP_TEXT_1"
+#define LC_UPGRADE_EMERGENCY_JUMP_TEXT_2 "LC_UPGRADE_EMERGENCY_JUMP_TEXT_2"
+#define LC_UPGRADE_EMERGENCY_JUMP_TEXT_3 "LC_UPGRADE_EMERGENCY_JUMP_TEXT_3"
+#define LC_UPGRADE_EMERGENCY_JUMP_TEXT_4 "LC_UPGRADE_EMERGENCY_JUMP_TEXT_4"
+
+#define LC_UPGRADE_OBJECTS_MAP_TEXT_1 "О, еще оgин самоубийца с GS-CARD!"
+#define LC_UPGRADE_OBJECTS_MAP_TEXT_2 "Ты знаешь что ты счастливчик?"
+#define LC_UPGRADE_OBJECTS_MAP_TEXT_3 "У тебя же в рассчетах нет информации о черных gырах!"
+#define LC_UPGRADE_OBJECTS_MAP_TEXT_4 "Могу скинуть актуальную карту черных gыр и туманностей."
+
+#define LC_UPGRADE_POLITICAL_MAP_TEXT_1 "Привет! На GS-CARD летаешь?"
+#define LC_UPGRADE_POLITICAL_MAP_TEXT_2 "Беgняга, она же gавно устарела..."
+#define LC_UPGRADE_POLITICAL_MAP_TEXT_3 "Давай скину тебе карту секторов галактики?"
+#define LC_UPGRADE_POLITICAL_MAP_TEXT_4 "За символическую сумму, конечно."
 
 
 /* ----------------------------------------------------------------

@@ -58,6 +58,11 @@ echo Compiling UI\AD\AD.C...                        >> %BLD%\build.log
 tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\AD\AD.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
+echo Compiling UI\BARS\BARS.C...                        >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\BARS\BARS.C >> %BLD%\build.log
+if errorlevel 1 goto err
+
+
 echo Compiling UI\MAP\MAPWND.C...                      >> %BLD%\build.log
 tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\MAP\MAPWND.C >> %BLD%\build.log
 if errorlevel 1 goto err
@@ -88,6 +93,15 @@ if errorlevel 1 goto err
 
 echo Compiling UI\NPC\NPCWND.C...                     >> %BLD%\build.log
 tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\NPC\NPCWND.C >> %BLD%\build.log
+if errorlevel 1 goto err
+
+echo Compiling UI\UPGRADE\UPGRWND.C...                     >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\UPGRADE\UPGRWND.C >> %BLD%\build.log
+if errorlevel 1 goto err
+
+
+echo Compiling UI\UPGRADE\UPGRNAV.C...                     >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\UPGRADE\UPGRNAV.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 
@@ -123,6 +137,10 @@ echo GAME.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo MENUNAV.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo STATNAV.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo MUSIC.OBJ+                                    >> %BLD%\GS-LINK.RSP
+echo UPGRWND.OBJ+                                    >> %BLD%\GS-LINK.RSP
+echo UPGRNAV.OBJ+                                    >> %BLD%\GS-LINK.RSP
+echo BARS.OBJ+                                    >> %BLD%\GS-LINK.RSP
+
 echo NPCWND.OBJ+ >> %BLD%\GS-LINK.RSP
 echo PATHWND.OBJ, GSCARD.EXE, GSCARD.MAP, %LIB%\EMU.LIB %LIB%\MATHL.LIB %LIB%\GRAPHICS.LIB %LIB%\CL.LIB >> %BLD%\GS-LINK.RSP
 

@@ -2,4 +2,4 @@
 
 
 void gui_status_wnd();
-void gui_status_quest_wnd(int selected);
+void gui_status_quest_wnd();
