@@ -372,7 +372,7 @@ void core_game_gen_npc(NPC* ptr_npc, unsigned int faction, E_GENDER gender, E_NP
     };
 
     const char FACTION_SYMBOL[] = {
-        'A', 'R', 'S', 'R'
+        'A', 'R', 'S', 'U'
     };
 
     int photo_id = 0;
@@ -395,14 +395,6 @@ void core_game_gen_npc(NPC* ptr_npc, unsigned int faction, E_GENDER gender, E_NP
         sprintf(ptr_npc->photo, "NPC/GAS%c.BMP", FACTION_SYMBOL[ptr_npc->faction]);    
 
     switch(faction){
-        case 1:
-        case 3:
-            if (ptr_npc->gender == 0)
-                sprintf(ptr_npc->name, "%s %s", IRISH_MALE_FIRST[rand()%N_SIZE], IRISH_LAST[rand()%N_SIZE]);
-            else
-                sprintf(ptr_npc->name, "%s %s", IRISH_FEMALE_FIRST[rand()%N_SIZE], IRISH_LAST[rand()%N_SIZE]);
-        break;
-
         case 0:
             if (ptr_npc->gender == 0)
                 sprintf(ptr_npc->name, "%s %s", ARAB_MALE_FIRST[rand()%N_SIZE], ARAB_LAST[rand()%N_SIZE]);
@@ -410,7 +402,15 @@ void core_game_gen_npc(NPC* ptr_npc, unsigned int faction, E_GENDER gender, E_NP
                 sprintf(ptr_npc->name, "%s %s", ARAB_FEMALE_FIRST[rand()%N_SIZE], ARAB_LAST[rand()%N_SIZE]);
         break;
 
-        default:
+        case 1:
+            if (ptr_npc->gender == 0)
+                sprintf(ptr_npc->name, "%s %s", IRISH_MALE_FIRST[rand()%N_SIZE], IRISH_LAST[rand()%N_SIZE]);
+            else
+                sprintf(ptr_npc->name, "%s %s", IRISH_FEMALE_FIRST[rand()%N_SIZE], IRISH_LAST[rand()%N_SIZE]);
+        break;
+
+        case 2:
+        case 3:
             if (ptr_npc->gender == 0)
                 sprintf(ptr_npc->name, "%s %s", COMMON_MALE_FIRST[rand()%N_SIZE], COMMON_LAST[rand()%N_SIZE]);
             else
@@ -485,6 +485,12 @@ void core_game_gen_quest(QUEST* ptr_quest, int player_rep, unsigned int faction)
 {
     int type, target, cargo, distance, reward, penalty, r;
     int* dist_arr;
+
+    if (faction == 3){
+        system_quests_size = 0;
+        return;
+    }
+
     r = rand() % 100;
     if (r < 50) type = 1;
     else if (r < 75) type = 2;
@@ -611,7 +617,6 @@ int core_game_check_quest_done() {
 void core_game_check_gas_station() {
   if (sol_list[gs.current_system].is_gas_station && gs.fuel < 100) {
     unsigned int percent_price, amount, total;
-    char faction_char[] = {'A', 'R', 'S', 'R'};
 
     int i, j;
     char* text[100];
@@ -630,7 +635,7 @@ void core_game_check_gas_station() {
     amount = 100 - gs.fuel;
     total = amount * percent_price;
     faction = sol_list[gs.current_system].faction;
-    gender = faction == 3 || faction == 1 ? 1 : 0;
+    gender = faction == 1 ? 1 : 0;
 
     core_game_gen_npc(&gas_worker, faction, gender, GAS_NPC);
 

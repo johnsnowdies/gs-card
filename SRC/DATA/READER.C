@@ -181,12 +181,10 @@ int data_reader_load_systems(SYSTEM** list)
   /* Set gas stations and abandoned systems */
   for(count = 0; count < counter; count++)
   {
-    if (count%7 == 0){
-        (*list)[count].is_gas_station = 1;
-    }
-
     if (count%33 == 0 && (*list)[count].is_shipyard == 0){
-        (*list)[count].faction = 4;
+        (*list)[count].faction = 3;
+    } else if (count%7 == 0){
+        (*list)[count].is_gas_station = 1;
     }
   }
 
