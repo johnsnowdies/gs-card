@@ -43,7 +43,8 @@
 
 #include "music.h"
 
-unsigned _stklen = 16384;
+/* Stack size (bytes) */
+unsigned _stklen = 16384; 
 
 const int DEBUG = 1;
 
@@ -57,12 +58,14 @@ OBJECT* obj_list;
 BOUND_LINE* bnd_list;
 QUEST system_quests[5];
 UPGRADE system_upgrades[8];
+SHIP system_shipyard[6];
 
 unsigned int sol_size;
 unsigned int obj_size;
 unsigned int bnd_size;
 int system_quests_size = 0;
 int system_upgrades_size = 0;
+int system_shipyard_size = 0;
 
 WAYPOINT wp;
 

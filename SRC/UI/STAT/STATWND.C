@@ -27,15 +27,21 @@ extern char* data_sectors[SECTORS_COUNT];
 extern char* data_ship_names[SHIP_COUNT];
 extern char* data_hyper_names[HYPER_COUNT];
 
-extern char* QUEST_TYPES[];
 extern QUEST system_quests[5];
 
 extern int system_quests_size;
-
+static char* QUEST_TYPES[] = {"",
+                                LC_QUEST_TYPE_1,
+                                LC_QUEST_TYPE_2,
+                                LC_QUEST_TYPE_3,
+                                LC_QUEST_TYPE_4,
+                                LC_QUEST_TYPE_5};
+                                
 void gui_status_quest_info(int selected) {
   int result, i;
   char lines[4][100];
   char buttons[2][100] = {LC_GUI_BOOL_YES, LC_GUI_BOOL_NO};
+  
   for (i = 0; i < 4; i++) {
     lines[i][0] = '\0';
   }
@@ -145,9 +151,9 @@ void gui_status_quest_list(WND* status_wnd) {
   setcolor(0);
   outtextxy(status_wnd->x + 10, y_pos - 42, LC_QUEST_NEW_HEAD);
 
-  sprintf(line, "%-25.25s %-15.15s %-6.6s %6s %6s %6s", LC_QUEST_TABLE_1,
+  sprintf(line, "%-25.25s %-15.15s %-7.7s %6s %6s %6s %6s", LC_QUEST_TABLE_1,
           LC_QUEST_TABLE_2, LC_QUEST_TABLE_3, LC_QUEST_TABLE_4,
-          LC_QUEST_TABLE_5, LC_QUEST_TABLE_6);
+          LC_QUEST_TABLE_5, LC_QUEST_TABLE_6, LC_QUEST_TABLE_7);
   settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
   setcolor(4);
   outtextxy(x_pos, y_pos - 15, line);
@@ -156,11 +162,11 @@ void gui_status_quest_list(WND* status_wnd) {
   for (i = 0; i < system_quests_size; i++) {
     char buf[128], system[16];
     sprintf(system, "SA.%d", system_quests[i].target_system);
-    sprintf(buf, "%-25.25s %-15.15s %-6.6s %6d %6d %6d",
+    sprintf(buf, "%-25.25s %-15.15s %-7.7s %6d  %6d %6d %6d",
             QUEST_TYPES[system_quests[i].type],
             data_sectors[system_quests[i].target_sector], system,
             system_quests[i].cargo, system_quests[i].reward,
-            system_quests[i].penalty);
+            system_quests[i].penalty, system_quests[i].jumps);
 
     if (i == system_quest_selected) {
       setfillstyle(SOLID_FILL, RED);
@@ -196,9 +202,9 @@ void gui_status_quest_list(WND* status_wnd) {
   
   outtextxy(status_wnd->x + 10, y_pos - 42, LC_QUEST_MY_HEAD);
 
-  sprintf(line, "%-25.25s %-15.15s %-6.6s %6s %6s %6s", LC_QUEST_TABLE_1,
+  sprintf(line, "%-25.25s %-15.15s %-7.7s %6s %6s %6s %6s", LC_QUEST_TABLE_1,
           LC_QUEST_TABLE_2, LC_QUEST_TABLE_3, LC_QUEST_TABLE_4,
-          LC_QUEST_TABLE_5, LC_QUEST_TABLE_6);
+          LC_QUEST_TABLE_5, LC_QUEST_TABLE_6, LC_QUEST_TABLE_7);
   settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
   setcolor(4);
   outtextxy(x_pos, y_pos - 15, line);
@@ -207,10 +213,10 @@ void gui_status_quest_list(WND* status_wnd) {
   for (i = 0; i < gs.quests_size; i++) {
     char buf[128], system[16];
     sprintf(system, "SA.%d", gs.quests[i].target_system);
-    sprintf(buf, "%-25.25s %-15.15s %-6.6s %6d %6d %6d",
+    sprintf(buf, "%-25.25s %-15.15s %-7.7s %6d  %6d %6d %6d",
             QUEST_TYPES[gs.quests[i].type],
             data_sectors[gs.quests[i].target_sector], system,
-            gs.quests[i].cargo, gs.quests[i].reward, gs.quests[i].penalty);
+            gs.quests[i].cargo, gs.quests[i].reward, gs.quests[i].penalty, gs.quests[i].jumps);
 
     outtextxy(x_pos, y_pos + (10 * i), buf);
   }

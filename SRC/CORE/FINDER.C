@@ -261,7 +261,7 @@ int core_finder_restore_path(WAYPOINT* wp, int start, int end, int reverse) {
     int minRate;
     int next;
 
-    for (i = 0; i < 25; i++) wp->way[i] = 0;   /* или 30, если используем весь массив */
+    for (i = 0; i < 25; i++) wp->way[i] = 0;
     wp->way[0] = end;
 
     c = end;

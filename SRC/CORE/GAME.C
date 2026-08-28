@@ -18,9 +18,10 @@
 /* ----------------------------------------------------------------
  * Extern game globals (defined in card.c)
  * ---------------------------------------------------------------- */
+extern int DEBUG;
+
 extern GAME_STATE gs;
-extern int system_quests_size;
-extern QUEST system_quests[5];
+
 extern WAYPOINT wp;
 
 extern SYSTEM* sol_list;
@@ -32,9 +33,14 @@ extern unsigned int obj_size;
 extern WND map_wnd;
 extern WND root_wnd;
 
+extern QUEST system_quests[5];
+extern int system_quests_size;
+
 extern UPGRADE system_upgrades[8];
 extern int system_upgrades_size;
-extern NPC black_market_npc;
+
+extern SHIP system_shipyard[6];
+extern int system_shipyard_size;
 
 #define N_SIZE 15
 
@@ -63,17 +69,6 @@ char* data_sectors[SECTORS_COUNT] = {
     LC_GAME_SECTOR_4, LC_GAME_SECTOR_5, LC_GAME_SECTOR_6,
     LC_GAME_SECTOR_7, LC_GAME_SECTOR_8, LC_GAME_SECTOR_9};
 
-char* QUEST_TYPES[] = {"",
-                       LC_QUEST_TYPE_1,
-                       LC_QUEST_TYPE_2,
-                       LC_QUEST_TYPE_3,
-                       LC_QUEST_TYPE_4,
-                       LC_QUEST_TYPE_5};
-
-char* UPGRADES[] = {LC_UPGRADE_SMUGGLER_BAY, LC_UPGRADE_CONTIN_JUMP_SYSTEM,
-                    LC_UPGRADE_EMERGENCY_JUMP_SYSTEM, LC_UPGRADE_OBJECTS_MAP,
-                    LC_UPGRADE_POLITICAL_MAP};
-
 
 /* ----------------------------------------------------------------
  * Visited solar systems tracking
@@ -97,7 +92,7 @@ void new_game(char* name, int sol_size) {
   int i;
 
   strcpy(gs.captain_name, name);
-  gs.balance = 200;
+  gs.balance = DEBUG == 1? 100000: 500;
   gs.current_system = 87; 
   if (gs.current_system < 0) gs.current_system = 0;
   if (gs.current_system >= sol_size) gs.current_system = 0;
@@ -442,6 +437,7 @@ void core_game_gen_quest(QUEST* ptr_quest, int player_rep,
   ptr_quest->target_sector = sol_list[target].sector;
   ptr_quest->cargo = cargo;
   ptr_quest->type = type;
+  ptr_quest->jumps = 0;
 }
 
 int core_game_accept_quest(unsigned int index) {
@@ -615,6 +611,41 @@ int core_game_run_event() {
   game_over = core_game_check_fuel_gone();
 
   return game_over;
+}
+
+void core_game_gen_shipyard(void) {
+    int i, count = 0, faction;
+    int ship_prices[] = SHIP_UPGRADE_BASE_PRICES;
+
+    faction = sol_list[gs.current_system].faction;
+    if (!sol_list[gs.current_system].is_shipyard) {
+      system_shipyard_size = 0;
+      return;
+    }
+
+    for (i=0; i < SHIP_COUNT; i++){
+        /* Almighty vessel only for CSU */
+        if (i == 0 && faction != 0)
+            continue;
+
+        /* Ga-Bolg only for IMC */
+        if (i == 3 && faction != 1)
+            continue;
+
+        /* Nova and Sashok only for Sentinels */
+        if ( (i == 4 || i == 5) && faction != 2)
+            continue;
+
+        
+        system_shipyard[count].name = data_ship_names[i];
+        system_shipyard[count].base_price = ship_prices[i];
+        system_shipyard[count].id = i;
+
+        core_game_gen_npc(&system_shipyard[count].giver, faction, RANDOM_GENDER, QUEST_NPC);
+        count++;
+    }
+
+
 }
 
 void core_game_gen_upgrades(void) {

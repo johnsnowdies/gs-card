@@ -68,6 +68,7 @@ QUEST {
   unsigned int target_system;
   unsigned int target_sector;
   unsigned int cargo;
+  unsigned int jumps;
   NPC giver;
 };
 
@@ -111,6 +112,15 @@ UPGRADE {
     char *name;
     int base_price;
     int type; 
+    int id;
+    NPC giver;
+};
+
+#define SHIP struct ship
+SHIP
+{
+    char *name;
+    int base_price;
     int id;
     NPC giver;
 };

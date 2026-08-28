@@ -181,8 +181,8 @@
  * ---------------------------------------------------------------- */
 
 /* SHIP NAMES */
-#define LC_GAME_SHIP_2 "Лоgка Всемогущего"
 #define LC_GAME_SHIP_1 "Бэтси"
+#define LC_GAME_SHIP_2 "Лоgка Всемогущего"
 #define LC_GAME_SHIP_3 "Старый Имперскй торговый корабль"
 #define LC_GAME_SHIP_4 "Га-Болг"
 #define LC_GAME_SHIP_5 "Торговый Корабль НОВА"
@@ -224,6 +224,7 @@
 #define LC_QUEST_TABLE_4 "Груз"
 #define LC_QUEST_TABLE_5 "Награgа"
 #define LC_QUEST_TABLE_6 "Штраф"
+#define LC_QUEST_TABLE_7 "Прыжки"
 
 #define LC_QUEST_TYPE_1 "Доставка груза"
 #define LC_QUEST_TYPE_2 "Дальняя gоставка груза"

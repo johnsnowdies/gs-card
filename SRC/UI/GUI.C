@@ -553,9 +553,6 @@ int gui_dialog_wnd(WND* parent, char* header, char* title, char* photo_file,
       }
     }
   }
-
-
-
 }
 
 
