@@ -242,11 +242,11 @@ void draw_player_status(WND* status_wnd) {
   settextstyle(SMALL_FONT, HORIZ_DIR, 5);
   setcolor(15);
 
-  outtextxy(status_wnd->x + 80, status_wnd->y + 20, current_system);
-  outtextxy(status_wnd->x + 80, status_wnd->y + 40, data_factions[sol_list[gs.current_system].faction]);
-  outtextxy(status_wnd->x + 80, status_wnd->y + 60, sector);
+  outtextxy(status_wnd->x + 80, status_wnd->y + 20, captain_name);
+  outtextxy(status_wnd->x + 80, status_wnd->y + 35, data_factions[sol_list[gs.current_system].faction]);
+  outtextxy(status_wnd->x + 80, status_wnd->y + 50, sector);
+  outtextxy(status_wnd->x + 80, status_wnd->y + 65, current_system);
 
-  outtextxy(status_wnd->x + 10, status_wnd->y + 100, captain_name);
   outtextxy(status_wnd->x + 10, status_wnd->y + 120, systems_visited);
   outtextxy(status_wnd->x + 10, status_wnd->y + 140, quests_done);
 }

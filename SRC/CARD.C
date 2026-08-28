@@ -57,7 +57,6 @@ OBJECT* obj_list;
 BOUND_LINE* bnd_list;
 QUEST system_quests[5];
 UPGRADE system_upgrades[8];
-NPC black_market_npc;
 
 unsigned int sol_size;
 unsigned int obj_size;

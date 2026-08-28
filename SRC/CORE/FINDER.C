@@ -397,10 +397,11 @@ void core_finder_calc_hyper_threads() {
       sol_list[i].threadSize = 0;
     }
   }
+  /*
   if (!DEBUG) {
     core_finder_clear_threads_costs();
     core_finder_calc_threads_costs(1);
-    }
+    }*/
 }
 
 void core_finder_calc_distances(int start, int* distances, int max_dist) {

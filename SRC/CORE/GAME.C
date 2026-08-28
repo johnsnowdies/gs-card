@@ -93,46 +93,48 @@ int game_is_visited(GAME_STATE *gs, int system) {
 /* ----------------------------------------------------------------
  * Initialise new game state
  * ---------------------------------------------------------------- */
-void new_game(char *name, int sol_size)
-{
-    int i;
+void new_game(char* name, int sol_size) {
+  int i;
 
-    strcpy(gs.captain_name, name);
-    gs.balance            = 100000;
-    gs.current_system     = 87; /*rand() % sol_size;*/
-    if (gs.current_system < 0) gs.current_system = 0;
-    if (gs.current_system >= sol_size) gs.current_system = 0;
+  strcpy(gs.captain_name, name);
+  gs.balance = 200;
+  gs.current_system = 87; 
+  if (gs.current_system < 0) gs.current_system = 0;
+  if (gs.current_system >= sol_size) gs.current_system = 0;
 
-    gs.ship_type         = rand()%6;
-    gs.tonnage           = data_ship_tonnages[gs.ship_type];
-    gs.current_cargo     = 0;
-    gs.hyper_class       = 0;
-    /*gs.smuggler_bay      = 0;*/
-    gs.reputation        = 0;
-    gs.missions_completed = 0;
-    gs.fuel              = 100;
+  gs.ship_type = 0;
+  gs.tonnage = data_ship_tonnages[gs.ship_type];
+  gs.current_cargo = 0;
+  gs.hyper_class = 0;
+  gs.upgrade_smuggler_bay = 0;
+  gs.upgrade_continuous_jump = 0;
+  gs.upgrade_emergency_jump = 0;
+  gs.upgrade_objects_map = 0;
+  gs.upgrade_political_map = 0;
+  gs.reputation = 0;
+  gs.missions_completed = 0;
+  gs.fuel = 100;
 
-    gs.quests_size = 0;
+  gs.quests_size = 0;
 
-    gs.visited_bytes = (sol_size + 7) / 8;
-    gs.visited = (unsigned char*)malloc(gs.visited_bytes);
-    if (gs.visited) {
-        memset(gs.visited, 0, gs.visited_bytes);
-    }
-    system_quests_size = 0;
-    system_upgrades_size = 0;
+  gs.visited_bytes = (sol_size + 7) / 8;
+  gs.visited = (unsigned char*)malloc(gs.visited_bytes);
+  if (gs.visited) {
+    memset(gs.visited, 0, gs.visited_bytes);
+  }
 
+  system_quests_size = 0;
+  system_upgrades_size = 0;
 
-    core_game_run_event();
-    wp.size = 0;
+  core_game_run_event();
+  wp.size = 0;
 
-    core_game_save("USER.SAV");
+  core_game_save("USER.SAV");
 
-    /* Draw new game GUI */
-    gui_map_nav_move_screen_to(sol_list, gs.current_system);
-    gui_bars_map_bottom();
-    gui_bars_common_top();
-
+  /* Draw new game GUI */
+  gui_map_nav_move_screen_to(sol_list, gs.current_system);
+  gui_bars_map_bottom();
+  gui_bars_common_top();
 }
 
 /* ----------------------------------------------------------------
@@ -631,6 +633,8 @@ void core_game_gen_upgrades(void) {
     system_upgrades[count].base_price = hyper_prices[gs.hyper_class + 1];
     system_upgrades[count].type = 0;
     system_upgrades[count].id = gs.hyper_class + 1;
+    core_game_gen_npc(&system_upgrades[count].giver, sol_list[gs.current_system].faction,
+                    RANDOM_GENDER, QUEST_NPC);
     count++;
   }
 
@@ -659,14 +663,12 @@ void core_game_gen_upgrades(void) {
         system_upgrades[count].base_price = custom_prices[i];
         system_upgrades[count].type = 1;
         system_upgrades[count].id = i;
+        core_game_gen_npc(&system_upgrades[count].giver, sol_list[gs.current_system].faction,
+                    RANDOM_GENDER, QUEST_NPC);
         count++;
       }
     }
   }
 
-  system_upgrades_size = count;
-
-  /* marketer NPC */
-  core_game_gen_npc(&black_market_npc, sol_list[gs.current_system].faction,
-                    RANDOM_GENDER, QUEST_NPC);
+  system_upgrades_size = count; 
 }

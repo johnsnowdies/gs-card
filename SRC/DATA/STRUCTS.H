@@ -112,4 +112,5 @@ UPGRADE {
     int base_price;
     int type; 
     int id;
+    NPC giver;
 };

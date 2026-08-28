@@ -11,6 +11,7 @@
 #include "ui\upgrade\upgrwnd.h"
 #include "ui\npc\npcwnd.h"
 #include "ui\stat\statwnd.h"
+#include "ui\ad\ad.h"
 #include "music.h"
 
 WND upgrade_wnd;
@@ -24,7 +25,6 @@ extern char* data_hyper_names[HYPER_COUNT];
 extern int   data_hyper_fuel[HYPER_COUNT];
 extern UPGRADE system_upgrades[8];
 extern int system_upgrades_size;
-extern NPC black_market_npc;
 
 static void draw_ship_info(void)
 {
@@ -33,17 +33,17 @@ static void draw_ship_info(void)
     outtextxy(upgrade_wnd.x + 80, upgrade_wnd.y + 20, buf);
 
     sprintf(buf, "%s: %d", LC_UPGRADE_TONNAGE, data_ship_tonnages[gs.ship_type]);
-    outtextxy(upgrade_wnd.x + 80, upgrade_wnd.y + 40, buf);
+    outtextxy(upgrade_wnd.x + 80, upgrade_wnd.y + 35, buf);
 }
 
 static void draw_engine_info(void)
 {
     char buf[100];
     sprintf(buf, "%s", data_hyper_names[gs.hyper_class]);
-    outtextxy(upgrade_wnd.x + 80, upgrade_wnd.y + 60, buf);
+    outtextxy(upgrade_wnd.x + 80, upgrade_wnd.y + 50, buf);
 
     sprintf(buf, "%s: %d", LC_UPGRADE_FUEL_PER_JUMP, data_hyper_fuel[gs.hyper_class]);
-    outtextxy(upgrade_wnd.x + 10, upgrade_wnd.y + 90, buf);
+    outtextxy(upgrade_wnd.x + 80, upgrade_wnd.y + 65, buf);
 }
 
 static void draw_upgrade_status_table(void)
@@ -51,7 +51,7 @@ static void draw_upgrade_status_table(void)
     int x = upgrade_wnd.x + 10;
     int y_start = upgrade_wnd.y + 105;
     int i, max_label_width = 0;
-    int step = 15;
+    int step = 10;
 
     char *labels[5];
     unsigned char values[5];
@@ -67,6 +67,8 @@ static void draw_upgrade_status_table(void)
     values[2] = gs.upgrade_continuous_jump;
     values[3] = gs.upgrade_objects_map;
     values[4] = gs.upgrade_political_map;
+
+    settextstyle(SMALL_FONT, HORIZ_DIR, 4);
 
     
     for (i = 0; i < 5; i++) {
@@ -93,7 +95,7 @@ void gui_upgrade_draw_list(void)
     int tx, ty;
     char line[100];
 
-    y_pos = upgrade_wnd.y + 300;  
+    y_pos = upgrade_wnd.y + 220;  
 
     
     setfillstyle(SOLID_FILL, BLACK);
@@ -238,7 +240,7 @@ void gui_upgrade_show_info(int selected)
         }
 
         {
-            int result = gui_npc_wnd(&upgrade_wnd, &black_market_npc, NPC_CHOICE_WND,
+            int result = gui_npc_wnd(&upgrade_wnd, &system_upgrades[selected].giver, NPC_CHOICE_WND,
                                      system_upgrades[selected].name, lines, 4, buttons, 2);
 
             if (result == 0) { 
