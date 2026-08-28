@@ -311,31 +311,35 @@ static void core_game_gen_npc(NPC* ptr_npc, unsigned int faction, E_GENDER gende
  * Quests generator
  * ---------------------------------------------------------------- */
 
-static int pick_target_system(int current, int min_dist, int max_dist) {
-  int candidates[1000];
-  int count = 0, d = 0, i;
-  int* distances = (int*)malloc(sol_size * sizeof(int));
-  if (!distances) return -1;
+static int pick_target_system_by_jumps(int current, int min_jumps, int max_jumps) {
+    int candidates[1000];
+    int count = 0;
+    int i, jumps;
 
-  core_finder_calc_distances(current, distances, 999);
-
-  for (i = 0; i < sol_size; i++) {
-    if (i == current) continue;
-    d = distances[i];
-    if (d >= min_dist && d <= max_dist) {
-      candidates[count++] = i;
-    }
-  }
-  free(distances);
-
-  if (count == 0) {
     for (i = 0; i < sol_size; i++) {
-      if (i != current) candidates[count++] = i;
+        gui_progress_wnd(&map_wnd, "GS-CARD 1.5", "Generating Quests", i, sol_size);
+        
+        if (i == current) continue;
+        jumps = core_finder_get_jumps(current, i);
+        if (jumps == 0) continue;
+        if (jumps >= min_jumps && jumps <= max_jumps) {
+            candidates[count++] = i;
+        }
     }
-    if (count == 0) return -1;
-  }
-  return candidates[rand() % count];
+
+    if (count == 0) {
+        /* fallback: any reachable system */
+        for (i = 0; i < sol_size; i++) {
+            if (i != current && core_finder_get_jumps(current, i) > 0) {
+                candidates[count++] = i;
+            }
+        }
+        if (count == 0) return -1;
+    }
+
+    return candidates[rand() % count];
 }
+
 
 static int generate_cargo(void) {
   double r = (double)rand() / RAND_MAX;
@@ -348,96 +352,100 @@ static int generate_cargo(void) {
   }
 }
 
-static int calc_reward(int type, int cargo, int distance) {
-  int base;
-  switch (type) {
-    case 1:
-      base = 100 + rand() % 201;
-      break;
-    case 2:
-      base = 250 + rand() % 251;
-      break;
-    case 3:
-      base = 400 + rand() % 401;
-      break;
-    case 4:
-    case 5:
-      base = 200 + rand() % 251;
-      break;
-    default:
-      base = 100;
-      break;
-  }
+static int calc_reward(int type, int cargo, int jumps) {
+    int base;
+    double cargo_factor;
+    double jump_factor;
 
-  if (type <= 3) {
-    double cargo_factor = 1.0 + (double)cargo / 200.0;
-    double dist_factor = 1.0 + (double)distance / 20.0;
-    return (int)(base * cargo_factor * dist_factor);
-  } else {
-    double dist_factor = 1.0 + (double)distance / 20.0;
-    return (int)(base * dist_factor);
-  }
+    switch (type) {
+        case 1:
+            base = 100 + rand() % 201;
+            break;
+        case 2:
+            base = 250 + rand() % 251;
+            break;
+        case 3:
+            base = 400 + rand() % 401;
+            break;
+        case 4:
+        case 5:
+            base = 200 + rand() % 251;
+            break;
+        default:
+            base = 100;
+            break;
+    }
+
+    if (type <= 3) {
+        cargo_factor = 1.0 + (double)cargo / 200.0;
+        jump_factor = 1.0 + (double)jumps / 10.0;
+        return (int)(base * cargo_factor * jump_factor);
+    } else {
+        jump_factor = 1.0 + (double)jumps / 10.0;
+        return (int)(base * jump_factor);
+    }
 }
 
 void core_game_gen_quest(QUEST* ptr_quest, int player_rep,
                          unsigned int faction) {
-  int type, target, cargo, distance, reward, penalty, r;
-  int* dist_arr;
+    int type, target, cargo, jumps, reward, penalty, r;
 
-  if (faction == 3) {
-    system_quests_size = 0;
-    return;
-  }
+    if (faction == 3) {
+        system_quests_size = 0;
+        return;
+    }
 
-  r = rand() % 100;
-  if (r < 50)
-    type = 1;
-  else if (r < 75)
-    type = 2;
-  else if (r < 90)
-    type = 3;
-  else if (r < 95)
-    type = 4;
-  else
-    type = 5;
+    r = rand() % 100;
+    if (r < 50)
+        type = 1;
+    else if (r < 75)
+        type = 2;
+    else if (r < 90)
+        type = 3;
+    else if (r < 95)
+        type = 4;
+    else
+        type = 5;
 
-  if (type == 1)
-    target = pick_target_system(gs.current_system, 1, 10);
-  else if (type == 2)
-    target = pick_target_system(gs.current_system, 11, 50);
-  else
-    target = pick_target_system(gs.current_system, 1, 50);
+    if (type == 1)
+        target = pick_target_system_by_jumps(gs.current_system, 1, 5);
+    else if (type == 2)
+        target = pick_target_system_by_jumps(gs.current_system, 6, 10);
+    else  /* type 3, 4, 5 – дальняя */
+        target = pick_target_system_by_jumps(gs.current_system, 11, 999);
 
-  if (type <= 3)
-    cargo = generate_cargo();
-  else
-    cargo = 1;
+    if (target == -1) {
+        /* совсем нет подходящих – выбираем любую достижимую */
+        target = pick_target_system_by_jumps(gs.current_system, 1, 999);
+        if (target == -1) {
+            system_quests_size = 0;
+            return;
+        }
+    }
 
-  dist_arr = (int*)malloc(sol_size * sizeof(int));
-  if (dist_arr) {
-    core_finder_calc_distances(gs.current_system, dist_arr, 50);
-    distance = dist_arr[target];
-    free(dist_arr);
-  } else {
-    distance = 1;
-  }
-  if (distance < 1) distance = 1;
+    if (type <= 3)
+        cargo = generate_cargo();
+    else
+        cargo = 1;
 
-  reward = calc_reward(type, cargo, distance);
+    jumps = core_finder_get_jumps(gs.current_system, target);
+    if (jumps < 1) jumps = 1;
 
-  penalty = (int)(reward * (0.5 - player_rep * 0.0004));
-  if (penalty < (int)(reward * 0.1)) penalty = (int)(reward * 0.1);
-  if (penalty < 0) penalty = 0;
+    reward = calc_reward(type, cargo, jumps);
 
-  core_game_gen_npc(&ptr_quest->giver, faction, RANDOM_GENDER, QUEST_NPC);
+    penalty = (int)(reward * (0.5 - player_rep * 0.0004));
+    if (penalty < (int)(reward * 0.1)) penalty = (int)(reward * 0.1);
+    if (penalty < 0) penalty = 0;
 
-  ptr_quest->reward = reward;
-  ptr_quest->penalty = penalty;
-  ptr_quest->target_system = target;
-  ptr_quest->target_sector = sol_list[target].sector;
-  ptr_quest->cargo = cargo;
-  ptr_quest->type = type;
-  ptr_quest->jumps = 0;
+    core_game_gen_npc(&ptr_quest->giver, faction, RANDOM_GENDER, QUEST_NPC);
+
+    ptr_quest->reward = reward;
+    ptr_quest->penalty = penalty;
+    ptr_quest->target_system = target;
+    ptr_quest->target_sector = sol_list[target].sector;
+    ptr_quest->cargo = cargo;
+    ptr_quest->type = type;
+    ptr_quest->jumps = jumps;
 }
 
 int core_game_accept_quest(unsigned int index) {
@@ -597,18 +605,27 @@ int core_game_run_event() {
   game_mark_visited(&gs, gs.current_system);
   gs.fuel -= data_hyper_fuel[gs.hyper_class];
 
-  system_quests_size = 5;
-  /* System quests generator */
-  for (i = 0; i < system_quests_size; i++) {
-    core_game_gen_quest(&system_quests[i], gs.reputation,
-                        sol_list[gs.current_system].faction);
-  }
-
-  /* System upgrades market generator */
-  core_game_gen_upgrades();
-
-  core_game_check_quest_done();
   game_over = core_game_check_fuel_gone();
+
+  if (!game_over){
+      system_quests_size = 5;
+      /* System quests generator */
+      for (i = 0; i < system_quests_size; i++) {
+        core_game_gen_quest(&system_quests[i], gs.reputation,
+                            sol_list[gs.current_system].faction);
+      }
+
+      for (i = 0; i < gs.quests_size; i++)
+      {
+        gui_progress_wnd(&map_wnd, "GS-CARD 1.5", "Updating Quests", i, gs.quests_size);
+        gs.quests[i].jumps = core_finder_get_jumps(gs.current_system, gs.quests[i].target_system);
+      }
+
+      /* System upgrades market generator */
+      core_game_gen_upgrades();
+
+      core_game_check_quest_done();
+  }
 
   return game_over;
 }
