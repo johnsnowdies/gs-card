@@ -104,6 +104,15 @@ echo Compiling UI\UPGRADE\UPGRNAV.C...                     >> %BLD%\build.log
 tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\UPGRADE\UPGRNAV.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
+echo Compiling UI\SHIPYARD\SYARDWND.C...                     >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\SHIPYARD\SYARDWND.C >> %BLD%\build.log
+if errorlevel 1 goto err
+
+
+echo Compiling UI\SHIPYARD\SYARDNAV.C...                     >> %BLD%\build.log
+tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\SHIPYARD\SYARDNAV.C >> %BLD%\build.log
+if errorlevel 1 goto err
+
 
 echo Compiling MUSIC.C...                     >> %BLD%\build.log
 tcc -c -ml %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\MUSIC.C >> %BLD%\build.log
@@ -140,6 +149,8 @@ echo MUSIC.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo UPGRWND.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo UPGRNAV.OBJ+                                    >> %BLD%\GS-LINK.RSP
 echo BARS.OBJ+                                    >> %BLD%\GS-LINK.RSP
+echo SYARDWND.OBJ+  >> %BLD%\GS-LINK.RSP
+echo SYARDNAV.OBJ+ >> %BLD%\GS-LINK.RSP
 
 echo NPCWND.OBJ+ >> %BLD%\GS-LINK.RSP
 echo PATHWND.OBJ, GSCARD.EXE, GSCARD.MAP, %LIB%\EMU.LIB %LIB%\MATHL.LIB %LIB%\GRAPHICS.LIB %LIB%\CL.LIB >> %BLD%\GS-LINK.RSP

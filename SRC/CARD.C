@@ -39,6 +39,9 @@
 #include "ui\upgrade\upgrwnd.h"
 #include "ui\upgrade\upgrnav.h"
 
+#include "ui\shipyard\syardwnd.h"
+#include "ui\shipyard\syardnav.h"
+
 #include "ui\locale.h"
 
 #include "music.h"
@@ -88,7 +91,8 @@ static key_handler key_handlers[] = {
     gui_menu_main_wnd_key,    /* SCR_MAIN_MENU */
     gui_menu_game_wnd_key,    /* SCR_GAME_MENU */
     gui_status_wnd_key,       /* SCR_STATUS */
-    gui_upgrade_wnd_key       /* SCR_UPGRADE */
+    gui_upgrade_wnd_key,       /* SCR_UPGRADE */
+    gui_shipyard_wnd_key      /* SCR_SHIPYARD */
 };
 
 WND root_wnd = {NULL, 0, 21, 639, 460};
@@ -126,7 +130,7 @@ int main() {
 
   while (!SIG_TERM) {
     c = getch();
-    if (cur_screen >= 0 && cur_screen < 5) {
+    if (cur_screen >= 0 && cur_screen < 6) {
       key_handlers[cur_screen](c, &root_wnd);
     }
   }

@@ -13,6 +13,7 @@
 
 #include "ui\stat\statnav.h"
 #include "ui\upgrade\upgrwnd.h"
+#include "ui\shipyard\syardwnd.h"
 #include "music.h"
 
 
@@ -46,6 +47,11 @@ int gui_status_wnd_key(int ch, WND *parent)
         prev_screen = cur_screen;
         cur_screen = SCR_UPGRADE;
         gui_upgrade_wnd();
+    }
+    if (F3 == ch){
+        prev_screen = cur_screen;
+        cur_screen = SCR_SHIPYARD;
+        gui_shipyard_wnd();
     }
     if (ESC == ch) {
         prev_screen = cur_screen;

@@ -1,0 +1,1 @@
+int gui_shipyard_wnd_key(int ch, WND *parent);

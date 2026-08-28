@@ -1,25 +1,26 @@
 #include <graphics.h>
 #include <conio.h>
 
+
 #include "data\structs.h"
 #include "data\keys.h"
 #include "ui\gui.h"
 #include "ui\locale.h"
-#include "ui\stat\statwnd.h"
-#include "ui\upgrade\upgrwnd.h"
 #include "ui\map\mapwnd.h"
-#include "ui\shipyard\syardwnd.h"
 #include "music.h"
+
+#include "ui\shipyard\syardwnd.h"
+#include "ui\shipyard\syardnav.h"
 
 extern E_GAME_SCREEN cur_screen;
 extern E_GAME_SCREEN prev_screen;
-extern int system_upgrades_size;
-extern int upgrade_selected;
+extern int system_shipyard_size;
+extern int ship_selected;
 
 /* ----------------------------------------------------------------
- * SCR_UPGRADES -- upgrades screen controller
+ * SCR_SHIPYARD - shipyard window navigation
  * ---------------------------------------------------------------- */
-int gui_upgrade_wnd_key(int ch, WND* parent) {
+int gui_shipyard_wnd_key(int ch, WND* parent) {
   if (TAB == ch) {
     cur_screen = SCR_MAP;
     gui_bars_common_top();
@@ -31,26 +32,21 @@ int gui_upgrade_wnd_key(int ch, WND* parent) {
     gui_status_wnd();
     sfx_screen_change();
   }
-  if (F3 == ch) {
-    prev_screen = cur_screen;
-    cur_screen = SCR_SHIPYARD;
-    gui_shipyard_wnd();
+  if (F2 == ch) {
+    cur_screen = SCR_UPGRADE;
+    gui_status_wnd();
+    sfx_screen_change();
   }
   if (UP == ch) {
-    if (upgrade_selected > 0) {
-      upgrade_selected--;
-      gui_upgrade_draw_list();
+    if (ship_selected > 0) {
+      ship_selected--;
+      gui_shipyard_draw_list();
     }
   }
   if (DWN == ch) {
-    if (upgrade_selected < system_upgrades_size - 1) {
-      upgrade_selected++;
-      gui_upgrade_draw_list();
-    }
-  }
-  if (ENTER == ch) {
-    if (system_upgrades_size > 0) {
-      gui_upgrade_show_info(upgrade_selected);
+    if (ship_selected < system_shipyard_size - 1) {
+      ship_selected++;
+      gui_shipyard_draw_list();
     }
   }
   if (ESC == ch) {
