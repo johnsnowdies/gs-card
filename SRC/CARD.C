@@ -47,7 +47,7 @@
 #include "music.h"
 
 /* Stack size (bytes) */
-unsigned _stklen = 16384; 
+/*unsigned _stklen = 16384; */
 
 const int DEBUG = 1;
 

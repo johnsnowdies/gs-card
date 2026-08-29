@@ -12,7 +12,7 @@ SYSTEM {
   int z;
 
   /* PATHFINDER DATA */
-  THREAD* threads;
+  THREAD far* threads;
   unsigned char threadSize;
   int rate;
   unsigned char visited;
