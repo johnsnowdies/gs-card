@@ -102,7 +102,7 @@ void new_game(char* name, int sol_size) {
   int i;
 
   strcpy(gs.captain_name, name);
-  gs.balance = DEBUG == 1? 100000: 500;
+  gs.balance = DEBUG == 1? 999999: 500;
   gs.current_system = 85; 
   if (gs.current_system < 0) gs.current_system = 0;
   if (gs.current_system >= sol_size) gs.current_system = 0;
@@ -536,9 +536,13 @@ static int core_game_event_quest_done() {
  * Game Events System
  * ---------------------------------------------------------------- */
 static int core_game_check_fuel_gone() {
+
   if (gs.fuel <= 0) {
     char lines[9][100];
     int i;
+
+    gui_bars_common_top();
+    gui_map_wnd_draw();
 
     for (i = 0; i < 9; i++) {
       lines[i][0] = '\0';
@@ -548,13 +552,70 @@ static int core_game_check_fuel_gone() {
     sprintf(lines[1], LC_GAME_OVER_FUEL_TEXT_2);
     sprintf(lines[2], "   ");
     sprintf(lines[3], LC_GAME_OVER_STATS_HEAD);
-    sprintf(lines[4], LC_GAME_OVER_STATS_TEXT_1, *gs.visited);
-    sprintf(lines[5], LC_GAME_OVER_STATS_TEXT_2, gs.missions_completed);
-    sprintf(lines[6], LC_GAME_OVER_STATS_TEXT_3, gs.balance);
-    sprintf(lines[7], "   ");
-    sprintf(lines[8], LC_GAME_OVER_STATS_TEXT_4);
+    sprintf(lines[4], LC_GAME_OVER_STATS_TEXT_2, gs.missions_completed);
+    sprintf(lines[5], LC_GAME_OVER_STATS_TEXT_3, gs.balance);
+    sprintf(lines[6], "   ");
+    sprintf(lines[7], LC_GAME_OVER_STATS_TEXT_4);
     gui_dialog_wnd(&map_wnd, LC_GAME_OVER_HEAD, LC_GAME_OVER_HEAD, NULL, lines,
-                   9, NULL, 0, SOUND_ERROR, 1);
+                   8, NULL, 0, SOUND_ERROR, 1);
+
+    return 1;
+  }
+  return 0;
+}
+
+static int core_game_check_win() {
+
+  if (gs.balance >= 1000000) {
+    char lines[9][100];
+    int i;
+
+    gui_bars_common_top();
+    gui_map_wnd_draw();
+
+    for (i = 0; i < 9; i++) {
+      lines[i][0] = '\0';
+    }
+
+    sprintf(lines[0], LC_GAME_OVER_WIN_TEXT_1);
+    sprintf(lines[1], LC_GAME_OVER_WIN_TEXT_2);
+    sprintf(lines[2], "   ");
+    sprintf(lines[3], LC_GAME_OVER_STATS_HEAD);
+    sprintf(lines[4], LC_GAME_OVER_STATS_TEXT_2, gs.missions_completed);
+    sprintf(lines[5], LC_GAME_OVER_STATS_TEXT_3, gs.balance);
+    sprintf(lines[6], "   ");
+    sprintf(lines[7], LC_GAME_OVER_STATS_TEXT_4);
+    gui_dialog_wnd(&map_wnd, LC_GAME_OVER_HEAD, LC_GAME_OVER_HEAD, NULL, lines,
+                   8, NULL, 0, SOUND_ERROR, 1);
+
+    return 1;
+  }
+  return 0;
+}
+
+static int core_game_check_money_gone() {
+
+  if (gs.balance <= 0) {
+    char lines[9][100];
+    int i;
+
+    gui_bars_common_top();
+    gui_map_wnd_draw();
+
+    for (i = 0; i < 9; i++) {
+      lines[i][0] = '\0';
+    }
+
+    sprintf(lines[0], LC_GAME_OVER_MONEY_TEXT_1);
+    sprintf(lines[1], LC_GAME_OVER_MONEY_TEXT_1);
+    sprintf(lines[2], "   ");
+    sprintf(lines[3], LC_GAME_OVER_STATS_HEAD);
+    sprintf(lines[4], LC_GAME_OVER_STATS_TEXT_2, gs.missions_completed);
+    sprintf(lines[5], LC_GAME_OVER_STATS_TEXT_3, gs.balance);
+    sprintf(lines[6], "   ");
+    sprintf(lines[7], LC_GAME_OVER_STATS_TEXT_4);
+    gui_dialog_wnd(&map_wnd, LC_GAME_OVER_HEAD, LC_GAME_OVER_HEAD, NULL, lines,
+                   8, NULL, 0, SOUND_ERROR, 1);
 
     return 1;
   }
@@ -712,6 +773,8 @@ int core_game_run_event() {
   gs.fuel -= data_hyper_fuel[gs.hyper_class];
 
   game_over = core_game_check_fuel_gone();
+  game_over = core_game_check_money_gone();
+  game_over = core_game_check_win();
 
   if (!game_over){
       system_quests_size = 5;
@@ -731,6 +794,9 @@ int core_game_run_event() {
       core_game_gen_upgrades();
       core_game_gen_shipyard();
 
+      gui_bars_common_top();
+      gui_map_wnd_draw();
+
       /* Random events */
       if (rand() % 100 < (sol_list[gs.current_system].faction == 1 ? 30 : 10)) {
         int nested_over = core_game_event_hijack();
@@ -740,6 +806,9 @@ int core_game_run_event() {
         }
       }
 
+      gui_bars_common_top();
+      gui_map_wnd_draw();
+
       if (rand() % 100 < (sol_list[gs.current_system].faction == 2 ? 70 : 20) && sol_list[gs.current_system].is_shipyard ) {
           int nested_over = core_game_event_customs();
           if (gs.current_system != start_system) {
@@ -747,6 +816,9 @@ int core_game_run_event() {
                 return game_over;
             }
       }
+
+      gui_bars_common_top();
+      gui_map_wnd_draw();
 
       /* Kidnapping: 10% chance if player has at least one type 4 quest */
       for (i = 0; i < gs.quests_size; i++) {
@@ -763,7 +835,13 @@ int core_game_run_event() {
           }
       }
 
+      gui_bars_common_top();
+      gui_map_wnd_draw();
+
       core_game_event_quest_done();
+      gui_bars_common_top();
+      gui_map_wnd_draw();
+      game_over = core_game_check_win();
   }
 
   return game_over;
@@ -820,6 +898,8 @@ void core_game_event_quest_failed(int index)
 
     /* Apply penalty */
     gs.balance -= gs.quests[index].penalty;
+
+    gui_bars_common_top();
 
     /* Remove quest by shifting array left */
     for (i = index; i < gs.quests_size - 1; i++) {
@@ -886,6 +966,7 @@ int core_game_event_hijack()
     if (choice == pay_idx) {
         /* Pay ransom */
         gs.balance -= request;
+        gui_bars_common_top();
     } else if (choice == drop_idx) {
         /* Drop all cargo and fail corresponding quests */
         gs.current_cargo = 0;

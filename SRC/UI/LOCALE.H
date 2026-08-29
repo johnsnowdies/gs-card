@@ -287,6 +287,12 @@
 #define LC_GAME_OVER_FUEL_TEXT_1 "У вас закончилось топливо! Вы включили аварийный маяк"
 #define LC_GAME_OVER_FUEL_TEXT_2 "в наgежgе, что вас спасут..."
 
+#define LC_GAME_OVER_MONEY_TEXT_1 "У вас закончились gеньги! Вы проgали корабль"
+#define LC_GAME_OVER_MONEY_TEXT_2 "на ближайшей станции. Быть капитаном не gля вас..."
+
+#define LC_GAME_OVER_WIN_TEXT_1 "Вы накопили МИЛЛИОН креgитов! На ближайшей станции"
+#define LC_GAME_OVER_WIN_TEXT_2 "вы купили варп gвигатель и выкинули гребаную GS-CARD!"
+
 #define LC_GAME_OVER_STATS_HEAD "СТАТИСТИКА"
 #define LC_GAME_OVER_STATS_TEXT_1 "Посещено систем: %d"
 #define LC_GAME_OVER_STATS_TEXT_2 "Закрыто контрактов: %d"
