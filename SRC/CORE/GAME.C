@@ -53,7 +53,7 @@ char* data_ship_names[SHIP_COUNT] = {LC_GAME_SHIP_1, LC_GAME_SHIP_2,
                                      LC_GAME_SHIP_5, LC_GAME_SHIP_6};
 
 unsigned int data_ship_engines[SHIP_COUNT] = {0, 0, 1, 1, 3, 2};
-unsigned char data_ship_smuggler_bay[SHIP_COUNT] = { 0, 0, 1, 1, 0, 0};
+unsigned char data_ship_smuggler_bay[SHIP_COUNT] = { 0, 1, 1, 1, 0, 0};
 unsigned char data_ship_continuous_jump[SHIP_COUNT] = {0, 0, 1, 1, 1, 1};
 unsigned char data_ship_emergency_jump[SHIP_COUNT] = {0, 0, 0, 1, 1, 1};
 
@@ -75,6 +75,9 @@ char* data_sectors[SECTORS_COUNT] = {
     LC_GAME_SECTOR_4, LC_GAME_SECTOR_5, LC_GAME_SECTOR_6,
     LC_GAME_SECTOR_7, LC_GAME_SECTOR_8, LC_GAME_SECTOR_9};
 
+long ship_prices[SHIP_COUNT] = SHIP_UPGRADE_BASE_PRICES;
+long hyper_prices[HYPER_COUNT] = HYPER_UPGRADE_BASE_PRICES;
+long custom_prices[CUSTOM_UPGRADES_COUNT] = CUSTOM_UPGRADE_BASE_PRICES;
 
 /* ----------------------------------------------------------------
  * Visited solar systems tracking
@@ -606,7 +609,6 @@ void core_game_check_gas_station() {
 
 static void core_game_gen_shipyard(void) {
     int i, count = 0, faction;
-    long ship_prices[SHIP_COUNT] = SHIP_UPGRADE_BASE_PRICES;
 
     faction = sol_list[gs.current_system].faction;
     system_shipyard_size = 0;
@@ -616,6 +618,18 @@ static void core_game_gen_shipyard(void) {
     }
 
     for (i=0; i < SHIP_COUNT; i++){
+        /* Almighty's vessel only cor CSU */
+        if (i == 1 && faction != 0)
+            continue;
+
+        /* Ga-Bolg only for IMC */
+        if (i == 3 && faction != 1)
+            continue;
+
+        /* NOVA and Sashok only for Sentinels */
+        if ((i == 4 || i == 5) && faction != 2)
+            continue;
+
         system_shipyard[count].name = data_ship_names[i];
         system_shipyard[count].base_price = ship_prices[i];
 
@@ -671,8 +685,6 @@ int core_game_run_event() {
 
 void core_game_gen_upgrades(void) {
   int i, count = 0;
-  int hyper_prices[] = HYPER_UPGRADE_BASE_PRICES;
-  int custom_prices[] = CUSTOM_UPGRADE_BASE_PRICES;
 
   if (!sol_list[gs.current_system].is_shipyard) {
     system_upgrades_size = 0;

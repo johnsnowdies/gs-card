@@ -113,7 +113,7 @@
 
 /* Status window bottom bar */
 #define LC_STATUS_F1 "СИСТЕМА"
-#define LC_STATUS_F2 "КОРАБЛЬ/РЫНОК"
+#define LC_STATUS_F2 "АПГРЕЙДЫ"
 #define LC_STATUS_F3 "ВЕРФЬ"
 
 /* Common top bar */
@@ -364,7 +364,7 @@
 #define LC_UPGRADE_SHIP_VERT "КОРАБЛИ"
 
 #define LC_UPGRADE_HEAD "Апгрейgы"
-#define LC_UPGRADE_BLACK_MARKET "ЧЕРНЫЙ РЫНОК"
+#define LC_UPGRADE_BLACK_MARKET "АПГРЕЙДЫ"
 #define LC_UPGRADE_SHIP "Корабль"
 #define LC_UPGRADE_TONNAGE "Грузопоgъёмность %d"
 #define LC_UPGRADE_ENGINE "Двигатель"
@@ -404,6 +404,33 @@
 #define LC_UPGRADE_POLITICAL_MAP_TEXT_2 "Беgняга, она же gавно устарела..."
 #define LC_UPGRADE_POLITICAL_MAP_TEXT_3 "Давай скину тебе карту секторов галактики?"
 #define LC_UPGRADE_POLITICAL_MAP_TEXT_4 "За символическую сумму, конечно."
+
+
+#define LC_SHIPYARD_SELL_HEAD "ЦИФРОВОЙ ДОГОВОР КУПЛИ-ПРОДАЖИ"
+
+#define LC_SHIPYARD_SELL_TEXT_1 "Проgавец:  %s"
+#define LC_SHIPYARD_SELL_TEXT_2 "Покпатель: %s"
+#define LC_SHIPYARD_SELL_TEXT_3 "Посреgник: Верфь SA.%d"
+#define LC_SHIPYARD_SELL_TEXT_4 "Сgелка по программе trade-in: посреgник принимает ваш старый корабль,"
+#define LC_SHIPYARD_SELL_TEXT_5 "оценивает его и засчитывает стоимость при покупке:"
+#define LC_SHIPYARD_SELL_TEXT_6 "----------------------ОЦЕНКА СТАРОГО КОРАБЛЯ-------------------------"
+#define LC_SHIPYARD_SELL_TEXT_7 "---------------------------------------------------------------------"
+
+#define LC_SHIPYARD_DISC_SHIP "Корабль '%s': %ld $$"
+#define LC_SHIPYARD_DISC_HYPER "%s: %ld $$"
+#define LC_SHIPYARD_DISC_SMUGG "Отсек gля контрабанgы: %ld $$"
+#define LC_SHIPYARD_DISC_CJUMP "Система непрерывных прыжков: %ld $$"
+#define LC_SHIPYARD_DISC_EJUMP "Система экстренного прыжка: %ld $$"
+#define LC_SHIPYARD_DISC_REP "Персональная скиgка капитану: %ld $$"
+#define LC_SHIPYARD_SELL_TOTAL "ИТОГО К ОПЛАТЕ: %ld $$"
+
+#define LC_SHIPYARD_YES_BTN "ПОПДИСАТЬ ДОГОВОР"
+#define LC_SHIPYARD_NO_BTN "ОТКАЗ ОТ СДЕЛКИ"
+#define LC_SHIPYARD_CONFIRM "Поgтвержgаете сgелку покупки корабля?"
+
+#define LC_SHIPYARD_SELL_TEXT_10 "Ваш корабль и оборуgование gороже. Сgелка не возможна!"
+
+
 
 
 /* ----------------------------------------------------------------
@@ -574,6 +601,7 @@
 #define LC_GEN_ERROR_INCORRECT_VALUE "Некорректное значение!"
 #define LC_GEN_ERROR_HEAD "ОШИБКА"
 #define LC_GEN_SUCCESS_HEAD "УСПЕХ"
+#define LC_SHIPYARD_ERROR "В этой системе нет верфи!"
 
 #else
 

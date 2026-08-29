@@ -15,6 +15,8 @@ extern E_GAME_SCREEN cur_screen;
 extern E_GAME_SCREEN prev_screen;
 extern int system_upgrades_size;
 extern int upgrade_selected;
+extern GAME_STATE gs;
+extern SYSTEM* sol_list;
 
 /* ----------------------------------------------------------------
  * SCR_UPGRADES -- upgrades screen controller
@@ -32,9 +34,15 @@ int gui_upgrade_wnd_key(int ch, WND* parent) {
     sfx_screen_change();
   }
   if (F3 == ch) {
-    prev_screen = cur_screen;
-    cur_screen = SCR_SHIPYARD;
-    gui_shipyard_wnd();
+    if (sol_list[gs.current_system].is_shipyard){
+        prev_screen = cur_screen;
+        cur_screen = SCR_SHIPYARD;
+        gui_shipyard_wnd();
+    }else{
+        gui_warning_wnd(parent, LC_GEN_ERROR_HEAD, LC_SHIPYARD_ERROR, SOUND_ERROR);
+        getch();
+        gui_upgrade_wnd();
+    }
   }
   if (UP == ch) {
     if (upgrade_selected > 0) {

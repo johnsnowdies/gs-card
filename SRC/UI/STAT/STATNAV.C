@@ -30,6 +30,9 @@ extern WAYPOINT wp;
 extern E_GAME_SCREEN cur_screen;
 extern E_GAME_SCREEN prev_screen;
 
+extern GAME_STATE gs;
+extern SYSTEM* sol_list;
+
 
 /* ----------------------------------------------------------
  * SCR_STATUS -- status window
@@ -48,10 +51,16 @@ int gui_status_wnd_key(int ch, WND *parent)
         cur_screen = SCR_UPGRADE;
         gui_upgrade_wnd();
     }
-    if (F3 == ch){
-        prev_screen = cur_screen;
-        cur_screen = SCR_SHIPYARD;
-        gui_shipyard_wnd();
+    if (F3 == ch) {
+        if (sol_list[gs.current_system].is_shipyard){
+            prev_screen = cur_screen;
+            cur_screen = SCR_SHIPYARD;
+            gui_shipyard_wnd();
+        }else{
+            gui_warning_wnd(parent, LC_GEN_ERROR_HEAD, LC_SHIPYARD_ERROR, SOUND_ERROR);
+            getch();
+            gui_status_wnd();
+        }
     }
     if (ESC == ch) {
         prev_screen = cur_screen;

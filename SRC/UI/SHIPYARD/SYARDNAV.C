@@ -40,6 +40,9 @@ int gui_shipyard_wnd_key(int ch, WND* parent) {
     gui_upgrade_wnd();
     sfx_screen_change();
   }
+  if (ENTER == ch){
+      gui_shipyard_deal_wnd();
+  }
   if (UP == ch) {
     if (ship_selected > 0) {
       ship_selected--;

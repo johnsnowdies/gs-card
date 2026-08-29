@@ -112,7 +112,7 @@ E_GAME_SCREEN {
 #define UPGRADE struct upgrade
 UPGRADE {
     char *name;
-    int base_price;
+    long base_price;
     int type; 
     int id;
     NPC giver;
