@@ -343,6 +343,7 @@ void gui_shipyard_deal_wnd() {
             gs.balance -= final_price;
             gs.ship_type = system_shipyard[ship_selected].id;
             gs.tonnage = data_ship_tonnages[gs.ship_type];
+            gs.hyper_class = system_shipyard[ship_selected].hyper_class;
 
             gs.upgrade_smuggler_bay =
                 system_shipyard[ship_selected].upgrade_smuggler_bay;

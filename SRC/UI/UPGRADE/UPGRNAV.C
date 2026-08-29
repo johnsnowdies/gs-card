@@ -17,16 +17,17 @@ extern int system_upgrades_size;
 extern int upgrade_selected;
 extern GAME_STATE gs;
 extern SYSTEM* sol_list;
+extern WAYPOINT wp;
 
 /* ----------------------------------------------------------------
  * SCR_UPGRADES -- upgrades screen controller
  * ---------------------------------------------------------------- */
 int gui_upgrade_wnd_key(int ch, WND* parent) {
   if (TAB == ch) {
+    if (wp.size > 0) gui_map_path_wnd();
     cur_screen = SCR_MAP;
-    gui_bars_common_top();
+    gui_bars_map_bottom();
     gui_map_wnd_draw();
-    sfx_screen_change();
   }
   if (F1 == ch) {
     cur_screen = SCR_STATUS;

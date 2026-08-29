@@ -16,17 +16,17 @@ extern E_GAME_SCREEN cur_screen;
 extern E_GAME_SCREEN prev_screen;
 extern int system_shipyard_size;
 extern int ship_selected;
+extern WAYPOINT wp;
 
 /* ----------------------------------------------------------------
  * SCR_SHIPYARD - shipyard window navigation
  * ---------------------------------------------------------------- */
 int gui_shipyard_wnd_key(int ch, WND* parent) {
   if (TAB == ch) {
-    ship_selected = 0;
+    if (wp.size > 0) gui_map_path_wnd();
     cur_screen = SCR_MAP;
-    gui_bars_common_top();
+    gui_bars_map_bottom();
     gui_map_wnd_draw();
-    sfx_screen_change();
   }
   if (F1 == ch) {
     ship_selected = 0;

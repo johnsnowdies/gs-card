@@ -94,6 +94,7 @@ int game_is_visited(GAME_STATE *gs, int system) {
     return (gs->visited[system >> 3] >> (system & 7)) & 1;
 }
 
+unsigned int init_game = 0;
 
 /* ----------------------------------------------------------------
  * Initialise new game state
@@ -101,6 +102,7 @@ int game_is_visited(GAME_STATE *gs, int system) {
 void new_game(char* name, int sol_size) {
   int i;
 
+  init_game = 1;
   strcpy(gs.captain_name, name);
   gs.balance = DEBUG == 1? 999999: 500;
   gs.current_system = 85; 
@@ -149,7 +151,7 @@ int core_game_load(char *filename)
 {
 
     int result = 0;
-
+    init_game = 1;
     result = data_reader_load_game_file(&gs, filename);
 
     if (result == 1)
@@ -760,9 +762,8 @@ static void core_game_gen_upgrades(void) {
     }
   }
 
-  system_upgrades_size = count; 
+  system_upgrades_size = count;
 }
-
 
 int core_game_run_event() {
   int i = 0, game_over = 0;
@@ -776,24 +777,26 @@ int core_game_run_event() {
   game_over = core_game_check_money_gone();
   game_over = core_game_check_win();
 
-  if (!game_over){
-      system_quests_size = 5;
-      /* System quests generator */
-      for (i = 0; i < system_quests_size; i++) {
-        core_game_gen_quest(&system_quests[i], gs.reputation,
-                            sol_list[gs.current_system].faction);
-      }
+  if (!game_over) {
+    system_quests_size = 5;
+    /* System quests generator */
+    for (i = 0; i < system_quests_size; i++) {
+      core_game_gen_quest(&system_quests[i], gs.reputation,
+                          sol_list[gs.current_system].faction);
+    }
 
-      for (i = 0; i < gs.quests_size; i++)
-      {
-        gui_progress_wnd(&map_wnd, "GS-CARD 1.5", "Updating Quests", i, gs.quests_size);
-        gs.quests[i].jumps = core_finder_get_jumps(gs.current_system, gs.quests[i].target_system);
-      }
+    for (i = 0; i < gs.quests_size; i++) {
+      gui_progress_wnd(&map_wnd, "GS-CARD 1.5", "Updating Quests", i,
+                       gs.quests_size);
+      gs.quests[i].jumps =
+          core_finder_get_jumps(gs.current_system, gs.quests[i].target_system);
+    }
 
-      /* System upgrades market generator */
-      core_game_gen_upgrades();
-      core_game_gen_shipyard();
+    /* System upgrades market generator */
+    core_game_gen_upgrades();
+    core_game_gen_shipyard();
 
+    if (!init_game) {
       gui_bars_common_top();
       gui_map_wnd_draw();
 
@@ -801,20 +804,21 @@ int core_game_run_event() {
       if (rand() % 100 < (sol_list[gs.current_system].faction == 1 ? 30 : 10)) {
         int nested_over = core_game_event_hijack();
         if (gs.current_system != start_system) {
-            game_over = nested_over;
-            return game_over;
+          game_over = nested_over;
+          return game_over;
         }
       }
 
       gui_bars_common_top();
       gui_map_wnd_draw();
 
-      if (rand() % 100 < (sol_list[gs.current_system].faction == 2 ? 70 : 20) && sol_list[gs.current_system].is_shipyard ) {
-          int nested_over = core_game_event_customs();
-          if (gs.current_system != start_system) {
-                game_over = nested_over;
-                return game_over;
-            }
+      if (rand() % 100 < (sol_list[gs.current_system].faction == 2 ? 70 : 20) &&
+          sol_list[gs.current_system].is_shipyard) {
+        int nested_over = core_game_event_customs();
+        if (gs.current_system != start_system) {
+          game_over = nested_over;
+          return game_over;
+        }
       }
 
       gui_bars_common_top();
@@ -822,26 +826,30 @@ int core_game_run_event() {
 
       /* Kidnapping: 10% chance if player has at least one type 4 quest */
       for (i = 0; i < gs.quests_size; i++) {
-
-          if (gs.quests[i].type == 4) {
-              if (rand() % 100 < 10) {
-                  int nested_over = core_game_event_kidnapping(i);
-                  if (gs.current_system != start_system) {
-                    game_over = nested_over;
-                    return game_over;
-                }
-              }
-              break; /* only first type 4 quest triggers kidnapping */
+        if (gs.quests[i].type == 4) {
+          if (rand() % 100 < 10) {
+            int nested_over = core_game_event_kidnapping(i);
+            if (gs.current_system != start_system) {
+              game_over = nested_over;
+              return game_over;
+            }
           }
+          break; /* only first type 4 quest triggers kidnapping */
+        }
       }
 
       gui_bars_common_top();
       gui_map_wnd_draw();
 
       core_game_event_quest_done();
+
       gui_bars_common_top();
       gui_map_wnd_draw();
+
       game_over = core_game_check_win();
+    } else {
+        init_game = 0;
+    }
   }
 
   return game_over;
