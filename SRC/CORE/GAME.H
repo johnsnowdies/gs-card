@@ -50,15 +50,14 @@ int core_game_save(char *filename);
 
 int core_game_accept_quest(unsigned int index);
 
-
 void core_game_event_gas_station();
 
 void core_game_event_quest_failed(int index);
 
-void core_game_event_hijack();
+int core_game_event_hijack();
 
-void core_game_event_customs();
+int core_game_event_customs();
 
-void core_game_event_kidnapping();
+int core_game_event_kidnapping(int quest_index);
 
-void core_game_danger_object();
+void core_game_danger_object();

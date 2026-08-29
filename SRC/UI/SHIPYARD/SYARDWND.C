@@ -331,7 +331,7 @@ void gui_shipyard_deal_wnd() {
     {
       int result = gui_dialog_wnd(&shipyard_wnd, LC_SHIPYARD_SELL_HEAD,
                                   LC_SHIPYARD_SELL_HEAD, NULL, lines, line_cnt,
-                                  buttons, 2, NO_SOUND);
+                                  buttons, 2, NO_SOUND, 1);
 
       if (result == 0) {
         int confirm = gui_confirm_wnd(&shipyard_wnd, LC_SHIPYARD_SELL_HEAD,

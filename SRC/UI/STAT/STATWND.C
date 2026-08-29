@@ -94,7 +94,7 @@ void gui_status_quest_info(int selected) {
 
   result = gui_npc_wnd(
       &status_wnd, &system_quests[selected].giver, NPC_CHOICE_WND,
-      QUEST_TYPES[system_quests[selected].type], lines, 4, buttons, 2);
+      QUEST_TYPES[system_quests[selected].type], lines, 4, buttons, 2, 1);
 
   /* Quest info controller */
   if (result == 0) {

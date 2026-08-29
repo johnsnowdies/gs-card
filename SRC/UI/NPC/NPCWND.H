@@ -6,12 +6,6 @@ E_NPC_WND_TYPE {
     NPC_DIALOG_WND
 };
 
-int gui_npc_wnd(
-    WND* ptr_parent, 
-    NPC* ptr_npc, 
-    int wnd_type, 
-    char title[100], 
-    char lines[][100], 
-    int lines_count,
-    char buttons[][100],
-    int buttons_count);
+int gui_npc_wnd(WND* ptr_parent, NPC* ptr_npc, int wnd_type,
+                char title[100], char lines[][100], int lines_count,
+                char buttons[][100], int buttons_count, int buttons_orient);

@@ -12,6 +12,7 @@
 
 #include "ui/gui.h"
 #include "ui/npc/npcwnd.h"
+#include "ui/map/mapwnd.h"
 
 #include "music.h"
 
@@ -517,7 +518,7 @@ static int core_game_event_quest_done() {
       }
 
       gui_npc_wnd(&map_wnd, &gs.quests[i].giver, NPC_DIALOG_WND,
-                  LC_QUEST_COMPLETE_HEAD, lines, 2, NULL, 0);
+                  LC_QUEST_COMPLETE_HEAD, lines, 2, NULL, 0, 1);
 
       /* Remove Quest from user log */
       for (j = i; j < gs.quests_size; j++) {
@@ -553,7 +554,7 @@ static int core_game_check_fuel_gone() {
     sprintf(lines[7], "   ");
     sprintf(lines[8], LC_GAME_OVER_STATS_TEXT_4);
     gui_dialog_wnd(&map_wnd, LC_GAME_OVER_HEAD, LC_GAME_OVER_HEAD, NULL, lines,
-                   9, NULL, 0, SOUND_ERROR);
+                   9, NULL, 0, SOUND_ERROR, 1);
 
     return 1;
   }
@@ -592,12 +593,12 @@ void core_game_event_gas_station() {
       /* Not enough money! */
       sprintf(lines[2], LC_GAME_GAS_STATION_NO_MONEY_TEXT, total);
       gui_npc_wnd(&map_wnd, &gas_worker, NPC_DIALOG_WND,
-                  LC_GAME_GAS_STATION_HEAD, lines, 3, NULL, 0);
+                  LC_GAME_GAS_STATION_HEAD, lines, 3, NULL, 0, 1);
 
     } else {
       sprintf(lines[2], LC_GAME_GAS_STATION_TEXT_3, total);
       choice = gui_npc_wnd(&map_wnd, &gas_worker, NPC_CHOICE_WND,
-                           LC_GAME_GAS_STATION_HEAD, lines, 3, buttons, 2);
+                           LC_GAME_GAS_STATION_HEAD, lines, 3, buttons, 2, 1);
 
       if (choice == 0) {
         gs.fuel = 100;
@@ -705,6 +706,7 @@ static void core_game_gen_upgrades(void) {
 int core_game_run_event() {
   int i = 0, game_over = 0;
   char buf[50];
+  int start_system = gs.current_system;
 
   game_mark_visited(&gs, gs.current_system);
   gs.fuel -= data_hyper_fuel[gs.hyper_class];
@@ -727,8 +729,39 @@ int core_game_run_event() {
 
       /* System upgrades market generator */
       core_game_gen_upgrades();
-
       core_game_gen_shipyard();
+
+      /* Random events */
+      if (rand() % 100 < (sol_list[gs.current_system].faction == 1 ? 30 : 10)) {
+        int nested_over = core_game_event_hijack();
+        if (gs.current_system != start_system) {
+            game_over = nested_over;
+            return game_over;
+        }
+      }
+
+      if (rand() % 100 < (sol_list[gs.current_system].faction == 2 ? 70 : 20) && sol_list[gs.current_system].is_shipyard ) {
+          int nested_over = core_game_event_customs();
+          if (gs.current_system != start_system) {
+                game_over = nested_over;
+                return game_over;
+            }
+      }
+
+      /* Kidnapping: 10% chance if player has at least one type 4 quest */
+      for (i = 0; i < gs.quests_size; i++) {
+
+          if (gs.quests[i].type == 4) {
+              if (rand() % 100 < 10) {
+                  int nested_over = core_game_event_kidnapping(i);
+                  if (gs.current_system != start_system) {
+                    game_over = nested_over;
+                    return game_over;
+                }
+              }
+              break; /* only first type 4 quest triggers kidnapping */
+          }
+      }
 
       core_game_event_quest_done();
   }
@@ -736,24 +769,327 @@ int core_game_run_event() {
   return game_over;
 }
 
+/* -----------------------------------------------------------------
+ * Quest failed: show penalty, deduct balance, remove quest
+ * ---------------------------------------------------------------- */
 void core_game_event_quest_failed(int index)
 {
+    int type, i;
+    char lines[2][100];
+    char header[80];
 
+    if (index < 0 || index >= gs.quests_size)
+        return;
+
+    type = gs.quests[index].type;
+
+    /* Select failure text by quest type */
+    switch (type) {
+        case 1:
+            strcpy(lines[0], LC_QUEST_TYPE_1_FAIL_1);
+            sprintf(lines[1], LC_QUEST_TYPE_1_FAIL_2, gs.quests[index].penalty);
+            break;
+        case 2:
+            strcpy(lines[0], LC_QUEST_TYPE_2_FAIL_1);
+            sprintf(lines[1], LC_QUEST_TYPE_2_FAIL_2, gs.quests[index].penalty);
+            break;
+        case 3:
+            strcpy(lines[0], LC_QUEST_TYPE_3_FAIL_1);
+            sprintf(lines[1], LC_QUEST_TYPE_3_FAIL_2, gs.quests[index].penalty);
+            break;
+        case 4:
+            strcpy(lines[0], LC_QUEST_TYPE_4_FAIL_1);
+            sprintf(lines[1], LC_QUEST_TYPE_4_FAIL_2, gs.quests[index].penalty);
+            break;
+        case 5:
+            strcpy(lines[0], LC_QUEST_TYPE_5_FAIL_1);
+            sprintf(lines[1], LC_QUEST_TYPE_5_FAIL_2, gs.quests[index].penalty);
+            break;
+        default:
+            strcpy(lines[0], "Quest failed.");
+            sprintf(lines[1], "Penalty: %ld", gs.quests[index].penalty);
+            break;
+    }
+
+    strcpy(header, LC_QUEST_FAILED_HEAD);
+
+    gui_map_wnd_draw();
+    gui_npc_wnd(&map_wnd, &gs.quests[index].giver, NPC_DIALOG_WND,
+                header, lines, 2, NULL, 0, 1);
+    gui_map_wnd_draw();
+
+    /* Apply penalty */
+    gs.balance -= gs.quests[index].penalty;
+
+    /* Remove quest by shifting array left */
+    for (i = index; i < gs.quests_size - 1; i++) {
+        gs.quests[i] = gs.quests[i + 1];
+    }
+    gs.quests_size--;
 }
 
-void core_game_event_hijack()
+/* -----------------------------------------------------------------
+ * Hijack event
+ * ---------------------------------------------------------------- */
+int core_game_event_hijack()
 {
+    int ship_type, faction, i;
+    long request;
+    NPC hijacker;
+    char lines[2][100];
+    char buttons[3][100];
+    int btn_count = 0;
+    int pay_idx = -1, drop_idx = -1, ejump_idx = -1;
+    int choice;
 
+    ship_type = gs.ship_type;
+
+    /* Ransom amount based on ship type */
+    switch (ship_type) {
+        case 0: request = 1000 + rand() % 1001; break;   /* 1000..2000 */
+        case 1: request = 1000 + rand() % 2001; break;   /* 1000..3000 */
+        case 2: request = 1000 + rand() % 4001; break;   /* 1000..5000 */
+        case 3: request = 1000 + rand() % 4001; break;   /* same as 2 */
+        case 4: request = 1000 + rand() % 9001; break;   /* 1000..10000 */
+        case 5: request = 1000 + rand() % 19001; break;  /* 1000..20000 */
+        default: request = 1000 + rand() % 1001;
+    }
+
+    /* Generate hijacker: 90% Irish */
+    if ((rand() % 100) < 90)
+        faction = 1;
+    else
+        faction = rand() % 4;
+    core_game_gen_npc(&hijacker, faction, RANDOM_GENDER, QUEST_NPC);
+
+    strcpy(lines[0], LC_EVENT_HIJACK_TEXT_1);
+    sprintf(lines[1], LC_EVENT_HIJACK_TEXT_2, request);
+
+    /* Build active buttons */
+    if (gs.balance >= request) {
+        pay_idx = btn_count;
+        strcpy(buttons[btn_count], LC_EVENT_HIJACK_PAY_BTN);
+        btn_count++;
+    }
+    drop_idx = btn_count;
+    strcpy(buttons[btn_count], LC_EVENT_HIJACK_DROP_BTN);
+    btn_count++;
+    if (gs.upgrade_emergency_jump) {
+        ejump_idx = btn_count;
+        strcpy(buttons[btn_count], LC_EVENT_EJUMP_BTN);
+        btn_count++;
+    }
+
+    choice = gui_npc_wnd(&map_wnd, &hijacker, NPC_CHOICE_WND,
+                         LC_EVENT_HIJACK_HEAD, lines, 2, buttons, btn_count, 2);
+
+    if (choice == pay_idx) {
+        /* Pay ransom */
+        gs.balance -= request;
+    } else if (choice == drop_idx) {
+        /* Drop all cargo and fail corresponding quests */
+        gs.current_cargo = 0;
+        for (i = gs.quests_size - 1; i >= 0; i--) {
+            if (gs.quests[i].type == 1 ||
+                gs.quests[i].type == 2 ||
+                (gs.quests[i].type == 3 && !gs.upgrade_smuggler_bay)) {
+                core_game_event_quest_failed(i);
+            }
+        }
+    } else if (choice == ejump_idx) {
+        /* Emergency jump */
+        int current = gs.current_system;
+        int thread_count = sol_list[current].threadSize;
+        if (thread_count > 0) {
+            int selected = rand() % thread_count;
+            gs.current_system = sol_list[current].threads[selected].value;
+            wp.size = 0;
+            return core_game_run_event();
+        }
+    }
+    return 0;
 }
 
-void core_game_event_customs()
+/* -----------------------------------------------------------------
+ * Customs event
+ * ---------------------------------------------------------------- */
+int core_game_event_customs()
 {
+    int faction, i;
+    long bribe;
+    NPC customs_officer;
+    char lines[2][100];
+    char buttons[3][100];
+    int btn_count = 0;
+    int bribe_idx = -1, allow_idx = -1, ejump_idx = -1;
+    int has_contraband = 0;
+    int choice;
 
+    faction = sol_list[gs.current_system].faction;
+    core_game_gen_npc(&customs_officer, faction, RANDOM_GENDER, QUEST_NPC);
+
+    /* Bribe amount 500..2000 */
+    bribe = 500 + rand() % 1501;
+
+    sprintf(lines[0], LC_EVENT_CUSTOMS_TEXT_1);
+    sprintf(lines[1], LC_EVENT_CUSTOMS_TEXT_2, gs.current_system,
+            data_sectors[sol_list[gs.current_system].sector]);
+
+    /* Check for contraband (type 3) quests */
+    for (i = 0; i < gs.quests_size; i++) {
+        if (gs.quests[i].type == 3) {
+            has_contraband = 1;
+            break;
+        }
+    }
+
+    /* Build buttons */
+    if (has_contraband) {
+        bribe_idx = btn_count;
+        strcpy(buttons[btn_count], LC_EVENT_CUSTOM_BARB_BTN);
+        btn_count++;
+    }
+    allow_idx = btn_count;
+    strcpy(buttons[btn_count], LC_EVENT_CUSTOM_ALLOW_BTN);
+    btn_count++;
+    if (gs.upgrade_emergency_jump) {
+        ejump_idx = btn_count;
+        strcpy(buttons[btn_count], LC_EVENT_EJUMP_BTN);
+        btn_count++;
+    }
+
+    choice = gui_npc_wnd(&map_wnd, &customs_officer, NPC_CHOICE_WND,
+                         LC_EVENT_CUSTOMS_HEAD, lines, 2, buttons, btn_count, 2);
+
+    if (choice == bribe_idx) {
+        /* Pay bribe */
+        gs.balance -= bribe;
+        gui_map_wnd_draw();
+        strcpy(lines[0], LC_EVENT_CUSTOMS_TEXT_3);
+        gui_npc_wnd(&map_wnd, &customs_officer, NPC_DIALOG_WND,
+                    LC_EVENT_CUSTOMS_HEAD, lines, 1, NULL, 0, 1);
+    } else if (choice == allow_idx) {
+        /* Allow inspection */
+        gui_map_wnd_draw();
+        if (!has_contraband || gs.upgrade_smuggler_bay) {
+            strcpy(lines[0], LC_EVENT_CUSTOMS_TEXT_4);
+            gui_npc_wnd(&map_wnd, &customs_officer, NPC_DIALOG_WND,
+                        LC_EVENT_CUSTOMS_HEAD, lines, 1, NULL, 0, 1);
+        } else {
+            /* Confiscate first contraband quest */
+            for (i = 0; i < gs.quests_size; i++) {
+                if (gs.quests[i].type == 3) {
+                    strcpy(lines[0], LC_EVENT_CUSTOMS_TEXT_4);
+                    gui_npc_wnd(&map_wnd, &customs_officer, NPC_DIALOG_WND,
+                                LC_EVENT_CUSTOMS_HEAD, lines, 1, NULL, 0, 1);
+                    core_game_event_quest_failed(i);
+                    break;
+                }
+            }
+        }
+    } else if (choice == ejump_idx) {
+        /* Emergency jump */
+        int current = gs.current_system;
+        int thread_count = sol_list[current].threadSize;
+        if (thread_count > 0) {
+            int selected = rand() % thread_count;
+            gs.current_system = sol_list[current].threads[selected].value;
+            wp.size = 0;
+            return core_game_run_event();
+        }
+    }
+
+    return 0;
 }
 
-void core_game_event_kidnapping()
+/* -----------------------------------------------------------------
+ * Kidnapping event
+ * ---------------------------------------------------------------- */
+int core_game_event_kidnapping(int quest_index)
 {
+    NPC kidnapper;
+    int faction;
+    char lines[2][100];
+    char msg[100];
+    char buttons[3][100];
+    int btn_count = 0;
+    int hide_idx = -1, give_idx = -1, ejump_idx = -1;
+    int choice;
+    QUEST *quest;
 
+    if (quest_index < 0 || quest_index >= gs.quests_size)
+        return 0;
+
+    quest = &gs.quests[quest_index];
+
+    /* Generate kidnapper: 90% Irish */
+    if ((rand() % 100) < 90)
+        faction = 1;
+    else
+        faction = rand() % 4;
+    core_game_gen_npc(&kidnapper, faction, RANDOM_GENDER, QUEST_NPC);
+
+    sprintf(lines[0], LC_EVENT_NAP_TEXT_1, quest->giver.name);
+    strcpy(lines[1], LC_EVENT_NAP_TEXT_2);
+
+    /* Build buttons */
+    if (gs.upgrade_smuggler_bay) {
+        hide_idx = btn_count;
+        strcpy(buttons[btn_count], LC_EVENT_NAP_HIDE_BTN);
+        btn_count++;
+    }
+    give_idx = btn_count;
+    strcpy(buttons[btn_count], LC_EVENT_NAP_GIVE_BTN);
+    btn_count++;
+    if (gs.upgrade_emergency_jump) {
+        ejump_idx = btn_count;
+        strcpy(buttons[btn_count], LC_EVENT_EJUMP_BTN);
+        btn_count++;
+    }
+    choice = gui_npc_wnd(&map_wnd, &kidnapper, NPC_CHOICE_WND,
+                         LC_EVENT_NAP_HEAD, lines, 2, buttons, btn_count, 2);
+
+    if (choice == hide_idx) {
+        /* Hide NPC, reward half */
+        long half_reward = quest->reward / 2;
+        char single_line[1][100];
+
+        sprintf(single_line[0], LC_EVENT_NAP_THANK, half_reward);
+        gui_map_wnd_draw();
+        gui_npc_wnd(&map_wnd, &quest->giver, NPC_DIALOG_WND,
+                    LC_EVENT_NAP_HEAD, single_line, 1, NULL, 0, 1);
+        gs.balance += half_reward;
+    } else if (choice == give_idx) {
+        /* Give NPC, fail quest */
+        char single_line[1][100];
+
+        strcpy(single_line[0], LC_EVENT_NAP_FAIL);
+        gui_map_wnd_draw();
+        gui_npc_wnd(&map_wnd, &kidnapper, NPC_DIALOG_WND,
+                    LC_EVENT_NAP_HEAD, single_line, 1, NULL, 0, 1);
+        core_game_event_quest_failed(quest_index);
+    } else if (choice == ejump_idx) {
+        /* Emergency jump */
+            int current = gs.current_system;
+            int thread_count = sol_list[current].threadSize;
+            
+
+            if (thread_count > 0) {
+                int selected = rand() % thread_count;
+                long half_reward = quest->reward / 2;
+                char single_line[1][100];
+                sprintf(single_line[0], LC_EVENT_NAP_THANK, half_reward);
+                gui_map_wnd_draw();
+                gui_npc_wnd(&map_wnd, &quest->giver, NPC_DIALOG_WND,
+                            LC_EVENT_NAP_HEAD, single_line, 1, NULL, 0, 1);
+                gs.balance += half_reward;
+
+                gs.current_system = sol_list[current].threads[selected].value;
+                wp.size = 0;
+                return core_game_run_event();
+            }
+    }
+    return 0;
 }
 
 void core_game_danger_object()

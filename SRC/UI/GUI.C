@@ -430,12 +430,13 @@ void gui_progress_wnd(WND* ptr_parent, char* header, char* text, int current, in
 
 int gui_dialog_wnd(WND* parent, char* header, char* title, char* photo_file,
                    char lines[][100], int lines_count, char buttons[][100],
-                   int buttons_count, int play_sound) {
+                   int buttons_count, int play_sound, int buttons_orient) {
   WND dialog;
   int i, max_line_width = 0, btn_width = 0, btn_height = 0, btn_gap = 15;
-  int btn_total_width = 0, max_content_width, content_height, btn_holder_y;
+  int btn_total_width = 0, btn_total_height = 0, max_content_width, content_height;
   int photo_present = (photo_file != NULL && photo_file[0] != '\0');
 
+  /* Расчёт ширины текста */
   settextstyle(SMALL_FONT, HORIZ_DIR, 4);
   for (i = 0; i < lines_count; i++) {
     int w = textwidth(lines[i]);
@@ -446,6 +447,7 @@ int gui_dialog_wnd(WND* parent, char* header, char* title, char* photo_file,
   if (textwidth(title) > max_line_width)
     max_line_width = textwidth(title);
 
+  /* btn sizes */
   if (buttons_count > 0) {
     if (buttons_count > MAX_BTNS) buttons_count = MAX_BTNS;
     for (i = 0; i < buttons_count; i++) {
@@ -456,7 +458,14 @@ int gui_dialog_wnd(WND* parent, char* header, char* title, char* photo_file,
     }
     btn_width += 20;
     btn_height += 10;
-    btn_total_width = buttons_count * btn_width + (buttons_count - 1) * btn_gap;
+
+    if (buttons_orient == 1) { /* horizontal */
+      btn_total_width = buttons_count * btn_width + (buttons_count - 1) * btn_gap;
+      btn_total_height = btn_height;
+    } else { /* vertical */
+      btn_total_width = btn_width;
+      btn_total_height = buttons_count * btn_height + (buttons_count - 1) * btn_gap;
+    }
   }
 
   max_content_width = max_line_width;
@@ -470,7 +479,7 @@ int gui_dialog_wnd(WND* parent, char* header, char* title, char* photo_file,
 
   content_height = 65 + (lines_count * 15);
   if (buttons_count > 0) {
-    content_height += 20 + btn_height + 10;
+    content_height += 20 + btn_total_height + 10;
   }
   dialog.height = (content_height > WND_DIALOG_DEFAULT_HEIGHT)
                       ? content_height
@@ -501,43 +510,40 @@ int gui_dialog_wnd(WND* parent, char* header, char* title, char* photo_file,
   }
 
   switch (play_sound) {
-    case NO_SOUND:
-      break;
-    case SOUND_WARNING:
-      sfx_modal();
-      break;
-    case SOUND_ERROR:
-      sfx_error();
-      break;
-    case SOUND_SUCCESS:
-      sfx_hyperjump();
-      break;
+    case NO_SOUND: break;
+    case SOUND_WARNING: sfx_modal(); break;
+    case SOUND_ERROR: sfx_error(); break;
+    case SOUND_SUCCESS: sfx_hyperjump(); break;
   }
-
 
   {
     WND btn_holder;
     BTN btn_list[MAX_BTNS];
     int choice = 0;
-    int total = btn_total_width;
 
     btn_holder.y = dialog.y + 65 + (lines_count + 1) * 15;
     btn_holder.x = dialog.x + (photo_present ? 160 : 10);
     btn_holder.width = max_content_width;
-    btn_holder.height = btn_height;
+    btn_holder.height = btn_total_height;
 
     for (i = 0; i < buttons_count; i++) {
       btn_list[i].text = buttons[i];
       btn_list[i].width = btn_width;
       btn_list[i].height = btn_height;
-      btn_list[i].y = btn_holder.y;
       btn_list[i].enabled = 1;
       btn_list[i].visible = 1;
       btn_list[i].selected = 0;
-      if (i == 0) {
-        btn_list[i].x = btn_holder.x + (btn_holder.width - total) / 2;
-      } else {
-        btn_list[i].x = btn_list[i - 1].x + btn_list[i - 1].width + btn_gap;
+
+      if (buttons_orient == 1) { /* horizontal */
+        if (i == 0) {
+          btn_list[i].x = btn_holder.x + (btn_holder.width - btn_total_width) / 2;
+        } else {
+          btn_list[i].x = btn_list[i - 1].x + btn_list[i - 1].width + btn_gap;
+        }
+        btn_list[i].y = btn_holder.y;
+      } else { /* vertical */
+        btn_list[i].x = btn_holder.x + (btn_holder.width - btn_width) / 2;
+        btn_list[i].y = btn_holder.y + i * (btn_height + btn_gap);
       }
     }
 

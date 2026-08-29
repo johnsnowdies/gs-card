@@ -236,7 +236,7 @@ void gui_upgrade_show_info(int selected)
 
         {
             int result = gui_npc_wnd(&upgrade_wnd, &system_upgrades[selected].giver, NPC_CHOICE_WND,
-                                     system_upgrades[selected].name, lines, 4, buttons, 2);
+                                     system_upgrades[selected].name, lines, 4, buttons, 2, 1);
 
             if (result == 0) { 
                 if (gs.balance >= final_price) {

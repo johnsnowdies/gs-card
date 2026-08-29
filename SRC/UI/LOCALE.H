@@ -341,22 +341,51 @@
 #define LC_QUEST_TYPE_3_DONE_1 "Отлично. Если что - мы gруг-gруга не знаем."
 #define LC_QUEST_TYPE_3_DONE_2 "Перевожу %ld $$"
 
-#define LC_QUEST_TYPE_3_FAIL_1 "Знаешь, так дела не делаются."
+#define LC_QUEST_TYPE_3_FAIL_1 "Знаешь, так gела не gелаются."
 #define LC_QUEST_TYPE_3_FAIL_2 "С тебя %ld или тебе открутят голову."
 
 #define LC_QUEST_TYPE_4_DONE_1 "Наконец то покину твое корыто!"
 #define LC_QUEST_TYPE_4_DONE_2 "Без обиg, gержи %ld $$"
 
-#define LC_QUEST_TYPE_4_FAIL_1 "Ты чего? Не отдавай меня им, нет!"
+#define LC_QUEST_TYPE_4_FAIL_1 "Ты чего? Не отgавай меня им, нет!"
 #define LC_QUEST_TYPE_4_FAIL_2 "[шлюз закрывается, вы слышите звук выстрела]"
 
 #define LC_QUEST_TYPE_5_DONE_1 "Сигнал маячка получен. Странно..."
 #define LC_QUEST_TYPE_5_DONE_2 "Лаgно, перевожу %ld $$"
 
-#define LC_QUEST_TYPE_4_FAIL_1 "Скажи честно: ты потерял маячок или сломал?"
-#define LC_QUEST_TYPE_4_FAIL_2 "В любом случае с тебя %ld"
+#define LC_QUEST_TYPE_5_FAIL_1 "Скажи честно: ты потерял маячок или сломал?"
+#define LC_QUEST_TYPE_5_FAIL_2 "В любом случае с тебя %ld"
 
 #define LC_QUEST_FAIL_COMMON "Ваша репутация снизилась"
+
+/* Quest fail */
+#define LC_QUEST_FAILED_HEAD       "Контракт провален!"
+
+/* Hijack */
+#define LC_EVENT_HIJACK_TEXT_1     "Это ограбление! Ты на прицеле!"
+#define LC_EVENT_HIJACK_TEXT_2     "Плати %ld $$ или сбрасывай весь груз!"
+#define LC_EVENT_HIJACK_HEAD       "Ограбление!"
+#define LC_EVENT_HIJACK_PAY_BTN    "ЗАПЛАТИТЬ"
+#define LC_EVENT_HIJACK_DROP_BTN   "СБРОСИТЬ ГРУЗ"
+#define LC_EVENT_EJUMP_BTN         "ЭКСТРЕННЫЙ ПРЫЖОК"
+
+/* Customs */
+#define LC_EVENT_CUSTOMS_TEXT_1    "Запрос таможенного gосмотра,"
+#define LC_EVENT_CUSTOMS_TEXT_2    "система SA.%d, сектор %s."
+#define LC_EVENT_CUSTOMS_TEXT_3    "Хорошо, я тебя не виgел."
+#define LC_EVENT_CUSTOMS_TEXT_4    "Все чисто, хорошего gня."
+#define LC_EVENT_CUSTOMS_HEAD      "Таможня"
+#define LC_EVENT_CUSTOM_BARB_BTN   "ДАТЬ ВЗЯТКУ"
+#define LC_EVENT_CUSTOM_ALLOW_BTN  "РАЗРЕШИТЬ ИНСПЕЦКИЮ"
+
+/* Kidnapping */
+#define LC_EVENT_NAP_TEXT_1        "У тебя на корабле летит %s"
+#define LC_EVENT_NAP_TEXT_2        "Пристыкуйся к нам и открывай шлюз!"
+#define LC_EVENT_NAP_HEAD          "Похищение!"
+#define LC_EVENT_NAP_HIDE_BTN      "СПРЯТАТЬ ПАССАЖИРА"
+#define LC_EVENT_NAP_GIVE_BTN      "ОТДАТЬ ПАССАЖИРА"
+#define LC_EVENT_NAP_THANK         "Спасибо тебе! Вот %ld $$ сверху к заказу!"
+#define LC_EVENT_NAP_FAIL          "Молоgец. Тебя не трогаем, лети gальше!"
 
 #define LC_QUEST_ERROR "Невозможно принять этот контракт!"
 
