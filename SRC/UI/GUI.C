@@ -624,8 +624,64 @@ void gui_draw_status_line(WND* ptr_wnd, char* keys[], char* items[], int highlig
     gui_memory_status();
 }
 
-
-void gui_game_over(WND* parent)
+void gui_draw_section_header(int x, int y, int width, char *title)
 {
-    
+    int points[6];
+    int tx, ty;
+
+    /* Main solid bar */
+    setfillstyle(SOLID_FILL, RED);
+    bar(x, y - 50, x + width, y - 20);
+
+    /* Title text */
+    setcolor(0);
+    settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
+    outtextxy(x + 10, y - 42, title);
+
+    /* Pattern area from right of text to the edge */
+    setfillstyle(BKSLASH_FILL, RED);
+    tx = x + textwidth(title) + 20;
+    ty = y - 20;
+    bar(tx, ty, x + width, y - 50);
+
+    /* Triangle overlay for smooth transition */
+    points[0] = tx + 2;        points[1] = ty - 30;
+    points[2] = tx + 32;   points[3] = ty;
+    points[4] = tx + 2;        points[5] = ty;
+
+    setcolor(RED);
+    setfillstyle(SOLID_FILL, RED);
+    bar(tx, ty-30, tx+2, ty);
+    fillpoly(3, points);
+}
+
+void gui_draw_section_header_v(int x, int y, int width, int height, char *title)
+{
+    int points[6];
+    int tx, ty;
+
+    /* Main vertical solid bar */
+    setfillstyle(SOLID_FILL, RED);
+    bar(x, y, x + width, y + height);
+
+    /* Vertical title */
+    setcolor(0);
+    settextstyle(DEFAULT_FONT, VERT_DIR, 2);
+    outtextxy(x + 10 + textheight(title), y + 10, title);
+
+    /* Compute where text ends vertically */
+    ty = y + 10 + textwidth(title) + 10;
+
+    /* Pattern fill from end of text to bottom */
+    setfillstyle(BKSLASH_FILL, RED);
+    bar(x, ty, x + width, y + height);
+
+    /* Triangle at bottom for transition */
+    points[0] = x;               points[1] = ty;      /* bottom-left */
+    points[2] = x + width;       points[3] = ty;      /* bottom-right */
+    points[4] = x + width;       points[5] = ty + 40; /* top-left */
+
+    setcolor(RED);
+    setfillstyle(SOLID_FILL, RED);
+    fillpoly(3, points);
 }

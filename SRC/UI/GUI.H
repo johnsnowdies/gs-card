@@ -121,3 +121,11 @@ void gui_draw_status_line(WND* ptr_wnd, char* keys[], char* items[], int highlig
 
 /* Memory status (fixed) */
 void gui_memory_status(void);
+
+/* Draw section header: red bar, title, pattern fill and transition triangle.
+   x, y     - top-left corner of the window (y is baseline for 30px high bar)
+   width    - full width of the bar
+   title    - header text (ASCII)
+*/
+void gui_draw_section_header(int x, int y, int width, char *title);
+void gui_draw_section_header_v(int x, int y, int width, int height, char *title);

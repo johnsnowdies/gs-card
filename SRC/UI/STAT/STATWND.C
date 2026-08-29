@@ -124,28 +124,8 @@ void gui_status_quest_list(WND* status_wnd) {
 
   y_pos = status_wnd->y + 220;
   x_pos = status_wnd->x + 10;
-
-  settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
   
-  setfillstyle(SOLID_FILL, BLACK);
-  bar(x_pos, y_pos -15, status_wnd->x + status_wnd->width - 11, y_pos + 50);
-
-  setfillstyle(SOLID_FILL, RED);
-  bar(status_wnd->x, y_pos - 20, status_wnd->x + status_wnd->width, y_pos - 50);
-
-  setfillstyle(BKSLASH_FILL, RED);
-  tx = status_wnd->x + textwidth(LC_QUEST_NEW_HEAD) + 20;
-  ty = y_pos - 20;
-  bar(tx, ty, status_wnd->x + status_wnd->width, y_pos - 50);
-
-  points[0] = tx;        points[1] = ty - 30;
-  points[2] = tx + 30;   points[3] = ty;
-  points[4] = tx;        points[5] = ty;
-
-  setcolor(RED);             
-  setfillstyle(SOLID_FILL, RED);
-  fillpoly(3, points);       
-
+  gui_draw_section_header(status_wnd->x, y_pos, status_wnd->width, LC_QUEST_NEW_HEAD);
 
   /* New Contracts Section */
   setcolor(0);
@@ -159,6 +139,8 @@ void gui_status_quest_list(WND* status_wnd) {
   outtextxy(x_pos, y_pos - 15, line);
   setcolor(15);
 
+  setfillstyle(SOLID_FILL, BLACK);
+  bar(x_pos, y_pos, status_wnd->x + status_wnd->width - 11, y_pos + (system_quests_size * 10));
   for (i = 0; i < system_quests_size; i++) {
     char buf[128], system[16];
     sprintf(system, "SA.%d", system_quests[i].target_system);
@@ -177,26 +159,7 @@ void gui_status_quest_list(WND* status_wnd) {
   }
 
   y_pos += 120;
-  
-  /* My Contracts Section */
-  settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
-
-  setfillstyle(SOLID_FILL, RED);
-  bar(status_wnd->x, y_pos - 20, status_wnd->x + status_wnd->width, y_pos - 50);
-
-  setfillstyle(BKSLASH_FILL, RED);
-
-  tx = status_wnd->x + textwidth(LC_QUEST_MY_HEAD) + 20;
-  ty = y_pos - 20;
-  bar(tx, ty, status_wnd->x + status_wnd->width, y_pos - 50);
-
-  points[0] = tx;        points[1] = ty - 30;
-  points[2] = tx + 30;   points[3] = ty;
-  points[4] = tx;        points[5] = ty;
-
-  setcolor(RED);             
-  setfillstyle(SOLID_FILL, RED);
-  fillpoly(3, points);       
+  gui_draw_section_header(status_wnd->x, y_pos, status_wnd->width, LC_QUEST_MY_HEAD); 
 
   setcolor(0);
   
@@ -238,11 +201,13 @@ void draw_player_status(WND* status_wnd) {
           data_sectors[sol_list[gs.current_system].sector]);
   sprintf(systems_visited, LC_GAME_OVER_STATS_TEXT_1, *gs.visited);
   sprintf(quests_done, LC_GAME_OVER_STATS_TEXT_2, gs.missions_completed);
+  
+  /*
   {
     char ship_image[50];
     sprintf(ship_image, "SHIPS/SHIP_%u.BMP", gs.ship_type + 1);
     data_reader_draw_bmp(ship_image, 339, 22);
-  }
+  }*/
 
   
   settextstyle(SMALL_FONT, HORIZ_DIR, 5);
@@ -260,9 +225,9 @@ void draw_player_status(WND* status_wnd) {
 void gui_status_wnd() {
   status_wnd.header = NULL;
   status_wnd.x = 0;
-  status_wnd.y = 22;
+  status_wnd.y = 21;
   status_wnd.width = 639;
-  status_wnd.height = 438;
+  status_wnd.height = 439;
 
   gui_draw_wnd_proto(&status_wnd);
 

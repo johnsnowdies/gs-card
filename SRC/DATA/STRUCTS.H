@@ -85,6 +85,7 @@ GAME_STATE {
   unsigned char upgrade_smuggler_bay;
   unsigned char upgrade_continuous_jump;
   unsigned char upgrade_emergency_jump;
+
   unsigned char upgrade_objects_map;
   unsigned char upgrade_political_map;
   
@@ -118,10 +119,13 @@ UPGRADE {
 };
 
 #define SHIP struct ship
-SHIP
-{
-    char *name;
-    int base_price;
-    int id;
-    NPC giver;
+SHIP {
+  char* name;
+  long base_price;
+  int id;
+  NPC giver;
+  unsigned int hyper_class;
+  unsigned char upgrade_smuggler_bay;
+  unsigned char upgrade_continuous_jump;
+  unsigned char upgrade_emergency_jump;
 };

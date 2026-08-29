@@ -763,7 +763,5 @@ void gui_map_wnd_draw()
     if (mode == 2) draw3dwnd(is_coord, is_hyper, &wp);
     if (mode == 3) drawyzwnd(is_coord, is_hyper, &wp);
 
-    gui_ad_hypersoft();
     gui_bars_map_bottom();
-}
-
+}

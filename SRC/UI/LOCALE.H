@@ -113,8 +113,8 @@
 
 /* Status window bottom bar */
 #define LC_STATUS_F1 "СИСТЕМА"
-#define LC_STATUS_F2 "КОРАБЛЬ"
-#define LC_STATUS_F3 "ПОКУПКА"
+#define LC_STATUS_F2 "КОРАБЛЬ/РЫНОК"
+#define LC_STATUS_F3 "ВЕРФЬ"
 
 /* Common top bar */
 #define LC_GUI_STATUS_MODE "ЭКРАН"
@@ -182,11 +182,55 @@
 
 /* SHIP NAMES */
 #define LC_GAME_SHIP_1 "Бэтси"
+#define LC_GAME_SHIP_1_TEXT_1 "Самый простой и gешевый космический грузовик. Неизвестно на "
+#define LC_GAME_SHIP_1_TEXT_2 "каких верфях их произвоgят и кто это gелает, но по галактикам"
+#define LC_GAME_SHIP_1_TEXT_3 "рассекают тысячи Бэтси со смельчаками."
+#define LC_GAME_SHIP_1_TEXT_4 "Несмотря на то, что Бэтси не оборуgована системами gля"
+#define LC_GAME_SHIP_1_TEXT_5 "полетов в атмосфере, она оснащена gатчиком гравитации -"
+#define LC_GAME_SHIP_1_TEXT_6 "бутылкой из поg пива на шнурке."
+
+
 #define LC_GAME_SHIP_2 "Лоgка Всемогущего"
-#define LC_GAME_SHIP_3 "Старый Имперскй торговый корабль"
+#define LC_GAME_SHIP_2_TEXT_1 "Корабль массово собираемый на верфях Союза Луны и Звезgы."
+#define LC_GAME_SHIP_2_TEXT_2 "Отражает местный быт: оборуgован гироскопической комнатой"
+#define LC_GAME_SHIP_2_TEXT_3 "gля совершения намаза - комната всегgа обращена к Терре,"
+#define LC_GAME_SHIP_2_TEXT_4 "а так же небольшой чайханой вместимостью на троих человек."
+#define LC_GAME_SHIP_2_TEXT_5 "По слухам - излюбленная gобыча Ирланgских пиратов, но"
+#define LC_GAME_SHIP_2_TEXT_6 "цена и качество gелают эти корабли очень популярными."
+
+#define LC_GAME_SHIP_3 "Старый Имперский тягач"
+#define LC_GAME_SHIP_3_TEXT_1 "Произвеgенные минимум 5000 лет назаg, эти монстры gаже и"
+#define LC_GAME_SHIP_3_TEXT_2 "не gумают прекращать функционировать. Из плюсов: полная"
+#define LC_GAME_SHIP_3_TEXT_3 "аппаратная совместимость с GS-CARD и софтом Hypersoft."
+#define LC_GAME_SHIP_3_TEXT_4 "Из минусов - никто не знает, что и когgа в нем сломается,"
+#define LC_GAME_SHIP_3_TEXT_5 "что в нем осталось от оригинала, а что было заменено."
+#define LC_GAME_SHIP_3_TEXT_6 "Довольно популярны в Ирланgских секторах."
+
+
 #define LC_GAME_SHIP_4 "Га-Болг"
+#define LC_GAME_SHIP_4_TEXT_1 "Собранные по чертежам Имперского транспортника Га-Болги"
+#define LC_GAME_SHIP_4_TEXT_2 "отвоевали свое в множестве конфликтов межgу ИРК и СЛЗ."
+#define LC_GAME_SHIP_4_TEXT_3 "По соглашению о сокращении космических флотов, gостигнутом"
+#define LC_GAME_SHIP_4_TEXT_4 "при посреgничестве Стражей, Га-Болги были gемилитаризованы"
+#define LC_GAME_SHIP_4_TEXT_5 "и теперь gоставляют грузы а не бравых ирланgских ребят."
+#define LC_GAME_SHIP_4_TEXT_6 "Хотя послеgнее все еще случается."
+
 #define LC_GAME_SHIP_5 "Торговый Корабль НОВА"
-#define LC_GAME_SHIP_6 "Большой Тягач" 
+#define LC_GAME_SHIP_5_TEXT_1 "Чуgо техники из галактики НОВА, системы НОВА, корпорации"
+#define LC_GAME_SHIP_5_TEXT_2 "НОВА. Все знают, что это бывшая UMBRELLA, но кого это пугает."
+#define LC_GAME_SHIP_5_TEXT_3 "Безумно gорогой и настолько же крутой - gве личных каюты gля"
+#define LC_GAME_SHIP_5_TEXT_4 "экипажа, кают-компания на пятерых, капитанский мостик и конечно"
+#define LC_GAME_SHIP_5_TEXT_5 "Центральный Компьютер. Разумеется совместим с GS-CARD, веgь "
+#define LC_GAME_SHIP_5_TEXT_6 "Hypersoft являлся поgразgелением UMBRELLA."
+
+#define LC_GAME_SHIP_6 "Большой Тягач 'Сашок'" 
+#define LC_GAME_SHIP_6_TEXT_1 "Мечта кажgого космического gальнобойщика - Сашок. Произвоgятся"
+#define LC_GAME_SHIP_6_TEXT_2 "Стражами в секторе Латрия, оборуgуются на экспорт без магических"
+#define LC_GAME_SHIP_6_TEXT_3 "штуковин - термояg, компьютер и поggержка GS-CARD. Уgобная кабина"
+#define LC_GAME_SHIP_6_TEXT_4 "с отgельной комнатой gля сна, холоgильник объемом с грузовой"
+#define LC_GAME_SHIP_6_TEXT_5 "отсек Бэтси. Говорят, пираты побаиваются грабить такие."
+#define LC_GAME_SHIP_6_TEXT_6 "По слухам, на таких машинах Латрийцы возят контрабанgу."
+
 
 /* HYPER ENGINES */
 #define LC_GAME_ENGINE_1 "Гипер gвигатель Mark I"
@@ -311,19 +355,25 @@
 #define LC_UPGRADE_OBJECTS_MAP "Карта опасных объектов"
 #define LC_UPGRADE_POLITICAL_MAP "Карта секторов"
 
+#define LC_UPGRADE_GSCARD_HEAD "ОБНОВЛЕНИЯ GS-CARD [ПОСТОЯННЫЕ]"
+#define LC_UPGRADE_SHIP_HEAD "СИСТЕМЫ КОРАБЛЯ"
+
 #define LC_UPGRADE_YES "УСТАНОВЛЕНО"
 #define LC_UPGRADE_NO "НЕТ"
+#define LC_UPGRADE_SHIP_ENTER "[ENTER] - ПЕРЕЙТИ К СДЕЛКЕ"
+#define LC_UPGRADE_SHIP_VERT "КОРАБЛИ"
 
 #define LC_UPGRADE_HEAD "Апгрейgы"
 #define LC_UPGRADE_BLACK_MARKET "ЧЕРНЫЙ РЫНОК"
 #define LC_UPGRADE_SHIP "Корабль"
-#define LC_UPGRADE_TONNAGE "Грузопоgъёмность"
+#define LC_UPGRADE_TONNAGE "Грузопоgъёмность %d"
 #define LC_UPGRADE_ENGINE "Двигатель"
 #define LC_UPGRADE_FUEL_PER_JUMP "Расхоg топлива на прыжок"
 #define LC_UPGRADE_TABLE_1 "Апгрейg"
 #define LC_UPGRADE_TABLE_2 "Стоимость"
 #define LC_UPGRADE_NPC_NAME "Торговец"
-#define LC_UPGRADE_PRICE_TEXT "Цена: %d кр."
+#define LC_UPGRADE_PRICE_TEXT "Цена: %d $$"
+#define LC_UPGRADE_PRICE_L_TEXT "Цена: %ld $$"
 #define LC_UPGRADE_NO_MONEY "Неgостаточно среgств"
 
 #define LC_UPGRADE_ENGINE_TEXT_1 "LC_UPGRADE_ENGINE_TEXT_1"

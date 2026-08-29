@@ -110,6 +110,8 @@ int gui_menu_game_wnd_key(int ch, WND *parent)
             gui_status_wnd();
         if (cur_screen == SCR_UPGRADE)
             gui_upgrade_wnd();
+        if (cur_screen == SCR_SHIPYARD)
+            gui_shipyard_wnd();
     }
     if (mm_select == 0 && ENTER == ch) {
         char *text_input;

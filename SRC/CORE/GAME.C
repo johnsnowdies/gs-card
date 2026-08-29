@@ -52,6 +52,12 @@ char* data_ship_names[SHIP_COUNT] = {LC_GAME_SHIP_1, LC_GAME_SHIP_2,
                                      LC_GAME_SHIP_3, LC_GAME_SHIP_4,
                                      LC_GAME_SHIP_5, LC_GAME_SHIP_6};
 
+unsigned int data_ship_engines[SHIP_COUNT] = {0, 0, 1, 1, 3, 2};
+unsigned char data_ship_smuggler_bay[SHIP_COUNT] = { 0, 0, 1, 1, 0, 0};
+unsigned char data_ship_continuous_jump[SHIP_COUNT] = {0, 0, 1, 1, 1, 1};
+unsigned char data_ship_emergency_jump[SHIP_COUNT] = {0, 0, 0, 1, 1, 1};
+
+
 unsigned int data_ship_tonnages[SHIP_COUNT] = {50, 80, 100, 150, 200, 400};
 
 char* data_hyper_names[HYPER_COUNT] = {LC_GAME_ENGINE_1, LC_GAME_ENGINE_2,
@@ -93,7 +99,7 @@ void new_game(char* name, int sol_size) {
 
   strcpy(gs.captain_name, name);
   gs.balance = DEBUG == 1? 100000: 500;
-  gs.current_system = 87; 
+  gs.current_system = 85; 
   if (gs.current_system < 0) gs.current_system = 0;
   if (gs.current_system >= sol_size) gs.current_system = 0;
 
@@ -598,6 +604,35 @@ void core_game_check_gas_station() {
   }
 }
 
+static void core_game_gen_shipyard(void) {
+    int i, count = 0, faction;
+    long ship_prices[SHIP_COUNT] = SHIP_UPGRADE_BASE_PRICES;
+
+    faction = sol_list[gs.current_system].faction;
+    system_shipyard_size = 0;
+
+    if (!sol_list[gs.current_system].is_shipyard) {
+      return;
+    }
+
+    for (i=0; i < SHIP_COUNT; i++){
+        system_shipyard[count].name = data_ship_names[i];
+        system_shipyard[count].base_price = ship_prices[i];
+
+        /* Preinstalled upgrades */
+        system_shipyard[count].hyper_class = data_ship_engines[i];
+        system_shipyard[count].upgrade_smuggler_bay = data_ship_smuggler_bay[i];
+        system_shipyard[count].upgrade_continuous_jump = data_ship_continuous_jump[i];
+        system_shipyard[count].upgrade_emergency_jump = data_ship_emergency_jump[i];
+        system_shipyard[count].id = i;
+
+        core_game_gen_npc(&system_shipyard[count].giver, faction, RANDOM_GENDER, QUEST_NPC);
+        count++;
+    }
+
+    system_shipyard_size = count;
+}
+
 int core_game_run_event() {
   int i = 0, game_over = 0;
   char buf[50];
@@ -624,46 +659,15 @@ int core_game_run_event() {
       /* System upgrades market generator */
       core_game_gen_upgrades();
 
+      core_game_gen_shipyard();
+
       core_game_check_quest_done();
   }
 
   return game_over;
 }
 
-void core_game_gen_shipyard(void) {
-    int i, count = 0, faction;
-    int ship_prices[] = SHIP_UPGRADE_BASE_PRICES;
 
-    faction = sol_list[gs.current_system].faction;
-    if (!sol_list[gs.current_system].is_shipyard) {
-      system_shipyard_size = 0;
-      return;
-    }
-
-    for (i=0; i < SHIP_COUNT; i++){
-        /* Almighty vessel only for CSU */
-        if (i == 0 && faction != 0)
-            continue;
-
-        /* Ga-Bolg only for IMC */
-        if (i == 3 && faction != 1)
-            continue;
-
-        /* Nova and Sashok only for Sentinels */
-        if ( (i == 4 || i == 5) && faction != 2)
-            continue;
-
-        
-        system_shipyard[count].name = data_ship_names[i];
-        system_shipyard[count].base_price = ship_prices[i];
-        system_shipyard[count].id = i;
-
-        core_game_gen_npc(&system_shipyard[count].giver, faction, RANDOM_GENDER, QUEST_NPC);
-        count++;
-    }
-
-
-}
 
 void core_game_gen_upgrades(void) {
   int i, count = 0;

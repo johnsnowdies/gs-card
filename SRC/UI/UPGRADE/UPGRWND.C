@@ -29,98 +29,92 @@ extern int system_upgrades_size;
 static void draw_ship_info(void)
 {
     char buf[100];
+    settextstyle(SMALL_FONT, HORIZ_DIR, 8);
     sprintf(buf, "%s", data_ship_names[gs.ship_type]);
-    outtextxy(upgrade_wnd.x + 80, upgrade_wnd.y + 20, buf);
+    outtextxy(upgrade_wnd.x + 10, upgrade_wnd.y + 10, buf);
 
-    sprintf(buf, "%s: %d", LC_UPGRADE_TONNAGE, data_ship_tonnages[gs.ship_type]);
-    outtextxy(upgrade_wnd.x + 80, upgrade_wnd.y + 35, buf);
+    settextstyle(SMALL_FONT, HORIZ_DIR, 4);
+    sprintf(buf, LC_UPGRADE_TONNAGE, data_ship_tonnages[gs.ship_type]);
+    outtextxy(upgrade_wnd.x + 10, upgrade_wnd.y + 35, buf);
 }
 
 static void draw_engine_info(void)
 {
     char buf[100];
+    settextstyle(SMALL_FONT, HORIZ_DIR, 4);
     sprintf(buf, "%s", data_hyper_names[gs.hyper_class]);
-    outtextxy(upgrade_wnd.x + 80, upgrade_wnd.y + 50, buf);
+    outtextxy(upgrade_wnd.x + 10, upgrade_wnd.y + 46, buf);
 
     sprintf(buf, "%s: %d", LC_UPGRADE_FUEL_PER_JUMP, data_hyper_fuel[gs.hyper_class]);
-    outtextxy(upgrade_wnd.x + 80, upgrade_wnd.y + 65, buf);
+    outtextxy(upgrade_wnd.x + 10, upgrade_wnd.y + 57, buf);
 }
 
 static void draw_upgrade_status_table(void)
 {
     int x = upgrade_wnd.x + 10;
-    int y_start = upgrade_wnd.y + 105;
+    int y_start = upgrade_wnd.y + 75;
     int i, max_label_width = 0;
-    int step = 10;
+    int step = 11;
 
-    char *labels[5];
-    unsigned char values[5];
+    char *labels[7];
+    char empty = '\0';
+    unsigned char values[7];
 
-    labels[0] = LC_UPGRADE_SMUGGLER_BAY;
-    labels[1] = LC_UPGRADE_EMERGENCY_JUMP_SYSTEM;
-    labels[2] = LC_UPGRADE_CONTIN_JUMP_SYSTEM;
-    labels[3] = LC_UPGRADE_OBJECTS_MAP;
-    labels[4] = LC_UPGRADE_POLITICAL_MAP;
+    labels[0] = LC_UPGRADE_SHIP_HEAD;
+    labels[1] = LC_UPGRADE_SMUGGLER_BAY;
+    labels[2] = LC_UPGRADE_EMERGENCY_JUMP_SYSTEM;
+    labels[3] = LC_UPGRADE_CONTIN_JUMP_SYSTEM;
+    labels[4] = LC_UPGRADE_GSCARD_HEAD;
+    labels[5] = LC_UPGRADE_OBJECTS_MAP;
+    labels[6] = LC_UPGRADE_POLITICAL_MAP;
 
-    values[0] = gs.upgrade_smuggler_bay;
-    values[1] = gs.upgrade_emergency_jump;
-    values[2] = gs.upgrade_continuous_jump;
-    values[3] = gs.upgrade_objects_map;
-    values[4] = gs.upgrade_political_map;
+    values[0] = empty;
+    values[1] = gs.upgrade_smuggler_bay;
+    values[2] = gs.upgrade_emergency_jump;
+    values[3] = gs.upgrade_continuous_jump;
+    values[4] = empty;
+    values[5] = gs.upgrade_objects_map;
+    values[6] = gs.upgrade_political_map;
 
     settextstyle(SMALL_FONT, HORIZ_DIR, 4);
 
     
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < 7; i++) {
         int w = textwidth(labels[i]);
         if (w > max_label_width) max_label_width = w;
     }
 
     
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < 7; i++) {
         int y = y_start + i * step;
-        setcolor(15);  
+        if (i == 0 || i == 4){
+            setcolor(RED);
+        }
+        else{
+            setcolor(15);  
+        }
+
+        if (i >= 4){
+            y+=10;
+        }
         outtextxy(x, y, labels[i]);
 
-        setcolor(values[i] ? 2 : 4);  
-        outtextxy(x + max_label_width + 10, y,
-                  values[i] ? LC_UPGRADE_YES : LC_UPGRADE_NO);
+        if (i != 0 && i != 4){
+            setcolor(values[i] ? 2 : 4);  
+            outtextxy(x + max_label_width + 10, y,
+                      values[i] ? LC_UPGRADE_YES : LC_UPGRADE_NO);
+        }
     }
 }
 
 void gui_upgrade_draw_list(void)
 {
     int i, y_pos;
-    int points[6];
-    int tx, ty;
     char line[100];
 
     y_pos = upgrade_wnd.y + 220;  
 
-    
-    setfillstyle(SOLID_FILL, BLACK);
-    bar(upgrade_wnd.x+1, y_pos - 50, upgrade_wnd.x + upgrade_wnd.width-1, y_pos + system_upgrades_size * 10 + 10);
-
-    
-    setfillstyle(SOLID_FILL, RED);
-    bar(upgrade_wnd.x, y_pos - 20, upgrade_wnd.x + upgrade_wnd.width, y_pos - 50);
-    setcolor(0);
-    settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
-    outtextxy(upgrade_wnd.x + 10, y_pos - 42, LC_UPGRADE_BLACK_MARKET);
-
-    setfillstyle(BKSLASH_FILL, RED);
-    tx = upgrade_wnd.x + textwidth(LC_UPGRADE_BLACK_MARKET) + 20;
-    ty = y_pos - 20;
-    bar(tx, ty, upgrade_wnd.x + upgrade_wnd.width, y_pos - 50);
-
-  points[0] = tx;        points[1] = ty - 30;
-  points[2] = tx + 30;   points[3] = ty;
-  points[4] = tx;        points[5] = ty;
-
-    setcolor(RED);             
-  setfillstyle(SOLID_FILL, RED);
-  fillpoly(3, points);       
-
+    gui_draw_section_header(upgrade_wnd.x, y_pos, upgrade_wnd.width, LC_UPGRADE_BLACK_MARKET);  
     
     sprintf(line, "%-40.40s %10s", LC_UPGRADE_TABLE_1, LC_UPGRADE_TABLE_2);
     settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
@@ -128,7 +122,9 @@ void gui_upgrade_draw_list(void)
     outtextxy(upgrade_wnd.x + 10, y_pos - 15, line);
     setcolor(15);
 
-    
+    setfillstyle(SOLID_FILL, BLACK);
+    bar(upgrade_wnd.x+1, y_pos, upgrade_wnd.x + upgrade_wnd.width-1, y_pos + system_upgrades_size * 10);
+
     for (i = 0; i < system_upgrades_size; i++) {
         char buf[120];
         int price = system_upgrades[i].base_price;
@@ -163,9 +159,7 @@ void gui_upgrade_wnd(void)
 
     
     setfillstyle(SOLID_FILL, BLACK);
-    bar(1, upgrade_wnd.y, upgrade_wnd.width - 1, upgrade_wnd.y + upgrade_wnd.height - 1);
-
-    gui_ad_hypersoft();
+    bar(1, upgrade_wnd.y+1, upgrade_wnd.width - 1, upgrade_wnd.y + upgrade_wnd.height - 1);
 
     settextstyle(SMALL_FONT, HORIZ_DIR, 5);
     setcolor(15);

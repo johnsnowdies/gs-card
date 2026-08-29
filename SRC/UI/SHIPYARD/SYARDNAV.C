@@ -22,19 +22,22 @@ extern int ship_selected;
  * ---------------------------------------------------------------- */
 int gui_shipyard_wnd_key(int ch, WND* parent) {
   if (TAB == ch) {
+    ship_selected = 0;
     cur_screen = SCR_MAP;
     gui_bars_common_top();
     gui_map_wnd_draw();
     sfx_screen_change();
   }
   if (F1 == ch) {
+    ship_selected = 0;
     cur_screen = SCR_STATUS;
     gui_status_wnd();
     sfx_screen_change();
   }
   if (F2 == ch) {
+    ship_selected = 0;
     cur_screen = SCR_UPGRADE;
-    gui_status_wnd();
+    gui_upgrade_wnd();
     sfx_screen_change();
   }
   if (UP == ch) {
@@ -50,6 +53,7 @@ int gui_shipyard_wnd_key(int ch, WND* parent) {
     }
   }
   if (ESC == ch) {
+    ship_selected = 0;
     prev_screen = cur_screen;
     cur_screen = SCR_GAME_MENU;
     gui_menu_wnd(parent, 0, 2);
