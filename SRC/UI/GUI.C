@@ -562,24 +562,30 @@ int gui_dialog_wnd(WND* parent, char* header, char* title, char* photo_file,
 void gui_memory_status()
 {
     unsigned int USED_MEM, FREE_MEM, TOTAL_MEM = 65535;
-    char memMsg[50] = "";
-    
+    unsigned long USED_FAR, FREE_FAR_MEM, TOTAL_FAR = 655360UL;
+    char memMsg[80];
+
     FREE_MEM = coreleft();
+    FREE_FAR_MEM = farcoreleft();
     USED_MEM = TOTAL_MEM - FREE_MEM;
-    sprintf(memMsg, "%u/%u", USED_MEM, TOTAL_MEM);
+    USED_FAR = TOTAL_FAR - FREE_FAR_MEM;
 
-    settextstyle(SMALL_FONT, HORIZ_DIR, 5);
+    sprintf(memMsg, "N: %u/%u F: %lu/%lu",
+        USED_MEM, TOTAL_MEM, USED_FAR, TOTAL_FAR);
+
+    settextstyle(SMALL_FONT, HORIZ_DIR, 4);
     setfillstyle(SOLID_FILL, BLACK);
-    bar(470, STATUSBAR_BOTTOM_Y, 640, STATUSBAR_BOTTOM_Y + STATUSBAR_HEIGHT - 1);
+    bar(420, STATUSBAR_BOTTOM_Y, 640, STATUSBAR_BOTTOM_Y + STATUSBAR_HEIGHT - 1);
 
+    setlinestyle(0, 0, 1);
     setcolor(RED);
-    line(470, STATUSBAR_BOTTOM_Y - 1, 470, STATUSBAR_BOTTOM_Y + STATUSBAR_HEIGHT - 1);
+    line(420, STATUSBAR_BOTTOM_Y - 1, 420, STATUSBAR_BOTTOM_Y + STATUSBAR_HEIGHT - 1);
 
     /* Memory */
     setcolor(RED);
-    outtextxy(470 + 5, STATUSBAR_BOTTOM_Y + 2, LC_MAP_STATUS_MEM);
+    outtextxy(420 + 5, STATUSBAR_BOTTOM_Y + 2, LC_MAP_STATUS_MEM);
     setcolor(WHITE);
-    outtextxy(470 + 35, STATUSBAR_BOTTOM_Y + 2, memMsg);
+    outtextxy(420 + 35, STATUSBAR_BOTTOM_Y + 2, memMsg);
 }
 
 /* ----------------------------------------------------------------
