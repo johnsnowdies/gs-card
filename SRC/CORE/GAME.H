@@ -49,6 +49,16 @@ int core_game_load(char *filename);
 int core_game_save(char *filename);
 
 int core_game_accept_quest(unsigned int index);
-int core_game_check_quest_done();
-void core_game_check_gas_station();
-void core_game_gen_upgrades(void);
+
+
+void core_game_event_gas_station();
+
+void core_game_event_quest_failed(int index);
+
+void core_game_event_hijack();
+
+void core_game_event_customs();
+
+void core_game_event_kidnapping();
+
+void core_game_danger_object();

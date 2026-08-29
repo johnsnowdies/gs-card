@@ -127,11 +127,11 @@ void gui_upgrade_draw_list(void)
 
     for (i = 0; i < system_upgrades_size; i++) {
         char buf[120];
-        int price = system_upgrades[i].base_price;
-        int discount = (price * gs.reputation) / 1000;
-        int final_price = price - discount;
+        long price = system_upgrades[i].base_price;
+        long discount = (price * gs.reputation) / 1000;
+        long final_price = price - discount;
 
-        sprintf(buf, "%-40.40s %10d", system_upgrades[i].name, final_price);
+        sprintf(buf, "%-40.40s %10ld", system_upgrades[i].name, final_price);
 
         if (i == upgrade_selected) {
             setfillstyle(SOLID_FILL, RED);
@@ -173,6 +173,7 @@ void gui_upgrade_wnd(void)
         data_reader_draw_bmp(ship_image, 339, 22);
     }
 
+    gui_bars_common_top();
     gui_upgrade_draw_list();
     gui_bars_status_bottom();
 }
@@ -185,9 +186,9 @@ void gui_upgrade_show_info(int selected)
         char lines[4][100];
         char buttons[2][100] = { LC_GUI_BOOL_YES, LC_GUI_BOOL_NO };
         int i;
-        int price = system_upgrades[selected].base_price;
-        int discount = (price * gs.reputation) / 1000;
-        int final_price = price - discount;
+        long price = system_upgrades[selected].base_price;
+        long discount = (price * gs.reputation) / 1000;
+        long final_price = price - discount;
 
         for (i = 0; i < 4; i++) lines[i][0] = '\0';
 

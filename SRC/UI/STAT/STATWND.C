@@ -144,7 +144,7 @@ void gui_status_quest_list(WND* status_wnd) {
   for (i = 0; i < system_quests_size; i++) {
     char buf[128], system[16];
     sprintf(system, "SA.%d", system_quests[i].target_system);
-    sprintf(buf, "%-25.25s %-15.15s %-7.7s %6d  %6d %6d %6d",
+    sprintf(buf, "%-25.25s %-15.15s %-7.7s %6d  %6ld %6ld %6d",
             QUEST_TYPES[system_quests[i].type],
             data_sectors[system_quests[i].target_sector], system,
             system_quests[i].cargo, system_quests[i].reward,
@@ -176,7 +176,7 @@ void gui_status_quest_list(WND* status_wnd) {
   for (i = 0; i < gs.quests_size; i++) {
     char buf[128], system[16];
     sprintf(system, "SA.%d", gs.quests[i].target_system);
-    sprintf(buf, "%-25.25s %-15.15s %-7.7s %6d  %6d %6d %6d",
+    sprintf(buf, "%-25.25s %-15.15s %-7.7s %6d  %6ld %6ld %6d",
             QUEST_TYPES[gs.quests[i].type],
             data_sectors[gs.quests[i].target_sector], system,
             gs.quests[i].cargo, gs.quests[i].reward, gs.quests[i].penalty, gs.quests[i].jumps);

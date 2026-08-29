@@ -62,8 +62,8 @@ NPC {
 
 #define QUEST struct quest
 QUEST {
-  unsigned int reward;
-  unsigned int penalty;
+  unsigned long reward;
+  unsigned long penalty;
   unsigned int type;  
   unsigned int target_system;
   unsigned int target_sector;

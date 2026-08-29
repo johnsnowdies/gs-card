@@ -361,8 +361,8 @@ static int generate_cargo(void) {
   }
 }
 
-static int calc_reward(int type, int cargo, int jumps) {
-    int base;
+static long calc_reward(int type, int cargo, int jumps) {
+    long base;
     double cargo_factor;
     double jump_factor;
 
@@ -388,10 +388,10 @@ static int calc_reward(int type, int cargo, int jumps) {
     if (type <= 3) {
         cargo_factor = 1.0 + (double)cargo / 200.0;
         jump_factor = 1.0 + (double)jumps / 10.0;
-        return (int)(base * cargo_factor * jump_factor);
+        return (long)(base * cargo_factor * jump_factor);
     } else {
         jump_factor = 1.0 + (double)jumps / 10.0;
-        return (int)(base * jump_factor);
+        return (long)(base * jump_factor);
     }
 }
 
@@ -442,8 +442,8 @@ void core_game_gen_quest(QUEST* ptr_quest, int player_rep,
 
     reward = calc_reward(type, cargo, jumps);
 
-    penalty = (int)(reward * (0.5 - player_rep * 0.0004));
-    if (penalty < (int)(reward * 0.1)) penalty = (int)(reward * 0.1);
+    penalty = (long)(reward * (0.5 - player_rep * 0.0004));
+    if (penalty < (long)(reward * 0.1)) penalty = (int)(reward * 0.1);
     if (penalty < 0) penalty = 0;
 
     core_game_gen_npc(&ptr_quest->giver, faction, RANDOM_GENDER, QUEST_NPC);
@@ -483,7 +483,7 @@ int core_game_accept_quest(unsigned int index) {
   return 1;
 }
 
-int core_game_check_quest_done() {
+static int core_game_event_quest_done() {
   int i, j;
   char lines[2][100];
 
@@ -560,9 +560,9 @@ static int core_game_check_fuel_gone() {
   return 0;
 }
 
-void core_game_check_gas_station() {
+void core_game_event_gas_station() {
   if (sol_list[gs.current_system].is_gas_station && gs.fuel < 100) {
-    unsigned int percent_price, amount, total;
+    unsigned long percent_price, amount, total;
 
     int i, j;
     char* text[100];
@@ -647,43 +647,7 @@ static void core_game_gen_shipyard(void) {
     system_shipyard_size = count;
 }
 
-int core_game_run_event() {
-  int i = 0, game_over = 0;
-  char buf[50];
-
-  game_mark_visited(&gs, gs.current_system);
-  gs.fuel -= data_hyper_fuel[gs.hyper_class];
-
-  game_over = core_game_check_fuel_gone();
-
-  if (!game_over){
-      system_quests_size = 5;
-      /* System quests generator */
-      for (i = 0; i < system_quests_size; i++) {
-        core_game_gen_quest(&system_quests[i], gs.reputation,
-                            sol_list[gs.current_system].faction);
-      }
-
-      for (i = 0; i < gs.quests_size; i++)
-      {
-        gui_progress_wnd(&map_wnd, "GS-CARD 1.5", "Updating Quests", i, gs.quests_size);
-        gs.quests[i].jumps = core_finder_get_jumps(gs.current_system, gs.quests[i].target_system);
-      }
-
-      /* System upgrades market generator */
-      core_game_gen_upgrades();
-
-      core_game_gen_shipyard();
-
-      core_game_check_quest_done();
-  }
-
-  return game_over;
-}
-
-
-
-void core_game_gen_upgrades(void) {
+static void core_game_gen_upgrades(void) {
   int i, count = 0;
 
   if (!sol_list[gs.current_system].is_shipyard) {
@@ -735,4 +699,64 @@ void core_game_gen_upgrades(void) {
   }
 
   system_upgrades_size = count; 
+}
+
+
+int core_game_run_event() {
+  int i = 0, game_over = 0;
+  char buf[50];
+
+  game_mark_visited(&gs, gs.current_system);
+  gs.fuel -= data_hyper_fuel[gs.hyper_class];
+
+  game_over = core_game_check_fuel_gone();
+
+  if (!game_over){
+      system_quests_size = 5;
+      /* System quests generator */
+      for (i = 0; i < system_quests_size; i++) {
+        core_game_gen_quest(&system_quests[i], gs.reputation,
+                            sol_list[gs.current_system].faction);
+      }
+
+      for (i = 0; i < gs.quests_size; i++)
+      {
+        gui_progress_wnd(&map_wnd, "GS-CARD 1.5", "Updating Quests", i, gs.quests_size);
+        gs.quests[i].jumps = core_finder_get_jumps(gs.current_system, gs.quests[i].target_system);
+      }
+
+      /* System upgrades market generator */
+      core_game_gen_upgrades();
+
+      core_game_gen_shipyard();
+
+      core_game_event_quest_done();
+  }
+
+  return game_over;
+}
+
+void core_game_event_quest_failed(int index)
+{
+
+}
+
+void core_game_event_hijack()
+{
+
+}
+
+void core_game_event_customs()
+{
+
+}
+
+void core_game_event_kidnapping()
+{
+
+}
+
+void core_game_danger_object()
+{
+    
 }

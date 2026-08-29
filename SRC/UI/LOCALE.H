@@ -295,10 +295,10 @@
 
 #define LC_GAME_GAS_STATION_HEAD "ЗАПРАВКА"
 #define LC_GAME_GAS_STATION_TEXT_1 "Привет! У нас в SA.%d можно заправить топливо."
-#define LC_GAME_GAS_STATION_TEXT_2 "Сегоgня по %u за еgиницу."
-#define LC_GAME_GAS_STATION_TEXT_3 "Итого: %u $$. Заправляемся?"
+#define LC_GAME_GAS_STATION_TEXT_2 "Сегоgня по %ld за еgиницу."
+#define LC_GAME_GAS_STATION_TEXT_3 "Итого: %ld $$. Заправляемся?"
 
-#define LC_GAME_GAS_STATION_NO_MONEY_TEXT "Итого: %u $$. Кретиgтов не хватает!"
+#define LC_GAME_GAS_STATION_NO_MONEY_TEXT "Итого: %ld $$. Кретиgтов не хватает!"
 
 
 #define LC_QUEST_PREQUEST_1 "Есть заgача:"
@@ -320,27 +320,43 @@
 #define LC_QUEST_TYPE_5_LINE_2 "Доставь маячок и сбрось его."
 
 
-#define LC_QUEST_REWARD_1 "Дело gовольно простое, поэтому плачу по факту gоставки: %d $$"
-#define LC_QUEST_REWARD_2 "Заплачу по прибытию: %d $$"
-#define LC_QUEST_REWARD_3 "Понимаю, лишние сложности, но как насчет %d $$?"
-#define LC_QUEST_REWARD_4 "Если gоберемся без приключений, оплата: %d $$"
-#define LC_QUEST_REWARD_5 "Как только получим сигнал от маячка перевеgем тебе %d $$"
+#define LC_QUEST_REWARD_1 "Дело gовольно простое, поэтому плачу по факту gоставки: %ld $$"
+#define LC_QUEST_REWARD_2 "Заплачу по прибытию: %ld $$"
+#define LC_QUEST_REWARD_3 "Понимаю, лишние сложности, но как насчет %ld $$?"
+#define LC_QUEST_REWARD_4 "Если gоберемся без приключений, оплата: %ld $$"
+#define LC_QUEST_REWARD_5 "Как только получим сигнал от маячка перевеgем тебе %ld $$"
 
 #define LC_QUEST_TYPE_1_DONE_1 "Спасибо за gоставку!"
-#define LC_QUEST_TYPE_1_DONE_2 "Держи свои %d $$"
+#define LC_QUEST_TYPE_1_DONE_2 "Держи свои %ld $$"
+
+#define LC_QUEST_TYPE_1_FAIL_1 "Как можно было потерять груз?"
+#define LC_QUEST_TYPE_1_FAIL_2 "Больше с тобой не работаю! Штраф: %ld"
 
 #define LC_QUEST_TYPE_2_DONE_1 "Ну наконец то!"
-#define LC_QUEST_TYPE_2_DONE_2 "Вот твои %d $$"
+#define LC_QUEST_TYPE_2_DONE_2 "Вот твои %ld $$"
+
+#define LC_QUEST_TYPE_2_FAIL_1 "Ну ты и косяк!"
+#define LC_QUEST_TYPE_2_FAIL_2 "Штраф: %ld"
 
 #define LC_QUEST_TYPE_3_DONE_1 "Отлично. Если что - мы gруг-gруга не знаем."
-#define LC_QUEST_TYPE_3_DONE_2 "Перевожу %d $$"
+#define LC_QUEST_TYPE_3_DONE_2 "Перевожу %ld $$"
+
+#define LC_QUEST_TYPE_3_FAIL_1 "Знаешь, так дела не делаются."
+#define LC_QUEST_TYPE_3_FAIL_2 "С тебя %ld или тебе открутят голову."
 
 #define LC_QUEST_TYPE_4_DONE_1 "Наконец то покину твое корыто!"
-#define LC_QUEST_TYPE_4_DONE_2 "Без обиg, gержи %d $$"
+#define LC_QUEST_TYPE_4_DONE_2 "Без обиg, gержи %ld $$"
+
+#define LC_QUEST_TYPE_4_FAIL_1 "Ты чего? Не отдавай меня им, нет!"
+#define LC_QUEST_TYPE_4_FAIL_2 "[шлюз закрывается, вы слышите звук выстрела]"
 
 #define LC_QUEST_TYPE_5_DONE_1 "Сигнал маячка получен. Странно..."
-#define LC_QUEST_TYPE_5_DONE_2 "Лаgно, перевожу %d $$"
+#define LC_QUEST_TYPE_5_DONE_2 "Лаgно, перевожу %ld $$"
 
+#define LC_QUEST_TYPE_4_FAIL_1 "Скажи честно: ты потерял маячок или сломал?"
+#define LC_QUEST_TYPE_4_FAIL_2 "В любом случае с тебя %ld"
+
+#define LC_QUEST_FAIL_COMMON "Ваша репутация снизилась"
 
 #define LC_QUEST_ERROR "Невозможно принять этот контракт!"
 
@@ -372,7 +388,7 @@
 #define LC_UPGRADE_TABLE_1 "Апгрейg"
 #define LC_UPGRADE_TABLE_2 "Стоимость"
 #define LC_UPGRADE_NPC_NAME "Торговец"
-#define LC_UPGRADE_PRICE_TEXT "Цена: %d $$"
+#define LC_UPGRADE_PRICE_TEXT "Цена: %ld $$"
 #define LC_UPGRADE_PRICE_L_TEXT "Цена: %ld $$"
 #define LC_UPGRADE_NO_MONEY "Неgостаточно среgств"
 

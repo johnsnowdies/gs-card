@@ -273,7 +273,7 @@ int gui_map_wnd_key(int ch, WND *parent)
                 if (!game_over){
                     char lines[1][100];
                     gui_bars_common_top();
-                    core_game_check_gas_station();
+                    core_game_event_gas_station();
                     gui_bars_common_top();
                     gui_map_wnd_draw();
                 } else {
