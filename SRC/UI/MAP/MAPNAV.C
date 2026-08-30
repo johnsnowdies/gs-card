@@ -244,6 +244,7 @@ int gui_map_wnd_key(int ch, WND *parent)
     if (TAB == ch) {
         cur_screen = SCR_STATUS;
         gui_status_wnd();
+        gui_bars_status_bottom();
     }
     if (ENTER == ch) {
         if (wp.size > 1 && wp.way[0] == gs.current_system) {

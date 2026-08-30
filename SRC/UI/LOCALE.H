@@ -28,7 +28,7 @@
 #define LC_AD_UPGRADE_TEXT "Hypersoft ILTD не несет ответственности за просроченые GS-карты. "
 
 /* gui_ad_legion */
-#define LC_AD_LEGION_HEAD_1 "Legion awits"
+#define LC_AD_LEGION_HEAD_1 "Legion awaits"
 #define LC_AD_LEGION_HEAD_2 "you, Soldier!"
 #define LC_AD_LEGION_TEXT_1 "Начни НОВУЮ жизнь в"
 #define LC_AD_LEGION_TEXT_2 "Армии Империи!"

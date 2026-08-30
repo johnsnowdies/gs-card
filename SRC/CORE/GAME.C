@@ -104,7 +104,7 @@ void new_game(char* name, int sol_size) {
 
   init_game = 1;
   strcpy(gs.captain_name, name);
-  gs.balance = DEBUG == 1? 999999: 500;
+  gs.balance = 500;
   gs.current_system = 85; 
   if (gs.current_system < 0) gs.current_system = 0;
   if (gs.current_system >= sol_size) gs.current_system = 0;
@@ -548,7 +548,6 @@ static int core_game_check_fuel_gone() {
     int i;
 
     gui_bars_common_top();
-    gui_map_wnd_draw();
 
     for (i = 0; i < 9; i++) {
       lines[i][0] = '\0';
@@ -606,14 +605,13 @@ static int core_game_check_money_gone() {
     int i;
 
     gui_bars_common_top();
-    gui_map_wnd_draw();
 
     for (i = 0; i < 9; i++) {
       lines[i][0] = '\0';
     }
 
     sprintf(lines[0], LC_GAME_OVER_MONEY_TEXT_1);
-    sprintf(lines[1], LC_GAME_OVER_MONEY_TEXT_1);
+    sprintf(lines[1], LC_GAME_OVER_MONEY_TEXT_2);
     sprintf(lines[2], "   ");
     sprintf(lines[3], LC_GAME_OVER_STATS_HEAD);
     sprintf(lines[4], LC_GAME_OVER_STATS_TEXT_2, gs.missions_completed);
@@ -779,8 +777,13 @@ int core_game_run_event(int fuel_consume) {
     gs.fuel -= data_hyper_fuel[gs.hyper_class];
 
   game_over = core_game_check_fuel_gone();
+  if (game_over) return game_over;
+
   game_over = core_game_check_money_gone();
+  if (game_over) return game_over;
+  
   game_over = core_game_check_win();
+  if (game_over) return game_over;
   
 
   if (!game_over) {
@@ -859,6 +862,15 @@ int core_game_run_event(int fuel_consume) {
         init_game = 0;
     }
   }
+
+  game_over = core_game_check_fuel_gone();
+  if (game_over) return game_over;
+
+  game_over = core_game_check_money_gone();
+  if (game_over) return game_over;
+  
+  game_over = core_game_check_win();
+  if (game_over) return game_over;
 
   return game_over;
 }
