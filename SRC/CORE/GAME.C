@@ -124,6 +124,8 @@ void new_game(char* name, int sol_size) {
 
   gs.quests_size = 0;
 
+  gs.prev_system = gs.current_system;
+
   gs.visited_bytes = (sol_size + 7) / 8;
   gs.visited = (unsigned char*)malloc(gs.visited_bytes);
   if (gs.visited) {
@@ -133,7 +135,7 @@ void new_game(char* name, int sol_size) {
   system_quests_size = 0;
   system_upgrades_size = 0;
 
-  core_game_run_event();
+  core_game_run_event(0);
   wp.size = 0;
 
   core_game_save("USER.SAV");
@@ -156,8 +158,9 @@ int core_game_load(char *filename)
 
     if (result == 1)
     {
+        gs.prev_system = gs.current_system;
         gui_map_nav_move_screen_to(sol_list, gs.current_system);
-        core_game_run_event();
+        core_game_run_event(0);
         wp.size = 0;
         /* Draw new game GUI */
         gui_map_nav_move_screen_to(sol_list, gs.current_system);
@@ -329,8 +332,6 @@ static int pick_target_system_by_jumps(int current, int min_jumps, int max_jumps
     int i, jumps;
 
     for (i = 0; i < sol_size; i++) {
-        gui_progress_wnd(&map_wnd, "GS-CARD 1.5", "Generating Quests", i, sol_size);
-        
         if (i == current) continue;
         jumps = core_finder_get_jumps(current, i);
         if (jumps == 0) continue;
@@ -518,6 +519,9 @@ static int core_game_event_quest_done() {
           sprintf(lines[1], LC_QUEST_TYPE_5_DONE_2, gs.quests[i].reward);
           break;
       }
+
+      gui_bars_common_top();
+      gui_map_wnd_draw();
 
       gui_npc_wnd(&map_wnd, &gs.quests[i].giver, NPC_DIALOG_WND,
                   LC_QUEST_COMPLETE_HEAD, lines, 2, NULL, 0, 1);
@@ -765,29 +769,31 @@ static void core_game_gen_upgrades(void) {
   system_upgrades_size = count;
 }
 
-int core_game_run_event() {
+int core_game_run_event(int fuel_consume) {
   int i = 0, game_over = 0;
   char buf[50];
   int start_system = gs.current_system;
 
   game_mark_visited(&gs, gs.current_system);
-  gs.fuel -= data_hyper_fuel[gs.hyper_class];
+  if (fuel_consume)
+    gs.fuel -= data_hyper_fuel[gs.hyper_class];
 
   game_over = core_game_check_fuel_gone();
   game_over = core_game_check_money_gone();
   game_over = core_game_check_win();
+  
 
   if (!game_over) {
     system_quests_size = 5;
     /* System quests generator */
     for (i = 0; i < system_quests_size; i++) {
+      /*gui_progress_wnd(&map_wnd, "GS-CARD 1.5", "Generating Quests", i, sol_size);*/
       core_game_gen_quest(&system_quests[i], gs.reputation,
                           sol_list[gs.current_system].faction);
     }
 
     for (i = 0; i < gs.quests_size; i++) {
-      gui_progress_wnd(&map_wnd, "GS-CARD 1.5", "Updating Quests", i,
-                       gs.quests_size);
+      /*gui_progress_wnd(&map_wnd, "GS-CARD 1.5", "Updating Quests", i, gs.quests_size);*/
       gs.quests[i].jumps =
           core_finder_get_jumps(gs.current_system, gs.quests[i].target_system);
     }
@@ -797,8 +803,16 @@ int core_game_run_event() {
     core_game_gen_shipyard();
 
     if (!init_game) {
-      gui_bars_common_top();
-      gui_map_wnd_draw();
+        /* Target system changed by black hole */
+        {
+            int nested_over = core_game_event_danger_object();
+            if (gs.current_system != start_system) {
+              game_over = nested_over;
+              return game_over;
+            }
+
+        }
+      
 
       /* Random events */
       if (rand() % 100 < (sol_list[gs.current_system].faction == 1 ? 30 : 10)) {
@@ -807,10 +821,9 @@ int core_game_run_event() {
           game_over = nested_over;
           return game_over;
         }
+        gui_bars_common_top();
+        gui_map_wnd_draw();  
       }
-
-      gui_bars_common_top();
-      gui_map_wnd_draw();
 
       if (rand() % 100 < (sol_list[gs.current_system].faction == 2 ? 70 : 20) &&
           sol_list[gs.current_system].is_shipyard) {
@@ -819,10 +832,9 @@ int core_game_run_event() {
           game_over = nested_over;
           return game_over;
         }
+        gui_bars_common_top();
+        gui_map_wnd_draw();
       }
-
-      gui_bars_common_top();
-      gui_map_wnd_draw();
 
       /* Kidnapping: 10% chance if player has at least one type 4 quest */
       for (i = 0; i < gs.quests_size; i++) {
@@ -833,18 +845,14 @@ int core_game_run_event() {
               game_over = nested_over;
               return game_over;
             }
+            gui_bars_common_top();
+            gui_map_wnd_draw();
           }
           break; /* only first type 4 quest triggers kidnapping */
         }
       }
 
-      gui_bars_common_top();
-      gui_map_wnd_draw();
-
       core_game_event_quest_done();
-
-      gui_bars_common_top();
-      gui_map_wnd_draw();
 
       game_over = core_game_check_win();
     } else {
@@ -929,6 +937,7 @@ int core_game_event_hijack()
     int btn_count = 0;
     int pay_idx = -1, drop_idx = -1, ejump_idx = -1;
     int choice;
+    int droppable_cargo =0;
 
     ship_type = gs.ship_type;
 
@@ -943,6 +952,11 @@ int core_game_event_hijack()
         default: request = 1000 + rand() % 1001;
     }
 
+    for (i = 0; i < gs.quests_size; i++){
+        if (gs.quests[i].type == 1 || gs.quests[i].type == 2)
+            droppable_cargo += gs.quests[i].cargo;
+    }
+
     /* Generate hijacker: 90% Irish */
     if ((rand() % 100) < 90)
         faction = 1;
@@ -954,14 +968,18 @@ int core_game_event_hijack()
     sprintf(lines[1], LC_EVENT_HIJACK_TEXT_2, request);
 
     /* Build active buttons */
-    if (gs.balance >= request) {
+    /*if (gs.balance >= request) {*/
         pay_idx = btn_count;
         strcpy(buttons[btn_count], LC_EVENT_HIJACK_PAY_BTN);
         btn_count++;
+    /*}*/
+    
+    if (droppable_cargo > 0) {
+        drop_idx = btn_count;
+        strcpy(buttons[btn_count], LC_EVENT_HIJACK_DROP_BTN);
+        btn_count++;
     }
-    drop_idx = btn_count;
-    strcpy(buttons[btn_count], LC_EVENT_HIJACK_DROP_BTN);
-    btn_count++;
+    
     if (gs.upgrade_emergency_jump) {
         ejump_idx = btn_count;
         strcpy(buttons[btn_count], LC_EVENT_EJUMP_BTN);
@@ -991,9 +1009,10 @@ int core_game_event_hijack()
         int thread_count = sol_list[current].threadSize;
         if (thread_count > 0) {
             int selected = rand() % thread_count;
+            gs.prev_system = gs.current_system;
             gs.current_system = sol_list[current].threads[selected].value;
             wp.size = 0;
-            return core_game_run_event();
+            return core_game_run_event(1);
         }
     }
     return 0;
@@ -1082,9 +1101,10 @@ int core_game_event_customs()
         int thread_count = sol_list[current].threadSize;
         if (thread_count > 0) {
             int selected = rand() % thread_count;
+            gs.prev_system = gs.current_system;
             gs.current_system = sol_list[current].threads[selected].value;
             wp.size = 0;
-            return core_game_run_event();
+            return core_game_run_event(1);
         }
     }
 
@@ -1161,8 +1181,6 @@ int core_game_event_kidnapping(int quest_index)
         /* Emergency jump */
             int current = gs.current_system;
             int thread_count = sol_list[current].threadSize;
-            
-
             if (thread_count > 0) {
                 int selected = rand() % thread_count;
                 long half_reward = quest->reward / 2;
@@ -1172,16 +1190,146 @@ int core_game_event_kidnapping(int quest_index)
                 gui_npc_wnd(&map_wnd, &quest->giver, NPC_DIALOG_WND,
                             LC_EVENT_NAP_HEAD, single_line, 1, NULL, 0, 1);
                 gs.balance += half_reward;
-
+                gs.prev_system = gs.current_system;
                 gs.current_system = sol_list[current].threads[selected].value;
                 wp.size = 0;
-                return core_game_run_event();
+                return core_game_run_event(1);
             }
     }
     return 0;
 }
 
-void core_game_danger_object()
+int core_game_event_danger_object()
 {
+    int cur = gs.current_system;
+    int prev = gs.prev_system;
+    int o = 0, i;
+    static char* upgr_names[] = {LC_UPGRADE_SMUGGLER_BAY,
+                            LC_UPGRADE_CONTIN_JUMP_SYSTEM,
+                            LC_UPGRADE_EMERGENCY_JUMP_SYSTEM,
+                            LC_UPGRADE_OBJECTS_MAP, LC_UPGRADE_POLITICAL_MAP};
+
+    if (gs.current_system == gs.prev_system)
+        return;
+    for (o = 0; o < obj_size; o++){
+        if(core_objects_sphere_line_intersect(
+                        sol_list[prev].x, sol_list[prev].y, sol_list[prev].z,
+                        sol_list[cur].x,  sol_list[cur].y,  sol_list[cur].z,
+                        obj_list[o].x,  obj_list[o].y,  obj_list[o].z,
+                        obj_list[o].r))
+        {   
+            int thread_count = sol_list[cur].threadSize;
+            int selected = rand() % thread_count;
+            char lines[8][100];
+            int quest_selected = -1;
+            int upgr_selected = -1, print_upgr = 0;
+
+            gui_bars_common_top();
+            gui_map_wnd_draw();  
+
+            for (i = 0; i < 8; i++) {
+              lines[i][0] = '\0';
+            }
+
+            /*
+#define LC_EVENT_DANGER_HEAD "Опасный прыжок!"
+#define LC_EVENT_DANGER_TEXT "Гипер прыжок из %d в %d прошел %s!"
+#define LC_EVENT_DANGER_BH "близко к черной дыре"
+#define LC_EVENT_DANGER_NEB "через туманность"
+#define LC_EVENT_DANGER_GAS "газовое скопление"
+
+#define LC_EVENT_DANGER_BH_TEXT "Маршрут сбит, вы вышли в SA.%d!"
+
+#define LC_EVENT_DANGER_NEB_TEXT "ЭМИ импульс вывел из строя %s"
+#define LC_EVENT_DANGER_NEB_NO "ЭМИ было мощным но ничего не сломалось!"
+
+#define LC_EVENT_DANGER_GAS_TEXT "Радиация повредила %d груза для SA.%d."
+#define LC_EVENT_DANGER_GAS_NO "Радиация облучила корпус но груз не пострадал!"
+            */
+
+
+            switch(obj_list[o].type){
+                case OBJ_GASCLOUD:
+                    sprintf(lines[0], LC_EVENT_DANGER_TEXT, prev, cur, LC_EVENT_DANGER_GAS);
+
+                    for (i = 0; i < gs.quests_size; i++) {
+                        if (gs.quests[i].type == 1 || gs.quests[i].type == 2 || (gs.quests[i].type == 3 && !gs.upgrade_smuggler_bay)){
+                            quest_selected = i;
+                            break;
+                        }
+                    }
+                    /* Cargo damaged */
+                    if (quest_selected >= 0){
+                        sprintf(lines[1], LC_EVENT_DANGER_GAS_TEXT, gs.quests[quest_selected].cargo, gs.quests[quest_selected].target_system);
+                        gs.quests[quest_selected].reward /= 2;
+                        sprintf(lines[2],LC_EVENT_DANGER_GAS_TEXT_2, gs.quests[quest_selected].reward);
+                        gui_bars_common_top();
+                        gui_dialog_wnd(&map_wnd, LC_EVENT_DANGER_HEAD, LC_EVENT_DANGER_HEAD, NULL, lines, 3, NULL, 0, SOUND_ERROR, 1);
+                    }
+                    else{
+                        sprintf(lines[1], LC_EVENT_DANGER_GAS_NO);
+                        gui_bars_common_top();
+                        gui_dialog_wnd(&map_wnd, LC_EVENT_DANGER_HEAD, LC_EVENT_DANGER_HEAD, NULL, lines, 2, NULL, 0, SOUND_ERROR, 1);
+                    }
+                    
+                    break;
+                case OBJ_BLACKHOLE: 
+                    sprintf(lines[0], LC_EVENT_DANGER_TEXT, prev, cur, LC_EVENT_DANGER_BH);
+                    gs.prev_system = gs.current_system;
+                    gs.current_system = sol_list[cur].threads[selected].value;
+                    wp.size = 0;
+                    sprintf(lines[1], LC_EVENT_DANGER_BH_TEXT, gs.current_system);
+                    gui_bars_common_top();
+                    gui_dialog_wnd(&map_wnd, LC_EVENT_DANGER_HEAD, LC_EVENT_DANGER_HEAD, NULL, lines, 2, NULL, 0, SOUND_ERROR, 1);
+                    return core_game_run_event(0);
+                    break;
+                case OBJ_NEBULA:
+                    sprintf(lines[0], LC_EVENT_DANGER_TEXT, prev, cur, LC_EVENT_DANGER_NEB);
+                    upgr_selected = (rand() % 4) + 1;
+/*
+    static char* upgr_names[] = {LC_UPGRADE_SMUGGLER_BAY,
+                            LC_UPGRADE_CONTIN_JUMP_SYSTEM,
+                            LC_UPGRADE_EMERGENCY_JUMP_SYSTEM,
+                            LC_UPGRADE_OBJECTS_MAP, LC_UPGRADE_POLITICAL_MAP};
+*/
+                    if (upgr_selected == 1){
+                        if (gs.upgrade_continuous_jump)
+                            print_upgr = 1;
+
+                        gs.upgrade_continuous_jump = 0;
+                    }
+                    if (upgr_selected == 2){
+                        if (gs.upgrade_emergency_jump)
+                            print_upgr = 1;
+
+                        gs.upgrade_emergency_jump = 0;
+                    }
+                    if (upgr_selected == 3){
+                        if (gs.upgrade_objects_map)
+                            print_upgr = 1;
+
+                        gs.upgrade_objects_map = 0;
+                    }
+                    if (upgr_selected == 4){
+                        if (gs.upgrade_political_map)
+                            print_upgr = 1;
+
+                        gs.upgrade_political_map = 0;
+                    }
+
+                    if (print_upgr)
+                        sprintf(lines[1], LC_EVENT_DANGER_NEB_TEXT, upgr_names[upgr_selected]);
+                    else
+                        sprintf(lines[1], LC_EVENT_DANGER_NEB_NO);
+
+                    gui_bars_common_top();
+                    gui_dialog_wnd(&map_wnd, LC_EVENT_DANGER_HEAD, LC_EVENT_DANGER_HEAD, NULL, lines, 2, NULL, 0, SOUND_ERROR, 1);
+
+                    break;
+            }
+
+            continue;
+        }
+    }
     
 }

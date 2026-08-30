@@ -29,7 +29,6 @@ extern struct game_state gs;
 extern SYSTEM* sol_list;
 extern unsigned int sol_size;
 
-extern unsigned char show_danger_path_parts;
 extern WAYPOINT wp;
 
 /* ----------------------------------------------------------------
@@ -119,7 +118,7 @@ void gui_map_path_wnd()
         }
 
         /* Mark dangerous segments */
-        if (i > 0 && show_danger_path_parts && obj_size) {
+        if (i > 0 && gs.upgrade_objects_map && obj_size) {
             int prev = wp.way[i - 1];
             int cur  = wp.way[i];
             for (o = 0; o < obj_size; o++) {

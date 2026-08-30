@@ -252,7 +252,8 @@ int gui_map_wnd_key(int ch, WND *parent)
             if (gui_confirm_wnd(&map_wnd, LC_CARD_JUMP_WND_HEAD, buf) == 0) {
                 int game_over = 0;
                 int i;
-
+                
+                gs.prev_system = gs.current_system;
                 gs.current_system = wp.way[1];
                                 
                 /* Keep Path Window open until reached end */
@@ -267,7 +268,7 @@ int gui_map_wnd_key(int ch, WND *parent)
                     gui_map_wnd_draw();
                 }
 
-                game_over = core_game_run_event();
+                game_over = core_game_run_event(1);
                 gui_map_nav_move_screen_to(sol_list, gs.current_system);
 
                 if (!game_over){

@@ -42,7 +42,7 @@ E_GENDER {
 
 
 void core_game_gen_quest(QUEST* ptr_quest, int player_rep, unsigned int faction);
-int core_game_run_event();
+int core_game_run_event(int fuel_consume);
 int core_game_accept_quest(unsigned int index);
 
 int core_game_load(char *filename);
@@ -60,4 +60,4 @@ int core_game_event_customs();
 
 int core_game_event_kidnapping(int quest_index);
 
-void core_game_danger_object();
+int core_game_event_danger_object();

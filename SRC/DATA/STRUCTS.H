@@ -76,7 +76,10 @@ QUEST {
 GAME_STATE {
   char captain_name[100];
   long balance;
+  
   int current_system;
+  int prev_system;
+
   unsigned int ship_type;
   unsigned int tonnage;
   unsigned int current_cargo;

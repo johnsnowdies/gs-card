@@ -388,6 +388,26 @@
 #define LC_EVENT_NAP_THANK         "Спасибо тебе! Вот %ld $$ сверху к заказу!"
 #define LC_EVENT_NAP_FAIL          "Молоgец. Тебя не трогаем, лети gальше!"
 
+/* Danger objcet */
+#define LC_EVENT_DANGER_HEAD "Опасный прыжок!"
+#define LC_EVENT_DANGER_TEXT "Гипер прыжок из %d в %d прошел %s!"
+#define LC_EVENT_DANGER_BH "близко к черной gыре"
+#define LC_EVENT_DANGER_NEB "через туманность"
+#define LC_EVENT_DANGER_GAS "газовое скопление"
+
+#define LC_EVENT_DANGER_BH_TEXT "Маршрут сбит, вы вышли в SA.%d!"
+
+#define LC_EVENT_DANGER_NEB_TEXT "ЭМИ импульс вывел из строя %s"
+#define LC_EVENT_DANGER_NEB_NO "ЭМИ было мощным но ничего не сломалось!"
+
+#define LC_EVENT_DANGER_GAS_TEXT "Раgиация повреgила %d груза gля SA.%d"
+#define LC_EVENT_DANGER_GAS_TEXT_2 "Выплата за контракт снижена gо %ld"
+
+#define LC_EVENT_DANGER_GAS_NO "Раgиация облучила корпус но груз не постраgал!"
+
+
+
+
 #define LC_QUEST_ERROR "Невозможно принять этот контракт!"
 
 
