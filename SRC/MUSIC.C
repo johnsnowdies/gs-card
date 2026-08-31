@@ -151,10 +151,3 @@ void sfx_error()
     static int durs[]  = {2, 1, 2};
     music_play(notes, durs, 3);
 }
-
-void music_Untitled()
-{
-    static int notes[] = {72, 74, 76, 77, 79, 81, 83, 84};
-    static int durs[]  = {5, 5, 5, 5, 5, 5, 5, 5};
-    music_play(notes, durs, 8);
-}

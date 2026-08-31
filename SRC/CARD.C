@@ -102,7 +102,6 @@ WND root_wnd = {NULL, 0, 21, 639, 460};
  * ---------------------------------------------------------------- */
 int main() {
   char c;
-music_Untitled();
   srand((unsigned)time(NULL));
 
   sol_size = data_reader_load_systems(&sol_list);
