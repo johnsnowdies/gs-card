@@ -1,6 +1,7 @@
+#include "ui\ad\ad.h"
+
 #include <graphics.h>
 
-#include "ui\ad\ad.h"
 #include "ui\locale.h"
 
 void gui_ad_quindett() {

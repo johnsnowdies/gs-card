@@ -1,3 +1,5 @@
+#include "ui\menu\menunav.h"
+
 #include <graphics.h>
 #include <stdio.h>
 
@@ -8,11 +10,10 @@
 #include "core\objects.h"
 #include "core\game.h"
 
-#include "ui\gui.h"
+
 #include "ui\locale.h"
 
 #include "ui\menu\menuwnd.h"
-#include "ui\menu\menunav.h"
 
 #include "ui\upgrade\upgrwnd.h"
 #include "ui\upgrade\upgrnav.h"

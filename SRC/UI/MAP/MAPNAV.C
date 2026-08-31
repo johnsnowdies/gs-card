@@ -6,6 +6,8 @@
  * Public API declared in nav.h.
  */
 
+#include "ui\map\mapnav.h"
+
 #include <stdio.h>
 
 #include "data\structs.h"
@@ -13,10 +15,8 @@
 
 #include "core\game.h"
 
-#include "ui\gui.h"
 #include "ui\locale.h"
 
-#include "ui\map\mapnav.h"
 #include "ui\map\mapwnd.h"
 #include "ui\menu\menuwnd.h"
 

@@ -1,3 +1,5 @@
+#include "ui\stat\statnav.h"
+
 #include <graphics.h>
 #include <stdio.h>
 #include <conio.h>
@@ -11,7 +13,6 @@
 
 #include "core\game.h"
 
-#include "ui\stat\statnav.h"
 #include "ui\upgrade\upgrwnd.h"
 #include "ui\shipyard\syardwnd.h"
 #include "music.h"

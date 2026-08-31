@@ -4,6 +4,7 @@
  * All coordinates inside a window are expressed relative to
  * the window origin (wx, wy).
  */
+#include "ui\gui.h"
 
 #include <alloc.h>
 #include <graphics.h>
@@ -13,7 +14,6 @@
 #include "data\structs.h"
 #include "data\keys.h"
 
-#include "ui\gui.h"
 #include "ui\locale.h"
 
 #include "music.h"

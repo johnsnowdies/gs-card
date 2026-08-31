@@ -1,10 +1,10 @@
+#include "core\finder.h"
+
 #include <alloc.h>
 #include <limits.h>
 #include <math.h>
 
-#include "data\structs.h"
 #include "core\objects.h"
-#include "core\finder.h"
 #include "ui\gui.h"
 #include "ui\locale.h"
 #include "ui\map\mapwnd.h"

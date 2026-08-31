@@ -1,12 +1,12 @@
+#include "core/game.h"
+
 #include <stdlib.h>
 #include <math.h>
 
-#include "data/structs.h"
 #include "data/reader.h"
 
 #include "core/objects.h"
 #include "core/finder.h"
-#include "core/game.h"
 
 #include "ui/locale.h" 
 

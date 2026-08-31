@@ -1,7 +1,8 @@
+#include "ui\stat\statwnd.h"
+
 #include <graphics.h>
 #include <stdio.h>
 
-#include "ui\stat\statwnd.h"
 
 #include "data\structs.h"
 

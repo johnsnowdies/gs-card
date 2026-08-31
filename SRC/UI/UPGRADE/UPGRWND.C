@@ -1,3 +1,5 @@
+#include "ui\upgrade\upgrwnd.h"
+
 #include <graphics.h>
 #include <stdio.h>
 #include <string.h>
@@ -8,7 +10,6 @@
 #include "core\game.h"
 #include "ui\gui.h"
 #include "ui\locale.h"
-#include "ui\upgrade\upgrwnd.h"
 #include "ui\npc\npcwnd.h"
 #include "ui\stat\statwnd.h"
 #include "ui\ad\ad.h"

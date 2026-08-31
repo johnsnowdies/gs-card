@@ -1,5 +1,6 @@
 #ifndef _CORE_GAME
 #define _CORE_GAME
+#include "data/structs.h"
 
 /* game.c - core gameplay logics API */
 #define SHIP_ALMIGHTY       0
@@ -65,4 +66,4 @@ int core_game_event_kidnapping(int quest_index);
 
 int core_game_event_danger_object();
 
-#endif
+#endif

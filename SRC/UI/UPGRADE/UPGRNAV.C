@@ -1,13 +1,14 @@
+#include "ui\upgrade\upgrnav.h"
+
 #include <graphics.h>
 #include <conio.h>
 
 #include "data\structs.h"
 #include "data\keys.h"
-#include "ui\gui.h"
 #include "ui\locale.h"
 #include "ui\stat\statwnd.h"
-#include "ui\upgrade\upgrwnd.h"
 #include "ui\map\mapwnd.h"
+#include "ui\upgrade\upgrwnd.h"
 #include "ui\shipyard\syardwnd.h"
 #include "music.h"
 

@@ -4,6 +4,8 @@
  * Public:  gui_map_path_wnd()
  */
 
+#include "ui\map\pathwnd.h"
+
 #include <graphics.h>
 #include <stdio.h>
 
@@ -14,7 +16,6 @@
 #include "ui\locale.h"
 
 #include "ui\ad\ad.h"
-#include "ui\map\pathwnd.h"
 #include "ui\map\mapwnd.h"
 
 

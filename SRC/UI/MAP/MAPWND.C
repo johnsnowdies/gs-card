@@ -5,6 +5,8 @@
  *
  * Public: gui_map_wnd_draw(), gui_map_wnd_clear()
  */
+#include "ui\map\mapwnd.h"
+
 
 #include <alloc.h>
 #include <graphics.h>
@@ -19,7 +21,6 @@
 #include "ui\locale.h"
 
 #include "ui\ad\ad.h"
-#include "ui\map\mapwnd.h"
 #include "ui\map\pathwnd.h"
 
 /* ----------------------------------------------------------------
@@ -764,4 +765,4 @@ void gui_map_wnd_draw()
     if (mode == 3) drawyzwnd(is_coord, is_hyper, &wp);
 
     gui_bars_map_bottom();
-}
+}

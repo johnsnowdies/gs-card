@@ -1,3 +1,5 @@
+#include "ui\menu\menuwnd.h"
+
 #include <graphics.h>
 #include <stdio.h>
 
@@ -7,10 +9,8 @@
 
 #include "core\objects.h"
 
-#include "ui\gui.h"
 #include "ui\locale.h"
 
-#include "ui\menu\menuwnd.h"
 
 #include "music.h"
 

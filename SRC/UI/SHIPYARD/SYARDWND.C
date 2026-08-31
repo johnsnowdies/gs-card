@@ -1,3 +1,5 @@
+#include "ui\shipyard\syardwnd.h"
+
 #include <graphics.h>
 #include <stdio.h>
 #include <string.h>
@@ -8,7 +10,6 @@
 #include "core\game.h"
 #include "ui\gui.h"
 #include "ui\locale.h"
-#include "ui\shipyard\syardwnd.h"
 #include "ui\ad\ad.h"
 #include "ui\npc\npcwnd.h"
 #include "music.h"

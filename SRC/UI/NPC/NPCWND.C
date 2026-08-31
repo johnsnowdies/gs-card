@@ -1,7 +1,7 @@
-#include <graphics.h>
-#include "ui/gui.h"
-#include "data/structs.h"
 #include "ui/npc/npcwnd.h"
+
+#include <graphics.h>
+
 #include "ui/locale.h"
 #include "music.h"
 

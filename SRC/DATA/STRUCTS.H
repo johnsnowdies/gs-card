@@ -1,3 +1,6 @@
+#ifndef _DATA_STRUCTS
+#define _DATA_STRUCTS
+
 #define THREAD struct thread
 THREAD {
   unsigned int value;
@@ -132,3 +135,5 @@ SHIP {
   unsigned char upgrade_continuous_jump;
   unsigned char upgrade_emergency_jump;
 };
+
+#endif

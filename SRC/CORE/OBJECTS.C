@@ -1,9 +1,10 @@
+#include "core\objects.h"
+
 #include <alloc.h>
 #include <math.h>
 #include <stdio.h>
 
 #include "data\structs.h"
-#include "core\objects.h"
 
 
 /* sphereLineIntersect: returns 1 if line segment A-B passes within

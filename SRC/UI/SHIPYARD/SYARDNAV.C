@@ -1,16 +1,16 @@
+#include "ui\shipyard\syardnav.h"
+
 #include <graphics.h>
 #include <conio.h>
 
 
 #include "data\structs.h"
 #include "data\keys.h"
-#include "ui\gui.h"
 #include "ui\locale.h"
 #include "ui\map\mapwnd.h"
 #include "music.h"
 
 #include "ui\shipyard\syardwnd.h"
-#include "ui\shipyard\syardnav.h"
 
 extern E_GAME_SCREEN cur_screen;
 extern E_GAME_SCREEN prev_screen;
