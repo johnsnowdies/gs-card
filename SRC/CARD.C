@@ -8,52 +8,27 @@
  */
 
 #include <stdio.h>
-#include <conio.h>
 #include <graphics.h>
 #include <alloc.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "data\structs.h"
 #include "data\reader.h"
 
-#include "core\objects.h"
-#include "core\finder.h"
-#include "core\game.h"
-
 #include "ui\gui.h"
 #include "ui\ad\ad.h"
 
-#include "ui\map\mapwnd.h"
 #include "ui\map\mapnav.h"
-
-#include "ui\menu\menuwnd.h"
 #include "ui\menu\menunav.h"
-
-
-#include "ui\map\pathwnd.h"
-
-#include "ui\stat\statwnd.h"
 #include "ui\stat\statnav.h"
-
-#include "ui\upgrade\upgrwnd.h"
 #include "ui\upgrade\upgrnav.h"
-
-#include "ui\shipyard\syardwnd.h"
 #include "ui\shipyard\syardnav.h"
 
-#include "ui\locale.h"
-
-#include "music.h"
-
-/* Stack size (bytes) */
-/*unsigned _stklen = 16384; */
-
-const int DEBUG = 0;
 
 /* ----------------------------------------------------------------
  * Globals
  * ---------------------------------------------------------------- */
+const int DEBUG = 0;
 
 /* Data related global variables */
 SYSTEM* sol_list;
@@ -78,7 +53,10 @@ GAME_STATE gs;
 /* Exit signal */
 unsigned char SIG_TERM = 0;
 
-/* Screen enumerations */
+/* Root window */
+WND root_wnd = {NULL, 0, 21, 639, 460};
+
+/* Screens */
 E_GAME_SCREEN cur_screen = SCR_MAIN_MENU;
 E_GAME_SCREEN prev_screen = SCR_MAP;
 
@@ -95,7 +73,6 @@ static key_handler key_handlers[] = {
     gui_shipyard_wnd_key      /* SCR_SHIPYARD */
 };
 
-WND root_wnd = {NULL, 0, 21, 639, 460};
 
 /* ----------------------------------------------------------------
  * main
@@ -113,13 +90,11 @@ int main() {
   if (!DEBUG) {
     /* Splash screen */
     data_reader_draw_bmp("LOGO.BMP", 0, 0);
-    getch();
   }
 
   core_finder_calc_hyper_threads();
-  
-  setfillstyle(SOLID_FILL, BLACK);
-  bar(0, 0, 640, 480);
+ 
+  gui_clrscr();
 
   /* Show ads */
   gui_ad_loading();
@@ -135,8 +110,9 @@ int main() {
   }
 
   /* Cleanup */
-  free(sol_list);
+  if (sol_list) free(sol_list);
   if (obj_list) free(obj_list);
+  if (bnd_list) free(bnd_list);
   closegraph();
   return 0;
 }

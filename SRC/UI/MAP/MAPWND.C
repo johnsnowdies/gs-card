@@ -17,7 +17,6 @@
 #include "core\objects.h"
 #include "core\game.h"
 
-#include "ui\gui.h"
 #include "ui\locale.h"
 
 #include "ui\ad\ad.h"
@@ -30,10 +29,6 @@
 WND map_wnd = {NULL, 0, 21, 639, 460};
 int is_coord = 1, is_hyper = 0, mode = 1; 
 int path_wnd_index = 0;
-
-unsigned char render_danger_objects;
-unsigned char show_danger_hyperthreads;
-unsigned char show_danger_path_parts;
 
 /* Projection bounds */
 float xmin = MIN_VALUE, xmax = MAX_VALUE;

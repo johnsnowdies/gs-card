@@ -22,46 +22,7 @@
 
 #include "music.h"
 
-/* ----------------------------------------------------------------
- * Extern viewport globals (defined in mapwnd.c)
- * ---------------------------------------------------------------- */
-extern int offsetX, offsetY, offsetZ;
-extern float xmin, xmax, ymin, ymax, zmin, zmax;
-extern float xdens, ydens;
-
-extern int is_coord, is_hyper, mode;
-extern int path_wnd_index;
-
-extern float xmin, xmax;
-extern float ymin, ymax;
-extern float zmin, zmax;
-extern int offsetX, offsetY, offsetZ;
-extern float xdens, ydens;
-
-
-extern WAYPOINT wp;
-
-extern SYSTEM* sol_list;
-extern unsigned int sol_size;
-
-extern OBJECT* obj_list;
-extern unsigned int obj_size;
-
-extern BOUND_LINE* bnd_list;
-extern unsigned int bnd_size;
-
-extern GAME_STATE gs;
-
-extern char* data_factions[FACTIONS_COUNT];
-extern char* data_sectors[SECTORS_COUNT];
-extern unsigned int data_factions_colors[FACTIONS_COUNT];
-
-/* SCREEN NAVIGATION */
-extern E_GAME_SCREEN cur_screen;
-extern E_GAME_SCREEN prev_screen;
-
-extern WND map_wnd;
-extern WND root_wnd;
+#include "core\globals.h"
 
 
 /* ----------------------------------------------------------------

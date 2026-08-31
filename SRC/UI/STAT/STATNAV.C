@@ -17,23 +17,9 @@
 #include "ui\shipyard\syardwnd.h"
 #include "music.h"
 
+#include "ui/stat/statwnd.h"
 
-/* ----------------------------------------------------------------
- * Extern game globals
- * ---------------------------------------------------------------- */
-extern WND status_wnd;
-extern int system_quest_selected;
-
-extern int system_quests_size;
-extern WAYPOINT wp;
-
-/* SCREEN NAVIGATION */
-extern E_GAME_SCREEN cur_screen;
-extern E_GAME_SCREEN prev_screen;
-
-extern GAME_STATE gs;
-extern SYSTEM* sol_list;
-
+#include "core/globals.h"
 
 /* ----------------------------------------------------------
  * SCR_STATUS -- status window

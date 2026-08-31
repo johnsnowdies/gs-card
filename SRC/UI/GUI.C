@@ -18,11 +18,8 @@
 
 #include "music.h"
 
-/* ----------------------------------------------------------------
- * Extern game globals (defined in card.c)
- * ---------------------------------------------------------------- */
-extern GAME_STATE gs;
-extern SYSTEM* sol_list;
+#include "core/globals.h"
+
 
 /* ----------------------------------------------------------------
  * init -- BGI graphics init
@@ -40,6 +37,12 @@ void gui_init()
     }
 
     settextstyle(SMALL_FONT, HORIZ_DIR, 4);
+}
+
+void gui_clrscr()
+{
+      setfillstyle(SOLID_FILL, BLACK);
+  bar(0, 0, 640, 480);
 }
 
 /* ----------------------------------------------------------------

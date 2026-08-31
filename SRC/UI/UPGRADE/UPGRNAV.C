@@ -12,13 +12,7 @@
 #include "ui\shipyard\syardwnd.h"
 #include "music.h"
 
-extern E_GAME_SCREEN cur_screen;
-extern E_GAME_SCREEN prev_screen;
-extern int system_upgrades_size;
-extern int upgrade_selected;
-extern GAME_STATE gs;
-extern SYSTEM* sol_list;
-extern WAYPOINT wp;
+#include "core/globals.h"
 
 /* ----------------------------------------------------------------
  * SCR_UPGRADES -- upgrades screen controller

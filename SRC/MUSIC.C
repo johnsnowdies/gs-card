@@ -150,4 +150,4 @@ void sfx_error()
     static int notes[] = {80, 0, 60};
     static int durs[]  = {2, 1, 2};
     music_play(notes, durs, 3);
-}
+}

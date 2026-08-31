@@ -11,12 +11,8 @@
 #include "music.h"
 
 #include "ui\shipyard\syardwnd.h"
+#include "core/globals.h"
 
-extern E_GAME_SCREEN cur_screen;
-extern E_GAME_SCREEN prev_screen;
-extern int system_shipyard_size;
-extern int ship_selected;
-extern WAYPOINT wp;
 
 /* ----------------------------------------------------------------
  * SCR_SHIPYARD - shipyard window navigation

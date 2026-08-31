@@ -13,5 +13,11 @@
             "working_dir": "${project_path:${folder}}",
             "file_regex": "^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$"
         }
-    ]
+    ],
+    "settings":
+    {
+        "tab_size": 2,
+        "translate_tabs_to_spaces": true,
+        "detect_indentation": false
+    }
 }

@@ -20,16 +20,7 @@
 
 #include "music.h"
 
-/* SCREEN NAVIGATION */
-extern E_GAME_SCREEN cur_screen;
-extern E_GAME_SCREEN prev_screen;
-
-extern unsigned char SIG_TERM;
-extern GAME_STATE gs;
-
-extern mm_select;
-
-extern unsigned int sol_size;
+#include "core/globals.h"
 
 /* ----------------------------------------------------------
  * SCR_MAIN_MENU -- main menu on startup

@@ -15,11 +15,7 @@
 #include "music.h"
 
 
-/* ----------------------------------------------------------------
- * Extern game globals (defined in card.c)
- * ---------------------------------------------------------------- */
-
-extern unsigned int sol_size;
+#include "core/globals.h"
 
 char* MAIN_MENU_ITEMS[3] = {
     LC_MENU_NEW_GAME,

@@ -14,23 +14,12 @@
 
 #include "music.h"
 
+#include "core/globals.h"
+
 WND status_wnd;
 int system_quest_selected = 0;
 
-/* ----------------------------------------------------------------
- * Extern game globals (defined in card.c)
- * ---------------------------------------------------------------- */
-extern GAME_STATE gs;
-extern SYSTEM* sol_list;
 
-extern char* data_factions[FACTIONS_COUNT];
-extern char* data_sectors[SECTORS_COUNT];
-extern char* data_ship_names[SHIP_COUNT];
-extern char* data_hyper_names[HYPER_COUNT];
-
-extern QUEST system_quests[5];
-
-extern int system_quests_size;
 static char* QUEST_TYPES[] = {"",
                                 LC_QUEST_TYPE_1,
                                 LC_QUEST_TYPE_2,

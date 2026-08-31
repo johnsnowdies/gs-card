@@ -15,17 +15,11 @@
 #include "ui\ad\ad.h"
 #include "music.h"
 
+#include "core/globals.h"
+
+
 WND upgrade_wnd;
 int upgrade_selected = 0;
-
-extern GAME_STATE gs;
-extern SYSTEM* sol_list;
-extern char* data_ship_names[SHIP_COUNT];
-extern int   data_ship_tonnages[SHIP_COUNT];
-extern char* data_hyper_names[HYPER_COUNT];
-extern int   data_hyper_fuel[HYPER_COUNT];
-extern UPGRADE system_upgrades[8];
-extern int system_upgrades_size;
 
 static void draw_ship_info(void)
 {

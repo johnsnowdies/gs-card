@@ -4,22 +4,15 @@
 
 
 #include "data/structs.h"
+
 #include "ui/gui.h"
 #include "ui/locale.h"
 
-
-/* ----------------------------------------------------------------
- * Extern globals
- * ---------------------------------------------------------------- */
-
-extern GAME_STATE gs;
-extern SYSTEM* sol_list;
-extern E_GAME_SCREEN cur_screen;
+#include "core/globals.h"
 
 /* ----------------------------------------------------------------
  * Status lines
  * ---------------------------------------------------------------- */
-
 void gui_bars_common_top() {
   WND status_line;
   char buf[100];

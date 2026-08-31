@@ -14,21 +14,10 @@
 #include "ui\npc\npcwnd.h"
 #include "music.h"
 
+#include "core/globals.h"
+
 WND shipyard_wnd;
 int ship_selected = 0;
-
-extern char* data_ship_names[SHIP_COUNT];
-extern unsigned int data_ship_tonnages[SHIP_COUNT];
-extern char * data_hyper_names[SHIP_COUNT];
-extern unsigned int data_hyper_fuel[SHIP_COUNT];
-extern int system_shipyard_size;
-
-extern SHIP system_shipyard[6];
-extern GAME_STATE gs;
-
-extern long ship_prices[SHIP_COUNT];
-extern long hyper_prices[HYPER_COUNT];
-extern long custom_prices[CUSTOM_UPGRADES_COUNT];
 
 static void draw_ship_upgrades_status_table(void)
 {

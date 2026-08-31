@@ -7,6 +7,7 @@
 
 #include "core/objects.h"
 #include "core/finder.h"
+#include "core/globals.h"
 
 #include "ui/locale.h" 
 
@@ -15,35 +16,6 @@
 #include "ui/map/mapwnd.h"
 
 #include "music.h"
-
-/* ----------------------------------------------------------------
- * Extern game globals (defined in card.c)
- * ---------------------------------------------------------------- */
-extern int DEBUG;
-
-extern GAME_STATE gs;
-
-extern WAYPOINT wp;
-
-extern SYSTEM* sol_list;
-extern unsigned int sol_size;
-
-extern OBJECT* obj_list;
-extern unsigned int obj_size;
-
-extern WND map_wnd;
-extern WND root_wnd;
-
-extern QUEST system_quests[5];
-extern int system_quests_size;
-
-extern UPGRADE system_upgrades[8];
-extern int system_upgrades_size;
-
-extern SHIP system_shipyard[6];
-extern int system_shipyard_size;
-
-#define N_SIZE 15
 
 
 /* ----------------------------------------------------------------
@@ -294,30 +266,30 @@ static void core_game_gen_npc(NPC* ptr_npc, unsigned int faction, E_GENDER gende
   switch (faction) {
     case 0:
       if (ptr_npc->gender == 0)
-        sprintf(ptr_npc->name, "%s %s", ARAB_MALE_FIRST[rand() % N_SIZE],
-                ARAB_LAST[rand() % N_SIZE]);
+        sprintf(ptr_npc->name, "%s %s", ARAB_MALE_FIRST[rand() % NAMES_COUNT],
+                ARAB_LAST[rand() % NAMES_COUNT]);
       else
-        sprintf(ptr_npc->name, "%s %s", ARAB_FEMALE_FIRST[rand() % N_SIZE],
-                ARAB_LAST[rand() % N_SIZE]);
+        sprintf(ptr_npc->name, "%s %s", ARAB_FEMALE_FIRST[rand() % NAMES_COUNT],
+                ARAB_LAST[rand() % NAMES_COUNT]);
       break;
 
     case 1:
       if (ptr_npc->gender == 0)
-        sprintf(ptr_npc->name, "%s %s", IRISH_MALE_FIRST[rand() % N_SIZE],
-                IRISH_LAST[rand() % N_SIZE]);
+        sprintf(ptr_npc->name, "%s %s", IRISH_MALE_FIRST[rand() % NAMES_COUNT],
+                IRISH_LAST[rand() % NAMES_COUNT]);
       else
-        sprintf(ptr_npc->name, "%s %s", IRISH_FEMALE_FIRST[rand() % N_SIZE],
-                IRISH_LAST[rand() % N_SIZE]);
+        sprintf(ptr_npc->name, "%s %s", IRISH_FEMALE_FIRST[rand() % NAMES_COUNT],
+                IRISH_LAST[rand() % NAMES_COUNT]);
       break;
 
     case 2:
     case 3:
       if (ptr_npc->gender == 0)
-        sprintf(ptr_npc->name, "%s %s", COMMON_MALE_FIRST[rand() % N_SIZE],
-                COMMON_LAST[rand() % N_SIZE]);
+        sprintf(ptr_npc->name, "%s %s", COMMON_MALE_FIRST[rand() % NAMES_COUNT],
+                COMMON_LAST[rand() % NAMES_COUNT]);
       else
-        sprintf(ptr_npc->name, "%s %s", COMMON_FEMALE_FIRST[rand() % N_SIZE],
-                COMMON_LAST[rand() % N_SIZE]);
+        sprintf(ptr_npc->name, "%s %s", COMMON_FEMALE_FIRST[rand() % NAMES_COUNT],
+                COMMON_LAST[rand() % NAMES_COUNT]);
       break;
   }
 }

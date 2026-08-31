@@ -27,6 +27,11 @@
 /* Input Field Length*/
 #define Q_INPUT_LEN 30
 
+/* Main menu */
+#define MAIN_MENU 1
+#define GAME_MENU 2
+
+
 /* ----------------------------------------------------------------
  * GUI Elements
  * ---------------------------------------------------------------- */
@@ -82,6 +87,8 @@ BTN {
 
 void gui_init(void);
 
+void gui_clrscr(void);
+
 /* Window prototype - size, header */
 void gui_draw_wnd_proto(WND* ptr_wnd);
 
@@ -132,4 +139,4 @@ void gui_memory_status(void);
 void gui_draw_section_header(int x, int y, int width, char *title);
 void gui_draw_section_header_v(int x, int y, int width, int height, char *title);
 
-#endif
+#endif

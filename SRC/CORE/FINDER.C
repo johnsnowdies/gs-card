@@ -10,13 +10,8 @@
 #include "ui\map\mapwnd.h"
 #include "music.h"
 
-extern SYSTEM* sol_list;
-extern unsigned int sol_size;
-extern OBJECT* obj_list;
-extern int obj_size;
-extern GAME_STATE gs;
-extern WND map_wnd;
-extern const int DEBUG;
+#include "core\globals.h"
+
 
 /* BFS data (far pointers, allocated in far heap) */
 static int far* bfs_queue = NULL;

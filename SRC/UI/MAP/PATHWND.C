@@ -18,28 +18,14 @@
 #include "ui\ad\ad.h"
 #include "ui\map\mapwnd.h"
 
+#include "core\globals.h"
 
-/* ----------------------------------------------------------------
- * Extern game globals (defined in card.c)
- * ---------------------------------------------------------------- */
-extern struct object* obj_list;
-extern unsigned int obj_size;
-
-extern struct game_state gs;
-
-extern SYSTEM* sol_list;
-extern unsigned int sol_size;
-
-extern WAYPOINT wp;
 
 /* ----------------------------------------------------------------
  * One-shot flag: only show the Quindett ad once per path calc
  * ---------------------------------------------------------------- */
 static int pathListFlag = 0;
 
-extern int path_wnd_index;
-
-extern WND map_wnd;
 
 /* ----------------------------------------------------------------
  * Private: drawPathWnd -- background frame of the path panel

@@ -3,8 +3,8 @@
 #include "ui\gui.h"
 
 #define _GUI_MENU_WND
-#define MAIN_MENU 1
-#define GAME_MENU 2
+
+extern int mm_select;
 
 void gui_menu_wnd(WND* ptr_parent, int currentPos, int mode);
 #endif
