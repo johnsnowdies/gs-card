@@ -1,4 +1,6 @@
 /* ui/locale.h */
+#ifndef _GUI_LOCALE
+#define _GUI_LOCALE
 #ifdef LANGUAGE_RU
 
 /* ----------------------------------------------------------------
@@ -1266,3 +1268,4 @@
 
 #endif
 
+#endif

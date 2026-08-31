@@ -61,6 +61,14 @@ clean:
 fix:
 	@echo "Converting sources to DOS format (CP866 + CRLF)..."
 	@find $(SCRIPT_DIR)/SRC -type f \( -name "*.C" -o -name "*.H" \) -exec sh -c \
-		'file="$$1"; iconv -f utf-8 -t cp866 "$$file" 2>/dev/null > "$$file.tmp" && mv "$$file.tmp" "$$file" || rm -f "$$file.tmp"; sed -i "s/\r//g; s/$$/\r/" "$$file"' \
+		'file="$$1"; \
+		 if iconv -f utf-8 -t cp866 "$$file" 2>/dev/null > "$$file.tmp"; then \
+		   mv "$$file.tmp" "$$file"; \
+		   sed -i '\''s/\r//g; s/$$/\r/'\'' "$$file"; \
+		   echo "Converted: $$file"; \
+		 else \
+		   rm -f "$$file.tmp"; \
+		   echo "Warning: $$file is not UTF-8, skipped" >&2; \
+		 fi' \
 		_ {} \;
 	@echo "Done."

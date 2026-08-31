@@ -1,3 +1,6 @@
+#ifndef _CORE_GAME
+#define _CORE_GAME
+
 /* game.c - core gameplay logics API */
 #define SHIP_ALMIGHTY       0
 #define SHIP_BETSY          1
@@ -61,3 +64,5 @@ int core_game_event_customs();
 int core_game_event_kidnapping(int quest_index);
 
 int core_game_event_danger_object();
+
+#endif

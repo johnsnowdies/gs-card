@@ -1,3 +1,5 @@
 /* nav.h -- navigation controller API */
-
-int gui_map_wnd_key(int ch, WND *parent);
+#ifndef _GUI_MAP_NAV
+#define _GUI_MAP_NAV
+int gui_map_wnd_key(int ch, WND *parent);
+#endif

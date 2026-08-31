@@ -1,4 +1,6 @@
 /* objects.c -- gas clouds, black holes, nebulae */
+#ifndef _CORE_OBJECTS
+#define _CORE_OBJECTS
 
 #define OBJ_GASCLOUD 0
 #define OBJ_BLACKHOLE 1
@@ -6,3 +8,5 @@
 
 int core_objects_sphere_line_intersect(int ax, int ay, int az, int bx, int by, int bz, int cx,
                         int cy, int cz, int r);
+
+#endif

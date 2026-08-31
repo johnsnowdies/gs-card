@@ -1,3 +1,6 @@
+#ifndef _DATA_KEYS
+#define _DATA_KEYS
+
 #define ESC 0x1b
 #define ENTER 0x0D
 #define TAB 0x09
@@ -22,3 +25,5 @@
 
 #define KEY_P     0x70
 #define KEY_P_UPPER 0x50
+
+#endif

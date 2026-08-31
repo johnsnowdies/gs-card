@@ -1,4 +1,9 @@
 /* finder.c - main map related math and pathfinder algo API */
+#ifndef _CORE_FINDER
+#define _CORE_FINDER
+
 void core_finder_calc_hyper_threads();
 int core_finder_get_way(WAYPOINT *wp);
 int core_finder_get_jumps(int start, int end);
+
+#endif

@@ -1,6 +1,8 @@
 /* ----------------------------------------------------------------
  * Layout constants
  * ---------------------------------------------------------------- */
+#ifndef _GUI
+#define _GUI
 
 /* VGA Screen */
 #define SCREEN_W 640
@@ -129,3 +131,5 @@ void gui_memory_status(void);
 */
 void gui_draw_section_header(int x, int y, int width, char *title);
 void gui_draw_section_header_v(int x, int y, int width, int height, char *title);
+
+#endif
