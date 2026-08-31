@@ -60,11 +60,12 @@ extern long ship_prices[SHIP_COUNT];
 extern long hyper_prices[HYPER_COUNT];
 extern long custom_prices[CUSTOM_UPGRADES_COUNT];
 
-
+int game_is_visited(GAME_STATE* gs, int system);
 void core_game_gen_quest(QUEST* ptr_quest, int player_rep, unsigned int faction);
 int core_game_run_event(int fuel_consume);
 int core_game_accept_quest(unsigned int index);
 
+void new_game(char* name, int sol_size);
 int core_game_load(char *filename);
 int core_game_save(char *filename);
 

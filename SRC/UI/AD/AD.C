@@ -1,8 +1,7 @@
-#include "ui\ad\ad.h"
-
 #include <graphics.h>
 
-#include "ui\locale.h"
+#include "ui/ad/ad.h"
+#include "ui/locale.h"
 
 void gui_ad_quindett() {
   setcolor(4);
@@ -47,10 +46,9 @@ void gui_ad_quindett() {
 
   setfillstyle(SOLID_FILL, BLACK);
   bar(471, 453, 639, 459);
-  
-  settextstyle(SMALL_FONT,HORIZ_DIR,4);
-  outtextxy(478,440, LC_AD_QUINDETT_GS);
-  
+
+  settextstyle(SMALL_FONT, HORIZ_DIR, 4);
+  outtextxy(478, 440, LC_AD_QUINDETT_GS);
 }
 
 void gui_ad_hypersoft() {
@@ -170,9 +168,9 @@ void gui_ad_legals() {
 }
 
 void gui_ad_loading() {
-    setfillstyle(SOLID_FILL, BLACK);
-    bar(0,0,640, 480);
-  
+  setfillstyle(SOLID_FILL, BLACK);
+  bar(0, 0, 640, 480);
+
   gui_ad_hypersoft();
   gui_ad_upgrade();
   gui_ad_legion();

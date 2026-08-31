@@ -1,6 +1,6 @@
 /* menuwnd.h -- main menu window API */
 #ifndef _GUI_MENU_WND
-#include "ui\gui.h"
+#include "ui/gui.h"
 
 #define _GUI_MENU_WND
 

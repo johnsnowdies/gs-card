@@ -1,16 +1,14 @@
-#include "core\objects.h"
-
 #include <alloc.h>
 #include <math.h>
 #include <stdio.h>
 
-#include "data\structs.h"
-
+#include "core/objects.h"
+#include "data/structs.h"
 
 /* sphereLineIntersect: returns 1 if line segment A-B passes within
  * distance r of point C (sphere intersection) */
-int core_objects_sphere_line_intersect(int ax, int ay, int az, int bx, int by, int bz, int cx,
-                        int cy, int cz, int r) {
+int core_objects_sphere_line_intersect(int ax, int ay, int az, int bx, int by,
+                                       int bz, int cx, int cy, int cz, int r) {
   double dx, dy, dz; /* B - A */
   double wx, wy, wz; /* C - A */
   double cross_x, cross_y, cross_z;

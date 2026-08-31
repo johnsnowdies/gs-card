@@ -1,37 +1,30 @@
-#include "ui\stat\statwnd.h"
-
 #include <graphics.h>
 #include <stdio.h>
 
-
-#include "data\structs.h"
-
-#include "core\game.h"
-
-#include "ui\gui.h"
-#include "ui\locale.h"
-#include "ui\npc\npcwnd.h"
-
-#include "music.h"
-
+#include "core/game.h"
 #include "core/globals.h"
+#include "data/structs.h"
+#include "sound/sound.h"
+#include "ui/gui.h"
+#include "ui/locale.h"
+#include "ui/npc/npcwnd.h"
+#include "ui/stat/statwnd.h"
 
 WND status_wnd;
 int system_quest_selected = 0;
 
-
 static char* QUEST_TYPES[] = {"",
-                                LC_QUEST_TYPE_1,
-                                LC_QUEST_TYPE_2,
-                                LC_QUEST_TYPE_3,
-                                LC_QUEST_TYPE_4,
-                                LC_QUEST_TYPE_5};
-                                
+                              LC_QUEST_TYPE_1,
+                              LC_QUEST_TYPE_2,
+                              LC_QUEST_TYPE_3,
+                              LC_QUEST_TYPE_4,
+                              LC_QUEST_TYPE_5};
+
 void gui_status_quest_info(int selected) {
   int result, i;
   char lines[4][100];
   char buttons[2][100] = {LC_GUI_BOOL_YES, LC_GUI_BOOL_NO};
-  
+
   for (i = 0; i < 4; i++) {
     lines[i][0] = '\0';
   }
@@ -114,8 +107,9 @@ void gui_status_quest_list(WND* status_wnd) {
 
   y_pos = status_wnd->y + 220;
   x_pos = status_wnd->x + 10;
-  
-  gui_draw_section_header(status_wnd->x, y_pos, status_wnd->width, LC_QUEST_NEW_HEAD);
+
+  gui_draw_section_header(status_wnd->x, y_pos, status_wnd->width,
+                          LC_QUEST_NEW_HEAD);
 
   /* New Contracts Section */
   setcolor(0);
@@ -130,7 +124,8 @@ void gui_status_quest_list(WND* status_wnd) {
   setcolor(15);
 
   setfillstyle(SOLID_FILL, BLACK);
-  bar(x_pos, y_pos, status_wnd->x + status_wnd->width - 11, y_pos + (system_quests_size * 10));
+  bar(x_pos, y_pos, status_wnd->x + status_wnd->width - 11,
+      y_pos + (system_quests_size * 10));
   for (i = 0; i < system_quests_size; i++) {
     char buf[128], system[16];
     sprintf(system, "SA.%d", system_quests[i].target_system);
@@ -149,10 +144,11 @@ void gui_status_quest_list(WND* status_wnd) {
   }
 
   y_pos += 120;
-  gui_draw_section_header(status_wnd->x, y_pos, status_wnd->width, LC_QUEST_MY_HEAD); 
+  gui_draw_section_header(status_wnd->x, y_pos, status_wnd->width,
+                          LC_QUEST_MY_HEAD);
 
   setcolor(0);
-  
+
   outtextxy(status_wnd->x + 10, y_pos - 42, LC_QUEST_MY_HEAD);
 
   sprintf(line, "%-25.25s %-15.15s %-7.7s %6s %6s %6s %6s", LC_QUEST_TABLE_1,
@@ -169,7 +165,8 @@ void gui_status_quest_list(WND* status_wnd) {
     sprintf(buf, "%-25.25s %-15.15s %-7.7s %6d  %6ld %6ld %6d",
             QUEST_TYPES[gs.quests[i].type],
             data_sectors[gs.quests[i].target_sector], system,
-            gs.quests[i].cargo, gs.quests[i].reward, gs.quests[i].penalty, gs.quests[i].jumps);
+            gs.quests[i].cargo, gs.quests[i].reward, gs.quests[i].penalty,
+            gs.quests[i].jumps);
 
     outtextxy(x_pos, y_pos + (10 * i), buf);
   }
@@ -183,7 +180,6 @@ void draw_player_status(WND* status_wnd) {
   char systems_visited[100];
   char quests_done[100];
 
-
   sprintf(captain_name, "%s: %s", LC_STATUS_WND_CAPTAIN, gs.captain_name);
 
   sprintf(current_system, "%s: SA.%d", LC_STATUS_WND_SYSTEM, gs.current_system);
@@ -191,7 +187,7 @@ void draw_player_status(WND* status_wnd) {
           data_sectors[sol_list[gs.current_system].sector]);
   sprintf(systems_visited, LC_GAME_OVER_STATS_TEXT_1, *gs.visited);
   sprintf(quests_done, LC_GAME_OVER_STATS_TEXT_2, gs.missions_completed);
-  
+
   /*
   {
     char ship_image[50];
@@ -199,12 +195,12 @@ void draw_player_status(WND* status_wnd) {
     data_reader_draw_bmp(ship_image, 339, 22);
   }*/
 
-  
   settextstyle(SMALL_FONT, HORIZ_DIR, 5);
   setcolor(15);
 
   outtextxy(status_wnd->x + 80, status_wnd->y + 20, captain_name);
-  outtextxy(status_wnd->x + 80, status_wnd->y + 35, data_factions[sol_list[gs.current_system].faction]);
+  outtextxy(status_wnd->x + 80, status_wnd->y + 35,
+            data_factions[sol_list[gs.current_system].faction]);
   outtextxy(status_wnd->x + 80, status_wnd->y + 50, sector);
   outtextxy(status_wnd->x + 80, status_wnd->y + 65, current_system);
 

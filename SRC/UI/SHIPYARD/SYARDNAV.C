@@ -1,21 +1,17 @@
-#include "ui\shipyard\syardnav.h"
-
-#include <graphics.h>
 #include <conio.h>
+#include <graphics.h>
 
-
-#include "data\structs.h"
-#include "data\keys.h"
-#include "ui\locale.h"
-#include "ui\map\mapwnd.h"
-#include "music.h"
-
-#include "ui\shipyard\syardwnd.h"
 #include "core/globals.h"
-
+#include "data/keys.h"
+#include "data/structs.h"
+#include "sound/sound.h"
+#include "ui/locale.h"
+#include "ui/map/mapwnd.h"
+#include "ui/shipyard/syardnav.h"
+#include "ui/shipyard/syardwnd.h"
 
 /* ----------------------------------------------------------------
- * SCR_SHIPYARD - shipyard window navigation
+ * PUBLIC: SCR_SHIPYARD - SHIPYARD WINDOW KEY HANDLER
  * ---------------------------------------------------------------- */
 int gui_shipyard_wnd_key(int ch, WND* parent) {
   if (TAB == ch) {
@@ -36,8 +32,8 @@ int gui_shipyard_wnd_key(int ch, WND* parent) {
     gui_upgrade_wnd();
     sfx_screen_change();
   }
-  if (ENTER == ch){
-      gui_shipyard_deal_wnd();
+  if (ENTER == ch) {
+    gui_shipyard_deal_wnd();
   }
   if (UP == ch) {
     if (ship_selected > 0) {

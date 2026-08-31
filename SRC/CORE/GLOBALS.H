@@ -1,8 +1,8 @@
 #ifndef _CORE_GLOBALS
 #define _CORE_GLOBALS
 
-#include "ui/gui.h"
 #include "data/structs.h"
+#include "ui/gui.h"
 
 extern const int DEBUG;
 

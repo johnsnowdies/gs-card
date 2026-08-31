@@ -1,17 +1,13 @@
-#include "ui/bars/bars.h"
-
 #include <stdio.h>
 
-
+#include "core/globals.h"
 #include "data/structs.h"
-
+#include "ui/bars/bars.h"
 #include "ui/gui.h"
 #include "ui/locale.h"
 
-#include "core/globals.h"
-
 /* ----------------------------------------------------------------
- * Status lines
+ * STATUS LINES
  * ---------------------------------------------------------------- */
 void gui_bars_common_top() {
   WND status_line;
@@ -55,7 +51,6 @@ void gui_bars_status_bottom() {
   if (cur_screen == SCR_STATUS) highlight = 0;
   if (cur_screen == SCR_UPGRADE) highlight = 1;
   if (cur_screen == SCR_SHIPYARD) highlight = 2;
-  
 
   gui_draw_status_line(&status_line, keys, items, highlight);
 }

@@ -1,43 +1,68 @@
-/* card.c -- main entry point, event loop, game state
+#pragma comment(compiler)
+#pragma message("Compiled for Hypersoft ILTD GS-CARD")
+/*
+ * ========================================================================
+ *               HYPER SOFT ILTD  -  PROPRIETARY SOURCE CODE
+ * ========================================================================
  *
- * Event loop uses enum + switch so that adding a second screen
- * (e.g. cargo / ship management) is a matter of adding a new
- * case branch and a new input-handler function.
+ *  (C) COPYRIGHT 19950-34315 HYPERSPORT IMPERIAL LIMITED.
+ *  ALL RIGHTS RESERVED.  UNPUBLISHED RIGHTS RESERVED UNDER
+ *  IMPERIAL SPACE COPYRIGHT LAWS.
  *
- * Game globals are defined here and extern'd where needed.
+ *  This file contains confidential and proprietary information of
+ *  Hypersoft ILTD.  No part of this file may be reproduced, stored
+ *  in a retrieval system, or transmitted, in any form or by any means,
+ *  electronic, mechanical, photocopying, recording, or otherwise,
+ *  without the prior written permission of Hypersoft ILTD.
+ *
+ *  File    : CARD.C
+ *  Module  : MAIN
+ *  Author  : Hypersoft Engineering Team
+ *  Created : 15-JAN-19950
+ *  Revised : 12-DEC-34315
+ *  Version : 2.0b
+ *
+ *  Description:
+ *      GS-CARD main file, global variables initialization, screen change
+ *      system with keyboard handlers system
+ *
+ *  WARNING:
+ *      This software is provided "AS IS" without warranty of any kind,
+ *      express or implied.  Use of this code is at your own risk.
+ *      See the Hypersoft ILTD Software License Agreement for full terms.
+ *
+ * ========================================================================
  */
 
-#include <stdio.h>
-#include <graphics.h>
 #include <alloc.h>
+#include <graphics.h>
+#include <stdio.h>
 #include <stdlib.h>
 
-#include "data\structs.h"
-#include "data\reader.h"
-
-#include "ui\gui.h"
-#include "ui\ad\ad.h"
-
-#include "ui\map\mapnav.h"
-#include "ui\menu\menunav.h"
-#include "ui\stat\statnav.h"
-#include "ui\upgrade\upgrnav.h"
-#include "ui\shipyard\syardnav.h"
-
+#include "data/reader.h"
+#include "data/structs.h"
+#include "ui/ad/ad.h"
+#include "ui/gui.h"
+#include "ui/map/mapnav.h"
+#include "ui/menu/menunav.h"
+#include "ui/shipyard/syardnav.h"
+#include "ui/stat/statnav.h"
+#include "ui/upgrade/upgrnav.h"
 
 /* ----------------------------------------------------------------
- * Globals
+ * GLOBALS
  * ---------------------------------------------------------------- */
 const int DEBUG = 0;
 
 /* Data related global variables */
-SYSTEM* sol_list;
-OBJECT* obj_list;
-BOUND_LINE* bnd_list;
+SYSTEM *sol_list;
+OBJECT *obj_list;
+BOUND_LINE *bnd_list;
 QUEST system_quests[5];
 UPGRADE system_upgrades[8];
 SHIP system_shipyard[6];
 
+/* Sizes */
 unsigned int sol_size;
 unsigned int obj_size;
 unsigned int bnd_size;
@@ -45,6 +70,7 @@ int system_quests_size = 0;
 int system_upgrades_size = 0;
 int system_shipyard_size = 0;
 
+/* Pathfinder waypoints */
 WAYPOINT wp;
 
 /* Game state */
@@ -61,21 +87,20 @@ E_GAME_SCREEN cur_screen = SCR_MAIN_MENU;
 E_GAME_SCREEN prev_screen = SCR_MAP;
 
 /* ----------------------------------------------------------------
- * Handlers table
+ * HANDLERS TABLE
  * ---------------------------------------------------------------- */
-typedef int (*key_handler)(int ch, WND* parent);
+typedef int (*key_handler)(int ch, WND *parent);
 static key_handler key_handlers[] = {
-    gui_map_wnd_key,          /* SCR_MAP */
-    gui_menu_main_wnd_key,    /* SCR_MAIN_MENU */
-    gui_menu_game_wnd_key,    /* SCR_GAME_MENU */
-    gui_status_wnd_key,       /* SCR_STATUS */
-    gui_upgrade_wnd_key,       /* SCR_UPGRADE */
-    gui_shipyard_wnd_key      /* SCR_SHIPYARD */
+    gui_map_wnd_key,       /* SCR_MAP */
+    gui_menu_main_wnd_key, /* SCR_MAIN_MENU */
+    gui_menu_game_wnd_key, /* SCR_GAME_MENU */
+    gui_status_wnd_key,    /* SCR_STATUS */
+    gui_upgrade_wnd_key,   /* SCR_UPGRADE */
+    gui_shipyard_wnd_key   /* SCR_SHIPYARD */
 };
 
-
 /* ----------------------------------------------------------------
- * main
+ * MAIN
  * ---------------------------------------------------------------- */
 int main() {
   char c;
@@ -93,7 +118,7 @@ int main() {
   }
 
   core_finder_calc_hyper_threads();
- 
+
   gui_clrscr();
 
   /* Show ads */
@@ -110,9 +135,12 @@ int main() {
   }
 
   /* Cleanup */
-  if (sol_list) free(sol_list);
-  if (obj_list) free(obj_list);
-  if (bnd_list) free(bnd_list);
+  if (sol_list)
+    free(sol_list);
+  if (obj_list)
+    free(obj_list);
+  if (bnd_list)
+    free(bnd_list);
   closegraph();
   return 0;
 }

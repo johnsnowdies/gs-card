@@ -44,10 +44,9 @@ POINT {
 
 #define BOUND_LINE struct bound_line
 BOUND_LINE {
-    POINT* a;
-    POINT* b;
+  POINT* a;
+  POINT* b;
 };
-
 
 #define WAYPOINT struct waypoint
 WAYPOINT {
@@ -67,7 +66,7 @@ NPC {
 QUEST {
   unsigned long reward;
   unsigned long penalty;
-  unsigned int type;  
+  unsigned int type;
   unsigned int target_system;
   unsigned int target_sector;
   unsigned int cargo;
@@ -79,7 +78,7 @@ QUEST {
 GAME_STATE {
   char captain_name[100];
   long balance;
-  
+
   int current_system;
   int prev_system;
 
@@ -94,34 +93,27 @@ GAME_STATE {
 
   unsigned char upgrade_objects_map;
   unsigned char upgrade_political_map;
-  
+
   unsigned int reputation;
   unsigned int missions_completed;
   unsigned int fuel;
   unsigned int quests_size;
   QUEST quests[5];
-  unsigned char *visited;
+  unsigned char* visited;
   int visited_bytes;
 };
 
 #define E_GAME_SCREEN enum game_screen
-E_GAME_SCREEN {
-    SCR_MAP,
-    SCR_MAIN_MENU,
-    SCR_GAME_MENU,
-    SCR_STATUS,
-    SCR_UPGRADE,
-    SCR_SHIPYARD
-};
-
+E_GAME_SCREEN{SCR_MAP,    SCR_MAIN_MENU, SCR_GAME_MENU,
+              SCR_STATUS, SCR_UPGRADE,   SCR_SHIPYARD};
 
 #define UPGRADE struct upgrade
 UPGRADE {
-    char *name;
-    long base_price;
-    int type; 
-    int id;
-    NPC giver;
+  char* name;
+  long base_price;
+  int type;
+  int id;
+  NPC giver;
 };
 
 #define SHIP struct ship
@@ -136,4 +128,4 @@ SHIP {
   unsigned char upgrade_emergency_jump;
 };
 
-#endif
+#endif

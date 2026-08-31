@@ -1,17 +1,14 @@
-#include "core\finder.h"
-
 #include <alloc.h>
 #include <limits.h>
 #include <math.h>
 
-#include "core\objects.h"
-#include "ui\gui.h"
-#include "ui\locale.h"
-#include "ui\map\mapwnd.h"
-#include "music.h"
-
-#include "core\globals.h"
-
+#include "core/finder.h"
+#include "core/globals.h"
+#include "core/objects.h"
+#include "sound/sound.h"
+#include "ui/gui.h"
+#include "ui/locale.h"
+#include "ui/map/mapwnd.h"
 
 /* BFS data (far pointers, allocated in far heap) */
 static int far* bfs_queue = NULL;
@@ -24,13 +21,13 @@ static int bfs_valid = 0;
 #define EPSILON 1e-6
 
 /* ----------------------------------------------------------------
- * Helpers
+ * HELPERS
  * ---------------------------------------------------------------- */
-int max(int a, int b) { return (a > b) ? a : b; }
-int min(int a, int b) { return (a < b) ? a : b; }
+static int max(int a, int b) { return (a > b) ? a : b; }
+static int min(int a, int b) { return (a < b) ? a : b; }
 
 /* ----------------------------------------------------------------
- * Allocate BFS arrays in far memory
+ * ALLOCATE BFS ARRAYS IN FAR MEMORY
  * ---------------------------------------------------------------- */
 static int core_finder_ensure_bfs_arrays(void) {
   int need_size = sol_size;
@@ -137,7 +134,7 @@ static int core_finder_run_bfs(int start) {
 /* ----------------------------------------------------------------
  * Restore path (same as before, but uses far arrays)
  * ---------------------------------------------------------------- */
-int core_finder_restore_path(WAYPOINT* wp, int start, int end, int reverse) {
+static int core_finder_restore_path(WAYPOINT* wp, int start, int end, int reverse) {
   int i, j, cnt, cur;
   int temp_path[25];
 

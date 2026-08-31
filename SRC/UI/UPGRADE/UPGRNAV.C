@@ -1,21 +1,19 @@
-#include "ui\upgrade\upgrnav.h"
-
-#include <graphics.h>
 #include <conio.h>
-
-#include "data\structs.h"
-#include "data\keys.h"
-#include "ui\locale.h"
-#include "ui\stat\statwnd.h"
-#include "ui\map\mapwnd.h"
-#include "ui\upgrade\upgrwnd.h"
-#include "ui\shipyard\syardwnd.h"
-#include "music.h"
+#include <graphics.h>
 
 #include "core/globals.h"
+#include "data/keys.h"
+#include "data/structs.h"
+#include "sound/sound.h"
+#include "ui/locale.h"
+#include "ui/map/mapwnd.h"
+#include "ui/shipyard/syardwnd.h"
+#include "ui/stat/statwnd.h"
+#include "ui/upgrade/upgrnav.h"
+#include "ui/upgrade/upgrwnd.h"
 
 /* ----------------------------------------------------------------
- * SCR_UPGRADES -- upgrades screen controller
+ * PUBLIC: SCR_UPGRADES -- UPGRADE SCREEN KEY HANDLER
  * ---------------------------------------------------------------- */
 int gui_upgrade_wnd_key(int ch, WND* parent) {
   if (TAB == ch) {
@@ -30,14 +28,15 @@ int gui_upgrade_wnd_key(int ch, WND* parent) {
     sfx_screen_change();
   }
   if (F3 == ch) {
-    if (sol_list[gs.current_system].is_shipyard){
-        prev_screen = cur_screen;
-        cur_screen = SCR_SHIPYARD;
-        gui_shipyard_wnd();
-    }else{
-        gui_warning_wnd(parent, LC_GEN_ERROR_HEAD, LC_SHIPYARD_ERROR, SOUND_ERROR);
-        getch();
-        gui_upgrade_wnd();
+    if (sol_list[gs.current_system].is_shipyard) {
+      prev_screen = cur_screen;
+      cur_screen = SCR_SHIPYARD;
+      gui_shipyard_wnd();
+    } else {
+      gui_warning_wnd(parent, LC_GEN_ERROR_HEAD, LC_SHIPYARD_ERROR,
+                      SOUND_ERROR);
+      getch();
+      gui_upgrade_wnd();
     }
   }
   if (UP == ch) {

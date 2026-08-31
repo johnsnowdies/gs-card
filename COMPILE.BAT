@@ -114,8 +114,8 @@ tcc -c -mh %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\UI\SHIPYARD
 if errorlevel 1 goto err
 
 
-echo Compiling MUSIC.C...                     >> %BLD%\build.log
-tcc -c -mh %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\MUSIC.C >> %BLD%\build.log
+echo Compiling SOUND\SOUND.C...                     >> %BLD%\build.log
+tcc -c -mh %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\SOUND\SOUND.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
 
@@ -132,24 +132,24 @@ REM   line 3:    mapfile
 REM   line 4:    libfiles (space-separated)
 
 echo /x /c %LIB%\C0H.OBJ+ >  %BLD%\GS-LINK.RSP
-echo CARD.OBJ+                              >> %BLD%\GS-LINK.RSP
-echo GUI.OBJ+                                >> %BLD%\GS-LINK.RSP
-echo READER.OBJ+                             >> %BLD%\GS-LINK.RSP
-echo FINDER.OBJ+                             >> %BLD%\GS-LINK.RSP
-echo AD.OBJ+                                 >> %BLD%\GS-LINK.RSP
-echo OBJECTS.OBJ+                                >> %BLD%\GS-LINK.RSP
-echo MAPWND.OBJ+                                 >> %BLD%\GS-LINK.RSP
-echo MAPNAV.OBJ+                                    >> %BLD%\GS-LINK.RSP
-echo MENUWND.OBJ+                                    >> %BLD%\GS-LINK.RSP
-echo STATWND.OBJ+                                    >> %BLD%\GS-LINK.RSP
-echo GAME.OBJ+                                    >> %BLD%\GS-LINK.RSP
-echo MENUNAV.OBJ+                                    >> %BLD%\GS-LINK.RSP
-echo STATNAV.OBJ+                                    >> %BLD%\GS-LINK.RSP
-echo MUSIC.OBJ+                                    >> %BLD%\GS-LINK.RSP
-echo UPGRWND.OBJ+                                    >> %BLD%\GS-LINK.RSP
-echo UPGRNAV.OBJ+                                    >> %BLD%\GS-LINK.RSP
-echo BARS.OBJ+                                    >> %BLD%\GS-LINK.RSP
-echo SYARDWND.OBJ+  >> %BLD%\GS-LINK.RSP
+echo CARD.OBJ+     >> %BLD%\GS-LINK.RSP
+echo GUI.OBJ+      >> %BLD%\GS-LINK.RSP
+echo READER.OBJ+   >> %BLD%\GS-LINK.RSP
+echo FINDER.OBJ+   >> %BLD%\GS-LINK.RSP
+echo AD.OBJ+       >> %BLD%\GS-LINK.RSP
+echo OBJECTS.OBJ+  >> %BLD%\GS-LINK.RSP
+echo MAPWND.OBJ+   >> %BLD%\GS-LINK.RSP
+echo MAPNAV.OBJ+   >> %BLD%\GS-LINK.RSP
+echo MENUWND.OBJ+  >> %BLD%\GS-LINK.RSP
+echo STATWND.OBJ+  >> %BLD%\GS-LINK.RSP
+echo GAME.OBJ+     >> %BLD%\GS-LINK.RSP
+echo MENUNAV.OBJ+  >> %BLD%\GS-LINK.RSP
+echo STATNAV.OBJ+  >> %BLD%\GS-LINK.RSP
+echo SOUND.OBJ+    >> %BLD%\GS-LINK.RSP
+echo UPGRWND.OBJ+  >> %BLD%\GS-LINK.RSP
+echo UPGRNAV.OBJ+  >> %BLD%\GS-LINK.RSP
+echo BARS.OBJ+     >> %BLD%\GS-LINK.RSP
+echo SYARDWND.OBJ+ >> %BLD%\GS-LINK.RSP
 echo SYARDNAV.OBJ+ >> %BLD%\GS-LINK.RSP
 
 echo NPCWND.OBJ+ >> %BLD%\GS-LINK.RSP
