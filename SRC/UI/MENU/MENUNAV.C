@@ -15,7 +15,7 @@
 #include "ui/upgrade/upgrwnd.h"
 
 /* ----------------------------------------------------------
- * PUBLIC: SCR_MAIN_MENU -- MAIN MENU KEY HANDLER
+ * EXTERN: SCR_MAIN_MENU -- MAIN MENU KEY HANDLER
  * ---------------------------------------------------------- */
 int gui_menu_main_wnd_key(int ch, WND* parent) {
   if (mm_select == 0 && ENTER == ch) {
@@ -24,7 +24,7 @@ int gui_menu_main_wnd_key(int ch, WND* parent) {
                                       LC_CARD_MENU_NEW_WND_TEXT, NULL);
     if (text_input != NULL && text_input[0] != '\0') {
       mm_select = 0;
-      new_game(text_input, sol_size);
+      core_game_new_game(text_input);
       cur_screen = SCR_MAP;
       gui_map_wnd_draw();
       gui_bars_map_bottom();
@@ -82,7 +82,7 @@ int gui_menu_main_wnd_key(int ch, WND* parent) {
 }
 
 /* ----------------------------------------------------------
- * PUBLIC: SCR_GAME_MENU -- IN-GAME MENU KEY HANDLER
+ * EXTERN: SCR_GAME_MENU -- IN-GAME MENU KEY HANDLER
  * ---------------------------------------------------------- */
 int gui_menu_game_wnd_key(int ch, WND* parent) {
   if (ESC == ch) {

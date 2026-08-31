@@ -13,7 +13,7 @@
 #include "ui/npc/npcwnd.h"
 
 /* ----------------------------------------------------------------
- * GAME DATA STRUCTURES
+ * EXTERNAL: GAME DATA STRUCTURES
  * ---------------------------------------------------------------- */
 char* data_ship_names[SHIP_COUNT] = {LC_GAME_SHIP_1, LC_GAME_SHIP_2,
                                      LC_GAME_SHIP_3, LC_GAME_SHIP_4,
@@ -45,102 +45,27 @@ long ship_prices[SHIP_COUNT] = SHIP_UPGRADE_BASE_PRICES;
 long hyper_prices[HYPER_COUNT] = HYPER_UPGRADE_BASE_PRICES;
 long custom_prices[CUSTOM_UPGRADES_COUNT] = CUSTOM_UPGRADE_BASE_PRICES;
 
+/* One-shot new game flag */
+static unsigned int init_game = 0;
+
 /* ----------------------------------------------------------------
  * VISITED SOLAR SYSTEMS TRACKING
  * ---------------------------------------------------------------- */
 
-static void game_mark_visited(GAME_STATE* gs, int system) {
-  if (system < 0 || system >= sol_size || !gs->visited) return;
-  gs->visited[system >> 3] |= (1 << (system & 7));
-}
-
-int game_is_visited(GAME_STATE* gs, int system) {
-  if (system < 0 || system >= sol_size || !gs->visited) return 0;
-  return (gs->visited[system >> 3] >> (system & 7)) & 1;
-}
-
-unsigned int init_game = 0;
-
-/* ----------------------------------------------------------------
- * INITIALISE NEW GAME STATE
- * ---------------------------------------------------------------- */
-void new_game(char* name, int sol_size) {
-  int i;
-
-  init_game = 1;
-  strcpy(gs.captain_name, name);
-  gs.balance = 500;
-  gs.current_system = 85;
-  if (gs.current_system < 0) gs.current_system = 0;
-  if (gs.current_system >= sol_size) gs.current_system = 0;
-
-  gs.ship_type = 0;
-  gs.tonnage = data_ship_tonnages[gs.ship_type];
-  gs.current_cargo = 0;
-  gs.hyper_class = 0;
-  gs.upgrade_smuggler_bay = 0;
-  gs.upgrade_continuous_jump = 0;
-  gs.upgrade_emergency_jump = 0;
-  gs.upgrade_objects_map = 0;
-  gs.upgrade_political_map = 0;
-  gs.reputation = 0;
-  gs.missions_completed = 0;
-  gs.fuel = 100;
-
-  gs.quests_size = 0;
-
-  gs.prev_system = gs.current_system;
-
-  gs.visited_bytes = (sol_size + 7) / 8;
-  gs.visited = (unsigned char*)malloc(gs.visited_bytes);
-  if (gs.visited) {
-    memset(gs.visited, 0, gs.visited_bytes);
-  }
-
-  system_quests_size = 0;
-  system_upgrades_size = 0;
-
-  core_game_run_event(0);
-  wp.size = 0;
-
-  core_game_save("USER.SAV");
-
-  /* Draw new game GUI */
-  gui_map_nav_move_screen_to(sol_list, gs.current_system);
-  gui_bars_map_bottom();
-  gui_bars_common_top();
+static void core_game_mark_visited() {
+  int system = gs.current_system;
+  if (system < 0 || system >= sol_size || !gs.visited) return;
+  gs.visited[system >> 3] |= (1 << (system & 7));
 }
 
 /* ----------------------------------------------------------------
- * Load and save game
- * ---------------------------------------------------------------- */
-int core_game_load(char* filename) {
-  int result = 0;
-  init_game = 1;
-  result = data_reader_load_game_file(&gs, filename);
-
-  if (result == 1) {
-    gs.prev_system = gs.current_system;
-    gui_map_nav_move_screen_to(sol_list, gs.current_system);
-    core_game_run_event(0);
-    wp.size = 0;
-    /* Draw new game GUI */
-    gui_map_nav_move_screen_to(sol_list, gs.current_system);
-    gui_bars_map_bottom();
-    gui_bars_common_top();
-  }
-
-  return result;
-}
-
-int core_game_save(char* filename) {
-  int result = 0;
-  result = data_reader_save_game_file(&gs, filename);
-  return result;
-}
+ *
+ *                            GENERATORS
+ *
+ * ----------------------------------------------------------------
 
 /* ----------------------------------------------------------------
- * Quests and NPC's
+ * GENERATE NPC
  * ---------------------------------------------------------------- */
 
 static void core_game_gen_npc(NPC* ptr_npc, unsigned int faction,
@@ -285,13 +210,13 @@ static void core_game_gen_npc(NPC* ptr_npc, unsigned int faction,
 }
 
 /* ----------------------------------------------------------------
- * Quests generator
+ * CURRENT SYSTEM QUESTS GENERATION
  * ---------------------------------------------------------------- */
 
-static int pick_target_system_by_jumps(int current, int min_jumps,
-                                       int max_jumps) {
+static int pick_target_system_by_jumps(int min_jumps, int max_jumps) {
   int candidates[1000];
   int count = 0;
+  int current = gs.current_system;
   int i, jumps;
 
   for (i = 0; i < sol_size; i++) {
@@ -361,8 +286,8 @@ static long calc_reward(int type, int cargo, int jumps) {
   }
 }
 
-void core_game_gen_quest(QUEST* ptr_quest, int player_rep,
-                         unsigned int faction) {
+static void core_game_gen_quest(QUEST* ptr_quest, int player_rep,
+                                unsigned int faction) {
   int type, target, cargo, jumps, reward, penalty, r;
 
   if (faction == 3) {
@@ -383,15 +308,14 @@ void core_game_gen_quest(QUEST* ptr_quest, int player_rep,
     type = 5;
 
   if (type == 1)
-    target = pick_target_system_by_jumps(gs.current_system, 1, 5);
+    target = pick_target_system_by_jumps(1, 5);
   else if (type == 2)
-    target = pick_target_system_by_jumps(gs.current_system, 6, 10);
-  else /* type 3, 4, 5 – дальняя */
-    target = pick_target_system_by_jumps(gs.current_system, 11, 999);
+    target = pick_target_system_by_jumps(6, 10);
+  else
+    target = pick_target_system_by_jumps(11, 999);
 
   if (target == -1) {
-    /* совсем нет подходящих – выбираем любую достижимую */
-    target = pick_target_system_by_jumps(gs.current_system, 1, 999);
+    target = pick_target_system_by_jumps(1, 999);
     if (target == -1) {
       system_quests_size = 0;
       return;
@@ -423,214 +347,9 @@ void core_game_gen_quest(QUEST* ptr_quest, int player_rep,
   ptr_quest->jumps = jumps;
 }
 
-int core_game_accept_quest(unsigned int index) {
-  int i;
-
-  if (gs.quests_size >= 5) {
-    return 0;
-  }
-  if (index >= system_quests_size) {
-    return 0;
-  }
-
-  if (gs.current_cargo + system_quests[index].cargo > gs.tonnage) return 0;
-
-  gs.quests[gs.quests_size] = system_quests[index];
-  gs.quests_size++;
-
-  gs.current_cargo += system_quests[index].cargo;
-
-  for (i = index; i < system_quests_size - 1; i++) {
-    system_quests[i] = system_quests[i + 1];
-  }
-
-  system_quests_size = system_quests_size - 1;
-
-  return 1;
-}
-
-static int core_game_event_quest_done() {
-  int i, j;
-  char lines[2][100];
-
-  for (i = 0; i < gs.quests_size; i++) {
-    if (gs.quests[i].target_system == gs.current_system) {
-      /* Set quest done */
-      gs.current_cargo -= gs.quests[i].cargo;
-      gs.balance += gs.quests[i].reward;
-
-      switch (gs.quests[i].type) {
-        case 1:
-          sprintf(lines[0], LC_QUEST_TYPE_1_DONE_1);
-          sprintf(lines[1], LC_QUEST_TYPE_1_DONE_2, gs.quests[i].reward);
-          break;
-        case 2:
-          sprintf(lines[0], LC_QUEST_TYPE_2_DONE_1);
-          sprintf(lines[1], LC_QUEST_TYPE_2_DONE_2, gs.quests[i].reward);
-          break;
-        case 3:
-          sprintf(lines[0], LC_QUEST_TYPE_3_DONE_1);
-          sprintf(lines[1], LC_QUEST_TYPE_3_DONE_2, gs.quests[i].reward);
-          break;
-        case 4:
-          sprintf(lines[0], LC_QUEST_TYPE_4_DONE_1);
-          sprintf(lines[1], LC_QUEST_TYPE_4_DONE_2, gs.quests[i].reward);
-          break;
-        case 5:
-          sprintf(lines[0], LC_QUEST_TYPE_5_DONE_1);
-          sprintf(lines[1], LC_QUEST_TYPE_5_DONE_2, gs.quests[i].reward);
-          break;
-      }
-
-      gui_bars_common_top();
-      gui_map_wnd_draw();
-
-      gui_npc_wnd(&map_wnd, &gs.quests[i].giver, NPC_DIALOG_WND,
-                  LC_QUEST_COMPLETE_HEAD, lines, 2, NULL, 0, 1);
-
-      /* Remove Quest from user log */
-      for (j = i; j < gs.quests_size; j++) {
-        gs.quests[j] = gs.quests[j + 1];
-      }
-
-      gs.quests_size--;
-      gs.missions_completed++;
-      if (i >= gs.quests_size) break;
-    }
-  }
-}
-
 /* ----------------------------------------------------------------
- * Game Events System
+ * CURRENT SYSTEM SHOPS GENERATION
  * ---------------------------------------------------------------- */
-static int core_game_check_fuel_gone() {
-  if (gs.fuel <= 0) {
-    char lines[9][100];
-    int i;
-
-    gui_bars_common_top();
-
-    for (i = 0; i < 9; i++) {
-      lines[i][0] = '\0';
-    }
-
-    sprintf(lines[0], LC_GAME_OVER_FUEL_TEXT_1);
-    sprintf(lines[1], LC_GAME_OVER_FUEL_TEXT_2);
-    sprintf(lines[2], "   ");
-    sprintf(lines[3], LC_GAME_OVER_STATS_HEAD);
-    sprintf(lines[4], LC_GAME_OVER_STATS_TEXT_2, gs.missions_completed);
-    sprintf(lines[5], LC_GAME_OVER_STATS_TEXT_3, gs.balance);
-    sprintf(lines[6], "   ");
-    sprintf(lines[7], LC_GAME_OVER_STATS_TEXT_4);
-    gui_dialog_wnd(&map_wnd, LC_GAME_OVER_HEAD, LC_GAME_OVER_HEAD, NULL, lines,
-                   8, NULL, 0, SOUND_ERROR, 1);
-
-    return 1;
-  }
-  return 0;
-}
-
-static int core_game_check_win() {
-  if (gs.balance >= 1000000) {
-    char lines[9][100];
-    int i;
-
-    gui_bars_common_top();
-    gui_map_wnd_draw();
-
-    for (i = 0; i < 9; i++) {
-      lines[i][0] = '\0';
-    }
-
-    sprintf(lines[0], LC_GAME_OVER_WIN_TEXT_1);
-    sprintf(lines[1], LC_GAME_OVER_WIN_TEXT_2);
-    sprintf(lines[2], "   ");
-    sprintf(lines[3], LC_GAME_OVER_STATS_HEAD);
-    sprintf(lines[4], LC_GAME_OVER_STATS_TEXT_2, gs.missions_completed);
-    sprintf(lines[5], LC_GAME_OVER_STATS_TEXT_3, gs.balance);
-    sprintf(lines[6], "   ");
-    sprintf(lines[7], LC_GAME_OVER_STATS_TEXT_4);
-    gui_dialog_wnd(&map_wnd, LC_GAME_OVER_HEAD, LC_GAME_OVER_HEAD, NULL, lines,
-                   8, NULL, 0, SOUND_ERROR, 1);
-
-    return 1;
-  }
-  return 0;
-}
-
-static int core_game_check_money_gone() {
-  if (gs.balance <= 0) {
-    char lines[9][100];
-    int i;
-
-    gui_bars_common_top();
-
-    for (i = 0; i < 9; i++) {
-      lines[i][0] = '\0';
-    }
-
-    sprintf(lines[0], LC_GAME_OVER_MONEY_TEXT_1);
-    sprintf(lines[1], LC_GAME_OVER_MONEY_TEXT_2);
-    sprintf(lines[2], "   ");
-    sprintf(lines[3], LC_GAME_OVER_STATS_HEAD);
-    sprintf(lines[4], LC_GAME_OVER_STATS_TEXT_2, gs.missions_completed);
-    sprintf(lines[5], LC_GAME_OVER_STATS_TEXT_3, gs.balance);
-    sprintf(lines[6], "   ");
-    sprintf(lines[7], LC_GAME_OVER_STATS_TEXT_4);
-    gui_dialog_wnd(&map_wnd, LC_GAME_OVER_HEAD, LC_GAME_OVER_HEAD, NULL, lines,
-                   8, NULL, 0, SOUND_ERROR, 1);
-
-    return 1;
-  }
-  return 0;
-}
-
-void core_game_event_gas_station() {
-  if (sol_list[gs.current_system].is_gas_station && gs.fuel < 100) {
-    unsigned long percent_price, amount, total;
-
-    int i, j;
-    char* text[100];
-
-    char lines[3][100];
-    char buttons[2][100] = {LC_GUI_BOOL_YES, LC_GUI_BOOL_NO};
-
-    int choice = 0, gender = 0, faction = 0;
-    NPC gas_worker;
-
-    for (i = 0; i < 3; i++) {
-      lines[i][0] = '\0';
-    }
-
-    percent_price = (rand() % 3) + 1;
-    amount = 100 - gs.fuel;
-    total = amount * percent_price;
-    faction = sol_list[gs.current_system].faction;
-    gender = faction == 1 ? 1 : 0;
-
-    core_game_gen_npc(&gas_worker, faction, gender, GAS_NPC);
-
-    sprintf(lines[0], LC_GAME_GAS_STATION_TEXT_1, gs.current_system);
-    sprintf(lines[1], LC_GAME_GAS_STATION_TEXT_2, percent_price);
-
-    if (total > gs.balance) {
-      /* Not enough money! */
-      sprintf(lines[2], LC_GAME_GAS_STATION_NO_MONEY_TEXT, total);
-      gui_npc_wnd(&map_wnd, &gas_worker, NPC_DIALOG_WND,
-                  LC_GAME_GAS_STATION_HEAD, lines, 3, NULL, 0, 1);
-
-    } else {
-      sprintf(lines[2], LC_GAME_GAS_STATION_TEXT_3, total);
-      choice = gui_npc_wnd(&map_wnd, &gas_worker, NPC_CHOICE_WND,
-                           LC_GAME_GAS_STATION_HEAD, lines, 3, buttons, 2, 1);
-
-      if (choice == 0) {
-        gs.fuel = 100;
-        gs.balance -= total;
-      }
-    }
-  }
-}
 
 static void core_game_gen_shipyard(void) {
   int i, count = 0, faction;
@@ -725,116 +444,211 @@ static void core_game_gen_upgrades(void) {
   system_upgrades_size = count;
 }
 
-int core_game_run_event(int fuel_consume) {
-  int i = 0, game_over = 0;
-  char buf[50];
-  int start_system = gs.current_system;
+/* ----------------------------------------------------------------
+ *
+ *                      GAME EVENTS SYSTEM
+ *
+ * ----------------------------------------------------------------
 
-  game_mark_visited(&gs, gs.current_system);
-  if (fuel_consume) gs.fuel -= data_hyper_fuel[gs.hyper_class];
+/* ----------------------------------------------------------------
+ * GAME OVER EVENT - FUEL GONE
+ * ---------------------------------------------------------------- */
+static int core_game_check_fuel_gone(void) {
+  if (gs.fuel <= 0) {
+    char lines[9][100];
+    int i;
 
-  game_over = core_game_check_fuel_gone();
-  if (game_over) return game_over;
+    gui_bars_common_top();
 
-  game_over = core_game_check_money_gone();
-  if (game_over) return game_over;
-
-  game_over = core_game_check_win();
-  if (game_over) return game_over;
-
-  if (!game_over) {
-    system_quests_size = 5;
-    /* System quests generator */
-    for (i = 0; i < system_quests_size; i++) {
-      /*gui_progress_wnd(&map_wnd, "GS-CARD 1.5", "Generating Quests", i,
-       * sol_size);*/
-      core_game_gen_quest(&system_quests[i], gs.reputation,
-                          sol_list[gs.current_system].faction);
+    for (i = 0; i < 9; i++) {
+      lines[i][0] = '\0';
     }
 
-    for (i = 0; i < gs.quests_size; i++) {
-      /*gui_progress_wnd(&map_wnd, "GS-CARD 1.5", "Updating Quests", i,
-       * gs.quests_size);*/
-      gs.quests[i].jumps =
-          core_finder_get_jumps(gs.current_system, gs.quests[i].target_system);
+    sprintf(lines[0], LC_GAME_OVER_FUEL_TEXT_1);
+    sprintf(lines[1], LC_GAME_OVER_FUEL_TEXT_2);
+    sprintf(lines[2], "   ");
+    sprintf(lines[3], LC_GAME_OVER_STATS_HEAD);
+    sprintf(lines[4], LC_GAME_OVER_STATS_TEXT_2, gs.missions_completed);
+    sprintf(lines[5], LC_GAME_OVER_STATS_TEXT_3, gs.balance);
+    sprintf(lines[6], "   ");
+    sprintf(lines[7], LC_GAME_OVER_STATS_TEXT_4);
+    gui_dialog_wnd(&map_wnd, LC_GAME_OVER_HEAD, LC_GAME_OVER_HEAD, NULL, lines,
+                   8, NULL, 0, SOUND_ERROR, 1);
+
+    return 1;
+  }
+  return 0;
+}
+
+/* ----------------------------------------------------------------
+ * GAME OVER EVENT - MONEY GONE
+ * ---------------------------------------------------------------- */
+static int core_game_check_money_gone(void) {
+  if (gs.balance <= 0) {
+    char lines[9][100];
+    int i;
+
+    gui_bars_common_top();
+
+    for (i = 0; i < 9; i++) {
+      lines[i][0] = '\0';
     }
 
-    /* System upgrades market generator */
-    core_game_gen_upgrades();
-    core_game_gen_shipyard();
+    sprintf(lines[0], LC_GAME_OVER_MONEY_TEXT_1);
+    sprintf(lines[1], LC_GAME_OVER_MONEY_TEXT_2);
+    sprintf(lines[2], "   ");
+    sprintf(lines[3], LC_GAME_OVER_STATS_HEAD);
+    sprintf(lines[4], LC_GAME_OVER_STATS_TEXT_2, gs.missions_completed);
+    sprintf(lines[5], LC_GAME_OVER_STATS_TEXT_3, gs.balance);
+    sprintf(lines[6], "   ");
+    sprintf(lines[7], LC_GAME_OVER_STATS_TEXT_4);
+    gui_dialog_wnd(&map_wnd, LC_GAME_OVER_HEAD, LC_GAME_OVER_HEAD, NULL, lines,
+                   8, NULL, 0, SOUND_ERROR, 1);
 
-    if (!init_game) {
-      /* Target system changed by black hole */
-      {
-        int nested_over = core_game_event_danger_object();
-        if (gs.current_system != start_system) {
-          game_over = nested_over;
-          return game_over;
-        }
+    return 1;
+  }
+  return 0;
+}
+
+/* ----------------------------------------------------------------
+ * GAME OVER EVENT - PLAYER WINS!
+ * ---------------------------------------------------------------- */
+static int core_game_check_win(void) {
+  if (gs.balance >= 1000000) {
+    char lines[9][100];
+    int i;
+
+    gui_bars_common_top();
+    gui_map_wnd_draw();
+
+    for (i = 0; i < 9; i++) {
+      lines[i][0] = '\0';
+    }
+
+    sprintf(lines[0], LC_GAME_OVER_WIN_TEXT_1);
+    sprintf(lines[1], LC_GAME_OVER_WIN_TEXT_2);
+    sprintf(lines[2], "   ");
+    sprintf(lines[3], LC_GAME_OVER_STATS_HEAD);
+    sprintf(lines[4], LC_GAME_OVER_STATS_TEXT_2, gs.missions_completed);
+    sprintf(lines[5], LC_GAME_OVER_STATS_TEXT_3, gs.balance);
+    sprintf(lines[6], "   ");
+    sprintf(lines[7], LC_GAME_OVER_STATS_TEXT_4);
+    gui_dialog_wnd(&map_wnd, LC_GAME_OVER_HEAD, LC_GAME_OVER_HEAD, NULL, lines,
+                   8, NULL, 0, SOUND_ERROR, 1);
+
+    return 1;
+  }
+  return 0;
+}
+
+/* ----------------------------------------------------------------
+ * EVENT - QUEST DONE
+ * ---------------------------------------------------------------- */
+static int core_game_event_quest_done(void) {
+  int i, j;
+  char lines[2][100];
+
+  for (i = 0; i < gs.quests_size; i++) {
+    if (gs.quests[i].target_system == gs.current_system) {
+      /* Set quest done */
+      gs.current_cargo -= gs.quests[i].cargo;
+      gs.balance += gs.quests[i].reward;
+
+      switch (gs.quests[i].type) {
+        case 1:
+          sprintf(lines[0], LC_QUEST_TYPE_1_DONE_1);
+          sprintf(lines[1], LC_QUEST_TYPE_1_DONE_2, gs.quests[i].reward);
+          break;
+        case 2:
+          sprintf(lines[0], LC_QUEST_TYPE_2_DONE_1);
+          sprintf(lines[1], LC_QUEST_TYPE_2_DONE_2, gs.quests[i].reward);
+          break;
+        case 3:
+          sprintf(lines[0], LC_QUEST_TYPE_3_DONE_1);
+          sprintf(lines[1], LC_QUEST_TYPE_3_DONE_2, gs.quests[i].reward);
+          break;
+        case 4:
+          sprintf(lines[0], LC_QUEST_TYPE_4_DONE_1);
+          sprintf(lines[1], LC_QUEST_TYPE_4_DONE_2, gs.quests[i].reward);
+          break;
+        case 5:
+          sprintf(lines[0], LC_QUEST_TYPE_5_DONE_1);
+          sprintf(lines[1], LC_QUEST_TYPE_5_DONE_2, gs.quests[i].reward);
+          break;
       }
 
-      /* Random events */
-      if (rand() % 100 < (sol_list[gs.current_system].faction == 1 ? 30 : 10)) {
-        int nested_over = core_game_event_hijack();
-        if (gs.current_system != start_system) {
-          game_over = nested_over;
-          return game_over;
-        }
-        gui_bars_common_top();
-        gui_map_wnd_draw();
+      gui_bars_common_top();
+      gui_map_wnd_draw();
+
+      gui_npc_wnd(&map_wnd, &gs.quests[i].giver, NPC_DIALOG_WND,
+                  LC_QUEST_COMPLETE_HEAD, lines, 2, NULL, 0, 1);
+
+      /* Remove Quest from user log */
+      for (j = i; j < gs.quests_size; j++) {
+        gs.quests[j] = gs.quests[j + 1];
       }
 
-      if (rand() % 100 < (sol_list[gs.current_system].faction == 2 ? 70 : 20) &&
-          sol_list[gs.current_system].is_shipyard) {
-        int nested_over = core_game_event_customs();
-        if (gs.current_system != start_system) {
-          game_over = nested_over;
-          return game_over;
-        }
-        gui_bars_common_top();
-        gui_map_wnd_draw();
-      }
-
-      /* Kidnapping: 10% chance if player has at least one type 4 quest */
-      for (i = 0; i < gs.quests_size; i++) {
-        if (gs.quests[i].type == 4) {
-          if (rand() % 100 < 10) {
-            int nested_over = core_game_event_kidnapping(i);
-            if (gs.current_system != start_system) {
-              game_over = nested_over;
-              return game_over;
-            }
-            gui_bars_common_top();
-            gui_map_wnd_draw();
-          }
-          break; /* only first type 4 quest triggers kidnapping */
-        }
-      }
-
-      core_game_event_quest_done();
-
-      game_over = core_game_check_win();
-    } else {
-      init_game = 0;
+      gs.quests_size--;
+      gs.missions_completed++;
+      if (i >= gs.quests_size) break;
     }
   }
+}
 
-  game_over = core_game_check_fuel_gone();
-  if (game_over) return game_over;
+/* ----------------------------------------------------------------
+ * EVENT - GAS STATION
+ * ---------------------------------------------------------------- */
+static void core_game_event_gas_station(void) {
+  if (sol_list[gs.current_system].is_gas_station && gs.fuel < 100) {
+    unsigned long percent_price, amount, total;
 
-  game_over = core_game_check_money_gone();
-  if (game_over) return game_over;
+    int i, j;
+    char* text[100];
 
-  game_over = core_game_check_win();
-  if (game_over) return game_over;
+    char lines[3][100];
+    char buttons[2][100] = {LC_GUI_BOOL_YES, LC_GUI_BOOL_NO};
 
-  return game_over;
+    int choice = 0, gender = 0, faction = 0;
+    NPC gas_worker;
+
+    for (i = 0; i < 3; i++) {
+      lines[i][0] = '\0';
+    }
+
+    percent_price = (rand() % 3) + 1;
+    amount = 100 - gs.fuel;
+    total = amount * percent_price;
+    faction = sol_list[gs.current_system].faction;
+    gender = faction == 1 ? 1 : 0;
+
+    core_game_gen_npc(&gas_worker, faction, gender, GAS_NPC);
+
+    sprintf(lines[0], LC_GAME_GAS_STATION_TEXT_1, gs.current_system);
+    sprintf(lines[1], LC_GAME_GAS_STATION_TEXT_2, percent_price);
+
+    if (total > gs.balance) {
+      /* Not enough money! */
+      sprintf(lines[2], LC_GAME_GAS_STATION_NO_MONEY_TEXT, total);
+      gui_npc_wnd(&map_wnd, &gas_worker, NPC_DIALOG_WND,
+                  LC_GAME_GAS_STATION_HEAD, lines, 3, NULL, 0, 1);
+
+    } else {
+      sprintf(lines[2], LC_GAME_GAS_STATION_TEXT_3, total);
+      choice = gui_npc_wnd(&map_wnd, &gas_worker, NPC_CHOICE_WND,
+                           LC_GAME_GAS_STATION_HEAD, lines, 3, buttons, 2, 1);
+
+      if (choice == 0) {
+        gs.fuel = 100;
+        gs.balance -= total;
+      }
+    }
+  }
 }
 
 /* -----------------------------------------------------------------
- * Quest failed: show penalty, deduct balance, remove quest
+ * EVENT - QUEST FAILED, SHOW PENALTY, DEDUCT BALANCE, REMOVE QUEST
  * ---------------------------------------------------------------- */
-void core_game_event_quest_failed(int index) {
+static core_game_event_quest_failed(int index) {
   int type, i;
   char lines[2][100];
   char header[80];
@@ -891,12 +705,12 @@ void core_game_event_quest_failed(int index) {
 }
 
 /* -----------------------------------------------------------------
- * Hijack event
+ * EVENT - PIRACY
  * ---------------------------------------------------------------- */
-int core_game_event_hijack() {
+static int core_game_event_piracy(void) {
   int ship_type, faction, i;
   long request;
-  NPC hijacker;
+  NPC npc_pirate;
   char lines[2][100];
   char buttons[3][100];
   int btn_count = 0;
@@ -935,26 +749,26 @@ int core_game_event_hijack() {
       droppable_cargo += gs.quests[i].cargo;
   }
 
-  /* Generate hijacker: 90% Irish */
+  /* Generate npc_pirate: 90% Irish */
   if ((rand() % 100) < 90)
     faction = 1;
   else
     faction = rand() % 4;
-  core_game_gen_npc(&hijacker, faction, RANDOM_GENDER, QUEST_NPC);
+  core_game_gen_npc(&npc_pirate, faction, RANDOM_GENDER, QUEST_NPC);
 
-  strcpy(lines[0], LC_EVENT_HIJACK_TEXT_1);
-  sprintf(lines[1], LC_EVENT_HIJACK_TEXT_2, request);
+  strcpy(lines[0], LC_EVENT_PIRACY_TEXT_1);
+  sprintf(lines[1], LC_EVENT_PIRACY_TEXT_2, request);
 
   /* Build active buttons */
   /*if (gs.balance >= request) {*/
   pay_idx = btn_count;
-  strcpy(buttons[btn_count], LC_EVENT_HIJACK_PAY_BTN);
+  strcpy(buttons[btn_count], LC_EVENT_PIRACY_PAY_BTN);
   btn_count++;
   /*}*/
 
   if (droppable_cargo > 0) {
     drop_idx = btn_count;
-    strcpy(buttons[btn_count], LC_EVENT_HIJACK_DROP_BTN);
+    strcpy(buttons[btn_count], LC_EVENT_PIRACY_DROP_BTN);
     btn_count++;
   }
 
@@ -964,8 +778,8 @@ int core_game_event_hijack() {
     btn_count++;
   }
 
-  choice = gui_npc_wnd(&map_wnd, &hijacker, NPC_CHOICE_WND,
-                       LC_EVENT_HIJACK_HEAD, lines, 2, buttons, btn_count, 2);
+  choice = gui_npc_wnd(&map_wnd, &npc_pirate, NPC_CHOICE_WND,
+                       LC_EVENT_PIRACY_HEAD, lines, 2, buttons, btn_count, 2);
 
   if (choice == pay_idx) {
     /* Pay ransom */
@@ -996,9 +810,9 @@ int core_game_event_hijack() {
 }
 
 /* -----------------------------------------------------------------
- * Customs event
+ * EVENT - CUSTOMS
  * ---------------------------------------------------------------- */
-int core_game_event_customs() {
+static int core_game_event_customs(void) {
   int faction, i;
   long bribe;
   NPC customs_officer;
@@ -1088,9 +902,9 @@ int core_game_event_customs() {
 }
 
 /* -----------------------------------------------------------------
- * Kidnapping event
+ * EVENT - KIDNAPPING
  * ---------------------------------------------------------------- */
-int core_game_event_kidnapping(int quest_index) {
+static int core_game_event_kidnapping(int quest_index) {
   NPC kidnapper;
   int faction;
   char lines[2][100];
@@ -1173,7 +987,10 @@ int core_game_event_kidnapping(int quest_index) {
   return 0;
 }
 
-int core_game_event_danger_object() {
+/* -----------------------------------------------------------------
+ * EVENT - DANGER OBJECTS
+ * ---------------------------------------------------------------- */
+static int core_game_event_danger_object(void) {
   int cur = gs.current_system;
   int prev = gs.prev_system;
   int o = 0, i;
@@ -1285,4 +1102,238 @@ int core_game_event_danger_object() {
       continue;
     }
   }
+}
+
+/* ----------------------------------------------------------------
+ *
+ *                      EXTERNAL FUNCTIONS
+ *
+ * ---------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------
+ * EVENT SYSTEM MAIN FUNCTIONS
+ * ---------------------------------------------------------------- */
+int core_game_run_event(int fuel_consume) {
+  int i = 0, game_over = 0;
+  char buf[50];
+  int start_system = gs.current_system;
+
+  core_game_mark_visited(gs.current_system);
+  if (fuel_consume) gs.fuel -= data_hyper_fuel[gs.hyper_class];
+
+  game_over = core_game_check_fuel_gone();
+  if (game_over) return game_over;
+
+  game_over = core_game_check_money_gone();
+  if (game_over) return game_over;
+
+  game_over = core_game_check_win();
+  if (game_over) return game_over;
+
+  if (!game_over) {
+    system_quests_size = 5;
+    /* System quests generator */
+    for (i = 0; i < system_quests_size; i++) {
+      /*gui_progress_wnd(&map_wnd, "GS-CARD 1.5", "Generating Quests", i,
+       * sol_size);*/
+      core_game_gen_quest(&system_quests[i], gs.reputation,
+                          sol_list[gs.current_system].faction);
+    }
+
+    for (i = 0; i < gs.quests_size; i++) {
+      /*gui_progress_wnd(&map_wnd, "GS-CARD 1.5", "Updating Quests", i,
+       * gs.quests_size);*/
+      gs.quests[i].jumps =
+          core_finder_get_jumps(gs.current_system, gs.quests[i].target_system);
+    }
+
+    /* System upgrades market generator */
+    core_game_gen_upgrades();
+    core_game_gen_shipyard();
+
+    if (!init_game) {
+      /* Target system changed by black hole */
+      {
+        int nested_over = core_game_event_danger_object();
+        if (gs.current_system != start_system) {
+          game_over = nested_over;
+          return game_over;
+        }
+      }
+
+      /* Random events */
+      if (rand() % 100 < (sol_list[gs.current_system].faction == 1 ? 30 : 10)) {
+        int nested_over = core_game_event_piracy();
+        if (gs.current_system != start_system) {
+          game_over = nested_over;
+          return game_over;
+        }
+        gui_bars_common_top();
+        gui_map_wnd_draw();
+      }
+
+      if (rand() % 100 < (sol_list[gs.current_system].faction == 2 ? 70 : 20) &&
+          sol_list[gs.current_system].is_shipyard) {
+        int nested_over = core_game_event_customs();
+        if (gs.current_system != start_system) {
+          game_over = nested_over;
+          return game_over;
+        }
+        gui_bars_common_top();
+        gui_map_wnd_draw();
+      }
+
+      /* Kidnapping: 10% chance if player has at least one type 4 quest */
+      for (i = 0; i < gs.quests_size; i++) {
+        if (gs.quests[i].type == 4) {
+          if (rand() % 100 < 10) {
+            int nested_over = core_game_event_kidnapping(i);
+            if (gs.current_system != start_system) {
+              game_over = nested_over;
+              return game_over;
+            }
+            gui_bars_common_top();
+            gui_map_wnd_draw();
+          }
+          break; /* only first type 4 quest triggers kidnapping */
+        }
+      }
+
+      core_game_event_quest_done();
+
+      game_over = core_game_check_win();
+    } else {
+      init_game = 0;
+    }
+  }
+
+  core_game_event_gas_station();
+
+  game_over = core_game_check_fuel_gone();
+  if (game_over) return game_over;
+
+  game_over = core_game_check_money_gone();
+  if (game_over) return game_over;
+
+  game_over = core_game_check_win();
+  if (game_over) return game_over;
+
+  return game_over;
+}
+
+/* ----------------------------------------------------------------
+ * CHECK IS SYSTEM VISITED
+ * USED IN MAPWND.C
+ * ---------------------------------------------------------------- */
+int core_game_is_visited(int system) {
+  if (system < 0 || system >= sol_size || !gs.visited) return 0;
+  return (gs.visited[system >> 3] >> (system & 7)) & 1;
+}
+
+/* ----------------------------------------------------------------
+ * ACCEPT QUEST FROM NPC
+ * USED IN STATWND.C
+ * ---------------------------------------------------------------- */
+int core_game_accept_quest(unsigned int index) {
+  int i;
+
+  if (gs.quests_size >= 5) {
+    return 0;
+  }
+  if (index >= system_quests_size) {
+    return 0;
+  }
+
+  if (gs.current_cargo + system_quests[index].cargo > gs.tonnage) return 0;
+
+  gs.quests[gs.quests_size] = system_quests[index];
+  gs.quests_size++;
+
+  gs.current_cargo += system_quests[index].cargo;
+
+  for (i = index; i < system_quests_size - 1; i++) {
+    system_quests[i] = system_quests[i + 1];
+  }
+
+  system_quests_size = system_quests_size - 1;
+
+  return 1;
+}
+
+/* ----------------------------------------------------------------
+ * INITIALISE NEW GAME STATE
+ * ---------------------------------------------------------------- */
+void core_game_new_game(char* name) {
+  int i;
+
+  init_game = 1;
+  strcpy(gs.captain_name, name);
+  gs.balance = 500;
+  gs.current_system = 85;
+  if (gs.current_system < 0) gs.current_system = 0;
+  if (gs.current_system >= sol_size) gs.current_system = 0;
+
+  gs.ship_type = 0;
+  gs.tonnage = data_ship_tonnages[gs.ship_type];
+  gs.current_cargo = 0;
+  gs.hyper_class = 0;
+  gs.upgrade_smuggler_bay = 0;
+  gs.upgrade_continuous_jump = 0;
+  gs.upgrade_emergency_jump = 0;
+  gs.upgrade_objects_map = 0;
+  gs.upgrade_political_map = 0;
+  gs.reputation = 0;
+  gs.missions_completed = 0;
+  gs.fuel = 100;
+
+  gs.quests_size = 0;
+
+  gs.prev_system = gs.current_system;
+
+  gs.visited_bytes = (sol_size + 7) / 8;
+  gs.visited = (unsigned char*)malloc(gs.visited_bytes);
+  if (gs.visited) {
+    memset(gs.visited, 0, gs.visited_bytes);
+  }
+
+  system_quests_size = 0;
+  system_upgrades_size = 0;
+
+  core_game_run_event(0);
+  wp.size = 0;
+
+  core_game_save("USER.SAV");
+
+  /* Draw new game GUI */
+  gui_map_nav_move_screen_to(gs.current_system);
+  gui_bars_map_bottom();
+  gui_bars_common_top();
+}
+
+/* ----------------------------------------------------------------
+ * LOAD AND SAVE GAME
+ * ---------------------------------------------------------------- */
+int core_game_load(char* filename) {
+  int result = 0;
+  init_game = 1;
+  result = data_reader_load_game_file(&gs, filename);
+
+  if (result == 1) {
+    gs.prev_system = gs.current_system;
+    gui_map_nav_move_screen_to(gs.current_system);
+    core_game_run_event(0);
+    wp.size = 0;
+    /* Draw new game GUI */
+    gui_map_nav_move_screen_to(gs.current_system);
+    gui_bars_map_bottom();
+    gui_bars_common_top();
+  }
+
+  return result;
+}
+
+int core_game_save(char* filename) {
+  int result = 0;
+  result = data_reader_save_game_file(&gs, filename);
+  return result;
 }

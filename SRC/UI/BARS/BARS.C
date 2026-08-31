@@ -7,7 +7,7 @@
 #include "ui/locale.h"
 
 /* ----------------------------------------------------------------
- * STATUS LINES
+ * TOP BAR LINE FOR ALL SCREENS
  * ---------------------------------------------------------------- */
 void gui_bars_common_top() {
   WND status_line;
@@ -36,6 +36,9 @@ void gui_bars_common_top() {
   gui_draw_status_line(&status_line, keys, items, 0);
 }
 
+/* ----------------------------------------------------------------
+ * BOTTOM BAR LINE FOR SCR_STATUS, SCR_UPGRADE. SCR_SHIPYARD
+ * ---------------------------------------------------------------- */
 void gui_bars_status_bottom() {
   WND status_line;
   char* keys[] = {"F1", "F2", "F3", NULL};
@@ -55,6 +58,9 @@ void gui_bars_status_bottom() {
   gui_draw_status_line(&status_line, keys, items, highlight);
 }
 
+/* ----------------------------------------------------------------
+ * BOTTOM BAR LINE FOR SCR_MAP
+ * ---------------------------------------------------------------- */
 void gui_bars_map_bottom() {
   WND status_line;
   char* keys[] = {"F1", "F2", "F3/F4", "F5", "F6", "F7", NULL};

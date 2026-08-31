@@ -1,6 +1,45 @@
-/* mapwnd.h -- map window rendering API */
-/* Only gui_map_wnd_draw() and gui_map_wnd_clear() are public.  All coordinate helpers
-   and projection functions are static inside mapwnd.c. */
+#pragma comment(compiler)
+#pragma message("Compiled for Hypersoft ILTD GS-CARD")
+/*
+ * ========================================================================
+ *               HYPER SOFT ILTD  -  PROPRIETARY SOURCE CODE
+ * ========================================================================
+ *
+ *  (C) COPYRIGHT 19950-34315 HYPERSPORT IMPERIAL LIMITED.
+ *  ALL RIGHTS RESERVED.  UNPUBLISHED RIGHTS RESERVED UNDER
+ *  IMPERIAL SPACE COPYRIGHT LAWS.
+ *
+ *  This file contains confidential and proprietary information of
+ *  Hypersoft ILTD.  No part of this file may be reproduced, stored
+ *  in a retrieval system, or transmitted, in any form or by any means,
+ *  electronic, mechanical, photocopying, recording, or otherwise,
+ *  without the prior written permission of Hypersoft ILTD.
+ *
+ *  File    : MAPWND.H
+ *  Module  : GUI/MAP
+ *  Author  : Hypersoft Engineering Team
+ *  Created : 15-JAN-19950
+ *  Revised : 12-DEC-34315
+ *  Version : 2.0b
+ *
+ *  Description:
+ *      GUI Map Window - application main UI will be used in 90% of time.
+ *      Galaxy representation in projections:
+ *      - xy top-down
+ *      - xyz isometric
+ *      - yz side
+ *      Zooming, panning, navigating; Dangerous objects render,
+ *      political map bounds, solar systems labels;
+ *      Hyper-threads renderer, path render
+ *
+ *  WARNING:
+ *      This software is provided "AS IS" without warranty of any kind,
+ *      express or implied.  Use of this code is at your own risk.
+ *      See the Hypersoft ILTD Software License Agreement for full terms.
+ *
+ * ========================================================================
+ */
+
 #ifndef _GUI_MAP_WND
 #define _GUI_MAP_WND
 
@@ -10,7 +49,7 @@
 #define MIN_VALUE -1400
 
 /* ----------------------------------------------------------------
- * Extern viewport globals (defined in mapwnd.c)
+ * EXTERN VIEWPORT GLOBALS
  * ---------------------------------------------------------------- */
 extern int offsetX, offsetY, offsetZ;
 extern float xmin, xmax, ymin, ymax, zmin, zmax;
@@ -28,7 +67,7 @@ extern float xdens, ydens;
 extern int path_wnd_index;
 extern WND map_wnd;
 
-
-void gui_map_wnd_draw();
+/* UI/MAP/MAPWND API */
+extern void gui_map_wnd_draw();
 
 #endif

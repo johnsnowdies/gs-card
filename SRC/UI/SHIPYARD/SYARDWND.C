@@ -347,7 +347,7 @@ void gui_shipyard_deal_wnd() {
             }
 
             gui_shipyard_wnd();
-            sfx_hyperjump();
+            sfx_success();
           } else {
             gui_warning_wnd(&shipyard_wnd, LC_GEN_ERROR_HEAD,
                             LC_UPGRADE_NO_MONEY, SOUND_ERROR);

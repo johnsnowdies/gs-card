@@ -26,6 +26,16 @@
  *      GS-CARD main file, global variables initialization, screen change
  *      system with keyboard handlers system
  *
+ *  =====================================================================
+ *  !!  LEAD DEVELOPER NOTICE  !!
+ *  =====================================================================
+ *  UNDER NO CIRCUMSTANCES MENTION "UMBRELLA" IN ANY COMMENT, STRING,
+ *  OR DOCUMENTATION.  HYPERSOFT IS NOT UMBRELLA.  THIS IS NOT PUBLIC
+ *  INFORMATION.  REPEAT: DO NOT REFER TO UMBRELLA.  ANY VIOLATION
+ *  WILL RESULT IN IMMEDIATE TERMINATION OF YOUR CONTRACT WITH
+ *  HYPERSPORT!.
+ *  =====================================================================
+ *
  *  WARNING:
  *      This software is provided "AS IS" without warranty of any kind,
  *      express or implied.  Use of this code is at your own risk.
@@ -55,9 +65,9 @@
 const int DEBUG = 0;
 
 /* Data related global variables */
-SYSTEM *sol_list;
-OBJECT *obj_list;
-BOUND_LINE *bnd_list;
+SYSTEM* sol_list;
+OBJECT* obj_list;
+BOUND_LINE* bnd_list;
 QUEST system_quests[5];
 UPGRADE system_upgrades[8];
 SHIP system_shipyard[6];
@@ -89,7 +99,7 @@ E_GAME_SCREEN prev_screen = SCR_MAP;
 /* ----------------------------------------------------------------
  * HANDLERS TABLE
  * ---------------------------------------------------------------- */
-typedef int (*key_handler)(int ch, WND *parent);
+typedef int (*key_handler)(int ch, WND* parent);
 static key_handler key_handlers[] = {
     gui_map_wnd_key,       /* SCR_MAP */
     gui_menu_main_wnd_key, /* SCR_MAIN_MENU */
@@ -135,12 +145,9 @@ int main() {
   }
 
   /* Cleanup */
-  if (sol_list)
-    free(sol_list);
-  if (obj_list)
-    free(obj_list);
-  if (bnd_list)
-    free(bnd_list);
+  if (sol_list) free(sol_list);
+  if (obj_list) free(obj_list);
+  if (bnd_list) free(bnd_list);
   closegraph();
   return 0;
 }

@@ -10,7 +10,10 @@ static int music_active = 0;
 
 static void interrupt (*old_timer_isr)() = NULL;
 
-void pc_speaker_on(int freq) {
+/* ----------------------------------------------------------------
+ * PC_SPEAKER_ON - SET PC SPEAKER FREQUENCY
+ * ---------------------------------------------------------------- */
+static void pc_speaker_on(int freq) {
   unsigned char tmp;
   unsigned int divisor;
 
@@ -27,12 +30,18 @@ void pc_speaker_on(int freq) {
   }
 }
 
-void pc_speaker_off() {
+/* ----------------------------------------------------------------
+ * PC_SPEAKER_OFF - SILENCE PC SPEAKER
+ * ---------------------------------------------------------------- */
+static void pc_speaker_off() {
   unsigned char tmp;
   tmp = inportb(0x61);
   outportb(0x61, tmp & 0xFC);
 }
 
+/* ----------------------------------------------------------------
+ * MUSIC_TIMER_ISR - TIMER INTERRUPT HANDLER FOR MUSIC PLAYBACK
+ * ---------------------------------------------------------------- */
 static void interrupt music_timer_isr() {
   if (old_timer_isr) {
     old_timer_isr();
@@ -61,14 +70,20 @@ static void interrupt music_timer_isr() {
   }
 }
 
-void music_stop() {
+/* ----------------------------------------------------------------
+ * MUSIC_STOP - STOP MUSIC AND SILENCE SPEAKER
+ * ---------------------------------------------------------------- */
+static void music_stop() {
   if (music_active) {
     pc_speaker_off();
     music_active = 0;
   }
 }
 
-void music_play(int* notes, int* durations, int size) {
+/* ----------------------------------------------------------------
+ * MUSIC_PLAY - START PLAYING MUSIC SEQUENCE
+ * ---------------------------------------------------------------- */
+static void music_play(int* notes, int* durations, int size) {
   music_stop();
 
   music_notes = notes;
@@ -84,7 +99,10 @@ void music_play(int* notes, int* durations, int size) {
   }
 }
 
-void music_shutdown() {
+/* ----------------------------------------------------------------
+ * MUSIC_SHUTDOWN - RESTORE TIMER AND STOP MUSIC
+ * ---------------------------------------------------------------- */
+static void music_shutdown() {
   music_stop();
   if (old_timer_isr != NULL) {
     setvect(0x1C, old_timer_isr);
@@ -93,42 +111,58 @@ void music_shutdown() {
 }
 
 /* ----------------------------------------------------------------
- * sfx_menu_move -- short double beep (low frequency)
+ *
+ *                      EXTERNAL FUNCTIONS
+ *
+ * ----------------------------------------------------------------
+
+/* ----------------------------------------------------------------
+ * SHORT SINGLE BEEP (LOW FREQUENCY)
  * ---------------------------------------------------------------- */
 void sfx_menu_move() {
-  static int notes[] = {80, 0};
+  static int notes[] = {80};
+  static int durs[] = {1};
+  music_play(notes, durs, 1);
+}
+
+/* ----------------------------------------------------------------
+ * DESCENDING SWEEP 100 HZ -> 75 HZ
+ * ---------------------------------------------------------------- */
+void sfx_screen_change() {
+  static int notes[] = {100, 75};
   static int durs[] = {1, 1};
   music_play(notes, durs, 2);
 }
 
 /* ----------------------------------------------------------------
- * sfx_screen_change -- descending sweep 500 Hz -> 50 Hz
+ * DESCENDING SWEEP 75 HZ -> 50 HZ
  * ---------------------------------------------------------------- */
-void sfx_screen_change() {
-  static int notes[] = {100, 50};
+void sfx_window_open() {
+  static int notes[] = {75, 50};
   static int durs[] = {1, 1};
   music_play(notes, durs, 2);
 }
 
-void sfx_window_open() {
-  static int notes[] = {40, 80};
-  static int durs[] = {1, 1};
-  music_play(notes, durs, 2);
-}
+/* ----------------------------------------------------------------
+ * SINGLE BEEP 100 HZ
+ * ---------------------------------------------------------------- */
 void sfx_modal() {
   static int notes[] = {100};
   static int durs[] = {2};
   music_play(notes, durs, 1);
 }
 
-void sfx_hyperjump() {
+/* ----------------------------------------------------------------
+ * TRA-LA-LA
+ * ---------------------------------------------------------------- */
+void sfx_success() {
   static int notes[] = {40, 80, 160, 320};
   static int durs[] = {1, 1, 1, 1};
   music_play(notes, durs, 4);
 }
 
 /* ----------------------------------------------------------------
- * sfx_error -- low double buzz for error indication
+ * LOW DOUBLE BUZZ FOR ERROR INDICATION
  * ---------------------------------------------------------------- */
 void sfx_error() {
   static int notes[] = {80, 0, 60};

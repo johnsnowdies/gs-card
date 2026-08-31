@@ -1,9 +1,3 @@
-/* pathwnd.c -- path side-panel window
- *
- * Private: drawgui_map_path_wnd(), pathListFlag
- * Public:  gui_map_path_wnd()
- */
-
 #include <graphics.h>
 #include <stdio.h>
 
@@ -22,7 +16,7 @@
 static int pathListFlag = 0;
 
 /* ----------------------------------------------------------------
- * PRIVATE: DRAWPATHWND -- BACKGROUND FRAME OF THE PATH PANEL
+ * BACKGROUND FRAME OF THE PATH PANEL [GUI.H PROTO NOT USED]
  * ---------------------------------------------------------------- */
 static void draw_gui_map_path_wnd(int oy) {
   setfillstyle(SOLID_FILL, BLACK);
@@ -54,7 +48,7 @@ static void draw_gui_map_path_wnd(int oy) {
 }
 
 /* ----------------------------------------------------------------
- * PUBLIC: PATHWND -- DRAW THE PATH WAYPOINT LIST
+ * EXTERN: DRAW THE PATH WAYPOINT LIST
  * ---------------------------------------------------------------- */
 void gui_map_path_wnd() {
   int i, j, oy, yStep = 15, jump_possible = 0;

@@ -259,7 +259,7 @@ void gui_upgrade_show_info(int selected) {
           }
 
           gui_upgrade_wnd();
-          sfx_hyperjump();
+          sfx_success();
         } else {
           gui_warning_wnd(&upgrade_wnd, LC_GEN_ERROR_HEAD, LC_UPGRADE_NO_MONEY,
                           SOUND_ERROR);

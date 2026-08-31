@@ -257,7 +257,7 @@ void gui_warning_wnd(WND *ptr_parent, char *header, char *text,
     sfx_error();
     break;
   case SOUND_SUCCESS:
-    sfx_hyperjump();
+    sfx_success();
     break;
   }
 }
@@ -512,7 +512,7 @@ int gui_dialog_wnd(WND *parent, char *header, char *title, char *photo_file,
     sfx_error();
     break;
   case SOUND_SUCCESS:
-    sfx_hyperjump();
+    sfx_success();
     break;
   }
 

@@ -67,28 +67,7 @@ static int core_finder_ensure_bfs_arrays(void) {
 }
 
 /* ----------------------------------------------------------------
- * Cleanup: free all permanent allocations
- * ---------------------------------------------------------------- */
-void core_finder_cleanup(void) {
-  if (bfs_queue != NULL) {
-    farfree(bfs_queue);
-    bfs_queue = NULL;
-  }
-  if (bfs_parent != NULL) {
-    farfree(bfs_parent);
-    bfs_parent = NULL;
-  }
-  if (bfs_rates != NULL) {
-    farfree(bfs_rates);
-    bfs_rates = NULL;
-  }
-  bfs_queue_capacity = 0;
-  bfs_last_start = -1;
-  bfs_valid = 0;
-}
-
-/* ----------------------------------------------------------------
- * Run BFS (uses far arrays)
+ * RUN BFS (USES FAR ARRAYS)
  * ---------------------------------------------------------------- */
 static int core_finder_run_bfs(int start) {
   int head, tail, i, cur, neighbor;
@@ -132,9 +111,10 @@ static int core_finder_run_bfs(int start) {
 }
 
 /* ----------------------------------------------------------------
- * Restore path (same as before, but uses far arrays)
+ * RESTORE PATH (SAME AS BEFORE, BUT USES FAR ARRAYS)
  * ---------------------------------------------------------------- */
-static int core_finder_restore_path(WAYPOINT* wp, int start, int end, int reverse) {
+static int core_finder_restore_path(WAYPOINT* wp, int start, int end,
+                                    int reverse) {
   int i, j, cnt, cur;
   int temp_path[25];
 
@@ -167,54 +147,7 @@ static int core_finder_restore_path(WAYPOINT* wp, int start, int end, int revers
 }
 
 /* ----------------------------------------------------------------
- * Input and get way (unchanged logic)
- * ---------------------------------------------------------------- */
-int core_finder_get_way(WAYPOINT* wp) {
-  char* input;
-  int start, end, status;
-
-  start = gs.current_system;
-
-  input = (char*)gui_input_wnd(&map_wnd, LC_GEN_TITLE_GSCARD,
-                               LC_FINDER_END_TEXT, NULL);
-  if (input[0] == '\0') return 0;
-  end = atoi(input);
-  free(input);
-
-  if (start < 0 || end < 0 || start >= sol_size || end >= sol_size) {
-    gui_warning_wnd(&map_wnd, LC_GEN_TITLE_GSCARD, LC_GEN_ERROR_INCORRECT_VALUE,
-                    SOUND_ERROR);
-    getch();
-    return 0;
-  }
-
-  status = core_finder_restore_path(wp, start, end, 1);
-  if (!status) {
-    gui_warning_wnd(&map_wnd, LC_GEN_TITLE_GSCARD, LC_FINDER_ERROR_NOWAY,
-                    SOUND_ERROR);
-    getch();
-  }
-  return status;
-}
-
-/* ----------------------------------------------------------------
- * Get jumps (uses BFS)
- * ---------------------------------------------------------------- */
-int core_finder_get_jumps(int start, int end) {
-  int result;
-
-  if (start < 0 || end < 0 || start >= sol_size || end >= sol_size) return 0;
-
-  if (core_finder_run_bfs(start) != 0) return 0;
-  if (bfs_rates[end] == 0) return 0;
-  if (bfs_rates[end] > 25) return 0;
-
-  result = bfs_rates[end];
-  return result;
-}
-
-/* ----------------------------------------------------------------
- * Geometric intersection test (no large local arrays)
+ * GEOMETRIC INTERSECTION TEST (NO LARGE LOCAL ARRAYS)
  * ---------------------------------------------------------------- */
 static int segments_intersect_3d(int ax1, int ay1, int az1, int ax2, int ay2,
                                  int az2, int bx1, int by1, int bz1, int bx2,
@@ -279,8 +212,14 @@ static int segments_intersect_3d(int ax1, int ay1, int az1, int ax2, int ay2,
 }
 
 /* ----------------------------------------------------------------
- * Build hyper-thread graph without intersecting edges
- * All temporary large arrays are allocated in FAR memory
+ *
+ *                      EXTERNAL FUNCTIONS
+ *
+ * ----------------------------------------------------------------
+
+/* ----------------------------------------------------------------
+ * BUILD HYPER-THREAD GRAPH WITHOUT INTERSECTING EDGES
+ * ALL TEMPORARY LARGE ARRAYS ARE ALLOCATED IN FAR MEMORY
  * ---------------------------------------------------------------- */
 void core_finder_calc_hyper_threads() {
   int i, j;
@@ -481,4 +420,72 @@ void core_finder_calc_hyper_threads() {
 
   bfs_valid = 0;
   bfs_last_start = -1;
+}
+
+/* ----------------------------------------------------------------
+ * INPUT AND GET WAY
+ * ---------------------------------------------------------------- */
+int core_finder_get_way(WAYPOINT* wp) {
+  char* input;
+  int start, end, status;
+
+  start = gs.current_system;
+
+  input = (char*)gui_input_wnd(&map_wnd, LC_GEN_TITLE_GSCARD,
+                               LC_FINDER_END_TEXT, NULL);
+  if (input[0] == '\0') return 0;
+  end = atoi(input);
+  free(input);
+
+  if (start < 0 || end < 0 || start >= sol_size || end >= sol_size) {
+    gui_warning_wnd(&map_wnd, LC_GEN_TITLE_GSCARD, LC_GEN_ERROR_INCORRECT_VALUE,
+                    SOUND_ERROR);
+    getch();
+    return 0;
+  }
+
+  status = core_finder_restore_path(wp, start, end, 1);
+  if (!status) {
+    gui_warning_wnd(&map_wnd, LC_GEN_TITLE_GSCARD, LC_FINDER_ERROR_NOWAY,
+                    SOUND_ERROR);
+    getch();
+  }
+  return status;
+}
+
+/* ----------------------------------------------------------------
+ * GET JUMPS (USES BFS)
+ * ---------------------------------------------------------------- */
+int core_finder_get_jumps(int start, int end) {
+  int result;
+
+  if (start < 0 || end < 0 || start >= sol_size || end >= sol_size) return 0;
+
+  if (core_finder_run_bfs(start) != 0) return 0;
+  if (bfs_rates[end] == 0) return 0;
+  if (bfs_rates[end] > 25) return 0;
+
+  result = bfs_rates[end];
+  return result;
+}
+
+/* ----------------------------------------------------------------
+ * CLEANUP: FREE ALL PERMANENT ALLOCATIONS
+ * ---------------------------------------------------------------- */
+void core_finder_cleanup(void) {
+  if (bfs_queue != NULL) {
+    farfree(bfs_queue);
+    bfs_queue = NULL;
+  }
+  if (bfs_parent != NULL) {
+    farfree(bfs_parent);
+    bfs_parent = NULL;
+  }
+  if (bfs_rates != NULL) {
+    farfree(bfs_rates);
+    bfs_rates = NULL;
+  }
+  bfs_queue_capacity = 0;
+  bfs_last_start = -1;
+  bfs_valid = 0;
 }

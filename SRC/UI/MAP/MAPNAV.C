@@ -1,11 +1,3 @@
-/* nav.c -- navigation controller
- *
- * All functions here manipulate the viewport globals (offsetX/Y/Z,
- * xmin/xmax/ymin/ymax/zmin/zmax) that are defined in mapwnd.c.
- *
- * Public API declared in nav.h.
- */
-
 #include <stdio.h>
 
 #include "core/game.h"
@@ -19,10 +11,9 @@
 #include "ui/menu/menuwnd.h"
 
 /* ----------------------------------------------------------------
- * Scale
+ * SCALE DOWN MAP
  * ---------------------------------------------------------------- */
-
-void gui_map_nav_scale_minus() {
+static void gui_map_nav_scale_minus() {
   if (xmax < MAX_VALUE * 3 && xmin > MIN_VALUE * 3) {
     xmax = xmax + MAX_VALUE / 10;
     ymax = ymax + MAX_VALUE / 10;
@@ -37,7 +28,10 @@ void gui_map_nav_scale_minus() {
   }
 }
 
-void gui_map_nav_scale_plus() {
+/* ----------------------------------------------------------------
+ * SCALE UP MAP
+ * ---------------------------------------------------------------- */
+static void gui_map_nav_scale_plus() {
   if (xmax > MAX_VALUE / 10 && xmin < MIN_VALUE / 10) {
     xmax = xmax - MAX_VALUE / 10;
     ymax = ymax - MAX_VALUE / 10;
@@ -53,41 +47,25 @@ void gui_map_nav_scale_plus() {
 }
 
 /* ----------------------------------------------------------------
- * Offset
+ * OFFSET MAP
  * ---------------------------------------------------------------- */
-void gui_map_nav_offset_x_plus() { offsetX += xmax / 10; }
-void gui_map_nav_offset_x_minus() { offsetX -= xmax / 10; }
-void gui_map_nav_offset_y_plus() { offsetY += ymax / 10; }
-void gui_map_nav_offset_y_minus() { offsetY -= ymax / 10; }
-void gui_map_nav_offset_z_plus() { offsetZ += zmax / 10; }
-void gui_map_nav_offset_z_minus() { offsetZ -= zmax / 10; }
+static void gui_map_nav_offset_x_plus() { offsetX += xmax / 10; }
+static void gui_map_nav_offset_x_minus() { offsetX -= xmax / 10; }
+static void gui_map_nav_offset_y_plus() { offsetY += ymax / 10; }
+static void gui_map_nav_offset_y_minus() { offsetY -= ymax / 10; }
+static void gui_map_nav_offset_z_plus() { offsetZ += zmax / 10; }
+static void gui_map_nav_offset_z_minus() { offsetZ -= zmax / 10; }
 
 /* ----------------------------------------------------------------
- * moveScreenTo -- centre view on a system
+ * PROMPT FOR SYSTEM NUMBER, THEN JUMP
  * ---------------------------------------------------------------- */
-void gui_map_nav_move_screen_to(struct system_solar* solar, int value) {
-  offsetX = -1 * solar[value].x;
-  offsetY = -1 * solar[value].y;
-  offsetZ = -1 * solar[value].z;
-
-  xmax = MAX_VALUE / 10;
-  ymax = MAX_VALUE / 10;
-  zmax = MAX_VALUE / 10;
-
-  xmin = MIN_VALUE / 10;
-  ymin = MIN_VALUE / 10;
-  zmin = MIN_VALUE / 10;
-}
-
-/* ----------------------------------------------------------------
- * gotoSystem -- prompt for system number, then jump
- * ---------------------------------------------------------------- */
-void gui_map_nav_goto_system(int sol_size, struct system_solar* solar) {
+static void gui_map_nav_goto_system() {
   char* input;
   int value;
   int error = 0;
   char buf[50];
 
+  /* Current system is default in patch 1.5 */
   sprintf(buf, "%d", gs.current_system);
 
   input = (char*)gui_input_wnd(&map_wnd, LC_NAV_NORMAL_HEAD, LC_NAV_INPUT_COORD,
@@ -99,7 +77,7 @@ void gui_map_nav_goto_system(int sol_size, struct system_solar* solar) {
     if (value > sol_size || value < 1) {
       error = 1;
     } else {
-      gui_map_nav_move_screen_to(solar, value);
+      gui_map_nav_move_screen_to(value);
     }
   } else {
     error = 1;
@@ -113,11 +91,34 @@ void gui_map_nav_goto_system(int sol_size, struct system_solar* solar) {
 }
 
 /* ----------------------------------------------------------------
- * KEY LISTENER HANDLER
+ *
+ *                      EXTERNAL FUNCTIONS
+ *
+ * ---------------------------------------------------------------- */
+
+/* ----------------------------------------------------------------
+ * CENTRE VIEW ON A SYSTEM
+ * ---------------------------------------------------------------- */
+void gui_map_nav_move_screen_to(int value) {
+  offsetX = -1 * sol_list[value].x;
+  offsetY = -1 * sol_list[value].y;
+  offsetZ = -1 * sol_list[value].z;
+
+  xmax = MAX_VALUE / 10;
+  ymax = MAX_VALUE / 10;
+  zmax = MAX_VALUE / 10;
+
+  xmin = MIN_VALUE / 10;
+  ymin = MIN_VALUE / 10;
+  zmin = MIN_VALUE / 10;
+}
+
+/* ----------------------------------------------------------------
+ * SCR_MAP - MAP WINDOW KEY HANDLER
  * ---------------------------------------------------------------- */
 
 int gui_map_wnd_key(int ch, WND* parent) {
-  char buf[128]; /* ¤«ï á®®¡é¥­¨© */
+  char buf[128];
 
   if (F1 == ch) {
     mode = (mode < 3) ? mode + 1 : 1;
@@ -175,7 +176,7 @@ int gui_map_wnd_key(int ch, WND* parent) {
         path_wnd_index = (wp.size - 1);
       else
         path_wnd_index--;
-      gui_map_nav_move_screen_to(sol_list, wp.way[path_wnd_index]);
+      gui_map_nav_move_screen_to(wp.way[path_wnd_index]);
       gui_map_path_wnd();
       gui_map_wnd_draw();
     }
@@ -186,7 +187,7 @@ int gui_map_wnd_key(int ch, WND* parent) {
         path_wnd_index = 0;
       else
         path_wnd_index++;
-      gui_map_nav_move_screen_to(sol_list, wp.way[path_wnd_index]);
+      gui_map_nav_move_screen_to(wp.way[path_wnd_index]);
       gui_map_path_wnd();
       gui_map_wnd_draw();
     }
@@ -198,9 +199,13 @@ int gui_map_wnd_key(int ch, WND* parent) {
     gui_bars_status_bottom();
   }
   if (ENTER == ch) {
+    /* ----------------------------------------------------------------
+     * HYPER JUMP INITIATED!
+     * ---------------------------------------------------------------- */
     if (wp.size > 1 && wp.way[0] == gs.current_system) {
       sprintf(buf, LC_CARD_READY_TO_JUMP, wp.way[0], wp.way[1]);
       if (gui_confirm_wnd(&map_wnd, LC_CARD_JUMP_WND_HEAD, buf) == 0) {
+        /* JUMP CONFIRMED */
         int game_over = 0;
         int i;
 
@@ -218,16 +223,12 @@ int gui_map_wnd_key(int ch, WND* parent) {
         }
 
         game_over = core_game_run_event(1);
-        gui_map_nav_move_screen_to(sol_list, gs.current_system);
+        gui_map_nav_move_screen_to(gs.current_system);
 
         if (!game_over) {
-          char lines[1][100];
-          gui_bars_common_top();
-          core_game_event_gas_station();
           gui_bars_common_top();
           gui_map_wnd_draw();
         } else {
-          gui_bars_common_top();
           gui_ad_loading();
           cur_screen = SCR_MAIN_MENU;
           gui_menu_wnd(&root_wnd, 0, MAIN_MENU);

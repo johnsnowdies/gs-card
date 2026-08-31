@@ -365,11 +365,11 @@
 #define LC_QUEST_FAILED_HEAD       "Контракт провален!"
 
 /* Hijack */
-#define LC_EVENT_HIJACK_TEXT_1     "Это ограбление! Ты на прицеле!"
-#define LC_EVENT_HIJACK_TEXT_2     "Плати %ld $$ или сбрасывай весь груз!"
-#define LC_EVENT_HIJACK_HEAD       "Ограбление!"
-#define LC_EVENT_HIJACK_PAY_BTN    "ЗАПЛАТИТЬ"
-#define LC_EVENT_HIJACK_DROP_BTN   "СБРОСИТЬ ГРУЗ"
+#define LC_EVENT_PIRACY_TEXT_1     "Это ограбление! Ты на прицеле!"
+#define LC_EVENT_PIRACY_TEXT_2     "Плати %ld $$ или сбрасывай весь груз!"
+#define LC_EVENT_PIRACY_HEAD       "Ограбление!"
+#define LC_EVENT_PIRACY_PAY_BTN    "ЗАПЛАТИТЬ"
+#define LC_EVENT_PIRACY_DROP_BTN   "СБРОСИТЬ ГРУЗ"
 #define LC_EVENT_EJUMP_BTN         "ЭКСТРЕННЫЙ ПРЫЖОК"
 
 /* Customs */
@@ -1165,7 +1165,7 @@
 #define LC_QUEST_TYPE_2_DONE_2                   "Here's your %ld $$"
 #define LC_GAME_GAS_STATION_TEXT_2               "Today at %ld per unit."
 #define LC_UPGRADE_TONNAGE                       "Cargo capacity %d"
-#define LC_EVENT_HIJACK_DROP_BTN                 "DROP CARGO"
+#define LC_EVENT_PIRACY_DROP_BTN                 "DROP CARGO"
 #define LC_QUEST_TYPE_4_FAIL_2                   "[airlock closes, you hear a gunshot]"
 #define LC_GAME_GAS_STATION_TEXT_3               "Total: %ld $$. Refuel?"
 #define LC_QUEST_TYPE_5_DONE_1                   "Beacon signal received. Strange..."
@@ -1176,7 +1176,7 @@
 #define LC_UPGRADE_TABLE_1                       "Upgrade"
 #define LC_UPGRADE_TABLE_2                       "Cost"
 #define LC_UPGRADE_HEAD                          "Upgrades"
-#define LC_EVENT_HIJACK_PAY_BTN                  "PAY"
+#define LC_EVENT_PIRACY_PAY_BTN                  "PAY"
 #define LC_GAME_OVER_FUEL_TEXT_1                 "You ran out of fuel! You activated the emergency beacon"
 #define LC_EVENT_NAP_TEXT_1                      "You have %s on your ship"
 #define LC_GAME_OVER_FUEL_TEXT_2                 "hoping someone will rescue you..."
@@ -1231,10 +1231,10 @@
 #define LC_GAME_SHIP_6_TEXT_5                    "of Betsy's cargo hold. They say pirates are afraid to rob those."
 #define LC_GAME_SHIP_6_TEXT_6                    "Rumor has it Latrians smuggle goods on such ships."
 #define LC_SHIPYARD_SELL_HEAD                    "DIGITAL SALES CONTRACT"
-#define LC_EVENT_HIJACK_HEAD                     "Robbery!"
-#define LC_EVENT_HIJACK_TEXT_1                   "This is a robbery! You're in my sights!"
+#define LC_EVENT_PIRACY_HEAD                     "Robbery!"
+#define LC_EVENT_PIRACY_TEXT_1                   "This is a robbery! You're in my sights!"
 #define LC_QUEST_ERROR                           "Unable to accept this contract!"
-#define LC_EVENT_HIJACK_TEXT_2                   "Pay %ld $$ or drop all cargo!"
+#define LC_EVENT_PIRACY_TEXT_2                   "Pay %ld $$ or drop all cargo!"
 #define LC_EVENT_NAP_HEAD                        "Kidnapping!"
 #define LC_SHIPYARD_DISC_HYPER                   "%s: %ld $$"
 #define LC_SHIPYARD_ERROR                        "No shipyard in this system!"
@@ -1268,4 +1268,4 @@
 
 #endif
 
-#endif
+#endif

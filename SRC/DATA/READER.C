@@ -6,6 +6,9 @@
 
 #include "data/reader.h"
 
+/* ----------------------------------------------------------------
+ * LOAD BOUND LINES FOR POLITICAL MAP
+ * ---------------------------------------------------------------- */
 int data_reader_load_bounds(BOUND_LINE** list) {
   FILE* f;
   char buf[256];
@@ -76,6 +79,9 @@ int data_reader_load_bounds(BOUND_LINE** list) {
   return count;
 }
 
+/* ----------------------------------------------------------------
+ * LOAD DANGEROUS OBJECTS
+ * ---------------------------------------------------------------- */
 int data_reader_load_objects(OBJECT** list) {
   FILE* fp;
   char buf[100];
@@ -131,6 +137,9 @@ int data_reader_load_objects(OBJECT** list) {
   return counter;
 }
 
+/* ----------------------------------------------------------------
+ * LOAD SOLAR SYSTEMS
+ * ---------------------------------------------------------------- */
 int data_reader_load_systems(SYSTEM** list) {
   FILE* fp;
   char buf[100];
@@ -184,6 +193,9 @@ int data_reader_load_systems(SYSTEM** list) {
   return counter;
 }
 
+/* ----------------------------------------------------------------
+ * LOAD GAME STATE
+ * ---------------------------------------------------------------- */
 int data_reader_load_game_file(GAME_STATE* state, char* filename) {
   FILE* fp;
   int i;
@@ -244,6 +256,9 @@ int data_reader_load_game_file(GAME_STATE* state, char* filename) {
   return 1;
 }
 
+/* ----------------------------------------------------------------
+ * SAVE GAME STATE
+ * ---------------------------------------------------------------- */
 int data_reader_save_game_file(GAME_STATE* state, char* filename) {
   FILE* fp;
   int i;
@@ -283,6 +298,9 @@ int data_reader_save_game_file(GAME_STATE* state, char* filename) {
   return 1;
 }
 
+/* ----------------------------------------------------------------
+ * DRAW BMP
+ * ---------------------------------------------------------------- */
 void data_reader_draw_bmp(char* filename, int px, int py) {
   FILE* fp;
   long offbits;

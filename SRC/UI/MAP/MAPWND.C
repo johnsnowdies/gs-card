@@ -1,14 +1,8 @@
-/* mapwnd.c -- map viewport rendering, projection, clipping
- *
- * Private (static): safe_putpixel, safe_line, safe_outtextxy, safe_circle,
- *   p(), ex(), ey(), drawObjects, draw2dwnd, draw3dwnd, drawyzwnd, POINT_COLOR
- *
- * Public: gui_map_wnd_draw(), gui_map_wnd_clear()
- */
 #include <alloc.h>
 #include <graphics.h>
 
 #include "core/game.h"
+#include "core/globals.h"
 #include "core/objects.h"
 #include "data/keys.h"
 #include "data/structs.h"
@@ -16,8 +10,6 @@
 #include "ui/locale.h"
 #include "ui/map/mapwnd.h"
 #include "ui/map/pathwnd.h"
-#include "core/globals.h"
-
 
 WND map_wnd = {NULL, 0, 21, 639, 460};
 int is_coord = 1, is_hyper = 0, mode = 1;
@@ -34,15 +26,15 @@ float xdens, ydens;
 /* Colour computed as a side-effect of p() */
 static int POINT_COLOR = 0;
 
+
+/* ----------------------------------------------------------------
+ * CLIPPING HELPERS (SAFE_*) -- CLIP AGAINST MAP_BOUNDS
+ * ---------------------------------------------------------------- */
 /* Viewport bounds for clipping (map window only) */
 static struct map_bounds {
   int x1, y1, x2, y2;
 } map_bounds = {0, 21, 639, 460};
 
-
-/* ----------------------------------------------------------------
- * Clipping helpers (safe_*) -- clip against map_bounds
- * ---------------------------------------------------------------- */
 static void safe_putpixel(int x, int y, int c) {
   if (x >= map_bounds.x1 && x <= map_bounds.x2 && y >= map_bounds.y1 &&
       y <= map_bounds.y2)
@@ -118,7 +110,7 @@ static void safe_circle(int x, int y, int r) {
 }
 
 /* ----------------------------------------------------------------
- * Projection helpers
+ * PROJECTION HELPERS
  * ---------------------------------------------------------------- */
 static int ex(float x) { return (int)((x - xmin) / xdens); }
 
@@ -167,7 +159,7 @@ static POINT p(float x, float y, float z) {
 }
 
 /* ----------------------------------------------------------------
- * drawObjects -- gas clouds, black holes, nebulae
+ * OBJECTS - GAS CLOUDS, BLACK HOLES, NEBULAE
  * ---------------------------------------------------------------- */
 static void drawObjects(int mode) {
   int i, color;
@@ -218,6 +210,9 @@ static void drawObjects(int mode) {
   }
 }
 
+/* ----------------------------------------------------------------
+ * POLITICAL MAP BOUNDS
+ * ---------------------------------------------------------------- */
 static void draw_bounds() {
   int i;
   if (!bnd_size || !bnd_list || !gs.upgrade_political_map) return;
@@ -237,9 +232,9 @@ static void draw_bounds() {
 }
 
 /* ----------------------------------------------------------------
- * draw2dwnd -- XY projection (top-down)
+ * XY PROJECTION (TOP-DOWN)
  * ---------------------------------------------------------------- */
-static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp) {
+static void draw2dwnd(int isCoord, int isHyper) {
   int i, j, o;
   SYSTEM buf, a, b;
   int drawThreads = isHyper;
@@ -304,10 +299,10 @@ static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp) {
       if (sol_list[i].is_shipyard) {
         setcolor(3);
         sprintf(c, "SA.%d(%d) [S][F]", i, sol_list[i].threadSize);
-      } else if (sol_list[i].is_gas_station && game_is_visited(&gs, i)) {
+      } else if (sol_list[i].is_gas_station && core_game_is_visited(i)) {
         setcolor(1);
         sprintf(c, "SA.%d(%d) [F]", i, sol_list[i].threadSize);
-      } else if (game_is_visited(&gs, i)) {
+      } else if (core_game_is_visited(i)) {
         setcolor(15);
         sprintf(c, "SA.%d(%d)", i, sol_list[i].threadSize);
       } else {
@@ -397,9 +392,9 @@ static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp) {
   }
 
   /* Waypoint path */
-  for (i = 1; i < wp->size; i++) {
-    a = sol_list[wp->way[i - 1]];
-    b = sol_list[wp->way[i]];
+  for (i = 1; i < wp.size; i++) {
+    a = sol_list[wp.way[i - 1]];
+    b = sol_list[wp.way[i]];
     setcolor(9);
     setlinestyle(3, 0, 1);
     safe_line(ex(a.x + offsetX), ey(a.y + offsetY), ex(b.x + offsetX),
@@ -407,10 +402,10 @@ static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp) {
   }
 
   /* Dangerous path segments */
-  if (gs.upgrade_objects_map && obj_size && wp->size) {
-    for (i = 1; i < wp->size; i++) {
-      int a_idx = wp->way[i - 1];
-      int b_idx = wp->way[i];
+  if (gs.upgrade_objects_map && obj_size && wp.size) {
+    for (i = 1; i < wp.size; i++) {
+      int a_idx = wp.way[i - 1];
+      int b_idx = wp.way[i];
       for (o = 0; o < obj_size; o++) {
         if (core_objects_sphere_line_intersect(
                 sol_list[a_idx].x, sol_list[a_idx].y, sol_list[a_idx].z,
@@ -435,9 +430,9 @@ static void draw2dwnd(int isCoord, int isHyper, WAYPOINT* wp) {
 }
 
 /* ----------------------------------------------------------------
- * draw3dwnd -- Isometric (XYZ) projection
+ * ISOMETRIC (XYZ) PROJECTION
  * ---------------------------------------------------------------- */
-static void draw3dwnd(int isCoord, int isHyper, WAYPOINT* wp) {
+static void draw3dwnd(int isCoord, int isHyper) {
   int i, j, o;
   SYSTEM buf, a, b;
   int drawThreads = isHyper;
@@ -518,7 +513,7 @@ static void draw3dwnd(int isCoord, int isHyper, WAYPOINT* wp) {
       setcolor(15);
       settextstyle(SMALL_FONT, HORIZ_DIR, 4);
 
-      if (game_is_visited(&gs, i)) {
+      if (core_game_is_visited(i)) {
         if (sol_list[i].is_shipyard) {
           setcolor(3);
           sprintf(c, "SA.%d(%d) [S][F]", i, sol_list[i].threadSize);
@@ -539,9 +534,9 @@ static void draw3dwnd(int isCoord, int isHyper, WAYPOINT* wp) {
   }
 
   /* Waypoint path */
-  for (i = 1; i < wp->size; i++) {
-    a = sol_list[wp->way[i - 1]];
-    b = sol_list[wp->way[i]];
+  for (i = 1; i < wp.size; i++) {
+    a = sol_list[wp.way[i - 1]];
+    b = sol_list[wp.way[i]];
     {
       POINT A8 = p(a.x + offsetX, a.y + offsetY, a.z + offsetZ);
       POINT A9 = p(b.x + offsetX, b.y + offsetY, b.z + offsetZ);
@@ -552,10 +547,10 @@ static void draw3dwnd(int isCoord, int isHyper, WAYPOINT* wp) {
   }
 
   /* Dangerous path segments */
-  if (gs.upgrade_objects_map && obj_size && wp->size) {
-    for (i = 1; i < wp->size; i++) {
-      int a_idx = wp->way[i - 1];
-      int b_idx = wp->way[i];
+  if (gs.upgrade_objects_map && obj_size && wp.size) {
+    for (i = 1; i < wp.size; i++) {
+      int a_idx = wp.way[i - 1];
+      int b_idx = wp.way[i];
       for (o = 0; o < obj_size; o++) {
         if (core_objects_sphere_line_intersect(
                 sol_list[a_idx].x, sol_list[a_idx].y, sol_list[a_idx].z,
@@ -581,9 +576,9 @@ static void draw3dwnd(int isCoord, int isHyper, WAYPOINT* wp) {
 }
 
 /* ----------------------------------------------------------------
- * drawyzwnd -- YZ (side) projection
+ * YZ (SIDE) PROJECTION
  * ---------------------------------------------------------------- */
-static void drawyzwnd(int isCoord, int isHyper, WAYPOINT* wp) {
+static void drawyzwnd(int isCoord, int isHyper) {
   int i, j, o;
   struct system_solar buf, a, b;
   int drawThreads = isHyper;
@@ -646,7 +641,7 @@ static void drawyzwnd(int isCoord, int isHyper, WAYPOINT* wp) {
     if (((xmax <= MAX_VALUE / 10) || i == gs.current_system) &&
         ex(sol_list[i].x + offsetX) < (map_wnd.width - 80) &&
         ey(sol_list[i].y + offsetY) < (map_wnd.height - 100)) {
-      if (game_is_visited(&gs, i)) {
+      if (core_game_is_visited(i)) {
         if (sol_list[i].is_shipyard) {
           setcolor(3);
           sprintf(c, "SA.%d(%d) [S][F]", i, sol_list[i].threadSize);
@@ -669,9 +664,9 @@ static void drawyzwnd(int isCoord, int isHyper, WAYPOINT* wp) {
   }
 
   /* Waypoint path */
-  for (i = 1; i < wp->size; i++) {
-    a = sol_list[wp->way[i - 1]];
-    b = sol_list[wp->way[i]];
+  for (i = 1; i < wp.size; i++) {
+    a = sol_list[wp.way[i - 1]];
+    b = sol_list[wp.way[i]];
     setcolor(9);
     setlinestyle(3, 0, 1);
     safe_line(ex(a.x + offsetX), ey(-1 * (a.z + offsetZ)), ex(b.x + offsetX),
@@ -679,10 +674,10 @@ static void drawyzwnd(int isCoord, int isHyper, WAYPOINT* wp) {
   }
 
   /* Dangerous path segments */
-  if (gs.upgrade_objects_map && obj_size && wp->size) {
-    for (i = 1; i < wp->size; i++) {
-      int a_idx = wp->way[i - 1];
-      int b_idx = wp->way[i];
+  if (gs.upgrade_objects_map && obj_size && wp.size) {
+    for (i = 1; i < wp.size; i++) {
+      int a_idx = wp.way[i - 1];
+      int b_idx = wp.way[i];
       for (o = 0; o < obj_size; o++) {
         if (core_objects_sphere_line_intersect(
                 sol_list[a_idx].x, sol_list[a_idx].y, sol_list[a_idx].z,
@@ -705,13 +700,16 @@ static void drawyzwnd(int isCoord, int isHyper, WAYPOINT* wp) {
   rectangle(0, 21, map_wnd.width, map_wnd.height);
 }
 
-void gui_map_wnd_clear() {
+/* ----------------------------------------------------------------
+ * CLEAR MAP WND
+ * ---------------------------------------------------------------- */
+static void gui_map_wnd_clear() {
   setfillstyle(SOLID_FILL, BLACK);
   bar(1, 21, map_wnd.width - 1, map_wnd.height - 1);
 }
 
 /* ----------------------------------------------------------------
- * Public: gui_map_wnd_draw() -- main frame dispatcher
+ * EXTERNAL: MAP WINDOW DISPATCHER
  * ---------------------------------------------------------------- */
 void gui_map_wnd_draw() {
   /* Shrink main view when path panel is open */
@@ -725,9 +723,9 @@ void gui_map_wnd_draw() {
 
   gui_map_wnd_clear();
 
-  if (mode == 1) draw2dwnd(is_coord, is_hyper, &wp);
-  if (mode == 2) draw3dwnd(is_coord, is_hyper, &wp);
-  if (mode == 3) drawyzwnd(is_coord, is_hyper, &wp);
+  if (mode == 1) draw2dwnd(is_coord, is_hyper);
+  if (mode == 2) draw3dwnd(is_coord, is_hyper);
+  if (mode == 3) drawyzwnd(is_coord, is_hyper);
 
   gui_bars_map_bottom();
 }
