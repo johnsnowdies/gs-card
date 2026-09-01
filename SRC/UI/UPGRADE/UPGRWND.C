@@ -265,6 +265,7 @@ void gui_upgrade_draw_list(void) {
  * SCR_UPGRADE -- WINDOW DISPATCHER
  * ---------------------------------------------------------------- */
 void gui_upgrade_wnd(void) {
+  upgrade_wnd.id = SCR_UPGRADE;
   upgrade_wnd.x = UPGRADE_WND_DEFAULT_X;
   upgrade_wnd.y = UPGRADE_WND_DEFAULT_Y;
   upgrade_wnd.width = UPGRADE_WND_DEFAULT_WIDTH;
@@ -294,3 +295,9 @@ void gui_upgrade_wnd(void) {
   gui_bars_status_bottom();
 }
 
+
+void gui_upgrade_wnd_dispatch(WND* parent){
+  gui_upgrade_wnd();
+  gui_bars_common_top();
+  gui_bars_status_bottom();
+}

@@ -131,15 +131,10 @@ void gui_status_quest_info(int selected) {
   if (result == 0) {
     if (core_game_accept_quest(selected)) {
       system_quest_selected = 0;
-      gui_status_wnd();
-      gui_bars_common_top();
+      dispatch_wnd(SCR_STATUS, &root_wnd);
     } else {
       gui_warning_wnd(&status_wnd, LC_GEN_ERROR_HEAD, LC_QUEST_ERROR,
                       SOUND_ERROR);
-      getch();
-      system_quest_selected = 0;
-      gui_status_wnd();
-      gui_bars_common_top();
     }
   } else {
     gui_status_wnd();
@@ -228,6 +223,7 @@ void gui_status_quest_list(WND* status_wnd) {
  * SCR_STATUS -- WINDOW DISPATCHER
  * ---------------------------------------------------------------- */
 void gui_status_wnd() {
+  status_wnd.id = SCR_STATUS;
   status_wnd.header = NULL;
   status_wnd.x = 0;
   status_wnd.y = 21;
@@ -238,10 +234,13 @@ void gui_status_wnd() {
 
   setfillstyle(SOLID_FILL, BLACK);
   bar(1, 22, status_wnd.width - 1, status_wnd.height - 1);
-
   gui_ad_hypersoft();
   draw_player_status(&status_wnd);
-
   gui_status_quest_list(&status_wnd);
+}
+
+void gui_status_wnd_dispatch(WND* parent){
+  gui_status_wnd();
   gui_bars_status_bottom();
+  gui_bars_common_top();
 }

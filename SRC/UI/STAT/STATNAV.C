@@ -19,32 +19,21 @@
  * ---------------------------------------------------------- */
 int gui_status_wnd_key(int ch, WND* parent) {
   if (TAB == ch) {
-    if (wp.size > 0) gui_map_path_wnd();
-    cur_screen = SCR_MAP;
-    gui_bars_map_bottom();
-    gui_map_wnd_draw();
+    dispatch_wnd(SCR_MAP, &root_wnd);
   }
   if (F2 == ch) {
-    prev_screen = cur_screen;
-    cur_screen = SCR_UPGRADE;
-    gui_upgrade_wnd();
+    dispatch_wnd(SCR_UPGRADE, &root_wnd);
   }
   if (F3 == ch) {
     if (sol_list[gs.current_system].is_shipyard) {
-      prev_screen = cur_screen;
-      cur_screen = SCR_SHIPYARD;
-      gui_shipyard_wnd();
+      dispatch_wnd(SCR_SHIPYARD, &root_wnd);
     } else {
-      gui_warning_wnd(parent, LC_GEN_ERROR_HEAD, LC_SHIPYARD_ERROR,
+      gui_warning_wnd(&status_wnd, LC_GEN_ERROR_HEAD, LC_SHIPYARD_ERROR,
                       SOUND_ERROR);
-      getch();
-      gui_status_wnd();
     }
   }
   if (ESC == ch) {
-    prev_screen = cur_screen;
-    cur_screen = SCR_GAME_MENU;
-    gui_menu_wnd(parent, 0, 2);
+    dispatch_wnd(SCR_GAME_MENU, &root_wnd);
   }
   if (UP == ch) {
     if (system_quest_selected > 0) {

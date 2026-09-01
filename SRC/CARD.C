@@ -54,10 +54,15 @@
 #include "ui/ad/ad.h"
 #include "ui/gui.h"
 #include "ui/map/mapnav.h"
+#include "ui/map/mapwnd.h"
 #include "ui/menu/menunav.h"
+#include "ui/menu/menuwnd.h"
 #include "ui/shipyard/syardnav.h"
+#include "ui/shipyard/syardwnd.h"
 #include "ui/stat/statnav.h"
+#include "ui/stat/statwnd.h"
 #include "ui/upgrade/upgrnav.h"
+#include "ui/upgrade/upgrwnd.h"
 
 /* ----------------------------------------------------------------
  * GLOBALS
@@ -90,7 +95,7 @@ GAME_STATE gs;
 unsigned char SIG_TERM = 0;
 
 /* Root window */
-WND root_wnd = {NULL, 0, 21, 639, 460};
+WND root_wnd = {SCR_MAIN_MENU, NULL, 0, 21, 639, 460};
 
 /* Screens */
 E_GAME_SCREEN cur_screen = SCR_MAIN_MENU;
@@ -108,6 +113,22 @@ static key_handler key_handlers[] = {
     gui_upgrade_wnd_key,   /* SCR_UPGRADE */
     gui_shipyard_wnd_key   /* SCR_SHIPYARD */
 };
+
+typedef int (*wnd_dispatcher)(WND* parent);
+wnd_dispatcher wnd_dispatchers[] = {
+    gui_map_wnd_dispatch,         /* SCR_MAP */
+    gui_menu_main_wnd_dispatcher, /* SCR_MAIN_MENU */
+    gui_menu_game_wnd_dispatcher, /* SCR_GAME_MENU */
+    gui_status_wnd_dispatch,      /* SCR_STATUS */
+    gui_upgrade_wnd_dispatch,     /* SCR_UPGRADE */
+    gui_shipyard_wnd_dispatch     /* SCR_SHIPYARD */
+};
+
+void dispatch_wnd(E_GAME_SCREEN id, WND* parent) {
+  prev_screen = cur_screen;
+  cur_screen = id;
+  wnd_dispatchers[id](parent);
+}
 
 /* ----------------------------------------------------------------
  * MAIN
@@ -131,11 +152,8 @@ int main() {
 
   gui_clrscr();
 
-  /* Show ads */
-  gui_ad_loading();
-
   /* Draw Main Menu */
-  gui_menu_wnd(&root_wnd, 0, MAIN_MENU);
+  dispatch_wnd(SCR_MAIN_MENU, &root_wnd);
 
   while (!SIG_TERM) {
     c = getch();

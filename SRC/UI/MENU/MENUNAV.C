@@ -7,6 +7,7 @@
 #include "data/structs.h"
 #include "sound/sound.h"
 #include "ui/locale.h"
+#include "ui/map/mapwnd.h"
 #include "ui/menu/menunav.h"
 #include "ui/menu/menuwnd.h"
 
@@ -21,15 +22,10 @@ int gui_menu_main_wnd_key(int ch, WND* parent) {
     if (text_input != NULL && text_input[0] != '\0') {
       mm_select = 0;
       core_game_new_game(text_input);
-      cur_screen = SCR_MAP;
-      gui_map_wnd_draw();
-      gui_bars_map_bottom();
-      gui_bars_common_top();
+      dispatch_wnd(SCR_MAP, &root_wnd);
     } else {
-      gui_warning_wnd(parent, LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE,
-                      SOUND_ERROR);
-      getch();
-      gui_menu_wnd(parent, mm_select, MAIN_MENU);
+      gui_warning_wnd(&root_wnd, LC_GEN_ERROR_HEAD,
+                      LC_GEN_ERROR_INCORRECT_VALUE, SOUND_ERROR);
     }
     free(text_input);
   }
@@ -39,23 +35,14 @@ int gui_menu_main_wnd_key(int ch, WND* parent) {
                                       LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
     if (text_input != NULL && text_input[0] != '\0') {
       if (core_game_load(text_input) == 1) {
-        mm_select = 0;
-        cur_screen = SCR_MAP;
-        gui_map_wnd_draw();
-        gui_bars_map_bottom();
-        gui_bars_common_top();
-
+        dispatch_wnd(SCR_MAP, &root_wnd);
       } else {
-        gui_warning_wnd(parent, LC_GEN_ERROR_HEAD, LC_CARD_MENU_LOAD_ERROR,
+        gui_warning_wnd(&root_wnd, LC_GEN_ERROR_HEAD, LC_CARD_MENU_LOAD_ERROR,
                         SOUND_ERROR);
-        getch();
-        gui_menu_wnd(parent, mm_select, MAIN_MENU);
       }
     } else {
-      gui_warning_wnd(parent, LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE,
-                      SOUND_ERROR);
-      getch();
-      gui_menu_wnd(parent, mm_select, MAIN_MENU);
+      gui_warning_wnd(&root_wnd, LC_GEN_ERROR_HEAD,
+                      LC_GEN_ERROR_INCORRECT_VALUE, SOUND_ERROR);
     }
     free(text_input);
   }
@@ -65,13 +52,13 @@ int gui_menu_main_wnd_key(int ch, WND* parent) {
   if (UP == ch) {
     if (mm_select > 0) {
       mm_select--;
-      gui_menu_wnd(parent, mm_select, MAIN_MENU);
+      dispatch_wnd(SCR_MAIN_MENU, &root_wnd);
     }
   }
   if (DWN == ch) {
     if (mm_select < 2) {
       mm_select++;
-      gui_menu_wnd(parent, mm_select, MAIN_MENU);
+      dispatch_wnd(SCR_MAIN_MENU, &root_wnd);
     }
   }
   return 0;
@@ -84,10 +71,10 @@ int gui_menu_game_wnd_key(int ch, WND* parent) {
   if (ESC == ch) {
     mm_select = 0;
     cur_screen = prev_screen;
-    if (cur_screen == SCR_MAP) gui_map_wnd_draw();
-    if (cur_screen == SCR_STATUS) gui_status_wnd();
-    if (cur_screen == SCR_UPGRADE) gui_upgrade_wnd();
-    if (cur_screen == SCR_SHIPYARD) gui_shipyard_wnd();
+    if (prev_screen == SCR_MAP)
+      dispatch_wnd(prev_screen, &map_wnd);
+    else
+      dispatch_wnd(prev_screen, &root_wnd);
   }
   if (mm_select == 0 && ENTER == ch) {
     char* text_input;
@@ -95,40 +82,17 @@ int gui_menu_game_wnd_key(int ch, WND* parent) {
                                       LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
     if (text_input != NULL && text_input[0] != '\0') {
       if (core_game_save(text_input) == 1) {
-        cur_screen = prev_screen;
         gui_warning_wnd(parent, LC_GEN_SUCCESS_HEAD, LC_CARD_MENU_SAVE_SUCCESS,
                         SOUND_SUCCESS);
-        getch();
-        mm_select = 0;
-        if (cur_screen == SCR_MAP) {
-          gui_map_wnd_draw();
-          gui_bars_map_bottom();
-          gui_bars_common_top();
-        }
-
-        if (cur_screen == SCR_STATUS) {
-          gui_bars_common_top();
-          gui_bars_status_bottom();
-          gui_status_wnd();
-        }
-
-        if (cur_screen == SCR_UPGRADE) {
-          gui_bars_common_top();
-          gui_bars_status_bottom();
-          gui_upgrade_wnd();
-        }
+        dispatch_wnd(prev_screen, &root_wnd);
 
       } else {
         gui_warning_wnd(parent, LC_GEN_ERROR_HEAD, LC_CARD_MENU_SAVE_ERROR,
                         SOUND_ERROR);
-        getch();
-        gui_menu_wnd(parent, mm_select, GAME_MENU);
       }
     } else {
       gui_warning_wnd(parent, LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE,
                       SOUND_ERROR);
-      getch();
-      gui_menu_wnd(parent, mm_select, GAME_MENU);
     }
     free(text_input);
   }
@@ -138,36 +102,15 @@ int gui_menu_game_wnd_key(int ch, WND* parent) {
                                       LC_CARD_MENU_SAVE_WND_TEXT, "USER.SAV");
     if (text_input != NULL && text_input[0] != '\0') {
       if (core_game_load(text_input) == 1) {
-        mm_select = 0;
-        cur_screen = prev_screen;
-        if (cur_screen == SCR_MAP) {
-          gui_map_wnd_draw();
-          gui_bars_map_bottom();
-          gui_bars_common_top();
-        }
-
-        if (cur_screen == SCR_STATUS) {
-          gui_bars_common_top();
-          gui_bars_status_bottom();
-          gui_status_wnd();
-        }
-
-        if (cur_screen == SCR_UPGRADE) {
-          gui_bars_common_top();
-          gui_bars_status_bottom();
-          gui_upgrade_wnd();
-        }
+        dispatch_wnd(prev_screen, &root_wnd);
       } else {
         gui_warning_wnd(parent, LC_GEN_ERROR_HEAD, LC_CARD_MENU_LOAD_ERROR,
                         SOUND_ERROR);
-        getch();
-        gui_menu_wnd(parent, mm_select, GAME_MENU);
+
       }
     } else {
       gui_warning_wnd(parent, LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE,
                       SOUND_ERROR);
-      getch();
-      gui_menu_wnd(parent, mm_select, GAME_MENU);
     }
     free(text_input);
   }
@@ -177,13 +120,13 @@ int gui_menu_game_wnd_key(int ch, WND* parent) {
   if (UP == ch) {
     if (mm_select > 0) {
       mm_select--;
-      gui_menu_wnd(parent, mm_select, GAME_MENU);
+      dispatch_wnd(SCR_GAME_MENU, &root_wnd);
     }
   }
   if (DWN == ch) {
     if (mm_select < 2) {
       mm_select++;
-      gui_menu_wnd(parent, mm_select, GAME_MENU);
+      dispatch_wnd(SCR_GAME_MENU, &root_wnd);
     }
   }
   return 0;

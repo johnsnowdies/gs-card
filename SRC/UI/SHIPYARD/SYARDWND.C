@@ -98,8 +98,6 @@ void gui_shipyard_deal_wnd(void) {
     if (final_price <= 0) {
       gui_warning_wnd(&shipyard_wnd, LC_GEN_ERROR_HEAD,
                       LC_SHIPYARD_SELL_TEXT_10, SOUND_ERROR);
-      getch();
-      gui_shipyard_wnd();
       return;
     }
 
@@ -200,14 +198,11 @@ void gui_shipyard_deal_wnd(void) {
           } else {
             gui_warning_wnd(&shipyard_wnd, LC_GEN_ERROR_HEAD,
                             LC_UPGRADE_NO_MONEY, SOUND_ERROR);
-            getch();
-            gui_shipyard_wnd();
           }
         } else {
           sfx_error();
           gui_shipyard_wnd();
         }
-
       } else {
         gui_shipyard_wnd();
       }
@@ -358,7 +353,8 @@ void gui_shipyard_draw_list(void) {
 /* -----------------------------------------------------------------
  * SCR_SHIPYARD -- WINDOW DISPATCHER
  * ---------------------------------------------------------------- */
-void gui_shipyard_wnd(void) {
+void gui_shipyard_wnd() {
+  shipyard_wnd.id = SCR_SHIPYARD;
   shipyard_wnd.x = SYARD_WND_DEFAULT_X;
   shipyard_wnd.y = SYARD_WND_DEFAULT_Y;
   shipyard_wnd.width = SYARD_WND_DEFAULT_WIDTH;
@@ -377,8 +373,10 @@ void gui_shipyard_wnd(void) {
   setcolor(15);
 
   gui_shipyard_draw_list();
+}
 
+void gui_shipyard_wnd_dispatch(WND* parent){
+  gui_shipyard_wnd();
   gui_bars_common_top();
   gui_bars_status_bottom();
 }
-

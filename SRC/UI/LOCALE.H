@@ -73,6 +73,8 @@
 #define LC_GUI_BOOL_YES "ДА"
 #define LC_GUI_BOOL_NO "НЕТ"
 
+#define LC_GUI_GSCARD_VER "GS-CARD 2.0"
+
 /* gui_input_wnd */
 #define LC_GUI_INPUT_TEXT "Нажмите [ENTER] gля поgтвежgения [ESC] gля отмены"
 

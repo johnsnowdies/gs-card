@@ -9,7 +9,7 @@
 #include "ui/locale.h"
 #include "ui/map/mapwnd.h"
 
-WND map_wnd = {NULL, 0, 21, 639, 460};
+WND map_wnd = {SCR_MAP, NULL, 0, 21, 639, 460};
 int is_coord = 1, is_hyper = 0, mode = 1;
 int path_wnd_index = 0;
 
@@ -709,13 +709,16 @@ static void gui_map_wnd_clear() {
 /* ----------------------------------------------------------------
  * EXTERNAL: SCR_MAP -- WINDOW DISPATCHER
  * ---------------------------------------------------------------- */
-void gui_map_wnd_draw() {
+void gui_map_wnd_refresh() {
   /* Shrink main view when path panel is open */
 
-  if (wp.size)
+  if (wp.size){
     map_wnd.width = 470;
-  else
+    gui_map_path_wnd();
+  }
+  else{
     map_wnd.width = 639;
+  }
 
   map_bounds.x2 = map_wnd.width;
 
@@ -724,6 +727,10 @@ void gui_map_wnd_draw() {
   if (mode == 1) draw2dwnd(is_coord, is_hyper);
   if (mode == 2) draw3dwnd(is_coord, is_hyper);
   if (mode == 3) drawyzwnd(is_coord, is_hyper);
+}
 
+void gui_map_wnd_dispatch(WND* parent){
+  gui_map_wnd_refresh(); 
   gui_bars_map_bottom();
+  gui_bars_common_top();
 }

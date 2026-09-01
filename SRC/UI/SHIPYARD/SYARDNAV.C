@@ -14,22 +14,13 @@
  * ---------------------------------------------------------------- */
 int gui_shipyard_wnd_key(int ch, WND* parent) {
   if (TAB == ch) {
-    if (wp.size > 0) gui_map_path_wnd();
-    cur_screen = SCR_MAP;
-    gui_bars_map_bottom();
-    gui_map_wnd_draw();
+    dispatch_wnd(SCR_MAP, &root_wnd);
   }
   if (F1 == ch) {
-    ship_selected = 0;
-    cur_screen = SCR_STATUS;
-    gui_status_wnd();
-    sfx_screen_change();
+    dispatch_wnd(SCR_STATUS, &root_wnd);
   }
   if (F2 == ch) {
-    ship_selected = 0;
-    cur_screen = SCR_UPGRADE;
-    gui_upgrade_wnd();
-    sfx_screen_change();
+    dispatch_wnd(SCR_UPGRADE, &root_wnd);
   }
   if (ENTER == ch) {
     gui_shipyard_deal_wnd();
@@ -47,10 +38,7 @@ int gui_shipyard_wnd_key(int ch, WND* parent) {
     }
   }
   if (ESC == ch) {
-    ship_selected = 0;
-    prev_screen = cur_screen;
-    cur_screen = SCR_GAME_MENU;
-    gui_menu_wnd(parent, 0, 2);
+    dispatch_wnd(SCR_GAME_MENU, &root_wnd);
   }
   return 0;
 }

@@ -138,10 +138,6 @@ GAME_STATE {
   int visited_bytes;
 };
 
-#define E_GAME_SCREEN enum game_screen
-E_GAME_SCREEN{SCR_MAP,    SCR_MAIN_MENU, SCR_GAME_MENU,
-              SCR_STATUS, SCR_UPGRADE,   SCR_SHIPYARD};
-
 #define UPGRADE struct upgrade
 UPGRADE {
   char* name;

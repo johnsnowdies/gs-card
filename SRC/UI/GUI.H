@@ -64,9 +64,10 @@
 /* Input Field Length*/
 #define Q_INPUT_LEN 30
 
-/* Main menu */
-#define MAIN_MENU 1
-#define GAME_MENU 2
+/* Game Screens */
+#define E_GAME_SCREEN enum game_screen
+E_GAME_SCREEN{SCR_MAP,    SCR_MAIN_MENU, SCR_GAME_MENU,
+              SCR_STATUS, SCR_UPGRADE,   SCR_SHIPYARD};
 
 /* ----------------------------------------------------------------
  * GUI ELEMENTS
@@ -98,6 +99,7 @@ PROGRESS_BAR {
 
 #define WND struct gui_proto_window
 WND {
+  E_GAME_SCREEN id;
   char* header;
   int x;
   int y;

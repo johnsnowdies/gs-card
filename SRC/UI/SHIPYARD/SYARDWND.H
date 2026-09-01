@@ -48,5 +48,6 @@ extern int ship_selected;
 extern void gui_shipyard_deal_wnd(void);
 extern void gui_shipyard_draw_list(void);
 extern void gui_shipyard_wnd(void);
+extern void gui_shipyard_wnd_dispatch(WND* parent);
 
 #endif

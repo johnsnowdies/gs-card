@@ -439,7 +439,6 @@ int core_finder_get_way(WAYPOINT* wp) {
   if (start < 0 || end < 0 || start >= sol_size || end >= sol_size) {
     gui_warning_wnd(&map_wnd, LC_GEN_TITLE_GSCARD, LC_GEN_ERROR_INCORRECT_VALUE,
                     SOUND_ERROR);
-    getch();
     return 0;
   }
 
@@ -447,7 +446,6 @@ int core_finder_get_way(WAYPOINT* wp) {
   if (!status) {
     gui_warning_wnd(&map_wnd, LC_GEN_TITLE_GSCARD, LC_FINDER_ERROR_NOWAY,
                     SOUND_ERROR);
-    getch();
   }
   return status;
 }

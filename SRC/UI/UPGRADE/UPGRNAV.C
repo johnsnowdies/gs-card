@@ -16,26 +16,17 @@
  * ---------------------------------------------------------------- */
 int gui_upgrade_wnd_key(int ch, WND* parent) {
   if (TAB == ch) {
-    if (wp.size > 0) gui_map_path_wnd();
-    cur_screen = SCR_MAP;
-    gui_bars_map_bottom();
-    gui_map_wnd_draw();
+    dispatch_wnd(SCR_MAP, &root_wnd);
   }
   if (F1 == ch) {
-    cur_screen = SCR_STATUS;
-    gui_status_wnd();
-    sfx_screen_change();
+    dispatch_wnd(SCR_STATUS, &root_wnd);
   }
   if (F3 == ch) {
     if (sol_list[gs.current_system].is_shipyard) {
-      prev_screen = cur_screen;
-      cur_screen = SCR_SHIPYARD;
-      gui_shipyard_wnd();
+      dispatch_wnd(SCR_SHIPYARD, &root_wnd);
     } else {
-      gui_warning_wnd(parent, LC_GEN_ERROR_HEAD, LC_SHIPYARD_ERROR,
+      gui_warning_wnd(&upgrade_wnd, LC_GEN_ERROR_HEAD, LC_SHIPYARD_ERROR,
                       SOUND_ERROR);
-      getch();
-      gui_upgrade_wnd();
     }
   }
   if (UP == ch) {
@@ -56,9 +47,7 @@ int gui_upgrade_wnd_key(int ch, WND* parent) {
     }
   }
   if (ESC == ch) {
-    prev_screen = cur_screen;
-    cur_screen = SCR_GAME_MENU;
-    gui_menu_wnd(parent, 0, 2);
+    dispatch_wnd(SCR_GAME_MENU, &root_wnd);
   }
   return 0;
 }

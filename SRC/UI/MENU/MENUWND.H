@@ -38,10 +38,13 @@
 
 #define _GUI_MENU_WND
 
+/* Main menu */
+#define MAIN_MENU 1
+#define GAME_MENU 2
 
 extern int mm_select;
 
 /* UI/MENU/MENUWND API */
-extern void gui_menu_wnd(WND* ptr_parent, int currentPos, int mode);
-
+extern void gui_menu_main_wnd_dispatcher(WND* ptr_parent);
+extern void gui_menu_game_wnd_dispatcher(WND* ptr_parent);
 #endif

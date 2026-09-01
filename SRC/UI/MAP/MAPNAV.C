@@ -24,7 +24,6 @@ static void gui_map_nav_scale_minus() {
     zmin = zmin - MAX_VALUE / 10;
   } else {
     gui_warning_wnd(&map_wnd, LC_GEN_ERROR_HEAD, LC_NAV_ERROR_1, SOUND_ERROR);
-    getch();
   }
 }
 
@@ -42,7 +41,6 @@ static void gui_map_nav_scale_plus() {
     zmin = zmin + MAX_VALUE / 10;
   } else {
     gui_warning_wnd(&map_wnd, LC_GEN_ERROR_HEAD, LC_NAV_ERROR_2, SOUND_ERROR);
-    getch();
   }
 }
 
@@ -86,7 +84,6 @@ static void gui_map_nav_goto_system() {
   if (error) {
     gui_warning_wnd(&map_wnd, LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE,
                     SOUND_ERROR);
-    getch();
   }
 }
 
@@ -120,53 +117,53 @@ void gui_map_nav_move_screen_to(int value) {
 int gui_map_wnd_key(int ch, WND* parent) {
   if (F1 == ch) {
     mode = (mode < 3) ? mode + 1 : 1;
-    gui_map_wnd_draw();
+    gui_map_wnd_refresh();
   }
   if (F2 == ch) {
     is_coord = !is_coord;
-    gui_map_wnd_draw();
+    gui_map_wnd_refresh();
   }
   if (F4 == ch) {
     gui_map_nav_scale_plus();
-    gui_map_wnd_draw();
+    gui_map_wnd_refresh();
   }
   if (F3 == ch) {
     gui_map_nav_scale_minus();
-    gui_map_wnd_draw();
+    gui_map_wnd_refresh();
   }
   if (F5 == ch) {
     gui_map_nav_goto_system(sol_size, sol_list);
-    gui_map_wnd_draw();
+    gui_map_wnd_refresh();
   }
   if (F6 == ch) {
     is_hyper = !is_hyper;
-    gui_map_wnd_draw();
+    gui_map_wnd_refresh();
   }
   if (F7 == ch) {
     if (core_finder_get_way(&wp)) {
-      gui_map_wnd_draw();
+      gui_map_wnd_refresh();
       gui_map_path_wnd();
     } else {
-      gui_map_wnd_draw();
+      gui_map_wnd_refresh();
     }
   }
   if (LFT == ch) {
     gui_map_nav_offset_x_plus();
-    gui_map_wnd_draw();
+    gui_map_wnd_refresh();
   }
   if (RHT == ch) {
     gui_map_nav_offset_x_minus();
-    gui_map_wnd_draw();
+    gui_map_wnd_refresh();
   }
   if (UP == ch) {
     if (mode == 3 || mode == 2) gui_map_nav_offset_z_minus();
     if (mode == 1 || mode == 2) gui_map_nav_offset_y_plus();
-    gui_map_wnd_draw();
+    gui_map_wnd_refresh();
   }
   if (DWN == ch) {
     if (mode == 3 || mode == 2) gui_map_nav_offset_z_plus();
     if (mode == 1 || mode == 2) gui_map_nav_offset_y_minus();
-    gui_map_wnd_draw();
+    gui_map_wnd_refresh();
   }
   if (PUP == ch) {
     if (wp.size) {
@@ -176,7 +173,7 @@ int gui_map_wnd_key(int ch, WND* parent) {
         path_wnd_index--;
       gui_map_nav_move_screen_to(wp.way[path_wnd_index]);
       gui_map_path_wnd();
-      gui_map_wnd_draw();
+      gui_map_wnd_refresh();
     }
   }
   if (PDWN == ch) {
@@ -187,14 +184,12 @@ int gui_map_wnd_key(int ch, WND* parent) {
         path_wnd_index++;
       gui_map_nav_move_screen_to(wp.way[path_wnd_index]);
       gui_map_path_wnd();
-      gui_map_wnd_draw();
+      gui_map_wnd_refresh();
     }
   }
 
   if (TAB == ch) {
-    cur_screen = SCR_STATUS;
-    gui_status_wnd();
-    gui_bars_status_bottom();
+    dispatch_wnd(SCR_STATUS, &root_wnd);
   }
   if (ENTER == ch) {
     /* ----------------------------------------------------------------
@@ -218,7 +213,7 @@ int gui_map_wnd_key(int ch, WND* parent) {
           gui_map_path_wnd();
         } else {
           wp.size = 0;
-          gui_map_wnd_draw();
+          gui_map_wnd_refresh();
         }
 
         /* Run game new system events */
@@ -227,27 +222,23 @@ int gui_map_wnd_key(int ch, WND* parent) {
 
         if (!game_over) {
           gui_bars_common_top();
-          gui_map_wnd_draw();
+          gui_map_wnd_refresh();
         } else {
-          gui_ad_loading();
-          cur_screen = SCR_MAIN_MENU;
-          gui_menu_wnd(&root_wnd, 0, MAIN_MENU);
+          dispatch_wnd(SCR_MAIN_MENU, &root_wnd);
         }
       } else {
         wp.size = 0;
         gui_bars_common_top();
-        gui_map_wnd_draw();
+        gui_map_wnd_refresh();
       }
     }
   }
   if (ESC == ch) {
     if (wp.size) {
       wp.size = 0;
-      gui_map_wnd_draw();
+      gui_map_wnd_refresh();
     } else {
-      prev_screen = cur_screen;
-      cur_screen = SCR_GAME_MENU;
-      gui_menu_wnd(&map_wnd, 0, 2);
+      dispatch_wnd(SCR_GAME_MENU, &map_wnd);
     }
   }
   return 0;

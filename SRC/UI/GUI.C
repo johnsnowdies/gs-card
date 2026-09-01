@@ -216,6 +216,11 @@ void gui_warning_wnd(WND *ptr_parent, char *header, char *text,
     sfx_success();
     break;
   }
+
+  /* REFRESH AFTER MODAL */
+  getch();
+  if (ptr_parent->id)
+        dispatch_wnd(ptr_parent->id, &root_wnd);
 }
 
 /* ----------------------------------------------------------------
@@ -280,6 +285,8 @@ int gui_confirm_wnd(WND *ptr_parent, char *header, char *text) {
     }
 
     if (gui_handle_btn_keys(2, &selected) == 1) {
+      if (ptr_parent->id)
+        dispatch_wnd(ptr_parent->id, &root_wnd);
       return selected;
     }
   }
@@ -331,6 +338,10 @@ char *gui_input_wnd(WND *ptr_parent, char *header, char *text,
   result = (char *)malloc(Q_INPUT_LEN);
 
   strcpy(result, field.buffer);
+
+  if (ptr_parent->id)
+        dispatch_wnd(ptr_parent->id, &root_wnd);
+
   return result;
 }
 
@@ -378,7 +389,6 @@ int gui_dialog_wnd(WND *parent, char *header, char *title, char *photo_file,
       content_height;
   int photo_present = (photo_file != NULL && photo_file[0] != '\0');
 
-  /*  áçñâ è¨à¨­ë â¥ªáâ  */
   settextstyle(SMALL_FONT, HORIZ_DIR, 4);
   for (i = 0; i < lines_count; i++) {
     int w = textwidth(lines[i]);
@@ -513,9 +523,12 @@ int gui_dialog_wnd(WND *parent, char *header, char *title, char *photo_file,
         gui_draw_btn(&btn_list[i]);
       }
       if (gui_handle_btn_keys(buttons_count, &choice) == 1) {
+        if (parent->id)
+          dispatch_wnd(parent->id, &root_wnd);
         return choice;
       }
     }
+    if (parent->id) dispatch_wnd(parent->id, &root_wnd);
   }
 }
 

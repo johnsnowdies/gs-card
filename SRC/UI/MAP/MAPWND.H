@@ -68,6 +68,10 @@ extern int path_wnd_index;
 extern WND map_wnd;
 
 /* UI/MAP/MAPWND API */
-extern void gui_map_wnd_draw();
+
+/* Use only in MAPNAV */
+extern void gui_map_wnd_refresh();
+
+extern void gui_map_wnd_dispatch(WND* parent);
 
 #endif

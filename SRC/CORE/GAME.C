@@ -539,7 +539,7 @@ static int core_game_check_win(void) {
     int i;
 
     gui_bars_common_top();
-    gui_map_wnd_draw();
+    gui_map_wnd_refresh();
 
     for (i = 0; i < 9; i++) {
       lines[i][0] = '\0';
@@ -598,7 +598,7 @@ static int core_game_event_quest_done(void) {
       }
 
       gui_bars_common_top();
-      gui_map_wnd_draw();
+      gui_map_wnd_refresh();
 
       gui_npc_wnd(&map_wnd, &gs.quests[i].giver, NPC_DIALOG_WND,
                   LC_QUEST_COMPLETE_HEAD, lines, 2, NULL, 0, 1);
@@ -707,10 +707,10 @@ static core_game_event_quest_failed(int index) {
 
   strcpy(header, LC_QUEST_FAILED_HEAD);
 
-  gui_map_wnd_draw();
+  gui_map_wnd_refresh();
   gui_npc_wnd(&map_wnd, &gs.quests[index].giver, NPC_DIALOG_WND, header, lines,
               2, NULL, 0, 1);
-  gui_map_wnd_draw();
+  gui_map_wnd_refresh();
 
   /* Apply penalty */
   gs.balance -= gs.quests[index].penalty;
@@ -882,13 +882,13 @@ static int core_game_event_customs(void) {
   if (choice == bribe_idx) {
     /* Pay bribe */
     gs.balance -= bribe;
-    gui_map_wnd_draw();
+    gui_map_wnd_refresh();
     strcpy(lines[0], LC_EVENT_CUSTOMS_TEXT_3);
     gui_npc_wnd(&map_wnd, &customs_officer, NPC_DIALOG_WND,
                 LC_EVENT_CUSTOMS_HEAD, lines, 1, NULL, 0, 1);
   } else if (choice == allow_idx) {
     /* Allow inspection */
-    gui_map_wnd_draw();
+    gui_map_wnd_refresh();
     if (!has_contraband || gs.upgrade_smuggler_bay) {
       strcpy(lines[0], LC_EVENT_CUSTOMS_TEXT_4);
       gui_npc_wnd(&map_wnd, &customs_officer, NPC_DIALOG_WND,
@@ -972,7 +972,7 @@ static int core_game_event_kidnapping(int quest_index) {
     char single_line[1][100];
 
     sprintf(single_line[0], LC_EVENT_NAP_THANK, half_reward);
-    gui_map_wnd_draw();
+    gui_map_wnd_refresh();
     gui_npc_wnd(&map_wnd, &quest->giver, NPC_DIALOG_WND, LC_EVENT_NAP_HEAD,
                 single_line, 1, NULL, 0, 1);
     gs.balance += half_reward;
@@ -981,7 +981,7 @@ static int core_game_event_kidnapping(int quest_index) {
     char single_line[1][100];
 
     strcpy(single_line[0], LC_EVENT_NAP_FAIL);
-    gui_map_wnd_draw();
+    gui_map_wnd_refresh();
     gui_npc_wnd(&map_wnd, &kidnapper, NPC_DIALOG_WND, LC_EVENT_NAP_HEAD,
                 single_line, 1, NULL, 0, 1);
     core_game_event_quest_failed(quest_index);
@@ -994,7 +994,7 @@ static int core_game_event_kidnapping(int quest_index) {
       long half_reward = quest->reward / 2;
       char single_line[1][100];
       sprintf(single_line[0], LC_EVENT_NAP_THANK, half_reward);
-      gui_map_wnd_draw();
+      gui_map_wnd_refresh();
       gui_npc_wnd(&map_wnd, &quest->giver, NPC_DIALOG_WND, LC_EVENT_NAP_HEAD,
                   single_line, 1, NULL, 0, 1);
       gs.balance += half_reward;
@@ -1032,7 +1032,7 @@ static int core_game_event_danger_object(void) {
       int upgr_selected = -1, print_upgr = 0;
 
       gui_bars_common_top();
-      gui_map_wnd_draw();
+      gui_map_wnd_refresh();
 
       for (i = 0; i < 8; i++) {
         lines[i][0] = '\0';
@@ -1189,7 +1189,7 @@ int core_game_run_event(int fuel_consume) {
           return game_over;
         }
         gui_bars_common_top();
-        gui_map_wnd_draw();
+        gui_map_wnd_refresh();
       }
 
       if (rand() % 100 < (sol_list[gs.current_system].faction == 2 ? 70 : 20) &&
@@ -1200,7 +1200,7 @@ int core_game_run_event(int fuel_consume) {
           return game_over;
         }
         gui_bars_common_top();
-        gui_map_wnd_draw();
+        gui_map_wnd_refresh();
       }
 
       /* Kidnapping: 10% chance if player has at least one type 4 quest */
@@ -1213,7 +1213,7 @@ int core_game_run_event(int fuel_consume) {
               return game_over;
             }
             gui_bars_common_top();
-            gui_map_wnd_draw();
+            gui_map_wnd_refresh();
           }
           break; /* only first type 4 quest triggers kidnapping */
         }
