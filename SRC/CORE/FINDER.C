@@ -4,7 +4,6 @@
 
 #include "core/finder.h"
 #include "core/globals.h"
-#include "core/objects.h"
 #include "sound/sound.h"
 #include "ui/gui.h"
 #include "ui/locale.h"

@@ -10,62 +10,12 @@
 #include "ui/gui.h"
 #include "ui/locale.h"
 
-/* ----------------------------------------------------------------
- * init -- BGI graphics init
- * ---------------------------------------------------------------- */
-void gui_init() {
-  int gd = DETECT, gm, result;
-  char *msg;
-
-  initgraph(&gd, &gm, "BGI");
-  result = graphresult();
-  if (result) {
-    msg = grapherrormsg(result);
-    printf("%s", msg);
-  }
-
-  settextstyle(SMALL_FONT, HORIZ_DIR, 4);
-}
-
-void gui_clrscr() {
-  setfillstyle(SOLID_FILL, BLACK);
-  bar(0, 0, 640, 480);
-}
 
 /* ----------------------------------------------------------------
- * Window prototype - size, header
+ * ELEMENT: BUTTON
  * ---------------------------------------------------------------- */
 
-void gui_draw_wnd_proto(WND *ptr_wnd) {
-  int width = ptr_wnd->x + ptr_wnd->width,
-      height = ptr_wnd->y + ptr_wnd->height;
-
-  setlinestyle(0, 0, 1);
-
-  /* Fill window space with BLACK */
-  setfillstyle(SOLID_FILL, BLACK);
-  bar(ptr_wnd->x, ptr_wnd->y, width, height);
-
-  /* Window RED border */
-  setcolor(RED);
-  rectangle(ptr_wnd->x, ptr_wnd->y, width, height);
-
-  /* Title bar */
-  if (ptr_wnd->header) {
-    setfillstyle(SOLID_FILL, RED);
-    bar(ptr_wnd->x, ptr_wnd->y, width, ptr_wnd->y + WND_HEADER_HEIGHT);
-    settextstyle(WND_HEADER_FONT);
-    setcolor(BLACK);
-    outtextxy(ptr_wnd->x + WND_HEADER_X_OFFSET,
-              ptr_wnd->y + WND_HEADER_Y_OFFSET, ptr_wnd->header);
-    setcolor(RED);
-  }
-}
-/* ----------------------------------------------------------------
- * Element: Button
- * ---------------------------------------------------------------- */
-
-void gui_draw_btn(BTN *btn) {
+static void gui_draw_btn(BTN *btn) {
   if (!btn->visible)
     return;
   setlinestyle(0, 0, 1);
@@ -94,7 +44,7 @@ void gui_draw_btn(BTN *btn) {
   }
 }
 
-int gui_handle_btn_keys(int num_btns, int *current) {
+static int gui_handle_btn_keys(int num_btns, int *current) {
   int ch, ext;
   ch = getch();
   if (ch == 0) {
@@ -120,9 +70,9 @@ int gui_handle_btn_keys(int num_btns, int *current) {
 }
 
 /* ----------------------------------------------------------------
- * Element: Input Field
+ * ELEMENT: INPUT FIELD
  * ---------------------------------------------------------------- */
-void gui_draw_input_field(INPUT_FIELD *field) {
+static void gui_draw_input_field(INPUT_FIELD *field) {
   if (!field->visible)
     return;
 
@@ -167,7 +117,7 @@ static int gui_handle_input_key(INPUT_FIELD *field, int ch) {
   return 0;
 }
 
-void gui_run_input_field(INPUT_FIELD *field) {
+static void gui_run_input_field(INPUT_FIELD *field) {
   int done = 0;
   while (!done) {
     gui_draw_input_field(field);
@@ -179,9 +129,9 @@ void gui_run_input_field(INPUT_FIELD *field) {
 }
 
 /* ----------------------------------------------------------------
- * Element: Progress Bar
+ * ELEMENT: PROGRESS BAR
  * ---------------------------------------------------------------- */
-void gui_init_progress_bar(PROGRESS_BAR *pb, int x, int y, int width,
+static void gui_init_progress_bar(PROGRESS_BAR *pb, int x, int y, int width,
                            int height, int total, int border_color,
                            int fill_color, int bg_color) {
   pb->x = x;
@@ -196,7 +146,7 @@ void gui_init_progress_bar(PROGRESS_BAR *pb, int x, int y, int width,
   pb->visible = 1;
 }
 
-void gui_draw_progress_bar(PROGRESS_BAR *pb) {
+static void gui_draw_progress_bar(PROGRESS_BAR *pb) {
   int fill_width;
 
   if (!pb->visible)
@@ -219,7 +169,7 @@ void gui_draw_progress_bar(PROGRESS_BAR *pb) {
   }
 }
 
-void gui_set_progress(PROGRESS_BAR *pb, int current) {
+static void gui_set_progress(PROGRESS_BAR *pb, int current) {
   if (current < 0)
     current = 0;
   if (current > pb->total)
@@ -228,7 +178,13 @@ void gui_set_progress(PROGRESS_BAR *pb, int current) {
 }
 
 /* ----------------------------------------------------------------
- * Modal: simple centred warning dialog
+ *
+ *                      EXTERNAL FUNCTIONS
+ *
+ * ---------------------------------------------------------------- */
+
+/* ----------------------------------------------------------------
+ * MODAL: SIMPLE CENTRED WARNING DIALOG
  * ---------------------------------------------------------------- */
 void gui_warning_wnd(WND *ptr_parent, char *header, char *text,
                      int play_sound) {
@@ -263,7 +219,7 @@ void gui_warning_wnd(WND *ptr_parent, char *header, char *text,
 }
 
 /* ----------------------------------------------------------------
- * Modal: yes/no dialog
+ * MODAL: YES/NO DIALOG
  * ---------------------------------------------------------------- */
 int gui_confirm_wnd(WND *ptr_parent, char *header, char *text) {
   WND confirm_wnd;
@@ -330,7 +286,7 @@ int gui_confirm_wnd(WND *ptr_parent, char *header, char *text) {
 }
 
 /* ----------------------------------------------------------------
- * Modal: input dialog
+ * MODAL: INPUT DIALOG
  * ---------------------------------------------------------------- */
 char *gui_input_wnd(WND *ptr_parent, char *header, char *text,
                     char *defaultValue) {
@@ -379,7 +335,7 @@ char *gui_input_wnd(WND *ptr_parent, char *header, char *text,
 }
 
 /* ----------------------------------------------------------------
- * Modal: progress bar dialog
+ * MODAL: PROGRESS BAR DIALOG
  * ---------------------------------------------------------------- */
 
 void gui_progress_wnd(WND *ptr_parent, char *header, char *text, int current,
@@ -408,7 +364,7 @@ void gui_progress_wnd(WND *ptr_parent, char *header, char *text, int current,
 }
 
 /* ----------------------------------------------------------------
- * Multiline dialog window with portrait
+ * MODAL: MULTILINE DIALOG WINDOW WITH PORTRAIT
  * ---------------------------------------------------------------- */
 
 #define MAX_BTNS 5
@@ -564,7 +520,7 @@ int gui_dialog_wnd(WND *parent, char *header, char *title, char *photo_file,
 }
 
 /* ----------------------------------------------------------------
- * Memory status (fixed)
+ * MEMORY STATUS (NEAR, FAR)
  * ---------------------------------------------------------------- */
 void gui_memory_status() {
   unsigned int USED_MEM, FREE_MEM, TOTAL_MEM = 65535;
@@ -596,7 +552,7 @@ void gui_memory_status() {
 }
 
 /* ----------------------------------------------------------------
- * Universal status line
+ * UNIVERSAL STATUS LINE
  * ---------------------------------------------------------------- */
 void gui_draw_status_line(WND *ptr_wnd, char *keys[], char *items[],
                           int highlight) {
@@ -637,6 +593,9 @@ void gui_draw_status_line(WND *ptr_wnd, char *keys[], char *items[],
   gui_memory_status();
 }
 
+/* ----------------------------------------------------------------
+ * HORIZONTAL SECTION HEADER
+ * ---------------------------------------------------------------- */
 void gui_draw_section_header(int x, int y, int width, char *title) {
   int points[6];
   int tx, ty;
@@ -670,6 +629,9 @@ void gui_draw_section_header(int x, int y, int width, char *title) {
   fillpoly(3, points);
 }
 
+/* ----------------------------------------------------------------
+ * VERTICAL SECTION HEADER
+ * ---------------------------------------------------------------- */
 void gui_draw_section_header_v(int x, int y, int width, int height,
                                char *title) {
   int points[6];
@@ -702,4 +664,59 @@ void gui_draw_section_header_v(int x, int y, int width, int height,
   setcolor(RED);
   setfillstyle(SOLID_FILL, RED);
   fillpoly(3, points);
+}
+
+
+/* ----------------------------------------------------------------
+ * SOFT CLEAR SCREEN, USE THIS INSTEAD BGI CLRSCR
+ * ---------------------------------------------------------------- */
+void gui_clrscr() {
+  setfillstyle(SOLID_FILL, BLACK);
+  bar(0, 0, 640, 480);
+}
+
+/* ----------------------------------------------------------------
+ * WINDOW PROTOTYPE - SIZE, HEADER
+ * ---------------------------------------------------------------- */
+void gui_draw_wnd_proto(WND *ptr_wnd) {
+  int width = ptr_wnd->x + ptr_wnd->width,
+      height = ptr_wnd->y + ptr_wnd->height;
+
+  setlinestyle(0, 0, 1);
+
+  /* Fill window space with BLACK */
+  setfillstyle(SOLID_FILL, BLACK);
+  bar(ptr_wnd->x, ptr_wnd->y, width, height);
+
+  /* Window RED border */
+  setcolor(RED);
+  rectangle(ptr_wnd->x, ptr_wnd->y, width, height);
+
+  /* Title bar */
+  if (ptr_wnd->header) {
+    setfillstyle(SOLID_FILL, RED);
+    bar(ptr_wnd->x, ptr_wnd->y, width, ptr_wnd->y + WND_HEADER_HEIGHT);
+    settextstyle(WND_HEADER_FONT);
+    setcolor(BLACK);
+    outtextxy(ptr_wnd->x + WND_HEADER_X_OFFSET,
+              ptr_wnd->y + WND_HEADER_Y_OFFSET, ptr_wnd->header);
+    setcolor(RED);
+  }
+}
+
+/* ----------------------------------------------------------------
+ * INIT -- BGI GRAPHICS INIT
+ * ---------------------------------------------------------------- */
+void gui_init() {
+  int gd = DETECT, gm, result;
+  char *msg;
+
+  initgraph(&gd, &gm, "BGI");
+  result = graphresult();
+  if (result) {
+    msg = grapherrormsg(result);
+    printf("%s", msg);
+  }
+
+  settextstyle(SMALL_FONT, HORIZ_DIR, 4);
 }

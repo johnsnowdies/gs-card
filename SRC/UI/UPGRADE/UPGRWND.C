@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "core/globals.h"
 #include "core/game.h"
+#include "core/globals.h"
 #include "data/structs.h"
 #include "sound/sound.h"
 #include "ui/gui.h"
@@ -15,6 +15,9 @@
 WND upgrade_wnd;
 int upgrade_selected = 0;
 
+/* -----------------------------------------------------------------
+ * GENERAL SHIP INFORMATION
+ * ---------------------------------------------------------------- */
 static void draw_ship_info(void) {
   char buf[100];
   settextstyle(SMALL_FONT, HORIZ_DIR, 8);
@@ -26,6 +29,9 @@ static void draw_ship_info(void) {
   outtextxy(upgrade_wnd.x + 10, upgrade_wnd.y + 35, buf);
 }
 
+/* -----------------------------------------------------------------
+ * HYPER ENGINE INFORMATION
+ * ---------------------------------------------------------------- */
 static void draw_engine_info(void) {
   char buf[100];
   settextstyle(SMALL_FONT, HORIZ_DIR, 4);
@@ -37,13 +43,16 @@ static void draw_engine_info(void) {
   outtextxy(upgrade_wnd.x + 10, upgrade_wnd.y + 57, buf);
 }
 
+/* -----------------------------------------------------------------
+ * UPGRADES INFORMATION
+ * ---------------------------------------------------------------- */
 static void draw_upgrade_status_table(void) {
   int x = upgrade_wnd.x + 10;
   int y_start = upgrade_wnd.y + 75;
   int i, max_label_width = 0;
   int step = 11;
 
-  char *labels[7];
+  char* labels[7];
   char empty = '\0';
   unsigned char values[7];
 
@@ -67,8 +76,7 @@ static void draw_upgrade_status_table(void) {
 
   for (i = 0; i < 7; i++) {
     int w = textwidth(labels[i]);
-    if (w > max_label_width)
-      max_label_width = w;
+    if (w > max_label_width) max_label_width = w;
   }
 
   for (i = 0; i < 7; i++) {
@@ -92,6 +100,127 @@ static void draw_upgrade_status_table(void) {
   }
 }
 
+/* ----------------------------------------------------------------
+ *
+ *                      EXTERNAL FUNCTIONS
+ *
+ * ---------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------
+ * UPGRADE WINDOW DISPATCHER (NPCWND)
+ * ---------------------------------------------------------------- */
+void gui_upgrade_show_info(int selected) {
+  if (selected < 0 || selected >= system_upgrades_size) return;
+
+  {
+    char lines[4][100];
+    char buttons[2][100] = {LC_GUI_BOOL_YES, LC_GUI_BOOL_NO};
+    int i;
+    long price = system_upgrades[selected].base_price;
+    long discount = (price * gs.reputation) / 1000;
+    long final_price = price - discount;
+
+    for (i = 0; i < 4; i++) lines[i][0] = '\0';
+
+    if (system_upgrades[selected].type == 0) {
+      int level = system_upgrades[selected].id;
+      sprintf(lines[0], LC_UPGRADE_ENGINE_TEXT_1, data_hyper_names[level]);
+      sprintf(lines[1], LC_UPGRADE_ENGINE_TEXT_2, data_hyper_fuel[level]);
+      sprintf(lines[2], LC_UPGRADE_ENGINE_TEXT_3);
+      sprintf(lines[3], LC_UPGRADE_PRICE_TEXT, final_price);
+    } else {
+      int id = system_upgrades[selected].id;
+      switch (id) {
+        case 0:
+          strcpy(lines[0], LC_UPGRADE_SMUGGLER_BAY_TEXT_1);
+          strcpy(lines[1], LC_UPGRADE_SMUGGLER_BAY_TEXT_2);
+          strcpy(lines[2], LC_UPGRADE_SMUGGLER_BAY_TEXT_3);
+          strcpy(lines[3], LC_UPGRADE_SMUGGLER_BAY_TEXT_4);
+          break;
+        case 1:
+          strcpy(lines[0], LC_UPGRADE_CONTIN_JUMP_TEXT_1);
+          strcpy(lines[1], LC_UPGRADE_CONTIN_JUMP_TEXT_2);
+          strcpy(lines[2], LC_UPGRADE_CONTIN_JUMP_TEXT_3);
+          strcpy(lines[3], LC_UPGRADE_CONTIN_JUMP_TEXT_4);
+          break;
+        case 2:
+          strcpy(lines[0], LC_UPGRADE_EMERGENCY_JUMP_TEXT_1);
+          strcpy(lines[1], LC_UPGRADE_EMERGENCY_JUMP_TEXT_2);
+          strcpy(lines[2], LC_UPGRADE_EMERGENCY_JUMP_TEXT_3);
+          strcpy(lines[3], LC_UPGRADE_EMERGENCY_JUMP_TEXT_4);
+          break;
+        case 3:
+          strcpy(lines[0], LC_UPGRADE_OBJECTS_MAP_TEXT_1);
+          strcpy(lines[1], LC_UPGRADE_OBJECTS_MAP_TEXT_2);
+          strcpy(lines[2], LC_UPGRADE_OBJECTS_MAP_TEXT_3);
+          strcpy(lines[3], LC_UPGRADE_OBJECTS_MAP_TEXT_4);
+          break;
+        case 4:
+          strcpy(lines[0], LC_UPGRADE_POLITICAL_MAP_TEXT_1);
+          strcpy(lines[1], LC_UPGRADE_POLITICAL_MAP_TEXT_2);
+          strcpy(lines[2], LC_UPGRADE_POLITICAL_MAP_TEXT_3);
+          strcpy(lines[3], LC_UPGRADE_POLITICAL_MAP_TEXT_4);
+          break;
+      }
+    }
+
+    {
+      int result = gui_npc_wnd(&upgrade_wnd, &system_upgrades[selected].giver,
+                               NPC_CHOICE_WND, system_upgrades[selected].name,
+                               lines, 4, buttons, 2, 1);
+
+      if (result == 0) {
+        if (gs.balance >= final_price) {
+          gs.balance -= final_price;
+          if (system_upgrades[selected].type == 0) {
+            gs.hyper_class = system_upgrades[selected].id;
+          } else {
+            switch (system_upgrades[selected].id) {
+              case 0:
+                gs.upgrade_smuggler_bay = 1;
+                break;
+              case 1:
+                gs.upgrade_continuous_jump = 1;
+                break;
+              case 2:
+                gs.upgrade_emergency_jump = 1;
+                break;
+              case 3:
+                gs.upgrade_objects_map = 1;
+                break;
+              case 4:
+                gs.upgrade_political_map = 1;
+                break;
+            }
+          }
+
+          {
+            int idx = selected;
+            for (i = idx; i < system_upgrades_size - 1; i++) {
+              system_upgrades[i] = system_upgrades[i + 1];
+            }
+            system_upgrades_size--;
+            upgrade_selected = 0;
+          }
+
+          gui_upgrade_wnd();
+          sfx_success();
+        } else {
+          gui_warning_wnd(&upgrade_wnd, LC_GEN_ERROR_HEAD, LC_UPGRADE_NO_MONEY,
+                          SOUND_ERROR);
+          getch();
+          gui_upgrade_wnd();
+        }
+      } else {
+        gui_upgrade_wnd();
+      }
+    }
+  }
+}
+
+/* -----------------------------------------------------------------
+ * UPGRADES LIST 
+ * ---------------------------------------------------------------- */
 void gui_upgrade_draw_list(void) {
   int i, y_pos;
   char line[100];
@@ -132,6 +261,9 @@ void gui_upgrade_draw_list(void) {
   }
 }
 
+/* -----------------------------------------------------------------
+ * SCR_UPGRADE -- WINDOW DISPATCHER
+ * ---------------------------------------------------------------- */
 void gui_upgrade_wnd(void) {
   upgrade_wnd.x = UPGRADE_WND_DEFAULT_X;
   upgrade_wnd.y = UPGRADE_WND_DEFAULT_Y;
@@ -162,113 +294,3 @@ void gui_upgrade_wnd(void) {
   gui_bars_status_bottom();
 }
 
-void gui_upgrade_show_info(int selected) {
-  if (selected < 0 || selected >= system_upgrades_size)
-    return;
-
-  {
-    char lines[4][100];
-    char buttons[2][100] = {LC_GUI_BOOL_YES, LC_GUI_BOOL_NO};
-    int i;
-    long price = system_upgrades[selected].base_price;
-    long discount = (price * gs.reputation) / 1000;
-    long final_price = price - discount;
-
-    for (i = 0; i < 4; i++)
-      lines[i][0] = '\0';
-
-    if (system_upgrades[selected].type == 0) {
-      int level = system_upgrades[selected].id;
-      sprintf(lines[0], LC_UPGRADE_ENGINE_TEXT_1, data_hyper_names[level]);
-      sprintf(lines[1], LC_UPGRADE_ENGINE_TEXT_2, data_hyper_fuel[level]);
-      sprintf(lines[2], LC_UPGRADE_ENGINE_TEXT_3);
-      sprintf(lines[3], LC_UPGRADE_PRICE_TEXT, final_price);
-    } else {
-      int id = system_upgrades[selected].id;
-      switch (id) {
-      case 0:
-        strcpy(lines[0], LC_UPGRADE_SMUGGLER_BAY_TEXT_1);
-        strcpy(lines[1], LC_UPGRADE_SMUGGLER_BAY_TEXT_2);
-        strcpy(lines[2], LC_UPGRADE_SMUGGLER_BAY_TEXT_3);
-        strcpy(lines[3], LC_UPGRADE_SMUGGLER_BAY_TEXT_4);
-        break;
-      case 1:
-        strcpy(lines[0], LC_UPGRADE_CONTIN_JUMP_TEXT_1);
-        strcpy(lines[1], LC_UPGRADE_CONTIN_JUMP_TEXT_2);
-        strcpy(lines[2], LC_UPGRADE_CONTIN_JUMP_TEXT_3);
-        strcpy(lines[3], LC_UPGRADE_CONTIN_JUMP_TEXT_4);
-        break;
-      case 2:
-        strcpy(lines[0], LC_UPGRADE_EMERGENCY_JUMP_TEXT_1);
-        strcpy(lines[1], LC_UPGRADE_EMERGENCY_JUMP_TEXT_2);
-        strcpy(lines[2], LC_UPGRADE_EMERGENCY_JUMP_TEXT_3);
-        strcpy(lines[3], LC_UPGRADE_EMERGENCY_JUMP_TEXT_4);
-        break;
-      case 3:
-        strcpy(lines[0], LC_UPGRADE_OBJECTS_MAP_TEXT_1);
-        strcpy(lines[1], LC_UPGRADE_OBJECTS_MAP_TEXT_2);
-        strcpy(lines[2], LC_UPGRADE_OBJECTS_MAP_TEXT_3);
-        strcpy(lines[3], LC_UPGRADE_OBJECTS_MAP_TEXT_4);
-        break;
-      case 4:
-        strcpy(lines[0], LC_UPGRADE_POLITICAL_MAP_TEXT_1);
-        strcpy(lines[1], LC_UPGRADE_POLITICAL_MAP_TEXT_2);
-        strcpy(lines[2], LC_UPGRADE_POLITICAL_MAP_TEXT_3);
-        strcpy(lines[3], LC_UPGRADE_POLITICAL_MAP_TEXT_4);
-        break;
-      }
-    }
-
-    {
-      int result = gui_npc_wnd(&upgrade_wnd, &system_upgrades[selected].giver,
-                               NPC_CHOICE_WND, system_upgrades[selected].name,
-                               lines, 4, buttons, 2, 1);
-
-      if (result == 0) {
-        if (gs.balance >= final_price) {
-          gs.balance -= final_price;
-          if (system_upgrades[selected].type == 0) {
-            gs.hyper_class = system_upgrades[selected].id;
-          } else {
-            switch (system_upgrades[selected].id) {
-            case 0:
-              gs.upgrade_smuggler_bay = 1;
-              break;
-            case 1:
-              gs.upgrade_continuous_jump = 1;
-              break;
-            case 2:
-              gs.upgrade_emergency_jump = 1;
-              break;
-            case 3:
-              gs.upgrade_objects_map = 1;
-              break;
-            case 4:
-              gs.upgrade_political_map = 1;
-              break;
-            }
-          }
-
-          {
-            int idx = selected;
-            for (i = idx; i < system_upgrades_size - 1; i++) {
-              system_upgrades[i] = system_upgrades[i + 1];
-            }
-            system_upgrades_size--;
-            upgrade_selected = 0;
-          }
-
-          gui_upgrade_wnd();
-          sfx_success();
-        } else {
-          gui_warning_wnd(&upgrade_wnd, LC_GEN_ERROR_HEAD, LC_UPGRADE_NO_MONEY,
-                          SOUND_ERROR);
-          getch();
-          gui_upgrade_wnd();
-        }
-      } else {
-        gui_upgrade_wnd();
-      }
-    }
-  }
-}

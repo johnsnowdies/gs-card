@@ -2,9 +2,8 @@
 #include "ui/locale.h"
 #include "ui/npc/npcwnd.h"
 
-
 /* ----------------------------------------------------------
- * PUBLIC: NPC DIALOG WINDOW
+ * EXTERNAL: NPC DIALOG WINDOW DISPATCHER
  * ---------------------------------------------------------- */
 int gui_npc_wnd(WND* ptr_parent, NPC* ptr_npc, int wnd_type, char title[100],
                 char lines[][100], int lines_count, char buttons[][100],

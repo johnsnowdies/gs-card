@@ -2,20 +2,20 @@
 #include <graphics.h>
 #include <stdio.h>
 
-#include "core/globals.h"
 #include "core/game.h"
+#include "core/globals.h"
 #include "data/keys.h"
 #include "data/structs.h"
 #include "sound/sound.h"
-#include "ui/stat/statwnd.h"
 #include "ui/gui.h"
 #include "ui/locale.h"
 #include "ui/shipyard/syardwnd.h"
 #include "ui/stat/statnav.h"
+#include "ui/stat/statwnd.h"
 #include "ui/upgrade/upgrwnd.h"
 
 /* ----------------------------------------------------------
- * PUBLIC: SCR_STATUS -- STATUS WINDOW KEY HANDLER
+ * EXTERNAL: SCR_STATUS -- STATUS WINDOW KEY HANDLER
  * ---------------------------------------------------------- */
 int gui_status_wnd_key(int ch, WND* parent) {
   if (TAB == ch) {

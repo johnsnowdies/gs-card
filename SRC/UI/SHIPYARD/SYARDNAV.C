@@ -6,12 +6,11 @@
 #include "data/structs.h"
 #include "sound/sound.h"
 #include "ui/locale.h"
-#include "ui/map/mapwnd.h"
 #include "ui/shipyard/syardnav.h"
 #include "ui/shipyard/syardwnd.h"
 
 /* ----------------------------------------------------------------
- * PUBLIC: SCR_SHIPYARD - SHIPYARD WINDOW KEY HANDLER
+ * EXTERNAL: SCR_SHIPYARD -- SHIPYARD WINDOW KEY HANDLER
  * ---------------------------------------------------------------- */
 int gui_shipyard_wnd_key(int ch, WND* parent) {
   if (TAB == ch) {

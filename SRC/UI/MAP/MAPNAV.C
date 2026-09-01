@@ -114,12 +114,10 @@ void gui_map_nav_move_screen_to(int value) {
 }
 
 /* ----------------------------------------------------------------
- * SCR_MAP - MAP WINDOW KEY HANDLER
+ * SCR_MAP -- MAP WINDOW KEY HANDLER
  * ---------------------------------------------------------------- */
 
 int gui_map_wnd_key(int ch, WND* parent) {
-  char buf[128];
-
   if (F1 == ch) {
     mode = (mode < 3) ? mode + 1 : 1;
     gui_map_wnd_draw();
@@ -200,9 +198,10 @@ int gui_map_wnd_key(int ch, WND* parent) {
   }
   if (ENTER == ch) {
     /* ----------------------------------------------------------------
-     * HYPER JUMP INITIATED!
+     * WARNING: HYPER JUMP INITIATED!
      * ---------------------------------------------------------------- */
     if (wp.size > 1 && wp.way[0] == gs.current_system) {
+      char buf[128];
       sprintf(buf, LC_CARD_READY_TO_JUMP, wp.way[0], wp.way[1]);
       if (gui_confirm_wnd(&map_wnd, LC_CARD_JUMP_WND_HEAD, buf) == 0) {
         /* JUMP CONFIRMED */
@@ -222,6 +221,7 @@ int gui_map_wnd_key(int ch, WND* parent) {
           gui_map_wnd_draw();
         }
 
+        /* Run game new system events */
         game_over = core_game_run_event(1);
         gui_map_nav_move_screen_to(gs.current_system);
 

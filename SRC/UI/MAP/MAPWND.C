@@ -6,10 +6,8 @@
 #include "core/objects.h"
 #include "data/keys.h"
 #include "data/structs.h"
-#include "ui/ad/ad.h"
 #include "ui/locale.h"
 #include "ui/map/mapwnd.h"
-#include "ui/map/pathwnd.h"
 
 WND map_wnd = {NULL, 0, 21, 639, 460};
 int is_coord = 1, is_hyper = 0, mode = 1;
@@ -709,7 +707,7 @@ static void gui_map_wnd_clear() {
 }
 
 /* ----------------------------------------------------------------
- * EXTERNAL: MAP WINDOW DISPATCHER
+ * EXTERNAL: SCR_MAP -- WINDOW DISPATCHER
  * ---------------------------------------------------------------- */
 void gui_map_wnd_draw() {
   /* Shrink main view when path panel is open */

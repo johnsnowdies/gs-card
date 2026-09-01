@@ -1,8 +1,45 @@
-/* ----------------------------------------------------------------
- * Layout constants
- * ---------------------------------------------------------------- */
+#pragma comment(compiler)
+#pragma message("Compiled for Hypersoft ILTD GS-CARD")
+/*
+ * ========================================================================
+ *               HYPER SOFT ILTD  -  PROPRIETARY SOURCE CODE
+ * ========================================================================
+ *
+ *  (C) COPYRIGHT 19950-34315 HYPERSPORT IMPERIAL LIMITED.
+ *  ALL RIGHTS RESERVED.  UNPUBLISHED RIGHTS RESERVED UNDER
+ *  IMPERIAL SPACE COPYRIGHT LAWS.
+ *
+ *  This file contains confidential and proprietary information of
+ *  Hypersoft ILTD.  No part of this file may be reproduced, stored
+ *  in a retrieval system, or transmitted, in any form or by any means,
+ *  electronic, mechanical, photocopying, recording, or otherwise,
+ *  without the prior written permission of Hypersoft ILTD.
+ *
+ *  File    : GUI.H
+ *  Module  : GUI
+ *  Author  : Hypersoft Engineering Team
+ *  Created : 15-JAN-19950
+ *  Revised : 12-DEC-34315
+ *  Version : 2.0b
+ *
+ *  Description:
+ *      GUI Framework. Entire Window UI system based on BGI
+ *      Relative windows, inherence, independent UI elements
+ *
+ *  WARNING:
+ *      This software is provided "AS IS" without warranty of any kind,
+ *      express or implied.  Use of this code is at your own risk.
+ *      See the Hypersoft ILTD Software License Agreement for full terms.
+ *
+ * ========================================================================
+ */
+
 #ifndef _GUI
 #define _GUI
+
+/* ----------------------------------------------------------------
+ * LAYOUT CONSTANTS
+ * ---------------------------------------------------------------- */
 
 /* VGA Screen */
 #define SCREEN_W 640
@@ -31,9 +68,8 @@
 #define MAIN_MENU 1
 #define GAME_MENU 2
 
-
 /* ----------------------------------------------------------------
- * GUI Elements
+ * GUI ELEMENTS
  * ---------------------------------------------------------------- */
 
 #define INPUT_FIELD struct input_field
@@ -82,61 +118,34 @@ BTN {
 };
 
 /* ----------------------------------------------------------------
- * GUI API
+ * UI/GUI API
  * ---------------------------------------------------------------- */
+extern void gui_warning_wnd(WND* ptr_parent, char* header, char* text,
+                            int play_sound);
 
-void gui_init(void);
+extern int gui_confirm_wnd(WND* ptr_parent, char* header, char* text);
+extern char* gui_input_wnd(WND* ptr_parent, char* header, char* text,
+                           char* defaultValue);
 
-void gui_clrscr(void);
+extern void gui_progress_wnd(WND* ptr_parent, char* header, char* text,
+                             int current, int total);
 
-/* Window prototype - size, header */
-void gui_draw_wnd_proto(WND* ptr_wnd);
+extern int gui_dialog_wnd(WND* parent, char* header, char* title,
+                          char* photo_file, char lines[][100], int lines_count,
+                          char buttons[][100], int buttons_count,
+                          int play_sound, int buttons_orient);
 
-/* Element: Button */
-void gui_draw_btn(BTN* btn);
-int gui_handle_btn_keys(int num_btns, int* current);
+extern void gui_draw_status_line(WND* ptr_wnd, char* keys[], char* items[],
+                                 int highlight);
 
-/* Element: Input Field */
-void gui_draw_input_field(INPUT_FIELD* field);
-void gui_run_input_field(INPUT_FIELD* field);
+extern void gui_memory_status(void);
 
-/* Element: Progress Bar */
-void gui_init_progress_bar(PROGRESS_BAR* pb, int x, int y, int width,
-                           int height, int total, int border_color,
-                           int fill_color, int bg_color);
-void gui_draw_progress_bar(PROGRESS_BAR* pb);
+extern void gui_draw_section_header(int x, int y, int width, char* title);
+extern void gui_draw_section_header_v(int x, int y, int width, int height,
+                                      char* title);
 
-/* Modal: simple centred warning dialog */
-void gui_warning_wnd(WND* ptr_parent, char* header, char* text, int play_sound);
-
-/* Modal: yes/no dialog */
-int gui_confirm_wnd(WND* ptr_parent, char* header, char* text);
-
-/* Modal: input dialog */
-char* gui_input_wnd(WND* ptr_parent, char* header, char* text,
-                    char* defaultValue);
-
-/* Modal: progress bar dialog */
-void gui_progress_wnd(WND* ptr_parent, char* header, char* text, int current,
-                      int total);
-
-/* Multiline dialog window with portrait */
-int gui_dialog_wnd(WND* parent, char* header, char* title, char* photo_file,
-                   char lines[][100], int lines_count, char buttons[][100],
-                   int buttons_count, int play_sound, int buttons_orient);
-
-/* Universal status line */
-void gui_draw_status_line(WND* ptr_wnd, char* keys[], char* items[], int highlight);
-
-/* Memory status (fixed) */
-void gui_memory_status(void);
-
-/* Draw section header: red bar, title, pattern fill and transition triangle.
-   x, y     - top-left corner of the window (y is baseline for 30px high bar)
-   width    - full width of the bar
-   title    - header text (ASCII)
-*/
-void gui_draw_section_header(int x, int y, int width, char *title);
-void gui_draw_section_header_v(int x, int y, int width, int height, char *title);
+extern void gui_clrscr(void);
+extern void gui_draw_wnd_proto(WND* ptr_wnd);
+extern void gui_init(void);
 
 #endif

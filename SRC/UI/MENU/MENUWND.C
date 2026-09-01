@@ -2,9 +2,7 @@
 #include <stdio.h>
 
 #include "core/globals.h"
-#include "core/objects.h"
 #include "data/keys.h"
-#include "data/reader.h"
 #include "data/structs.h"
 #include "sound/sound.h"
 #include "ui/locale.h"
@@ -17,7 +15,7 @@ static char* GAME_MENU_ITEMS[3] = {LC_MENU_SAVE, LC_MENU_LOAD, LC_MENU_EXIT};
 int mm_select = 0;
 
 /* ----------------------------------------------------------
- * PUBLIC: GAME MENU WINDOW
+ * EXTERNAL: SCR_MENU -- WINDOW DISPATCHER
  * ---------------------------------------------------------- */
 void gui_menu_wnd(WND* ptr_parent, int currentPos, int mode) {
   WND menu_wnd;

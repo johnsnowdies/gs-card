@@ -20,6 +20,54 @@ static char* QUEST_TYPES[] = {"",
                               LC_QUEST_TYPE_4,
                               LC_QUEST_TYPE_5};
 
+/* -----------------------------------------------------------------
+ * PLAYER INFORMATION
+ * ---------------------------------------------------------------- */
+static void draw_player_status(WND* status_wnd) {
+  char captain_name[100];
+  char current_system[50];
+  char sector[50];
+
+  char systems_visited[100];
+  char quests_done[100];
+
+  sprintf(captain_name, "%s: %s", LC_STATUS_WND_CAPTAIN, gs.captain_name);
+
+  sprintf(current_system, "%s: SA.%d", LC_STATUS_WND_SYSTEM, gs.current_system);
+  sprintf(sector, "%s: %s", LC_STATUS_WND_SECTOR,
+          data_sectors[sol_list[gs.current_system].sector]);
+  sprintf(systems_visited, LC_GAME_OVER_STATS_TEXT_1, *gs.visited);
+  sprintf(quests_done, LC_GAME_OVER_STATS_TEXT_2, gs.missions_completed);
+
+  /*
+  {
+    char ship_image[50];
+    sprintf(ship_image, "SHIPS/SHIP_%u.BMP", gs.ship_type + 1);
+    data_reader_draw_bmp(ship_image, 339, 22);
+  }*/
+
+  settextstyle(SMALL_FONT, HORIZ_DIR, 5);
+  setcolor(15);
+
+  outtextxy(status_wnd->x + 80, status_wnd->y + 20, captain_name);
+  outtextxy(status_wnd->x + 80, status_wnd->y + 35,
+            data_factions[sol_list[gs.current_system].faction]);
+  outtextxy(status_wnd->x + 80, status_wnd->y + 50, sector);
+  outtextxy(status_wnd->x + 80, status_wnd->y + 65, current_system);
+
+  outtextxy(status_wnd->x + 10, status_wnd->y + 120, systems_visited);
+  outtextxy(status_wnd->x + 10, status_wnd->y + 140, quests_done);
+}
+
+/* ----------------------------------------------------------------
+ *
+ *                      EXTERNAL FUNCTIONS
+ *
+ * ---------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------
+ * QUEST INFO WINDOW DISPATCHER (NPCWND)
+ * ---------------------------------------------------------------- */
 void gui_status_quest_info(int selected) {
   int result, i;
   char lines[4][100];
@@ -98,6 +146,9 @@ void gui_status_quest_info(int selected) {
   }
 }
 
+/* -----------------------------------------------------------------
+ * QUEST LIST -- AVAILABLE AT STATION AND PLAYER'S QUEST LOG
+ * ---------------------------------------------------------------- */
 void gui_status_quest_list(WND* status_wnd) {
   char line[100];
   int points[6];
@@ -172,42 +223,10 @@ void gui_status_quest_list(WND* status_wnd) {
   }
 }
 
-void draw_player_status(WND* status_wnd) {
-  char captain_name[100];
-  char current_system[50];
-  char sector[50];
 
-  char systems_visited[100];
-  char quests_done[100];
-
-  sprintf(captain_name, "%s: %s", LC_STATUS_WND_CAPTAIN, gs.captain_name);
-
-  sprintf(current_system, "%s: SA.%d", LC_STATUS_WND_SYSTEM, gs.current_system);
-  sprintf(sector, "%s: %s", LC_STATUS_WND_SECTOR,
-          data_sectors[sol_list[gs.current_system].sector]);
-  sprintf(systems_visited, LC_GAME_OVER_STATS_TEXT_1, *gs.visited);
-  sprintf(quests_done, LC_GAME_OVER_STATS_TEXT_2, gs.missions_completed);
-
-  /*
-  {
-    char ship_image[50];
-    sprintf(ship_image, "SHIPS/SHIP_%u.BMP", gs.ship_type + 1);
-    data_reader_draw_bmp(ship_image, 339, 22);
-  }*/
-
-  settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-  setcolor(15);
-
-  outtextxy(status_wnd->x + 80, status_wnd->y + 20, captain_name);
-  outtextxy(status_wnd->x + 80, status_wnd->y + 35,
-            data_factions[sol_list[gs.current_system].faction]);
-  outtextxy(status_wnd->x + 80, status_wnd->y + 50, sector);
-  outtextxy(status_wnd->x + 80, status_wnd->y + 65, current_system);
-
-  outtextxy(status_wnd->x + 10, status_wnd->y + 120, systems_visited);
-  outtextxy(status_wnd->x + 10, status_wnd->y + 140, quests_done);
-}
-
+/* -----------------------------------------------------------------
+ * SCR_STATUS -- WINDOW DISPATCHER
+ * ---------------------------------------------------------------- */
 void gui_status_wnd() {
   status_wnd.header = NULL;
   status_wnd.x = 0;

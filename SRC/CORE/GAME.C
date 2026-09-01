@@ -5,7 +5,6 @@
 #include "core/game.h"
 #include "core/globals.h"
 #include "core/objects.h"
-#include "data/reader.h"
 #include "sound/sound.h"
 #include "ui/gui.h"
 #include "ui/locale.h"
@@ -13,7 +12,7 @@
 #include "ui/npc/npcwnd.h"
 
 /* ----------------------------------------------------------------
- * EXTERNAL: GAME DATA STRUCTURES
+ * GAME DATA STRUCTURES
  * ---------------------------------------------------------------- */
 char* data_ship_names[SHIP_COUNT] = {LC_GAME_SHIP_1, LC_GAME_SHIP_2,
                                      LC_GAME_SHIP_3, LC_GAME_SHIP_4,
@@ -208,11 +207,15 @@ static void core_game_gen_npc(NPC* ptr_npc, unsigned int faction,
       break;
   }
 }
+/* ----------------------------------------------------------------
+ *
+ *               CURRENT SYSTEM QUESTS GENERATION
+ *
+ * ----------------------------------------------------------------
 
 /* ----------------------------------------------------------------
- * CURRENT SYSTEM QUESTS GENERATION
+ * PICK QUEST TARGET SYSTEM ACCORDING TO DIFFICULTY
  * ---------------------------------------------------------------- */
-
 static int pick_target_system_by_jumps(int min_jumps, int max_jumps) {
   int candidates[1000];
   int count = 0;
@@ -241,6 +244,9 @@ static int pick_target_system_by_jumps(int min_jumps, int max_jumps) {
   return candidates[rand() % count];
 }
 
+/* ----------------------------------------------------------------
+ * GENERATE QUEST CARGO VALUE
+ * ---------------------------------------------------------------- */
 static int generate_cargo(void) {
   double r = (double)rand() / RAND_MAX;
   if (r < 0.70) {
@@ -252,6 +258,9 @@ static int generate_cargo(void) {
   }
 }
 
+/* ----------------------------------------------------------------
+ * CALCULATE QUEST REWARD
+ * ---------------------------------------------------------------- */
 static long calc_reward(int type, int cargo, int jumps) {
   long base;
   double cargo_factor;
@@ -286,6 +295,9 @@ static long calc_reward(int type, int cargo, int jumps) {
   }
 }
 
+/* ----------------------------------------------------------------
+ * GENERATE QUESTS AVAILABLE IN SYSTEM
+ * ---------------------------------------------------------------- */
 static void core_game_gen_quest(QUEST* ptr_quest, int player_rep,
                                 unsigned int faction) {
   int type, target, cargo, jumps, reward, penalty, r;
@@ -348,9 +360,14 @@ static void core_game_gen_quest(QUEST* ptr_quest, int player_rep,
 }
 
 /* ----------------------------------------------------------------
- * CURRENT SYSTEM SHOPS GENERATION
- * ---------------------------------------------------------------- */
+ *
+ *                CURRENT SYSTEM SHOPS GENERATION
+ *
+ * ----------------------------------------------------------------
 
+/* ----------------------------------------------------------------
+ * GENERATE SHIPS AVAILABLE ON SHIPYARD
+ * ---------------------------------------------------------------- */
 static void core_game_gen_shipyard(void) {
   int i, count = 0, faction;
 
@@ -390,6 +407,9 @@ static void core_game_gen_shipyard(void) {
   system_shipyard_size = count;
 }
 
+/* ----------------------------------------------------------------
+ * GENERATE SHIPS'S UPGRADES AVAILABLE ON SHIPYARD
+ * ---------------------------------------------------------------- */
 static void core_game_gen_upgrades(void) {
   int i, count = 0;
 

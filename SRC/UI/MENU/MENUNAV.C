@@ -1,18 +1,14 @@
 #include <graphics.h>
 #include <stdio.h>
 
-#include "core/globals.h"
 #include "core/game.h"
-#include "core/objects.h"
+#include "core/globals.h"
 #include "data/keys.h"
-#include "data/reader.h"
 #include "data/structs.h"
 #include "sound/sound.h"
 #include "ui/locale.h"
 #include "ui/menu/menunav.h"
 #include "ui/menu/menuwnd.h"
-#include "ui/upgrade/upgrnav.h"
-#include "ui/upgrade/upgrwnd.h"
 
 /* ----------------------------------------------------------
  * EXTERN: SCR_MAIN_MENU -- MAIN MENU KEY HANDLER

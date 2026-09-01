@@ -1,5 +1,4 @@
 #include <conio.h>
-#include <graphics.h>
 
 #include "core/globals.h"
 #include "data/keys.h"
@@ -13,7 +12,7 @@
 #include "ui/upgrade/upgrwnd.h"
 
 /* ----------------------------------------------------------------
- * PUBLIC: SCR_UPGRADES -- UPGRADE SCREEN KEY HANDLER
+ * EXTERNAL: SCR_UPGRADES -- UPGRADE SCREEN KEY HANDLER
  * ---------------------------------------------------------------- */
 int gui_upgrade_wnd_key(int ch, WND* parent) {
   if (TAB == ch) {
