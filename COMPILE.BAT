@@ -17,7 +17,7 @@ set SRC=SRC
 set INC=%TURBOC%\INCLUDE
 set LIB=%TURBOC%\LIBRARY
 set ASST=ASSETS
-set RU=-DLANGUAGE_RU
+REM set RU=-DLANGUAGE_RU
 
 REM ensure BUILD directory exists
 if not exist %BLD% mkdir %BLD%

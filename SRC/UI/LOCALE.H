@@ -364,7 +364,7 @@
 /* Quest fail */
 #define LC_QUEST_FAILED_HEAD       "Контракт провален!"
 
-/* Hijack */
+/* Piracy */
 #define LC_EVENT_PIRACY_TEXT_1     "Это ограбление! Ты на прицеле!"
 #define LC_EVENT_PIRACY_TEXT_2     "Плати %ld $$ или сбрасывай весь груз!"
 #define LC_EVENT_PIRACY_HEAD       "Ограбление!"
@@ -392,7 +392,7 @@
 
 /* Danger objcet */
 #define LC_EVENT_DANGER_HEAD "Опасный прыжок!"
-#define LC_EVENT_DANGER_TEXT "Гипер прыжок из %d в %d прошел %s!"
+#define LC_EVENT_DANGER_TEXT "Гипер прыжок из SA.%d в SA.%d прошел %s!"
 #define LC_EVENT_DANGER_BH "близко к черной gыре"
 #define LC_EVENT_DANGER_NEB "через туманность"
 #define LC_EVENT_DANGER_GAS "газовое скопление"
@@ -1255,7 +1255,7 @@
 #define LC_SHIPYARD_SELL_TEXT_4                  "Trade-in deal: the mediator takes your old ship,"
 #define LC_SHIPYARD_SELL_TEXT_5                  "evaluates it and credits the value toward the purchase:"
 #define LC_SHIPYARD_SELL_TEXT_6                  "----------------------OLD SHIP EVALUATION-------------------------"
-#define LC_SHIPYARD_SELL_TEXT_7                  "---------------------------------------------------------------------"
+#define LC_SHIPYARD_SELL_TEXT_7                  "------------------------------------------------------------------"
 #define LC_UPGRADE_ENGINE_TEXT_1                 "Got a hyperdrive upgrade."
 #define LC_UPGRADE_ENGINE_TEXT_2                 "Uses less fuel, more reliable."
 #define LC_UPGRADE_FUEL_PER_JUMP                 "Fuel per jump"
@@ -1266,6 +1266,21 @@
 #define LC_UPGRADE_ENGINE                        "Engine"
 #define LC_GAME_OVER_MONEY_TEXT_1                "You ran out of money! You sold the ship"
 
+#define LC_EVENT_DANGER_HEAD          "Dangerous jump!"
+#define LC_EVENT_DANGER_TEXT          "Hyper jump from %d into %d was %s!"
+#define LC_EVENT_DANGER_BH   "too close to a black hole"
+#define LC_EVENT_DANGER_NEB  "through a nebula"
+#define LC_EVENT_DANGER_GAS  "through a gas cloud"
+
+#define LC_EVENT_DANGER_BH_TEXT       "Course deviated, exit at SA.%d!"
+#define LC_EVENT_DANGER_NEB_TEXT      "EMP pulse has disabled the %s"
+#define LC_EVENT_DANGER_NEB_NO        "EMP was very powerful but nothing broke!"
+
+#define LC_EVENT_DANGER_GAS_TEXT      "Radiation damaged %d cargo for SA.%d"
+#define LC_EVENT_DANGER_GAS_TEXT_2    "Payment for contract reduced to %ld"
+#define LC_EVENT_DANGER_GAS_NO        "Radiation hit the hull but cargo not damaged!"
+
+#define LC_QUEST_ERROR                "This contract cannot be accepted!"
 #endif
 
 #endif
