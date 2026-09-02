@@ -177,6 +177,7 @@
 #define LC_CARD_MENU_SAVE_WND_TEXT "Ввеgите имя файла"
 #define LC_CARD_MENU_NEW_WND_TEXT "Ввеgите имя капитана:"
 #define LC_CARD_MENU_SAVE_SUCCESS "Игра сохранена!"
+#define LC_CARD_MENU_LOAD_SUCCESS "Игра загружена!"
 #define LC_CARD_MENU_SAVE_ERROR "Ошибка сохранения!"
 #define LC_CARD_MENU_LOAD_ERROR "Файл не найgен"
 

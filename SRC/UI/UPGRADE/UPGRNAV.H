@@ -39,6 +39,6 @@
 #include "ui/gui.h"
 
 /* UI/UPGRADE/UPGRNAV API */
-extern int gui_upgrade_wnd_key(int ch, WND* parent);
+extern int gui_upgrade_wnd_key(int ch);
 
 #endif

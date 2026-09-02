@@ -13,7 +13,7 @@
 /* ----------------------------------------------------------------
  * EXTERNAL: SCR_SHIPYARD -- SHIPYARD WINDOW KEY HANDLER
  * ---------------------------------------------------------------- */
-int gui_shipyard_wnd_key(int ch, WND* parent) {
+int gui_shipyard_wnd_key(int ch) {
   if (TAB == ch) {
     dispatch_wnd(SCR_MAP);
   }
@@ -39,7 +39,6 @@ int gui_shipyard_wnd_key(int ch, WND* parent) {
     }
   }
   if (ESC == ch) {
-    game_menu_wnd.ptr_parent = &shipyard_wnd;
     dispatch_wnd(SCR_GAME_MENU);
   }
   return 0;

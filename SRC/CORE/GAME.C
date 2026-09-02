@@ -573,7 +573,6 @@ void core_game_new_game(char* name) {
   wp.size = 0;
 
   core_game_save("USER.SAV");
-  gui_map_nav_move_screen_to(gs.current_system);
 }
 
 /* ----------------------------------------------------------------
@@ -585,12 +584,9 @@ int core_game_load(char* filename) {
 
   if (result == 1) {
     gs.prev_system = gs.current_system;
-    gui_map_nav_move_screen_to(gs.current_system);
+    wp.size = 0;
     core_game_gen_all();
     core_game_mark_visited(gs.current_system);
-    wp.size = 0;
-    /* Draw new game GUI */
-    gui_map_nav_move_screen_to(gs.current_system);
   }
 
   return result;

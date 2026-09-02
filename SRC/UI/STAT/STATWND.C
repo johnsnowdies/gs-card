@@ -242,7 +242,7 @@ void gui_status_quest_list(WND* status_wnd) {
 /* -----------------------------------------------------------------
  * SCR_STATUS -- WINDOW DISPATCHER
  * ---------------------------------------------------------------- */
-void gui_status_wnd_dispatch(WND* parent){
+void gui_status_wnd_dispatch(){
   gui_status_wnd();
   gui_bars_status_bottom();
   gui_bars_common_top();

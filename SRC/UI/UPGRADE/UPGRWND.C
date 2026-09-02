@@ -297,7 +297,7 @@ void gui_upgrade_draw_list(void) {
 /* -----------------------------------------------------------------
  * SCR_UPGRADE -- WINDOW DISPATCHER
  * ---------------------------------------------------------------- */
-void gui_upgrade_wnd_dispatch(WND* parent){
+void gui_upgrade_wnd_dispatch(){
   gui_upgrade_wnd();
   gui_bars_common_top();
   gui_bars_status_bottom();

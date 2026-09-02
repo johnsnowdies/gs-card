@@ -378,7 +378,7 @@ void gui_shipyard_draw_list(void) {
  * SCR_SHIPYARD -- WINDOW DISPATCHER
  * ---------------------------------------------------------------- */
 
-void gui_shipyard_wnd_dispatch(WND* parent){
+void gui_shipyard_wnd_dispatch(){
   shipyard_wnd.ptr_parent = &root_wnd;
   gui_shipyard_wnd();
   gui_bars_common_top();

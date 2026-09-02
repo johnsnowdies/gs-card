@@ -15,8 +15,8 @@ void gui_bars_common_top() {
   char* keys[3];
   char* items[3];
 
-  sprintf(buf, "SA.%d (%d) | %s: %ld$$ | %s: %d%% | %s: %d/%d",
-          gs.current_system, sol_list[gs.current_system].threadSize,
+  sprintf(buf, "SA.%d | %s: %ld$$ | %s: %d%% | %s: %d/%d",
+          gs.current_system,
           LC_GUI_STATUS_BALANCE, gs.balance, LC_GUI_STATUS_FUEL, gs.fuel,
           LC_GUI_STATUS_CARGO, gs.current_cargo, gs.tonnage);
 

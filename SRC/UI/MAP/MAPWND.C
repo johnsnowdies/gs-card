@@ -296,21 +296,29 @@ static void draw2dwnd(int isCoord, int isHyper) {
         ey(sol_list[i].y + offsetY) < (map_wnd.height - 15)) {
       if (sol_list[i].is_shipyard) {
         setcolor(3);
-        sprintf(c, "SA.%d(%d) [S][F]", i, sol_list[i].threadSize);
+        sprintf(c, "SA.%d [S][F]", i);
       } else if (sol_list[i].is_gas_station && core_game_is_visited(i)) {
         setcolor(1);
-        sprintf(c, "SA.%d(%d) [F]", i, sol_list[i].threadSize);
+        sprintf(c, "SA.%d [F]", i);
       } else if (core_game_is_visited(i)) {
         setcolor(15);
-        sprintf(c, "SA.%d(%d)", i, sol_list[i].threadSize);
+        sprintf(c, "SA.%d", i);
       } else {
         setcolor(8);
-        sprintf(c, "SA.%d(%d)", i, sol_list[i].threadSize);
+        sprintf(c, "SA.%d", i);
       }
 
       settextstyle(SMALL_FONT, HORIZ_DIR, 4);
       safe_outtextxy(ex(sol_list[i].x + offsetX),
                      ey(sol_list[i].y + offsetY) + 5, c);
+      if (i == gs.current_system) {
+        setcolor(RED);
+
+        safe_outtextxy(ex(sol_list[i].x + offsetX) - 5,
+                       ey(sol_list[i].y + offsetY) + 5, ">");
+        safe_outtextxy(ex(sol_list[i].x + offsetX) + textwidth(c),
+                       ey(sol_list[i].y + offsetY) + 5, "<");
+      }
     }
 
     /** SECTOR NAMES **/
@@ -514,20 +522,27 @@ static void draw3dwnd(int isCoord, int isHyper) {
       if (core_game_is_visited(i)) {
         if (sol_list[i].is_shipyard) {
           setcolor(3);
-          sprintf(c, "SA.%d(%d) [S][F]", i, sol_list[i].threadSize);
+          sprintf(c, "SA.%d [S][F]", i);
         } else if (sol_list[i].is_gas_station) {
           setcolor(1);
-          sprintf(c, "SA.%d(%d) [F]", i, sol_list[i].threadSize);
+          sprintf(c, "SA.%d [F]", i);
         } else {
           setcolor(15);
-          sprintf(c, "SA.%d(%d)", i, sol_list[i].threadSize);
+          sprintf(c, "SA.%d", i);
         }
       } else {
         setcolor(8);
-        sprintf(c, "SA.%d(%d)", i, sol_list[i].threadSize);
+        sprintf(c, "SA.%d", i);
       }
 
       safe_outtextxy(A1.x, A1.y + 5, c);
+
+      if (i == gs.current_system) {
+        setcolor(RED);
+
+        safe_outtextxy(A1.x - 5, A1.y + 5, ">");
+        safe_outtextxy(A1.x + textwidth(c), A1.y + 5, "<");
+      }
     }
   }
 
@@ -642,17 +657,17 @@ static void drawyzwnd(int isCoord, int isHyper) {
       if (core_game_is_visited(i)) {
         if (sol_list[i].is_shipyard) {
           setcolor(3);
-          sprintf(c, "SA.%d(%d) [S][F]", i, sol_list[i].threadSize);
+          sprintf(c, "SA.%d [S][F]", i);
         } else if (sol_list[i].is_gas_station) {
           setcolor(1);
-          sprintf(c, "SA.%d(%d) [F]", i, sol_list[i].threadSize);
+          sprintf(c, "SA.%d [F]", i);
         } else {
           setcolor(15);
-          sprintf(c, "SA.%d(%d)", i, sol_list[i].threadSize);
+          sprintf(c, "SA.%d", i);
         }
       } else {
         setcolor(8);
-        sprintf(c, "SA.%d(%d)", i, sol_list[i].threadSize);
+        sprintf(c, "SA.%d", i);
       }
 
       settextstyle(SMALL_FONT, VERT_DIR, 4);
@@ -729,7 +744,7 @@ void gui_map_wnd_refresh() {
   if (mode == 3) drawyzwnd(is_coord, is_hyper);
 }
 
-void gui_map_wnd_dispatch(WND* parent){
+void gui_map_wnd_dispatch(){
   map_wnd.id = SCR_MAP;
   map_wnd.ptr_parent = &root_wnd;
   map_wnd.x =  0;

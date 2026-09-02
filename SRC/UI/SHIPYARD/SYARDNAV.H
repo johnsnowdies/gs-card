@@ -39,6 +39,6 @@
 #include "ui/gui.h"
 
 /* UI/SHIPYARD/SYARDNAV API */
-extern int gui_shipyard_wnd_key(int ch, WND* parent);
+extern int gui_shipyard_wnd_key(int ch);
 
 #endif

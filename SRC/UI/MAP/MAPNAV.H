@@ -40,6 +40,6 @@
 
 /* UI/MAP/MAPNAV API */
 extern void gui_map_nav_move_screen_to(int value);
-extern int gui_map_wnd_key(int ch, WND* parent);
+extern int gui_map_wnd_key(int ch);
 
 #endif

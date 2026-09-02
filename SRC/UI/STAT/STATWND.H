@@ -45,7 +45,7 @@ extern int system_quest_selected;
 /* UI/STAT/STATWND API */
 extern void gui_status_quest_info(int selected);
 extern void gui_status_quest_list(WND* status_wnd);
-extern void gui_status_wnd_dispatch(WND* parent);
+extern void gui_status_wnd_dispatch();
 
 
 #endif

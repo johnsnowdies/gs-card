@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#include "core/game.h"
 #include "core/events.h"
+#include "core/game.h"
 #include "core/globals.h"
 #include "data/keys.h"
 #include "data/structs.h"
@@ -88,6 +88,42 @@ static void gui_map_nav_goto_system() {
   }
 }
 
+static void gui_map_nav_hyperjump() {
+  char buf[128];
+  sprintf(buf, LC_CARD_READY_TO_JUMP, wp.way[0], wp.way[1]);
+  if (gui_confirm_wnd(&map_wnd, LC_CARD_JUMP_WND_HEAD, buf) == 0) {
+    /* JUMP CONFIRMED */
+    int game_over = 0;
+    int i;
+
+    gs.prev_system = gs.current_system;
+    gs.current_system = wp.way[1];
+
+    /* Keep Path Window open until reached end */
+    if (wp.size != 2 && gs.upgrade_continuous_jump) {
+      for (i = 0; i <= wp.size - 1; i++) wp.way[i] = wp.way[i + 1];
+      wp.size--;
+    } else {
+      wp.size = 0;
+    }
+
+    dispatch_wnd(SCR_MAP);
+
+    /* Run game new system events */
+    game_over = core_events(1);
+    gui_map_nav_move_screen_to(gs.current_system);
+
+    if (!game_over) {
+      dispatch_wnd(SCR_MAP);
+    } else {
+      dispatch_wnd(SCR_MAIN_MENU);
+    }
+  } else {
+    wp.size = 0;
+    dispatch_wnd(SCR_MAP);
+  }
+}
+
 /* ----------------------------------------------------------------
  *
  *                      EXTERNAL FUNCTIONS
@@ -115,7 +151,7 @@ void gui_map_nav_move_screen_to(int value) {
  * SCR_MAP -- MAP WINDOW KEY HANDLER
  * ---------------------------------------------------------------- */
 
-int gui_map_wnd_key(int ch, WND* parent) {
+int gui_map_wnd_key(int ch) {
   if (F1 == ch) {
     mode = (mode < 3) ? mode + 1 : 1;
     gui_map_wnd_refresh();
@@ -197,39 +233,7 @@ int gui_map_wnd_key(int ch, WND* parent) {
      * WARNING: HYPER JUMP INITIATED!
      * ---------------------------------------------------------------- */
     if (wp.size > 1 && wp.way[0] == gs.current_system) {
-      char buf[128];
-      sprintf(buf, LC_CARD_READY_TO_JUMP, wp.way[0], wp.way[1]);
-      if (gui_confirm_wnd(&map_wnd, LC_CARD_JUMP_WND_HEAD, buf) == 0) {
-        /* JUMP CONFIRMED */
-        int game_over = 0;
-        int i;
-
-        gs.prev_system = gs.current_system;
-        gs.current_system = wp.way[1];
-
-        /* Keep Path Window open until reached end */
-        if (wp.size != 2 && gs.upgrade_continuous_jump) {
-          for (i = 0; i <= wp.size - 1; i++) wp.way[i] = wp.way[i + 1];
-          wp.size--;
-        } else {
-          wp.size = 0;
-        }
-
-        dispatch_wnd(SCR_MAP);
-
-        /* Run game new system events */
-        game_over = core_events(1);
-        gui_map_nav_move_screen_to(gs.current_system);
-
-        if (!game_over) {
-          dispatch_wnd(SCR_MAP);
-        } else {
-          dispatch_wnd(SCR_MAIN_MENU);
-        }
-      } else {
-        wp.size = 0;
-        dispatch_wnd(SCR_MAP);
-      }
+      gui_map_nav_hyperjump();
     }
   }
   if (ESC == ch) {
@@ -237,7 +241,6 @@ int gui_map_wnd_key(int ch, WND* parent) {
       wp.size = 0;
       gui_map_wnd_refresh();
     } else {
-      game_menu_wnd.ptr_parent = &map_wnd;
       dispatch_wnd(SCR_GAME_MENU);
     }
   }

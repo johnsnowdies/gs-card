@@ -38,6 +38,6 @@
 #include "ui\gui.h"
 
 /* UI/STAT/STATNAV API */
-extern int gui_status_wnd_key(int ch, WND* parent);
+extern int gui_status_wnd_key(int ch);
 
 #endif

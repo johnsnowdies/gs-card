@@ -38,7 +38,7 @@
 #include "ui/gui.h"
 
 /* UI/MENU/MENUNAV API */
-extern int gui_menu_main_wnd_key(int ch, WND* parent);
-extern int gui_menu_game_wnd_key(int ch, WND* parent);
+extern int gui_menu_main_wnd_key(int ch);
+extern int gui_menu_game_wnd_key(int ch);
 
 #endif

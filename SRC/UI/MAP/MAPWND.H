@@ -72,6 +72,6 @@ extern WND map_wnd;
 /* Use only in MAPNAV */
 extern void gui_map_wnd_refresh();
 
-extern void gui_map_wnd_dispatch(WND* parent);
+extern void gui_map_wnd_dispatch();
 
 #endif

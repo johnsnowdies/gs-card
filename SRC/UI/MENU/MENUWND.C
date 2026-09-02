@@ -17,10 +17,10 @@ int mm_select = 0;
 WND main_menu_wnd;
 WND game_menu_wnd;
 
-static void gui_menu_draw(WND* ptr_parent, int mode){
+static void gui_menu_draw(int mode){
   int i = 0;
-  int wx = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
-  int wy = ((ptr_parent->height - WND_MODAL_DEFAULT_HEIGHT) / 2) + 25;
+  int wx = (root_wnd.width - WND_MODAL_DEFAULT_WIDTH) / 2;
+  int wy = ((root_wnd.height - WND_MODAL_DEFAULT_HEIGHT) / 2) + 25;
   char** ITEMS;
   WND* menu_wnd;
 
@@ -36,8 +36,8 @@ static void gui_menu_draw(WND* ptr_parent, int mode){
   menu_wnd->header = LC_GUI_GSCARD_VER;
   
 
-  menu_wnd->x = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
-  menu_wnd->y = (ptr_parent->height - WND_MODAL_DEFAULT_HEIGHT) / 2;
+  menu_wnd->x = (root_wnd.width - WND_MODAL_DEFAULT_WIDTH) / 2;
+  menu_wnd->y = (root_wnd.height - WND_MODAL_DEFAULT_HEIGHT) / 2;
   menu_wnd->width = WND_MODAL_DEFAULT_WIDTH;
   menu_wnd->height = WND_MODAL_DEFAULT_HEIGHT;
 
@@ -64,18 +64,18 @@ static void gui_menu_draw(WND* ptr_parent, int mode){
 /* ----------------------------------------------------------
  * EXTERNAL: SCR_MENU -- WINDOW DISPATCHER
  * ---------------------------------------------------------- */
-void gui_menu_main_wnd_dispatcher(WND* ptr_parent) {
-  main_menu_wnd.ptr_parent = ptr_parent;
+void gui_menu_main_wnd_dispatcher() {
   main_menu_wnd.id = SCR_MAIN_MENU;
+
   if (!ad_rendered){
+    gui_clrscr();
     gui_ad_loading();
     ad_rendered = 1;
   }
-  gui_menu_draw(ptr_parent, MAIN_MENU);
+  gui_menu_draw(MAIN_MENU);
 }
 
-void gui_menu_game_wnd_dispatcher(WND* ptr_parent) {
-  game_menu_wnd.ptr_parent = ptr_parent;
+void gui_menu_game_wnd_dispatcher() {
   game_menu_wnd.id = SCR_GAME_MENU;
-  gui_menu_draw(ptr_parent, GAME_MENU);
+  gui_menu_draw(GAME_MENU);
 }

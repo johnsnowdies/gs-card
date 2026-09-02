@@ -124,6 +124,13 @@ static int core_events_quest_done(void) {
       /* Set quest done */
       gs.current_cargo -= gs.quests[i].cargo;
       gs.balance += gs.quests[i].reward;
+      if (gs.reputation < MAX_REPUTATION){
+        /* add reward/10 as reputation */
+        gs.reputation += gs.quests[i].reward / 10;
+        if (gs.reputation > MAX_REPUTATION)
+          gs.reputation = MAX_REPUTATION;
+      }
+
 
       switch (gs.quests[i].type) {
         case 1:
@@ -260,6 +267,13 @@ static core_events_quest_failed(int index) {
 
   /* Apply penalty */
   gs.balance -= gs.quests[index].penalty;
+
+  if (gs.reputation > MIN_REPUTATION) {
+    /* substract penalty/10 as reputation */
+    gs.reputation -= gs.quests[index].penalty / 10;
+    if (gs.reputation < MIN_REPUTATION) gs.reputation = MIN_REPUTATION;
+  }
+
   gui_bars_common_top();
 
   /* Remove quest by shifting array left */
@@ -673,7 +687,7 @@ int core_events(int fuel_consume) {
     /* Target system changed by black hole */
     {
       int nested_over = core_events_danger_object();
-      if (gs.current_system != start_system) {
+      if (gs.current_system != start_system || nested_over) {
         game_over = nested_over;
         return game_over;
       }
@@ -682,7 +696,7 @@ int core_events(int fuel_consume) {
     /* Piracy Event */
     if (rand() % 100 < (sol_list[gs.current_system].faction == 1 ? 30 : 10)) {
       int nested_over = core_events_piracy();
-      if (gs.current_system != start_system) {
+      if (gs.current_system != start_system || nested_over) {
         game_over = nested_over;
         return game_over;
       }
@@ -691,7 +705,7 @@ int core_events(int fuel_consume) {
     if (rand() % 100 < (sol_list[gs.current_system].faction == 2 ? 70 : 20) &&
         sol_list[gs.current_system].is_shipyard) {
       int nested_over = core_events_customs();
-      if (gs.current_system != start_system) {
+      if (gs.current_system != start_system || nested_over) {
         game_over = nested_over;
         return game_over;
       }
@@ -702,7 +716,7 @@ int core_events(int fuel_consume) {
       if (gs.quests[i].type == 4) {
         if (rand() % 100 < 10) {
           int nested_over = core_events_kidnapping(i);
-          if (gs.current_system != start_system) {
+          if (gs.current_system != start_system || nested_over) {
             game_over = nested_over;
             return game_over;
           }

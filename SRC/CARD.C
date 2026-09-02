@@ -103,7 +103,7 @@ E_GAME_SCREEN cur_screen = SCR_MAIN_MENU;
 /* ----------------------------------------------------------------
  * HANDLERS TABLE
  * ---------------------------------------------------------------- */
-typedef int (*key_handler)(int ch, WND* parent);
+typedef int (*key_handler)(int ch);
 static key_handler key_handlers[] = {
     gui_map_wnd_key,       /* SCR_MAP */
     gui_menu_main_wnd_key, /* SCR_MAIN_MENU */
@@ -113,7 +113,7 @@ static key_handler key_handlers[] = {
     gui_shipyard_wnd_key   /* SCR_SHIPYARD */
 };
 
-typedef int (*wnd_dispatcher)(WND* parent);
+typedef int (*wnd_dispatcher)();
 wnd_dispatcher wnd_dispatchers[] = {
     gui_map_wnd_dispatch,         /* SCR_MAP */
     gui_menu_main_wnd_dispatcher, /* SCR_MAIN_MENU */
@@ -133,8 +133,12 @@ WND* windows[] = {
 };
 
 void dispatch_wnd(E_GAME_SCREEN id) {
+  if (cur_screen == SCR_MAIN_MENU)
+    root_wnd.id = SCR_MAIN_MENU;
+  if (cur_screen == SCR_GAME_MENU)
+    root_wnd.id = SCR_GAME_MENU;
   cur_screen = id;
-  wnd_dispatchers[id](windows[cur_screen]->ptr_parent);
+  wnd_dispatchers[id]();
 }
 
 /* ----------------------------------------------------------------
@@ -166,7 +170,7 @@ int main() {
   while (!SIG_TERM) {
     c = getch();
     if (cur_screen >= 0 && cur_screen < 6) {
-      key_handlers[cur_screen](c, windows[cur_screen]->ptr_parent);
+      key_handlers[cur_screen](c);
     }
   }
 

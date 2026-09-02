@@ -15,7 +15,7 @@
 /* ----------------------------------------------------------------
  * EXTERNAL: SCR_UPGRADES -- UPGRADE SCREEN KEY HANDLER
  * ---------------------------------------------------------------- */
-int gui_upgrade_wnd_key(int ch, WND* parent) {
+int gui_upgrade_wnd_key(int ch) {
   if (TAB == ch) {
     dispatch_wnd(SCR_MAP);
   }
@@ -48,7 +48,6 @@ int gui_upgrade_wnd_key(int ch, WND* parent) {
     }
   }
   if (ESC == ch) {
-    game_menu_wnd.ptr_parent = &upgrade_wnd;
     dispatch_wnd(SCR_GAME_MENU);
   }
   return 0;

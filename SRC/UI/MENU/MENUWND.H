@@ -48,6 +48,6 @@ extern WND game_menu_wnd;
 extern int mm_select;
 
 /* UI/MENU/MENUWND API */
-extern void gui_menu_main_wnd_dispatcher(WND* ptr_parent);
-extern void gui_menu_game_wnd_dispatcher(WND* ptr_parent);
+extern void gui_menu_main_wnd_dispatcher();
+extern void gui_menu_game_wnd_dispatcher();
 #endif

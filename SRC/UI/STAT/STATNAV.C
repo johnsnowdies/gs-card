@@ -18,7 +18,7 @@
 /* ----------------------------------------------------------
  * EXTERNAL: SCR_STATUS -- STATUS WINDOW KEY HANDLER
  * ---------------------------------------------------------- */
-int gui_status_wnd_key(int ch, WND* parent) {
+int gui_status_wnd_key(int ch) {
   if (TAB == ch) {
     dispatch_wnd(SCR_MAP);
   }
@@ -33,10 +33,6 @@ int gui_status_wnd_key(int ch, WND* parent) {
                       SOUND_ERROR);
     }
   }
-  if (ESC == ch) {
-    game_menu_wnd.ptr_parent = &status_wnd;
-    dispatch_wnd(SCR_GAME_MENU);
-  }
   if (UP == ch) {
     if (system_quest_selected > 0) {
       system_quest_selected--;
@@ -49,8 +45,13 @@ int gui_status_wnd_key(int ch, WND* parent) {
       gui_status_quest_list(&status_wnd);
     }
   }
+
   if (ENTER == ch) {
     gui_status_quest_info(system_quest_selected);
+  }
+
+  if (ESC == ch) {
+    dispatch_wnd(SCR_GAME_MENU);
   }
   return 0;
 }
