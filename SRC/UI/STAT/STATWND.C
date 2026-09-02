@@ -59,6 +59,27 @@ static void draw_player_status(WND* status_wnd) {
   outtextxy(status_wnd->x + 10, status_wnd->y + 140, quests_done);
 }
 
+/* -----------------------------------------------------------------
+ * DRAW STATUS WINDOW
+ * ---------------------------------------------------------------- */
+static void gui_status_wnd() {
+  status_wnd.id = SCR_STATUS;
+  status_wnd.ptr_parent = &root_wnd;
+  status_wnd.header = NULL;
+  status_wnd.x = 0;
+  status_wnd.y = 21;
+  status_wnd.width = 639;
+  status_wnd.height = 439;
+
+  gui_draw_wnd_proto(&status_wnd);
+
+  setfillstyle(SOLID_FILL, BLACK);
+  bar(1, 22, status_wnd.width - 1, status_wnd.height - 1);
+  gui_ad_hypersoft();
+  draw_player_status(&status_wnd);
+  gui_status_quest_list(&status_wnd);
+}
+
 /* ----------------------------------------------------------------
  *
  *                      EXTERNAL FUNCTIONS
@@ -221,24 +242,6 @@ void gui_status_quest_list(WND* status_wnd) {
 /* -----------------------------------------------------------------
  * SCR_STATUS -- WINDOW DISPATCHER
  * ---------------------------------------------------------------- */
-void gui_status_wnd() {
-  status_wnd.id = SCR_STATUS;
-  status_wnd.ptr_parent = &root_wnd;
-  status_wnd.header = NULL;
-  status_wnd.x = 0;
-  status_wnd.y = 21;
-  status_wnd.width = 639;
-  status_wnd.height = 439;
-
-  gui_draw_wnd_proto(&status_wnd);
-
-  setfillstyle(SOLID_FILL, BLACK);
-  bar(1, 22, status_wnd.width - 1, status_wnd.height - 1);
-  gui_ad_hypersoft();
-  draw_player_status(&status_wnd);
-  gui_status_quest_list(&status_wnd);
-}
-
 void gui_status_wnd_dispatch(WND* parent){
   gui_status_wnd();
   gui_bars_status_bottom();

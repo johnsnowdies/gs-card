@@ -62,6 +62,32 @@ static void draw_ship_upgrades_status_table(void) {
   }
 }
 
+/* -----------------------------------------------------------------
+ * DRAW SHIPYARD WND
+ * ---------------------------------------------------------------- */
+static void gui_shipyard_wnd() {
+  shipyard_wnd.id = SCR_SHIPYARD;
+  shipyard_wnd.x = SYARD_WND_DEFAULT_X;
+  shipyard_wnd.y = SYARD_WND_DEFAULT_Y;
+  shipyard_wnd.width = SYARD_WND_DEFAULT_WIDTH;
+  shipyard_wnd.height = SYARD_WND_DEFAULT_HEIGHT;
+  shipyard_wnd.header = NULL;
+
+  gui_draw_wnd_proto(&shipyard_wnd);
+
+  setfillstyle(SOLID_FILL, BLACK);
+  bar(1, shipyard_wnd.y + 1, shipyard_wnd.width - 1,
+      shipyard_wnd.y + shipyard_wnd.height - 1);
+
+  gui_ad_hypersoft();
+
+  settextstyle(SMALL_FONT, HORIZ_DIR, 5);
+  setcolor(15);
+
+  gui_shipyard_draw_list();
+}
+
+
 /* ----------------------------------------------------------------
  *
  *                      EXTERNAL FUNCTIONS
@@ -351,27 +377,6 @@ void gui_shipyard_draw_list(void) {
 /* -----------------------------------------------------------------
  * SCR_SHIPYARD -- WINDOW DISPATCHER
  * ---------------------------------------------------------------- */
-void gui_shipyard_wnd() {
-  shipyard_wnd.id = SCR_SHIPYARD;
-  shipyard_wnd.x = SYARD_WND_DEFAULT_X;
-  shipyard_wnd.y = SYARD_WND_DEFAULT_Y;
-  shipyard_wnd.width = SYARD_WND_DEFAULT_WIDTH;
-  shipyard_wnd.height = SYARD_WND_DEFAULT_HEIGHT;
-  shipyard_wnd.header = NULL;
-
-  gui_draw_wnd_proto(&shipyard_wnd);
-
-  setfillstyle(SOLID_FILL, BLACK);
-  bar(1, shipyard_wnd.y + 1, shipyard_wnd.width - 1,
-      shipyard_wnd.y + shipyard_wnd.height - 1);
-
-  gui_ad_hypersoft();
-
-  settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-  setcolor(15);
-
-  gui_shipyard_draw_list();
-}
 
 void gui_shipyard_wnd_dispatch(WND* parent){
   shipyard_wnd.ptr_parent = &root_wnd;

@@ -9,11 +9,11 @@
 #include "sound/sound.h"
 #include "ui/gui.h"
 #include "ui/locale.h"
+#include "ui/menu/menuwnd.h"
 #include "ui/shipyard/syardwnd.h"
 #include "ui/stat/statnav.h"
 #include "ui/stat/statwnd.h"
 #include "ui/upgrade/upgrwnd.h"
-#include "ui/menu/menuwnd.h"
 
 /* ----------------------------------------------------------
  * EXTERNAL: SCR_STATUS -- STATUS WINDOW KEY HANDLER

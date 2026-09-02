@@ -101,6 +101,42 @@ static void draw_upgrade_status_table(void) {
   }
 }
 
+/* -----------------------------------------------------------------
+ * DRAW UPGRADE WND
+ * ---------------------------------------------------------------- */
+static void gui_upgrade_wnd(void) {
+  upgrade_wnd.id = SCR_UPGRADE;
+  upgrade_wnd.ptr_parent = &root_wnd;
+  upgrade_wnd.x = UPGRADE_WND_DEFAULT_X;
+  upgrade_wnd.y = UPGRADE_WND_DEFAULT_Y;
+  upgrade_wnd.width = UPGRADE_WND_DEFAULT_WIDTH;
+  upgrade_wnd.height = UPGRADE_WND_DEFAULT_HEIGHT;
+  upgrade_wnd.header = NULL;
+
+
+  gui_draw_wnd_proto(&upgrade_wnd);
+
+  setfillstyle(SOLID_FILL, BLACK);
+  bar(1, upgrade_wnd.y + 1, upgrade_wnd.width - 1,
+      upgrade_wnd.y + upgrade_wnd.height - 1);
+
+  settextstyle(SMALL_FONT, HORIZ_DIR, 5);
+  setcolor(15);
+  draw_ship_info();
+  draw_engine_info();
+  draw_upgrade_status_table();
+
+  {
+    char ship_image[50];
+    sprintf(ship_image, "SHIPS/SHIP_%u.BMP", gs.ship_type + 1);
+    data_reader_draw_bmp(ship_image, 339, 22);
+  }
+
+  gui_bars_common_top();
+  gui_upgrade_draw_list();
+  gui_bars_status_bottom();
+}
+
 /* ----------------------------------------------------------------
  *
  *                      EXTERNAL FUNCTIONS
@@ -261,40 +297,6 @@ void gui_upgrade_draw_list(void) {
 /* -----------------------------------------------------------------
  * SCR_UPGRADE -- WINDOW DISPATCHER
  * ---------------------------------------------------------------- */
-void gui_upgrade_wnd(void) {
-  upgrade_wnd.id = SCR_UPGRADE;
-  upgrade_wnd.ptr_parent = &root_wnd;
-  upgrade_wnd.x = UPGRADE_WND_DEFAULT_X;
-  upgrade_wnd.y = UPGRADE_WND_DEFAULT_Y;
-  upgrade_wnd.width = UPGRADE_WND_DEFAULT_WIDTH;
-  upgrade_wnd.height = UPGRADE_WND_DEFAULT_HEIGHT;
-  upgrade_wnd.header = NULL;
-
-
-  gui_draw_wnd_proto(&upgrade_wnd);
-
-  setfillstyle(SOLID_FILL, BLACK);
-  bar(1, upgrade_wnd.y + 1, upgrade_wnd.width - 1,
-      upgrade_wnd.y + upgrade_wnd.height - 1);
-
-  settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-  setcolor(15);
-  draw_ship_info();
-  draw_engine_info();
-  draw_upgrade_status_table();
-
-  {
-    char ship_image[50];
-    sprintf(ship_image, "SHIPS/SHIP_%u.BMP", gs.ship_type + 1);
-    data_reader_draw_bmp(ship_image, 339, 22);
-  }
-
-  gui_bars_common_top();
-  gui_upgrade_draw_list();
-  gui_bars_status_bottom();
-}
-
-
 void gui_upgrade_wnd_dispatch(WND* parent){
   gui_upgrade_wnd();
   gui_bars_common_top();

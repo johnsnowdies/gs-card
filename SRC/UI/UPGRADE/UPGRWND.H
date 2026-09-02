@@ -47,7 +47,6 @@ extern WND upgrade_wnd;
 extern int upgrade_selected;
 
 /* UP/UPGRADE/UPGRWND API */
-extern void gui_upgrade_wnd(void);
 extern void gui_upgrade_draw_list(void);
 extern void gui_upgrade_show_info(int selected);
 extern void gui_upgrade_wnd_dispatch(WND* parent);
