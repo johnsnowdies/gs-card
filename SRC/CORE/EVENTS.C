@@ -124,13 +124,11 @@ static int core_events_quest_done(void) {
       /* Set quest done */
       gs.current_cargo -= gs.quests[i].cargo;
       gs.balance += gs.quests[i].reward;
-      if (gs.reputation < MAX_REPUTATION){
+      if (gs.reputation < MAX_REPUTATION) {
         /* add reward/10 as reputation */
         gs.reputation += gs.quests[i].reward / 10;
-        if (gs.reputation > MAX_REPUTATION)
-          gs.reputation = MAX_REPUTATION;
+        if (gs.reputation > MAX_REPUTATION) gs.reputation = MAX_REPUTATION;
       }
-
 
       switch (gs.quests[i].type) {
         case 1:
@@ -385,7 +383,7 @@ static int core_events_piracy(void) {
       return core_events(1);
     }
   }
-  return 0;
+  return core_events_check_game_over();
 }
 
 /* -----------------------------------------------------------------
@@ -476,7 +474,7 @@ static int core_events_customs(void) {
     }
   }
 
-  return 0;
+  return core_events_check_game_over();
 }
 
 /* -----------------------------------------------------------------
@@ -559,7 +557,7 @@ static int core_events_kidnapping(int quest_index) {
       return core_events(1);
     }
   }
-  return 0;
+  return core_events_check_game_over();
 }
 
 /* -----------------------------------------------------------------
@@ -681,58 +679,56 @@ int core_events(int fuel_consume) {
 
   if (core_events_check_game_over()) return 1;
 
-  if (!game_over) {
-    /* Run new system arrival events */
+  /* Run new system arrival events */
 
-    /* Target system changed by black hole */
-    {
-      int nested_over = core_events_danger_object();
-      if (gs.current_system != start_system || nested_over) {
-        game_over = nested_over;
-        return game_over;
-      }
+  /* Target system changed by black hole */
+  {
+    int nested_over = core_events_danger_object();
+    if (gs.current_system != start_system || nested_over) {
+      game_over = nested_over;
+      return game_over;
     }
-
-    /* Piracy Event */
-    if (rand() % 100 < (sol_list[gs.current_system].faction == 1 ? 30 : 10)) {
-      int nested_over = core_events_piracy();
-      if (gs.current_system != start_system || nested_over) {
-        game_over = nested_over;
-        return game_over;
-      }
-    }
-    /* Customs Event */
-    if (rand() % 100 < (sol_list[gs.current_system].faction == 2 ? 70 : 20) &&
-        sol_list[gs.current_system].is_shipyard) {
-      int nested_over = core_events_customs();
-      if (gs.current_system != start_system || nested_over) {
-        game_over = nested_over;
-        return game_over;
-      }
-    }
-
-    /* Kidnapping Event */
-    for (i = 0; i < gs.quests_size; i++) {
-      if (gs.quests[i].type == 4) {
-        if (rand() % 100 < 10) {
-          int nested_over = core_events_kidnapping(i);
-          if (gs.current_system != start_system || nested_over) {
-            game_over = nested_over;
-            return game_over;
-          }
-        }
-        break; /* only first type 4 quest triggers kidnapping */
-      }
-    }
-
-    /* Gas Station Event */
-    core_events_gas_station();
-
-    /* Quest Done Event */
-    core_events_quest_done();
-
-    core_game_gen_all();
   }
+
+  /* Piracy Event */
+  if (rand() % 100 < (sol_list[gs.current_system].faction == 1 ? 30 : 10)) {
+    int nested_over = core_events_piracy();
+    if (gs.current_system != start_system || nested_over) {
+      game_over = nested_over;
+      return game_over;
+    }
+  }
+  /* Customs Event */
+  if (rand() % 100 < (sol_list[gs.current_system].faction == 2 ? 70 : 20) &&
+      sol_list[gs.current_system].is_shipyard) {
+    int nested_over = core_events_customs();
+    if (gs.current_system != start_system || nested_over) {
+      game_over = nested_over;
+      return game_over;
+    }
+  }
+
+  /* Kidnapping Event */
+  for (i = 0; i < gs.quests_size; i++) {
+    if (gs.quests[i].type == 4) {
+      if (rand() % 100 < 10) {
+        int nested_over = core_events_kidnapping(i);
+        if (gs.current_system != start_system || nested_over) {
+          game_over = nested_over;
+          return game_over;
+        }
+      }
+      break; /* only first type 4 quest triggers kidnapping */
+    }
+  }
+
+  /* Gas Station Event */
+  core_events_gas_station();
+
+  /* Quest Done Event */
+  core_events_quest_done();
+
+  core_game_gen_all();
 
   return core_events_check_game_over();
 }

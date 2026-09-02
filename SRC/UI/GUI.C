@@ -181,12 +181,14 @@ void gui_warning_wnd(WND* ptr_parent, char* header, char* text,
                      int play_sound) {
   WND warning_wnd;
 
+  if (ptr_parent == NULL){
+    return;
+  }
+
   warning_wnd.header = header;
   warning_wnd.ptr_parent = ptr_parent;
-  /* TODO: remove map dependency!*/
   warning_wnd.x = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
   warning_wnd.y = (ptr_parent->height - WND_MODAL_DEFAULT_HEIGHT) / 2;
-  ;
   warning_wnd.width = WND_MODAL_DEFAULT_WIDTH;
   warning_wnd.height = WND_MODAL_DEFAULT_HEIGHT;
 
@@ -228,7 +230,11 @@ int gui_confirm_wnd(WND* ptr_parent, char* header, char* text) {
   int btn_width = 50, btn_height = 20, btn_gap = 10;
   int btn_y;
   int total = 2 * btn_width + btn_gap;
-
+  
+  if (ptr_parent == NULL){
+    return 0;
+  }
+  
   confirm_wnd.header = header;
   confirm_wnd.x = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
   confirm_wnd.y = (ptr_parent->height - WND_MODAL_DEFAULT_HEIGHT) / 2;
@@ -242,7 +248,7 @@ int gui_confirm_wnd(WND* ptr_parent, char* header, char* text) {
   btn_yes.y = btn_y;
   btn_yes.width = btn_width;
   btn_yes.height = btn_height;
-  btn_yes.selected = (selected == 0) ? 1 : 0;
+  btn_yes.selected = 1;
   btn_yes.enabled = 1;
   btn_yes.visible = 1;
 
@@ -251,7 +257,7 @@ int gui_confirm_wnd(WND* ptr_parent, char* header, char* text) {
   btn_no.y = btn_y;
   btn_no.width = btn_width;
   btn_no.height = btn_height;
-  btn_no.selected = (selected == 1) ? 1 : 0;
+  btn_no.selected = 0;
   btn_no.enabled = 1;
   btn_no.visible = 1;
 
@@ -294,6 +300,10 @@ char* gui_input_wnd(WND* ptr_parent, char* header, char* text,
   INPUT_FIELD field;
   char* result;
 
+  if (ptr_parent == NULL){
+    return result;
+  }
+
   input_wnd.header = header;
   input_wnd.x = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
   input_wnd.y = (ptr_parent->height - WND_MODAL_DEFAULT_HEIGHT) / 2;
@@ -329,6 +339,11 @@ char* gui_input_wnd(WND* ptr_parent, char* header, char* text,
   sfx_modal();
   gui_run_input_field(&field);
   result = (char*)malloc(Q_INPUT_LEN);
+  if (result == NULL){
+    printf("Allocation fault in gui.c:342");
+    exit(1);
+  }
+
 
   strcpy(result, field.buffer);
 
@@ -382,6 +397,10 @@ int gui_dialog_wnd(WND* ptr_parent, char* header, char* title, char* photo_file,
   int btn_total_width = 0, btn_total_height = 0, max_content_width,
       content_height;
   int photo_present = (photo_file != NULL && photo_file[0] != '\0');
+
+  if (ptr_parent == NULL){
+    return 0;
+  }
 
   settextstyle(SMALL_FONT, HORIZ_DIR, 4);
   for (i = 0; i < lines_count; i++) {

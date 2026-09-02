@@ -128,7 +128,7 @@ int data_reader_load_objects(OBJECT** list) {
     (*list)[counter].y = v[1];
     (*list)[counter].z = v[2];
     (*list)[counter].r = v[3];
-    (*list)[counter].type = (vi >= 4) ? v[4] : 0;
+    (*list)[counter].type = v[4];
     counter++;
   }
 

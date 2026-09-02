@@ -30,14 +30,35 @@ static void draw_player_status(WND* status_wnd) {
 
   char systems_visited[100];
   char quests_done[100];
-
-  sprintf(captain_name, "%s: %s", LC_STATUS_WND_CAPTAIN, gs.captain_name);
-
+  WND cur = {NULL, NULL, "MINIMAP", 339, 21, 300, 168};
+  setcolor(15);
+  settextstyle(SMALL_FONT, HORIZ_DIR, 8);
   sprintf(current_system, "%s: SA.%d", LC_STATUS_WND_SYSTEM, gs.current_system);
+  outtextxy(status_wnd->x + 10, status_wnd->y + 10, current_system);
+
+  settextstyle(SMALL_FONT, HORIZ_DIR, 4);
   sprintf(sector, "%s: %s", LC_STATUS_WND_SECTOR,
           data_sectors[sol_list[gs.current_system].sector]);
-  sprintf(systems_visited, LC_GAME_OVER_STATS_TEXT_1, *gs.visited);
+  outtextxy(status_wnd->x + 10, status_wnd->y + 35, sector);
+
+  outtextxy(status_wnd->x + 10, status_wnd->y + 46,
+            data_factions[sol_list[gs.current_system].faction]);
+
+  setcolor(RED);
+
+  settextstyle(SMALL_FONT, HORIZ_DIR, 8);
+  line(status_wnd->x +10, status_wnd->y + 60, status_wnd->x + 10 + textwidth(current_system), status_wnd->y+60);
+  settextstyle(SMALL_FONT, HORIZ_DIR, 4);
+  setcolor(WHITE);
+
+  sprintf(captain_name, "%s: %s", LC_STATUS_WND_CAPTAIN, gs.captain_name);
+  outtextxy(status_wnd->x + 10, status_wnd->y + 65, captain_name);
   sprintf(quests_done, LC_GAME_OVER_STATS_TEXT_2, gs.missions_completed);
+
+  outtextxy(status_wnd->x + 10, status_wnd->y + 80, quests_done);
+  
+  gui_draw_wnd_proto(&cur);
+  gui_map_wnd_draw_minimap(&cur, 10.0f);
 
   /*
   {
@@ -46,17 +67,11 @@ static void draw_player_status(WND* status_wnd) {
     data_reader_draw_bmp(ship_image, 339, 22);
   }*/
 
-  settextstyle(SMALL_FONT, HORIZ_DIR, 5);
-  setcolor(15);
 
-  outtextxy(status_wnd->x + 80, status_wnd->y + 20, captain_name);
-  outtextxy(status_wnd->x + 80, status_wnd->y + 35,
-            data_factions[sol_list[gs.current_system].faction]);
-  outtextxy(status_wnd->x + 80, status_wnd->y + 50, sector);
-  outtextxy(status_wnd->x + 80, status_wnd->y + 65, current_system);
 
-  outtextxy(status_wnd->x + 10, status_wnd->y + 120, systems_visited);
-  outtextxy(status_wnd->x + 10, status_wnd->y + 140, quests_done);
+
+
+
 }
 
 /* -----------------------------------------------------------------
@@ -75,7 +90,7 @@ static void gui_status_wnd() {
 
   setfillstyle(SOLID_FILL, BLACK);
   bar(1, 22, status_wnd.width - 1, status_wnd.height - 1);
-  gui_ad_hypersoft();
+  /*gui_ad_hypersoft();*/
   draw_player_status(&status_wnd);
   gui_status_quest_list(&status_wnd);
 }

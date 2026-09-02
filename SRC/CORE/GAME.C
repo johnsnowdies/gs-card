@@ -189,6 +189,7 @@ static void core_game_gen_quest(QUEST* ptr_quest, int player_rep,
   penalty = (long)(reward * (0.5 - player_rep * 0.0004));
   if (penalty < (long)(reward * 0.1)) penalty = (int)(reward * 0.1);
   if (penalty < 0) penalty = 0;
+  if (type == 4) penalty = 0;
 
   core_game_gen_npc(&ptr_quest->giver, faction, RANDOM_GENDER, QUEST_NPC);
 

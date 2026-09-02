@@ -48,6 +48,7 @@
 #define MAX_VALUE  1400
 #define MIN_VALUE -1400
 
+
 /* ----------------------------------------------------------------
  * EXTERN VIEWPORT GLOBALS
  * ---------------------------------------------------------------- */
@@ -71,6 +72,7 @@ extern WND map_wnd;
 
 /* Use only in MAPNAV */
 extern void gui_map_wnd_refresh();
+extern void gui_map_wnd_draw_minimap(WND *small_map, float radius);
 
 extern void gui_map_wnd_dispatch();
 

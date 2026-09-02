@@ -722,6 +722,88 @@ static void gui_map_wnd_clear() {
 }
 
 /* ----------------------------------------------------------------
+ * MINIMAP DRAW (ZOOMED VIEW AROUND CURRENT SYSTEM)
+ * ----------------------------------------------------------------*/
+void gui_map_wnd_draw_minimap(WND *small_map, float radius)
+{
+    float center_x, center_y;
+    float left, right, top, bottom;
+    float local_xdens, local_ydens;
+    int i;
+    char c[50];
+
+    if (small_map == NULL) return;
+    if (gs.current_system < 0 || gs.current_system >= sol_size) return;
+
+    /* Default zoom radius if not specified */
+    if (radius <= 0.0f) radius = 50.0f;
+
+    center_x = sol_list[gs.current_system].x;
+    center_y = sol_list[gs.current_system].y;
+
+    left   = center_x - radius;
+    right  = center_x + radius;
+    top    = center_y + radius;   /* world Y increases upward */
+    bottom = center_y - radius;
+
+    /* Local scale: world units per pixel */
+    local_xdens = (right - left) / small_map->width;
+    local_ydens = (top - bottom) / small_map->height;
+
+    /* Draw all systems inside the zoom window */
+    for (i = 0; i < sol_size; i++) {
+        float sx = sol_list[i].x;
+        float sy = sol_list[i].y;
+        int px, py, color;
+
+        /* World‑space rejection */
+        if (sx < left || sx > right || sy < bottom || sy > top) continue;
+
+        /* Screen coordinates inside small_map */
+        px = small_map->x + (int)((sx - left) / local_xdens);
+        py = small_map->y + (int)((sy - bottom) / local_ydens);
+
+        /* Skip if outside the target rectangle */
+        if (px < small_map->x || px >= small_map->x + small_map->width ||
+            py < small_map->y+20 || py >= small_map->y + small_map->height-20)
+            continue;
+
+        color = get_color_by_z(sol_list[i].z);
+        setcolor(color);
+        /* Draw a small dot (2x2 block) for the system */
+        putpixel(px, py, color);
+
+        /* Label visited systems or current system */
+
+        if (sol_list[i].is_shipyard) {
+          setcolor(3);
+          sprintf(c, "SA.%d [S][F]", i);
+        } else if (sol_list[i].is_gas_station && core_game_is_visited(i)) {
+          setcolor(1);
+          sprintf(c, "SA.%d [F]", i);
+        } else if (core_game_is_visited(i)) {
+          setcolor(15);
+          sprintf(c, "SA.%d", i);
+        } else {
+          setcolor(8);
+          sprintf(c, "SA.%d", i);
+        }
+
+        settextstyle(SMALL_FONT, HORIZ_DIR, 4);
+        /* Place label slightly to the right and down */
+        outtextxy(px, py + 5, c);
+
+        if (i == gs.current_system) {
+          setcolor(RED);
+
+          safe_outtextxy(px - 5, py + 5, ">");
+          safe_outtextxy(px + textwidth(c), py + 5, "<");
+        }
+    }
+
+}
+
+/* ----------------------------------------------------------------
  * EXTERNAL: SCR_MAP -- WINDOW DISPATCHER
  * ---------------------------------------------------------------- */
 void gui_map_wnd_refresh() {
