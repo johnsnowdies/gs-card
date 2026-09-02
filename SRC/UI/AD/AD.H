@@ -36,7 +36,12 @@
 #ifndef _GUI_AD
 #define _GUI_AD
 
+#include "ui/gui.h"
+
 /* UI/AD API */
+
+/* No responsibility nag */
+extern void gui_ad_warning(WND* holder);
 
 /* -----------------------------------------------------------------
  * ADVERTISEMENT - QUINDETT

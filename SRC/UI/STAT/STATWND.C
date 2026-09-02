@@ -30,7 +30,7 @@ static void draw_player_status(WND* status_wnd) {
 
   char systems_visited[100];
   char quests_done[100];
-  WND cur = {NULL, NULL, "MINIMAP", 339, 21, 300, 168};
+  WND cur = {NULL, NULL, LC_STATUS_MINIMAP, 339, 21, 300, 168};
   setcolor(15);
   settextstyle(SMALL_FONT, HORIZ_DIR, 8);
   sprintf(current_system, "%s: SA.%d", LC_STATUS_WND_SYSTEM, gs.current_system);
@@ -59,19 +59,6 @@ static void draw_player_status(WND* status_wnd) {
   
   gui_draw_wnd_proto(&cur);
   gui_map_wnd_draw_minimap(&cur, 10.0f);
-
-  /*
-  {
-    char ship_image[50];
-    sprintf(ship_image, "SHIPS/SHIP_%u.BMP", gs.ship_type + 1);
-    data_reader_draw_bmp(ship_image, 339, 22);
-  }*/
-
-
-
-
-
-
 }
 
 /* -----------------------------------------------------------------
@@ -250,6 +237,24 @@ void gui_status_quest_list(WND* status_wnd) {
             gs.quests[i].jumps);
 
     outtextxy(x_pos, y_pos + (10 * i), buf);
+  }
+
+  {
+    WND ad_warning;
+    ad_warning.x = 442;
+    ad_warning.y = 21;
+    ad_warning.height = 439;
+    ad_warning.width = 197;
+    gui_ad_warning(&ad_warning);
+  }
+
+  {
+    WND ad_dynamic;
+    ad_dynamic.x = 10;
+    ad_dynamic.y = 414;
+    ad_dynamic.height = 35;
+    ad_dynamic.width = 430;
+    gui_ad_dynamic(&ad_dynamic);
   }
 }
 

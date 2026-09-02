@@ -2,6 +2,44 @@
 
 #include "ui/ad/ad.h"
 #include "ui/locale.h"
+#include "ui/gui.h"
+
+void gui_ad_warning(WND* holder){
+  setcolor(RED);
+  settextstyle(SMALL_FONT, HORIZ_DIR, 4);
+  
+  rectangle(holder->x + 5, holder->height - 25, holder->x + holder->width - 5, holder->height+10);
+
+  outtextxy(holder->x + 15, holder->height - 20,  LC_SHIPYARD_NAG_1);
+  outtextxy(holder->x + 15, holder->height - 5, LC_SHIPYARD_NAG_2);
+}
+
+void gui_ad_dynamic(WND* holder){
+  int r = (rand() % 6);
+  char ads[6][2][80] = {
+    {LC_AD_DYN_T1_L1, LC_AD_DYN_T1_L2},
+    {LC_AD_DYN_T2_L1, LC_AD_DYN_T2_L2},
+    {LC_AD_DYN_T3_L1, LC_AD_DYN_T3_L2},
+    {LC_AD_DYN_T4_L1, LC_AD_DYN_T4_L2},
+    {LC_AD_DYN_T5_L1, LC_AD_DYN_T5_L2},
+    {LC_AD_DYN_T6_L1, LC_AD_DYN_T6_L2}
+  }; 
+
+  setcolor(RED);
+  settextstyle(SMALL_FONT, HORIZ_DIR, 4);
+  setfillstyle(SOLID_FILL, BLACK);
+
+  bar(holder->x+1, holder->y+1, holder->x + holder->width -1,
+            holder->y + holder->height - 1);
+
+
+  rectangle(holder->x, holder->y, holder->x + holder->width,
+            holder->y + holder->height);
+  settextstyle(SMALL_FONT, HORIZ_DIR, 5);
+
+  outtextxy(holder->x + 10, holder->y + 5, ads[r][0]);
+  outtextxy(holder->x + 10, holder->y + 17, ads[r][1]);
+}
 
 void gui_ad_quindett() {
   setcolor(4);

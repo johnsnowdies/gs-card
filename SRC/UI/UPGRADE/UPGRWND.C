@@ -6,12 +6,13 @@
 #include "core/globals.h"
 #include "data/structs.h"
 #include "sound/sound.h"
+#include "ui/ad/ad.h"
 #include "ui/gui.h"
 #include "ui/locale.h"
+#include "ui/menu/menuwnd.h"
 #include "ui/npc/npcwnd.h"
 #include "ui/stat/statwnd.h"
 #include "ui/upgrade/upgrwnd.h"
-#include "ui/menu/menuwnd.h"
 
 WND upgrade_wnd;
 int upgrade_selected = 0;
@@ -113,7 +114,6 @@ static void gui_upgrade_wnd(void) {
   upgrade_wnd.height = UPGRADE_WND_DEFAULT_HEIGHT;
   upgrade_wnd.header = NULL;
 
-
   gui_draw_wnd_proto(&upgrade_wnd);
 
   setfillstyle(SOLID_FILL, BLACK);
@@ -135,6 +135,23 @@ static void gui_upgrade_wnd(void) {
   gui_bars_common_top();
   gui_upgrade_draw_list();
   gui_bars_status_bottom();
+  {
+    WND ad_warning;
+    ad_warning.x = 442;
+    ad_warning.y = 21;
+    ad_warning.height = 439;
+    ad_warning.width = 197;
+    gui_ad_warning(&ad_warning);
+  }
+
+  {
+    WND ad_dynamic;
+    ad_dynamic.x = 10;
+    ad_dynamic.y = 414;
+    ad_dynamic.height = 35;
+    ad_dynamic.width = 430;
+    gui_ad_dynamic(&ad_dynamic);
+  }
 }
 
 /* ----------------------------------------------------------------
@@ -252,7 +269,7 @@ void gui_upgrade_show_info(int selected) {
 }
 
 /* -----------------------------------------------------------------
- * UPGRADES LIST 
+ * UPGRADES LIST
  * ---------------------------------------------------------------- */
 void gui_upgrade_draw_list(void) {
   int i, y_pos;
@@ -297,7 +314,7 @@ void gui_upgrade_draw_list(void) {
 /* -----------------------------------------------------------------
  * SCR_UPGRADE -- WINDOW DISPATCHER
  * ---------------------------------------------------------------- */
-void gui_upgrade_wnd_dispatch(){
+void gui_upgrade_wnd_dispatch() {
   gui_upgrade_wnd();
   gui_bars_common_top();
   gui_bars_status_bottom();

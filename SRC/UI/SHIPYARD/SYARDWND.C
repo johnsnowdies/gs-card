@@ -11,9 +11,12 @@
 #include "ui/npc/npcwnd.h"
 #include "ui/shipyard/syardwnd.h"
 #include "ui/menu/menuwnd.h"
+#include "ui/ad/ad.h"
 
 WND shipyard_wnd;
 int ship_selected = 0;
+
+
 
 /* -----------------------------------------------------------------
  * SHIP UPGRADES INSTALLED
@@ -78,8 +81,6 @@ static void gui_shipyard_wnd() {
   setfillstyle(SOLID_FILL, BLACK);
   bar(1, shipyard_wnd.y + 1, shipyard_wnd.width - 1,
       shipyard_wnd.y + shipyard_wnd.height - 1);
-
-  gui_ad_hypersoft();
 
   settextstyle(SMALL_FONT, HORIZ_DIR, 5);
   setcolor(15);
@@ -317,7 +318,7 @@ void gui_shipyard_draw_list(void) {
     char ship_image[50];
     sprintf(ship_image, "SHIPS/SHIP_%u.BMP",
             system_shipyard[ship_selected].id + 1);
-    data_reader_draw_bmp(ship_image, 20, 22);
+    data_reader_draw_bmp(ship_image, 45, 22);
   }
 
   y_pos = 200;
@@ -370,8 +371,9 @@ void gui_shipyard_draw_list(void) {
     rectangle(shipyard_wnd.x + 10, shipyard_wnd.height - 25, l_wnd.x - 50,
               shipyard_wnd.height + 10);
     outtextxy(text_x, shipyard_wnd.height - 15, LC_UPGRADE_SHIP_ENTER);
-    setlinestyle(1, 0, 1);
+    setlinestyle(0, 0, 1);
   }
+  gui_ad_warning(&l_wnd);
 }
 
 /* -----------------------------------------------------------------

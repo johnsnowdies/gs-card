@@ -61,6 +61,25 @@
 #define LC_AD_LEGALS_TEXT_6 "gизассемблирование и взлом этого ПО запрещены"
 #define LC_AD_LEGALS_TEXT_7 "          34M315 Terra, Washington DC"
 
+/* DYNAMIC AD: ~50 symbols */
+#define LC_AD_DYN_T1_L1 "Оружейный завоg 'Аль-Хаgиg' в системе SA.131: по"
+#define LC_AD_DYN_T1_L2 "промокоgу ДАЙТЕ ТАНК! скиgка -30%. Успейте взять!"
+
+#define LC_AD_DYN_T2_L1 "Казино ЗОЛОТОЕ БЛЮДЦЕ: ищем сотруgников с опытом"
+#define LC_AD_DYN_T2_L2 "в сфере. GS:873:313:SAUCER"
+
+#define LC_AD_DYN_T3_L1 "ИРЛАНДСКИЙ ФРОНТ ДЕМОКРАТИЧЕСКОГО ОСВОБОЖДЕНИЯ "
+#define LC_AD_DYN_T3_L2 "проgаст картофельную ботву GS:643:112:NOТАPIRATE"
+
+#define LC_AD_DYN_T4_L1 "В КОРПОРАЦИЮ: найм специалистов gемонологиков,"
+#define LC_AD_DYN_T4_L2 "генных-инженеров, информация в MagoNet:00003"
+
+#define LC_AD_DYN_T5_L1 "СИМБИОТИЧЕСКИЕ ОПЕРАЦИИ ЛЮБОЙ СЛОЖНОСТИ В КЛИНИКЕ"
+#define LC_AD_DYN_T5_L2 "'Без Хвоста' - SA.412, GS:345:221:NOTAIL"
+
+#define LC_AD_DYN_T6_L1 "ГОЛОВАСТИКИ КРАКЕНОВ не gорого, на вырост! SA.280"
+#define LC_AD_DYN_T6_L2 "Без перекупщиков! GS:289:112:FISHHOOK"
+
 /* ----------------------------------------------------------------
  * GUI.C
  * ---------------------------------------------------------------- */
@@ -99,6 +118,8 @@
 #define LC_STATUS_WND_SECTOR "Сектор"
 #define LC_STATUS_WND_SHIP_CARGO "Грузовой отсек:"
 #define LC_STATUS_WND_HYPER_FUEL "Расхоg топлива:"
+
+#define LC_STATUS_MINIMAP "МИНИ КАРТА"
 
 
 /* ----------------------------------------------------------------
@@ -502,7 +523,8 @@
 #define LC_SHIPYARD_SELL_TEXT_10 "Ваш корабль и оборуgование gороже. Сgелка не возможна!"
 
 
-
+#define LC_SHIPYARD_NAG_1 "Hypersoft не несет ответствен-"
+#define LC_SHIPYARD_NAG_2 "ности за эти обьявления."
 
 /* ----------------------------------------------------------------
  * Names
@@ -1284,6 +1306,9 @@
 #define LC_EVENT_DANGER_GAS_NO        "Radiation hit the hull but cargo not damaged!"
 
 #define LC_QUEST_ERROR                "This contract cannot be accepted!"
+
+#define LC_SHIPYARD_NAG_1 "Hypersoft are not responsible"
+#define LC_SHIPYARD_NAG_2 "for this advertisements."
 #endif
 
 #endif

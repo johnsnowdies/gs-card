@@ -221,7 +221,7 @@ static void core_events_gas_station(void) {
 /* -----------------------------------------------------------------
  * EVENT - QUEST FAILED, SHOW PENALTY, DEDUCT BALANCE, REMOVE QUEST
  * ---------------------------------------------------------------- */
-static core_events_quest_failed(int index) {
+static void core_events_quest_failed(int index) {
   int type, i;
   char lines[2][100];
   char header[80];
