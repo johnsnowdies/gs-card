@@ -24,7 +24,7 @@
  *
  *  Description:
  *      Entire game logics: NPCs, quests, upgrades and shipyard generation,
- *      game state control (new, save, load); game events system.
+ *      game state control (new, save, load);
  *
  *  WARNING:
  *      This software is provided "AS IS" without warranty of any kind,
@@ -50,7 +50,7 @@
 #define HYPER_I 0
 #define HYPER_II 1
 #define HYPER_III 2
-#define HYPER_UMBRELLA 3
+#define HYPER_UMBRELLA 3 /* REMOVE UMBRELLA MENTION! */
 
 /* COUNTERS */
 #define SHIP_COUNT 6
@@ -75,27 +75,33 @@ E_NPC_TYPE{QUEST_NPC, GAS_NPC};
 E_GENDER{MALE, FEMALE, RANDOM_GENDER};
 
 /* EXTERNAL GLOBAL VARIABLES */
-extern char* data_ship_names[SHIP_COUNT];
-extern unsigned int data_ship_engines[SHIP_COUNT];
-extern unsigned char data_ship_smuggler_bay[SHIP_COUNT];
-extern unsigned char data_ship_continuous_jump[SHIP_COUNT];
-extern unsigned char data_ship_emergency_jump[SHIP_COUNT];
-extern unsigned int data_ship_tonnages[SHIP_COUNT];
-extern char* data_hyper_names[HYPER_COUNT];
-extern unsigned int data_hyper_fuel[HYPER_COUNT];
-extern char* data_factions[FACTIONS_COUNT];
-extern unsigned int data_factions_colors[FACTIONS_COUNT];
-extern char* data_sectors[SECTORS_COUNT];
-extern long ship_prices[SHIP_COUNT];
-extern long hyper_prices[HYPER_COUNT];
-extern long custom_prices[CUSTOM_UPGRADES_COUNT];
+extern const char* data_ship_names[SHIP_COUNT];
+extern const unsigned int data_ship_engines[SHIP_COUNT];
+extern const unsigned char data_ship_smuggler_bay[SHIP_COUNT];
+extern const unsigned char data_ship_continuous_jump[SHIP_COUNT];
+extern const unsigned char data_ship_emergency_jump[SHIP_COUNT];
+extern const unsigned int data_ship_tonnages[SHIP_COUNT];
+extern const char* data_hyper_names[HYPER_COUNT];
+extern const unsigned int data_hyper_fuel[HYPER_COUNT];
+extern const char* data_factions[FACTIONS_COUNT];
+extern const unsigned int data_factions_colors[FACTIONS_COUNT];
+extern const char* data_sectors[SECTORS_COUNT];
+extern const long ship_prices[SHIP_COUNT];
+extern const long hyper_prices[HYPER_COUNT];
+extern const long custom_prices[CUSTOM_UPGRADES_COUNT];
+extern const char* data_upgrade_names[CUSTOM_UPGRADES_COUNT];
 
 /* CORE GAME API */
-int core_game_run_event(int fuel_consume);
-int core_game_is_visited(int system);
-int core_game_accept_quest(unsigned int index);
-void core_game_new_game(char* name);
-int core_game_load(char* filename);
-int core_game_save(char* filename);
+extern void core_game_gen_npc(NPC* ptr_npc, unsigned int faction,
+                              E_GENDER gender, E_NPC_TYPE npc_type);
+extern void core_game_gen_all();
+extern int core_game_is_visited(int system);
+extern void core_game_mark_visited();
+
+extern int core_game_accept_quest(unsigned int index);
+
+extern void core_game_new_game(char* name);
+extern int core_game_load(char* filename);
+extern int core_game_save(char* filename);
 
 #endif

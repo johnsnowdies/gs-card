@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "core/game.h"
+#include "core/events.h"
 #include "core/globals.h"
 #include "data/keys.h"
 #include "data/structs.h"
@@ -217,7 +218,7 @@ int gui_map_wnd_key(int ch, WND* parent) {
         dispatch_wnd(SCR_MAP);
 
         /* Run game new system events */
-        game_over = core_game_run_event(1);
+        game_over = core_events(1);
         gui_map_nav_move_screen_to(gs.current_system);
 
         if (!game_over) {

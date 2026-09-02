@@ -45,6 +45,10 @@ echo Compiling CORE\GAME.C...                     >> %BLD%\build.log
 tcc -c -mh %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CORE\GAME.C >> %BLD%\build.log
 if errorlevel 1 goto err
 
+echo Compiling CORE\EVENTS.C...                     >> %BLD%\build.log
+tcc -c -mh %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CORE\EVENTS.C >> %BLD%\build.log
+if errorlevel 1 goto err
+
 echo Compiling CORE\OBJECTS.C...                    >> %BLD%\build.log
 tcc -c -mh %RU% -n%BLD% -I%INC% -I%SRC% -I%TURBOC%\BGI -L%LIB% %SRC%\CORE\OBJECTS.C >> %BLD%\build.log
 if errorlevel 1 goto err
@@ -143,6 +147,7 @@ echo MAPNAV.OBJ+   >> %BLD%\GS-LINK.RSP
 echo MENUWND.OBJ+  >> %BLD%\GS-LINK.RSP
 echo STATWND.OBJ+  >> %BLD%\GS-LINK.RSP
 echo GAME.OBJ+     >> %BLD%\GS-LINK.RSP
+echo EVENTS.OBJ+     >> %BLD%\GS-LINK.RSP
 echo MENUNAV.OBJ+  >> %BLD%\GS-LINK.RSP
 echo STATNAV.OBJ+  >> %BLD%\GS-LINK.RSP
 echo SOUND.OBJ+    >> %BLD%\GS-LINK.RSP

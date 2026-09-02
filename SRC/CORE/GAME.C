@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "core/events.h"
 #include "core/finder.h"
 #include "core/game.h"
 #include "core/globals.h"
@@ -9,204 +10,45 @@
 #include "ui/gui.h"
 #include "ui/locale.h"
 #include "ui/map/mapwnd.h"
-#include "ui/npc/npcwnd.h"
 
 /* ----------------------------------------------------------------
  * GAME DATA STRUCTURES
  * ---------------------------------------------------------------- */
-char* data_ship_names[SHIP_COUNT] = {LC_GAME_SHIP_1, LC_GAME_SHIP_2,
+const char* data_ship_names[SHIP_COUNT] = {LC_GAME_SHIP_1, LC_GAME_SHIP_2,
                                      LC_GAME_SHIP_3, LC_GAME_SHIP_4,
                                      LC_GAME_SHIP_5, LC_GAME_SHIP_6};
 
-unsigned int data_ship_engines[SHIP_COUNT] = {0, 0, 1, 1, 3, 2};
-unsigned char data_ship_smuggler_bay[SHIP_COUNT] = {0, 1, 1, 1, 0, 0};
-unsigned char data_ship_continuous_jump[SHIP_COUNT] = {0, 0, 1, 1, 1, 1};
-unsigned char data_ship_emergency_jump[SHIP_COUNT] = {0, 0, 0, 1, 1, 1};
+const unsigned int data_ship_engines[SHIP_COUNT] = {0, 0, 1, 1, 3, 2};
+const unsigned char data_ship_smuggler_bay[SHIP_COUNT] = {0, 1, 1, 1, 0, 0};
+const unsigned char data_ship_continuous_jump[SHIP_COUNT] = {0, 0, 1, 1, 1, 1};
+const unsigned char data_ship_emergency_jump[SHIP_COUNT] = {0, 0, 0, 1, 1, 1};
+const unsigned int data_ship_tonnages[SHIP_COUNT] = {50, 80, 100, 150, 200, 400};
 
-unsigned int data_ship_tonnages[SHIP_COUNT] = {50, 80, 100, 150, 200, 400};
-
-char* data_hyper_names[HYPER_COUNT] = {LC_GAME_ENGINE_1, LC_GAME_ENGINE_2,
+const char* data_hyper_names[HYPER_COUNT] = {LC_GAME_ENGINE_1, LC_GAME_ENGINE_2,
                                        LC_GAME_ENGINE_3, LC_GAME_ENGINE_4};
 
-unsigned int data_hyper_fuel[HYPER_COUNT] = {10, 8, 5, 2};
+const unsigned int data_hyper_fuel[HYPER_COUNT] = {10, 8, 5, 2};
 
-char* data_factions[FACTIONS_COUNT] = {LC_GAME_FACTION_1, LC_GAME_FACTION_2,
+const char* data_factions[FACTIONS_COUNT] = {LC_GAME_FACTION_1, LC_GAME_FACTION_2,
                                        LC_GAME_FACTION_3, LC_GAME_FACTION_4};
 
-unsigned int data_factions_colors[FACTIONS_COUNT] = {2, 14, 9, 4};
+const unsigned int data_factions_colors[FACTIONS_COUNT] = {2, 14, 9, 4};
 
-char* data_sectors[SECTORS_COUNT] = {
+const char* data_sectors[SECTORS_COUNT] = {
     LC_GAME_SECTOR_1, LC_GAME_SECTOR_2, LC_GAME_SECTOR_3,
     LC_GAME_SECTOR_4, LC_GAME_SECTOR_5, LC_GAME_SECTOR_6,
     LC_GAME_SECTOR_7, LC_GAME_SECTOR_8, LC_GAME_SECTOR_9};
 
-long ship_prices[SHIP_COUNT] = SHIP_UPGRADE_BASE_PRICES;
-long hyper_prices[HYPER_COUNT] = HYPER_UPGRADE_BASE_PRICES;
-long custom_prices[CUSTOM_UPGRADES_COUNT] = CUSTOM_UPGRADE_BASE_PRICES;
+const char* data_upgrade_names[CUSTOM_UPGRADES_COUNT] = {LC_UPGRADE_SMUGGLER_BAY,
+                              LC_UPGRADE_CONTIN_JUMP_SYSTEM,
+                              LC_UPGRADE_EMERGENCY_JUMP_SYSTEM,
+                              LC_UPGRADE_OBJECTS_MAP, LC_UPGRADE_POLITICAL_MAP};
 
-/* One-shot new game flag */
-static unsigned int init_game = 0;
+const long ship_prices[SHIP_COUNT] = SHIP_UPGRADE_BASE_PRICES;
+const long hyper_prices[HYPER_COUNT] = HYPER_UPGRADE_BASE_PRICES;
+const long custom_prices[CUSTOM_UPGRADES_COUNT] = CUSTOM_UPGRADE_BASE_PRICES;
 
-/* ----------------------------------------------------------------
- * VISITED SOLAR SYSTEMS TRACKING
- * ---------------------------------------------------------------- */
 
-static void core_game_mark_visited() {
-  int system = gs.current_system;
-  if (system < 0 || system >= sol_size || !gs.visited) return;
-  gs.visited[system >> 3] |= (1 << (system & 7));
-}
-
-/* ----------------------------------------------------------------
- *
- *                            GENERATORS
- *
- * ----------------------------------------------------------------
-
-/* ----------------------------------------------------------------
- * GENERATE NPC
- * ---------------------------------------------------------------- */
-
-static void core_game_gen_npc(NPC* ptr_npc, unsigned int faction,
-                              E_GENDER gender, E_NPC_TYPE npc_type) {
-  /* Name constants */
-  const char* IRISH_MALE_FIRST[] = {
-      LC_GEN_FNAME_MALE_IRISH_1,  LC_GEN_FNAME_MALE_IRISH_2,
-      LC_GEN_FNAME_MALE_IRISH_3,  LC_GEN_FNAME_MALE_IRISH_4,
-      LC_GEN_FNAME_MALE_IRISH_5,  LC_GEN_FNAME_MALE_IRISH_6,
-      LC_GEN_FNAME_MALE_IRISH_7,  LC_GEN_FNAME_MALE_IRISH_8,
-      LC_GEN_FNAME_MALE_IRISH_9,  LC_GEN_FNAME_MALE_IRISH_10,
-      LC_GEN_FNAME_MALE_IRISH_11, LC_GEN_FNAME_MALE_IRISH_12,
-      LC_GEN_FNAME_MALE_IRISH_13, LC_GEN_FNAME_MALE_IRISH_14,
-      LC_GEN_FNAME_MALE_IRISH_15};
-
-  const char* IRISH_FEMALE_FIRST[] = {
-      LC_GEN_FNAME_FEMALE_IRISH_1,  LC_GEN_FNAME_FEMALE_IRISH_2,
-      LC_GEN_FNAME_FEMALE_IRISH_3,  LC_GEN_FNAME_FEMALE_IRISH_4,
-      LC_GEN_FNAME_FEMALE_IRISH_5,  LC_GEN_FNAME_FEMALE_IRISH_6,
-      LC_GEN_FNAME_FEMALE_IRISH_7,  LC_GEN_FNAME_FEMALE_IRISH_8,
-      LC_GEN_FNAME_FEMALE_IRISH_9,  LC_GEN_FNAME_FEMALE_IRISH_10,
-      LC_GEN_FNAME_FEMALE_IRISH_11, LC_GEN_FNAME_FEMALE_IRISH_12,
-      LC_GEN_FNAME_FEMALE_IRISH_13, LC_GEN_FNAME_FEMALE_IRISH_14,
-      LC_GEN_FNAME_FEMALE_IRISH_15};
-
-  const char* IRISH_LAST[] = {
-      LC_GEN_LNAME_IRISH_1,  LC_GEN_LNAME_IRISH_2,  LC_GEN_LNAME_IRISH_3,
-      LC_GEN_LNAME_IRISH_4,  LC_GEN_LNAME_IRISH_5,  LC_GEN_LNAME_IRISH_6,
-      LC_GEN_LNAME_IRISH_7,  LC_GEN_LNAME_IRISH_8,  LC_GEN_LNAME_IRISH_9,
-      LC_GEN_LNAME_IRISH_10, LC_GEN_LNAME_IRISH_11, LC_GEN_LNAME_IRISH_12,
-      LC_GEN_LNAME_IRISH_13, LC_GEN_LNAME_IRISH_14, LC_GEN_LNAME_IRISH_15};
-
-  const char* ARAB_MALE_FIRST[] = {
-      LC_GEN_FNAME_MALE_ARAB_1,  LC_GEN_FNAME_MALE_ARAB_2,
-      LC_GEN_FNAME_MALE_ARAB_3,  LC_GEN_FNAME_MALE_ARAB_4,
-      LC_GEN_FNAME_MALE_ARAB_5,  LC_GEN_FNAME_MALE_ARAB_6,
-      LC_GEN_FNAME_MALE_ARAB_7,  LC_GEN_FNAME_MALE_ARAB_8,
-      LC_GEN_FNAME_MALE_ARAB_9,  LC_GEN_FNAME_MALE_ARAB_10,
-      LC_GEN_FNAME_MALE_ARAB_11, LC_GEN_FNAME_MALE_ARAB_12,
-      LC_GEN_FNAME_MALE_ARAB_13, LC_GEN_FNAME_MALE_ARAB_14,
-      LC_GEN_FNAME_MALE_ARAB_15};
-
-  const char* ARAB_FEMALE_FIRST[] = {
-      LC_GEN_FNAME_FEMALE_ARAB_1,  LC_GEN_FNAME_FEMALE_ARAB_2,
-      LC_GEN_FNAME_FEMALE_ARAB_3,  LC_GEN_FNAME_FEMALE_ARAB_4,
-      LC_GEN_FNAME_FEMALE_ARAB_5,  LC_GEN_FNAME_FEMALE_ARAB_6,
-      LC_GEN_FNAME_FEMALE_ARAB_7,  LC_GEN_FNAME_FEMALE_ARAB_8,
-      LC_GEN_FNAME_FEMALE_ARAB_9,  LC_GEN_FNAME_FEMALE_ARAB_10,
-      LC_GEN_FNAME_FEMALE_ARAB_11, LC_GEN_FNAME_FEMALE_ARAB_12,
-      LC_GEN_FNAME_FEMALE_ARAB_13, LC_GEN_FNAME_FEMALE_ARAB_14,
-      LC_GEN_FNAME_FEMALE_ARAB_15};
-
-  const char* ARAB_LAST[] = {
-      LC_GEN_LNAME_ARAB_1,  LC_GEN_LNAME_ARAB_2,  LC_GEN_LNAME_ARAB_3,
-      LC_GEN_LNAME_ARAB_4,  LC_GEN_LNAME_ARAB_5,  LC_GEN_LNAME_ARAB_6,
-      LC_GEN_LNAME_ARAB_7,  LC_GEN_LNAME_ARAB_8,  LC_GEN_LNAME_ARAB_9,
-      LC_GEN_LNAME_ARAB_10, LC_GEN_LNAME_ARAB_11, LC_GEN_LNAME_ARAB_12,
-      LC_GEN_LNAME_ARAB_13, LC_GEN_LNAME_ARAB_14, LC_GEN_LNAME_ARAB_15};
-
-  const char* COMMON_MALE_FIRST[] = {
-      LC_GEN_FNAME_MALE_COMMON_1,  LC_GEN_FNAME_MALE_COMMON_2,
-      LC_GEN_FNAME_MALE_COMMON_3,  LC_GEN_FNAME_MALE_COMMON_4,
-      LC_GEN_FNAME_MALE_COMMON_5,  LC_GEN_FNAME_MALE_COMMON_6,
-      LC_GEN_FNAME_MALE_COMMON_7,  LC_GEN_FNAME_MALE_COMMON_8,
-      LC_GEN_FNAME_MALE_COMMON_9,  LC_GEN_FNAME_MALE_COMMON_10,
-      LC_GEN_FNAME_MALE_COMMON_11, LC_GEN_FNAME_MALE_COMMON_12,
-      LC_GEN_FNAME_MALE_COMMON_13, LC_GEN_FNAME_MALE_COMMON_14,
-      LC_GEN_FNAME_MALE_COMMON_15};
-
-  const char* COMMON_FEMALE_FIRST[] = {
-      LC_GEN_FNAME_FEMALE_COMMON_1,  LC_GEN_FNAME_FEMALE_COMMON_2,
-      LC_GEN_FNAME_FEMALE_COMMON_3,  LC_GEN_FNAME_FEMALE_COMMON_4,
-      LC_GEN_FNAME_FEMALE_COMMON_5,  LC_GEN_FNAME_FEMALE_COMMON_6,
-      LC_GEN_FNAME_FEMALE_COMMON_7,  LC_GEN_FNAME_FEMALE_COMMON_8,
-      LC_GEN_FNAME_FEMALE_COMMON_9,  LC_GEN_FNAME_FEMALE_COMMON_10,
-      LC_GEN_FNAME_FEMALE_COMMON_11, LC_GEN_FNAME_FEMALE_COMMON_12,
-      LC_GEN_FNAME_FEMALE_COMMON_13, LC_GEN_FNAME_FEMALE_COMMON_14,
-      LC_GEN_FNAME_FEMALE_COMMON_15};
-
-  const char* COMMON_LAST[] = {
-      LC_GEN_LNAME_COMMON_1,  LC_GEN_LNAME_COMMON_2,  LC_GEN_LNAME_COMMON_3,
-      LC_GEN_LNAME_COMMON_4,  LC_GEN_LNAME_COMMON_5,  LC_GEN_LNAME_COMMON_6,
-      LC_GEN_LNAME_COMMON_7,  LC_GEN_LNAME_COMMON_8,  LC_GEN_LNAME_COMMON_9,
-      LC_GEN_LNAME_COMMON_10, LC_GEN_LNAME_COMMON_11, LC_GEN_LNAME_COMMON_12,
-      LC_GEN_LNAME_COMMON_13, LC_GEN_LNAME_COMMON_14, LC_GEN_LNAME_COMMON_15};
-
-  const char GENDER_SYMBOL[] = {'M', 'F'};
-
-  const char FACTION_SYMBOL[] = {'A', 'R', 'S', 'U'};
-
-  int photo_id = 0;
-
-  ptr_npc->faction = faction;
-
-  if (gender == RANDOM_GENDER)
-    ptr_npc->gender = rand() % 3 == 2 ? 1 : 0;
-  else
-    ptr_npc->gender = gender;
-
-  if (ptr_npc->gender == 0)
-    photo_id = (rand() % MALE_PORTRAITS_COUNT) + 1;
-  else
-    photo_id = (rand() % FEMALE_PORTRAITS_COUNT) + 1;
-
-  if (npc_type == QUEST_NPC)
-    sprintf(ptr_npc->photo, "NPC/%c%c%d.BMP", FACTION_SYMBOL[ptr_npc->faction],
-            GENDER_SYMBOL[ptr_npc->gender], photo_id);
-  else if (npc_type == GAS_NPC)
-    sprintf(ptr_npc->photo, "NPC/GAS%c.BMP", FACTION_SYMBOL[ptr_npc->faction]);
-
-  switch (faction) {
-    case 0:
-      if (ptr_npc->gender == 0)
-        sprintf(ptr_npc->name, "%s %s", ARAB_MALE_FIRST[rand() % NAMES_COUNT],
-                ARAB_LAST[rand() % NAMES_COUNT]);
-      else
-        sprintf(ptr_npc->name, "%s %s", ARAB_FEMALE_FIRST[rand() % NAMES_COUNT],
-                ARAB_LAST[rand() % NAMES_COUNT]);
-      break;
-
-    case 1:
-      if (ptr_npc->gender == 0)
-        sprintf(ptr_npc->name, "%s %s", IRISH_MALE_FIRST[rand() % NAMES_COUNT],
-                IRISH_LAST[rand() % NAMES_COUNT]);
-      else
-        sprintf(ptr_npc->name, "%s %s",
-                IRISH_FEMALE_FIRST[rand() % NAMES_COUNT],
-                IRISH_LAST[rand() % NAMES_COUNT]);
-      break;
-
-    case 2:
-    case 3:
-      if (ptr_npc->gender == 0)
-        sprintf(ptr_npc->name, "%s %s", COMMON_MALE_FIRST[rand() % NAMES_COUNT],
-                COMMON_LAST[rand() % NAMES_COUNT]);
-      else
-        sprintf(ptr_npc->name, "%s %s",
-                COMMON_FEMALE_FIRST[rand() % NAMES_COUNT],
-                COMMON_LAST[rand() % NAMES_COUNT]);
-      break;
-  }
-}
 /* ----------------------------------------------------------------
  *
  *               CURRENT SYSTEM QUESTS GENERATION
@@ -464,641 +306,6 @@ static void core_game_gen_upgrades(void) {
   system_upgrades_size = count;
 }
 
-/* ----------------------------------------------------------------
- *
- *                      GAME EVENTS SYSTEM
- *
- * ----------------------------------------------------------------
-
-/* ----------------------------------------------------------------
- * GAME OVER EVENT - FUEL GONE
- * ---------------------------------------------------------------- */
-static int core_game_check_fuel_gone(void) {
-  if (gs.fuel <= 0) {
-    char lines[9][100];
-    int i;
-
-    for (i = 0; i < 9; i++) {
-      lines[i][0] = '\0';
-    }
-
-    sprintf(lines[0], LC_GAME_OVER_FUEL_TEXT_1);
-    sprintf(lines[1], LC_GAME_OVER_FUEL_TEXT_2);
-    sprintf(lines[2], "   ");
-    sprintf(lines[3], LC_GAME_OVER_STATS_HEAD);
-    sprintf(lines[4], LC_GAME_OVER_STATS_TEXT_2, gs.missions_completed);
-    sprintf(lines[5], LC_GAME_OVER_STATS_TEXT_3, gs.balance);
-    sprintf(lines[6], "   ");
-    sprintf(lines[7], LC_GAME_OVER_STATS_TEXT_4);
-    gui_dialog_wnd(&map_wnd, LC_GAME_OVER_HEAD, LC_GAME_OVER_HEAD, NULL, lines,
-                   8, NULL, 0, SOUND_ERROR, 1);
-
-    return 1;
-  }
-  return 0;
-}
-
-/* ----------------------------------------------------------------
- * GAME OVER EVENT - MONEY GONE
- * ---------------------------------------------------------------- */
-static int core_game_check_money_gone(void) {
-  if (gs.balance <= 0) {
-    char lines[9][100];
-    int i;
-
-    for (i = 0; i < 9; i++) {
-      lines[i][0] = '\0';
-    }
-
-    sprintf(lines[0], LC_GAME_OVER_MONEY_TEXT_1);
-    sprintf(lines[1], LC_GAME_OVER_MONEY_TEXT_2);
-    sprintf(lines[2], "   ");
-    sprintf(lines[3], LC_GAME_OVER_STATS_HEAD);
-    sprintf(lines[4], LC_GAME_OVER_STATS_TEXT_2, gs.missions_completed);
-    sprintf(lines[5], LC_GAME_OVER_STATS_TEXT_3, gs.balance);
-    sprintf(lines[6], "   ");
-    sprintf(lines[7], LC_GAME_OVER_STATS_TEXT_4);
-    gui_dialog_wnd(&map_wnd, LC_GAME_OVER_HEAD, LC_GAME_OVER_HEAD, NULL, lines,
-                   8, NULL, 0, SOUND_ERROR, 1);
-
-    return 1;
-  }
-  return 0;
-}
-
-/* ----------------------------------------------------------------
- * GAME OVER EVENT - PLAYER WINS!
- * ---------------------------------------------------------------- */
-static int core_game_check_win(void) {
-  if (gs.balance >= 1000000) {
-    char lines[9][100];
-    int i;
-
-    for (i = 0; i < 9; i++) {
-      lines[i][0] = '\0';
-    }
-
-    sprintf(lines[0], LC_GAME_OVER_WIN_TEXT_1);
-    sprintf(lines[1], LC_GAME_OVER_WIN_TEXT_2);
-    sprintf(lines[2], "   ");
-    sprintf(lines[3], LC_GAME_OVER_STATS_HEAD);
-    sprintf(lines[4], LC_GAME_OVER_STATS_TEXT_2, gs.missions_completed);
-    sprintf(lines[5], LC_GAME_OVER_STATS_TEXT_3, gs.balance);
-    sprintf(lines[6], "   ");
-    sprintf(lines[7], LC_GAME_OVER_STATS_TEXT_4);
-    gui_dialog_wnd(&map_wnd, LC_GAME_OVER_HEAD, LC_GAME_OVER_HEAD, NULL, lines,
-                   8, NULL, 0, SOUND_ERROR, 1);
-
-    return 1;
-  }
-  return 0;
-}
-
-/* ----------------------------------------------------------------
- * EVENT - QUEST DONE
- * ---------------------------------------------------------------- */
-static int core_game_event_quest_done(void) {
-  int i, j;
-  char lines[2][100];
-
-  for (i = 0; i < gs.quests_size; i++) {
-    if (gs.quests[i].target_system == gs.current_system) {
-      /* Set quest done */
-      gs.current_cargo -= gs.quests[i].cargo;
-      gs.balance += gs.quests[i].reward;
-
-      switch (gs.quests[i].type) {
-        case 1:
-          sprintf(lines[0], LC_QUEST_TYPE_1_DONE_1);
-          sprintf(lines[1], LC_QUEST_TYPE_1_DONE_2, gs.quests[i].reward);
-          break;
-        case 2:
-          sprintf(lines[0], LC_QUEST_TYPE_2_DONE_1);
-          sprintf(lines[1], LC_QUEST_TYPE_2_DONE_2, gs.quests[i].reward);
-          break;
-        case 3:
-          sprintf(lines[0], LC_QUEST_TYPE_3_DONE_1);
-          sprintf(lines[1], LC_QUEST_TYPE_3_DONE_2, gs.quests[i].reward);
-          break;
-        case 4:
-          sprintf(lines[0], LC_QUEST_TYPE_4_DONE_1);
-          sprintf(lines[1], LC_QUEST_TYPE_4_DONE_2, gs.quests[i].reward);
-          break;
-        case 5:
-          sprintf(lines[0], LC_QUEST_TYPE_5_DONE_1);
-          sprintf(lines[1], LC_QUEST_TYPE_5_DONE_2, gs.quests[i].reward);
-          break;
-      }
-
-      gui_npc_wnd(&map_wnd, &gs.quests[i].giver, NPC_DIALOG_WND,
-                  LC_QUEST_COMPLETE_HEAD, lines, 2, NULL, 0, 1);
-
-      /* Remove Quest from user log */
-      for (j = i; j < gs.quests_size; j++) {
-        gs.quests[j] = gs.quests[j + 1];
-      }
-
-      gs.quests_size--;
-      gs.missions_completed++;
-      if (i >= gs.quests_size) break;
-    }
-  }
-}
-
-/* ----------------------------------------------------------------
- * EVENT - GAS STATION
- * ---------------------------------------------------------------- */
-static void core_game_event_gas_station(void) {
-  if (sol_list[gs.current_system].is_gas_station && gs.fuel < 100) {
-    unsigned long percent_price, amount, total;
-
-    int i, j;
-    char* text[100];
-
-    char lines[3][100];
-    char buttons[2][100] = {LC_GUI_BOOL_YES, LC_GUI_BOOL_NO};
-
-    int choice = 0, gender = 0, faction = 0;
-    NPC gas_worker;
-
-    for (i = 0; i < 3; i++) {
-      lines[i][0] = '\0';
-    }
-
-    percent_price = (rand() % 3) + 1;
-    amount = 100 - gs.fuel;
-    total = amount * percent_price;
-    faction = sol_list[gs.current_system].faction;
-    gender = faction == 1 ? 1 : 0;
-
-    core_game_gen_npc(&gas_worker, faction, gender, GAS_NPC);
-
-    sprintf(lines[0], LC_GAME_GAS_STATION_TEXT_1, gs.current_system);
-    sprintf(lines[1], LC_GAME_GAS_STATION_TEXT_2, percent_price);
-
-    if (total > gs.balance) {
-      /* Not enough money! */
-      sprintf(lines[2], LC_GAME_GAS_STATION_NO_MONEY_TEXT, total);
-      gui_npc_wnd(&map_wnd, &gas_worker, NPC_DIALOG_WND,
-                  LC_GAME_GAS_STATION_HEAD, lines, 3, NULL, 0, 1);
-
-    } else {
-      sprintf(lines[2], LC_GAME_GAS_STATION_TEXT_3, total);
-      choice = gui_npc_wnd(&map_wnd, &gas_worker, NPC_CHOICE_WND,
-                           LC_GAME_GAS_STATION_HEAD, lines, 3, buttons, 2, 1);
-
-      if (choice == 0) {
-        gs.fuel = 100;
-        gs.balance -= total;
-      }
-    }
-  }
-}
-
-/* -----------------------------------------------------------------
- * EVENT - QUEST FAILED, SHOW PENALTY, DEDUCT BALANCE, REMOVE QUEST
- * ---------------------------------------------------------------- */
-static core_game_event_quest_failed(int index) {
-  int type, i;
-  char lines[2][100];
-  char header[80];
-
-  if (index < 0 || index >= gs.quests_size) return;
-
-  type = gs.quests[index].type;
-
-  /* Select failure text by quest type */
-  switch (type) {
-    case 1:
-      strcpy(lines[0], LC_QUEST_TYPE_1_FAIL_1);
-      sprintf(lines[1], LC_QUEST_TYPE_1_FAIL_2, gs.quests[index].penalty);
-      break;
-    case 2:
-      strcpy(lines[0], LC_QUEST_TYPE_2_FAIL_1);
-      sprintf(lines[1], LC_QUEST_TYPE_2_FAIL_2, gs.quests[index].penalty);
-      break;
-    case 3:
-      strcpy(lines[0], LC_QUEST_TYPE_3_FAIL_1);
-      sprintf(lines[1], LC_QUEST_TYPE_3_FAIL_2, gs.quests[index].penalty);
-      break;
-    case 4:
-      strcpy(lines[0], LC_QUEST_TYPE_4_FAIL_1);
-      sprintf(lines[1], LC_QUEST_TYPE_4_FAIL_2, gs.quests[index].penalty);
-      break;
-    case 5:
-      strcpy(lines[0], LC_QUEST_TYPE_5_FAIL_1);
-      sprintf(lines[1], LC_QUEST_TYPE_5_FAIL_2, gs.quests[index].penalty);
-      break;
-    default:
-      strcpy(lines[0], "Quest failed.");
-      sprintf(lines[1], "Penalty: %ld", gs.quests[index].penalty);
-      break;
-  }
-
-  strcpy(header, LC_QUEST_FAILED_HEAD);
-
-  gui_npc_wnd(&map_wnd, &gs.quests[index].giver, NPC_DIALOG_WND, header, lines,
-              2, NULL, 0, 1);
-
-  /* Apply penalty */
-  gs.balance -= gs.quests[index].penalty;
-  gui_bars_common_top();
-
-  /* Remove quest by shifting array left */
-  for (i = index; i < gs.quests_size - 1; i++) {
-    gs.quests[i] = gs.quests[i + 1];
-  }
-  gs.quests_size--;
-}
-
-/* -----------------------------------------------------------------
- * EVENT - PIRACY
- * ---------------------------------------------------------------- */
-static int core_game_event_piracy(void) {
-  int ship_type, faction, i;
-  long request;
-  NPC npc_pirate;
-  char lines[2][100];
-  char buttons[3][100];
-  int btn_count = 0;
-  int pay_idx = -1, drop_idx = -1, ejump_idx = -1;
-  int choice;
-  int droppable_cargo = 0;
-
-  ship_type = gs.ship_type;
-
-  /* Ransom amount based on ship type */
-  switch (ship_type) {
-    case 0:
-      request = 1000 + rand() % 1001;
-      break; /* 1000..2000 */
-    case 1:
-      request = 1000 + rand() % 2001;
-      break; /* 1000..3000 */
-    case 2:
-      request = 1000 + rand() % 4001;
-      break; /* 1000..5000 */
-    case 3:
-      request = 1000 + rand() % 4001;
-      break; /* same as 2 */
-    case 4:
-      request = 1000 + rand() % 9001;
-      break; /* 1000..10000 */
-    case 5:
-      request = 1000 + rand() % 19001;
-      break; /* 1000..20000 */
-    default:
-      request = 1000 + rand() % 1001;
-  }
-
-  for (i = 0; i < gs.quests_size; i++) {
-    if (gs.quests[i].type == 1 || gs.quests[i].type == 2)
-      droppable_cargo += gs.quests[i].cargo;
-  }
-
-  /* Generate npc_pirate: 90% Irish */
-  if ((rand() % 100) < 90)
-    faction = 1;
-  else
-    faction = rand() % 4;
-  core_game_gen_npc(&npc_pirate, faction, RANDOM_GENDER, QUEST_NPC);
-
-  strcpy(lines[0], LC_EVENT_PIRACY_TEXT_1);
-  sprintf(lines[1], LC_EVENT_PIRACY_TEXT_2, request);
-
-  /* Build active buttons */
-  /*if (gs.balance >= request) {*/
-  pay_idx = btn_count;
-  strcpy(buttons[btn_count], LC_EVENT_PIRACY_PAY_BTN);
-  btn_count++;
-  /*}*/
-
-  if (droppable_cargo > 0) {
-    drop_idx = btn_count;
-    strcpy(buttons[btn_count], LC_EVENT_PIRACY_DROP_BTN);
-    btn_count++;
-  }
-
-  if (gs.upgrade_emergency_jump) {
-    ejump_idx = btn_count;
-    strcpy(buttons[btn_count], LC_EVENT_EJUMP_BTN);
-    btn_count++;
-  }
-
-  choice = gui_npc_wnd(&map_wnd, &npc_pirate, NPC_CHOICE_WND,
-                       LC_EVENT_PIRACY_HEAD, lines, 2, buttons, btn_count, 2);
-
-  if (choice == pay_idx) {
-    /* Pay ransom */
-    gs.balance -= request;
-    gui_bars_common_top();
-  } else if (choice == drop_idx) {
-    /* Drop all cargo and fail corresponding quests */
-    gs.current_cargo = 0;
-    for (i = gs.quests_size - 1; i >= 0; i--) {
-      if (gs.quests[i].type == 1 || gs.quests[i].type == 2 ||
-          (gs.quests[i].type == 3 && !gs.upgrade_smuggler_bay)) {
-        core_game_event_quest_failed(i);
-      }
-    }
-  } else if (choice == ejump_idx) {
-    /* Emergency jump */
-    int current = gs.current_system;
-    int thread_count = sol_list[current].threadSize;
-    if (thread_count > 0) {
-      int selected = rand() % thread_count;
-      gs.prev_system = gs.current_system;
-      gs.current_system = sol_list[current].threads[selected].value;
-      wp.size = 0;
-      return core_game_run_event(1);
-    }
-  }
-  return 0;
-}
-
-/* -----------------------------------------------------------------
- * EVENT - CUSTOMS
- * ---------------------------------------------------------------- */
-static int core_game_event_customs(void) {
-  int faction, i;
-  long bribe;
-  NPC customs_officer;
-  char lines[2][100];
-  char buttons[3][100];
-  int btn_count = 0;
-  int bribe_idx = -1, allow_idx = -1, ejump_idx = -1;
-  int has_contraband = 0;
-  int choice;
-
-  faction = sol_list[gs.current_system].faction;
-  core_game_gen_npc(&customs_officer, faction, RANDOM_GENDER, QUEST_NPC);
-
-  /* Bribe amount 500..2000 */
-  bribe = 500 + rand() % 1501;
-
-  sprintf(lines[0], LC_EVENT_CUSTOMS_TEXT_1);
-  sprintf(lines[1], LC_EVENT_CUSTOMS_TEXT_2, gs.current_system,
-          data_sectors[sol_list[gs.current_system].sector]);
-
-  /* Check for contraband (type 3) quests */
-  for (i = 0; i < gs.quests_size; i++) {
-    if (gs.quests[i].type == 3) {
-      has_contraband = 1;
-      break;
-    }
-  }
-
-  /* Build buttons */
-  if (has_contraband) {
-    bribe_idx = btn_count;
-    strcpy(buttons[btn_count], LC_EVENT_CUSTOM_BARB_BTN);
-    btn_count++;
-  }
-  allow_idx = btn_count;
-  strcpy(buttons[btn_count], LC_EVENT_CUSTOM_ALLOW_BTN);
-  btn_count++;
-  if (gs.upgrade_emergency_jump) {
-    ejump_idx = btn_count;
-    strcpy(buttons[btn_count], LC_EVENT_EJUMP_BTN);
-    btn_count++;
-  }
-
-  choice = gui_npc_wnd(&map_wnd, &customs_officer, NPC_CHOICE_WND,
-                       LC_EVENT_CUSTOMS_HEAD, lines, 2, buttons, btn_count, 2);
-
-  if (choice == bribe_idx) {
-    /* Pay bribe */
-    gs.balance -= bribe;
-    gui_bars_common_top();
-    strcpy(lines[0], LC_EVENT_CUSTOMS_TEXT_3);
-    gui_npc_wnd(&map_wnd, &customs_officer, NPC_DIALOG_WND,
-                LC_EVENT_CUSTOMS_HEAD, lines, 1, NULL, 0, 1);
-  } else if (choice == allow_idx) {
-    /* Allow inspection */
-    if (!has_contraband || gs.upgrade_smuggler_bay) {
-      strcpy(lines[0], LC_EVENT_CUSTOMS_TEXT_4);
-      gui_npc_wnd(&map_wnd, &customs_officer, NPC_DIALOG_WND,
-                  LC_EVENT_CUSTOMS_HEAD, lines, 1, NULL, 0, 1);
-    } else {
-      /* Confiscate first contraband quest */
-      for (i = 0; i < gs.quests_size; i++) {
-        if (gs.quests[i].type == 3) {
-          strcpy(lines[0], LC_EVENT_CUSTOMS_TEXT_4);
-          gui_npc_wnd(&map_wnd, &customs_officer, NPC_DIALOG_WND,
-                      LC_EVENT_CUSTOMS_HEAD, lines, 1, NULL, 0, 1);
-          core_game_event_quest_failed(i);
-          break;
-        }
-      }
-    }
-  } else if (choice == ejump_idx) {
-    /* Emergency jump */
-    int current = gs.current_system;
-    int thread_count = sol_list[current].threadSize;
-    if (thread_count > 0) {
-      int selected = rand() % thread_count;
-      gs.prev_system = gs.current_system;
-      gs.current_system = sol_list[current].threads[selected].value;
-      wp.size = 0;
-      return core_game_run_event(1);
-    }
-  }
-
-  return 0;
-}
-
-/* -----------------------------------------------------------------
- * EVENT - KIDNAPPING
- * ---------------------------------------------------------------- */
-static int core_game_event_kidnapping(int quest_index) {
-  NPC kidnapper;
-  int faction;
-  char lines[2][100];
-  char msg[100];
-  char buttons[3][100];
-  int btn_count = 0;
-  int hide_idx = -1, give_idx = -1, ejump_idx = -1;
-  int choice;
-  QUEST* quest;
-
-  if (quest_index < 0 || quest_index >= gs.quests_size) return 0;
-
-  quest = &gs.quests[quest_index];
-
-  /* Generate kidnapper: 90% Irish */
-  if ((rand() % 100) < 90)
-    faction = 1;
-  else
-    faction = rand() % 4;
-  core_game_gen_npc(&kidnapper, faction, RANDOM_GENDER, QUEST_NPC);
-
-  sprintf(lines[0], LC_EVENT_NAP_TEXT_1, quest->giver.name);
-  strcpy(lines[1], LC_EVENT_NAP_TEXT_2);
-
-  /* Build buttons */
-  if (gs.upgrade_smuggler_bay) {
-    hide_idx = btn_count;
-    strcpy(buttons[btn_count], LC_EVENT_NAP_HIDE_BTN);
-    btn_count++;
-  }
-  give_idx = btn_count;
-  strcpy(buttons[btn_count], LC_EVENT_NAP_GIVE_BTN);
-  btn_count++;
-  if (gs.upgrade_emergency_jump) {
-    ejump_idx = btn_count;
-    strcpy(buttons[btn_count], LC_EVENT_EJUMP_BTN);
-    btn_count++;
-  }
-  choice = gui_npc_wnd(&map_wnd, &kidnapper, NPC_CHOICE_WND, LC_EVENT_NAP_HEAD,
-                       lines, 2, buttons, btn_count, 2);
-
-  if (choice == hide_idx) {
-    /* Hide NPC, reward half */
-    long half_reward = quest->reward / 2;
-    char single_line[1][100];
-
-    sprintf(single_line[0], LC_EVENT_NAP_THANK, half_reward);
-    gui_npc_wnd(&map_wnd, &quest->giver, NPC_DIALOG_WND, LC_EVENT_NAP_HEAD,
-                single_line, 1, NULL, 0, 1);
-    gs.balance += half_reward;
-  } else if (choice == give_idx) {
-    /* Give NPC, fail quest */
-    char single_line[1][100];
-
-    strcpy(single_line[0], LC_EVENT_NAP_FAIL);
-    gui_npc_wnd(&map_wnd, &kidnapper, NPC_DIALOG_WND, LC_EVENT_NAP_HEAD,
-                single_line, 1, NULL, 0, 1);
-    core_game_event_quest_failed(quest_index);
-  } else if (choice == ejump_idx) {
-    /* Emergency jump */
-    int current = gs.current_system;
-    int thread_count = sol_list[current].threadSize;
-    if (thread_count > 0) {
-      int selected = rand() % thread_count;
-      long half_reward = quest->reward / 2;
-      char single_line[1][100];
-      sprintf(single_line[0], LC_EVENT_NAP_THANK, half_reward);
-      gui_npc_wnd(&map_wnd, &quest->giver, NPC_DIALOG_WND, LC_EVENT_NAP_HEAD,
-                  single_line, 1, NULL, 0, 1);
-      gs.balance += half_reward;
-      gs.prev_system = gs.current_system;
-      gs.current_system = sol_list[current].threads[selected].value;
-      wp.size = 0;
-      return core_game_run_event(1);
-    }
-  }
-  return 0;
-}
-
-/* -----------------------------------------------------------------
- * EVENT - DANGER OBJECTS
- * ---------------------------------------------------------------- */
-static int core_game_event_danger_object(void) {
-  int cur = gs.current_system;
-  int prev = gs.prev_system;
-  int o = 0, i;
-  static char* upgr_names[] = {
-      LC_UPGRADE_SMUGGLER_BAY, LC_UPGRADE_CONTIN_JUMP_SYSTEM,
-      LC_UPGRADE_EMERGENCY_JUMP_SYSTEM, LC_UPGRADE_OBJECTS_MAP,
-      LC_UPGRADE_POLITICAL_MAP};
-
-  if (gs.current_system == gs.prev_system) return;
-  for (o = 0; o < obj_size; o++) {
-    if (core_objects_sphere_line_intersect(
-            sol_list[prev].x, sol_list[prev].y, sol_list[prev].z,
-            sol_list[cur].x, sol_list[cur].y, sol_list[cur].z, obj_list[o].x,
-            obj_list[o].y, obj_list[o].z, obj_list[o].r)) {
-      int thread_count = sol_list[cur].threadSize;
-      int selected = rand() % thread_count;
-      char lines[8][100];
-      int quest_selected = -1;
-      int upgr_selected = -1, print_upgr = 0;
-
-      for (i = 0; i < 8; i++) {
-        lines[i][0] = '\0';
-      }
-
-      switch (obj_list[o].type) {
-        case OBJ_GASCLOUD:
-          sprintf(lines[0], LC_EVENT_DANGER_TEXT, prev, cur,
-                  LC_EVENT_DANGER_GAS);
-
-          for (i = 0; i < gs.quests_size; i++) {
-            if (gs.quests[i].type == 1 || gs.quests[i].type == 2 ||
-                (gs.quests[i].type == 3 && !gs.upgrade_smuggler_bay)) {
-              quest_selected = i;
-              break;
-            }
-          }
-          /* Cargo damaged */
-          if (quest_selected >= 0) {
-            sprintf(lines[1], LC_EVENT_DANGER_GAS_TEXT,
-                    gs.quests[quest_selected].cargo,
-                    gs.quests[quest_selected].target_system);
-            gs.quests[quest_selected].reward /= 2;
-            sprintf(lines[2], LC_EVENT_DANGER_GAS_TEXT_2,
-                    gs.quests[quest_selected].reward);
-            gui_dialog_wnd(&map_wnd, LC_EVENT_DANGER_HEAD, LC_EVENT_DANGER_HEAD,
-                           NULL, lines, 3, NULL, 0, SOUND_ERROR, 1);
-          } else {
-            sprintf(lines[1], LC_EVENT_DANGER_GAS_NO);
-            gui_dialog_wnd(&map_wnd, LC_EVENT_DANGER_HEAD, LC_EVENT_DANGER_HEAD,
-                           NULL, lines, 2, NULL, 0, SOUND_ERROR, 1);
-          }
-
-          break;
-        case OBJ_BLACKHOLE:
-          sprintf(lines[0], LC_EVENT_DANGER_TEXT, prev, cur,
-                  LC_EVENT_DANGER_BH);
-          gs.prev_system = gs.current_system;
-          gs.current_system = sol_list[cur].threads[selected].value;
-          wp.size = 0;
-          sprintf(lines[1], LC_EVENT_DANGER_BH_TEXT, gs.current_system);
-          gui_dialog_wnd(&map_wnd, LC_EVENT_DANGER_HEAD, LC_EVENT_DANGER_HEAD,
-                         NULL, lines, 2, NULL, 0, SOUND_ERROR, 1);
-          return core_game_run_event(0);
-          break;
-        case OBJ_NEBULA:
-          sprintf(lines[0], LC_EVENT_DANGER_TEXT, prev, cur,
-                  LC_EVENT_DANGER_NEB);
-          upgr_selected = (rand() % 4) + 1;
-          if (upgr_selected == 1) {
-            if (gs.upgrade_continuous_jump) print_upgr = 1;
-
-            gs.upgrade_continuous_jump = 0;
-          }
-          if (upgr_selected == 2) {
-            if (gs.upgrade_emergency_jump) print_upgr = 1;
-
-            gs.upgrade_emergency_jump = 0;
-          }
-          if (upgr_selected == 3) {
-            if (gs.upgrade_objects_map) print_upgr = 1;
-
-            gs.upgrade_objects_map = 0;
-          }
-          if (upgr_selected == 4) {
-            if (gs.upgrade_political_map) print_upgr = 1;
-
-            gs.upgrade_political_map = 0;
-          }
-
-          if (print_upgr)
-            sprintf(lines[1], LC_EVENT_DANGER_NEB_TEXT,
-                    upgr_names[upgr_selected]);
-          else
-            sprintf(lines[1], LC_EVENT_DANGER_NEB_NO);
-
-          gui_dialog_wnd(&map_wnd, LC_EVENT_DANGER_HEAD, LC_EVENT_DANGER_HEAD,
-                         NULL, lines, 2, NULL, 0, SOUND_ERROR, 1);
-
-          break;
-      }
-
-      continue;
-    }
-  }
-}
 
 /* ----------------------------------------------------------------
  *
@@ -1106,109 +313,171 @@ static int core_game_event_danger_object(void) {
  *
  * ---------------------------------------------------------------- */
 
-/* -----------------------------------------------------------------
- * EVENT SYSTEM MAIN FUNCTIONS
+/* ----------------------------------------------------------------
+ * GENERATE NPC
  * ---------------------------------------------------------------- */
-int core_game_run_event(int fuel_consume) {
-  int i = 0, game_over = 0;
-  char buf[50];
-  int start_system = gs.current_system;
 
-  core_game_mark_visited(gs.current_system);
-  if (fuel_consume) gs.fuel -= data_hyper_fuel[gs.hyper_class];
+void core_game_gen_npc(NPC* ptr_npc, unsigned int faction,
+                              E_GENDER gender, E_NPC_TYPE npc_type) {
+  /* Name constants */
+  const char* IRISH_MALE_FIRST[] = {
+      LC_GEN_FNAME_MALE_IRISH_1,  LC_GEN_FNAME_MALE_IRISH_2,
+      LC_GEN_FNAME_MALE_IRISH_3,  LC_GEN_FNAME_MALE_IRISH_4,
+      LC_GEN_FNAME_MALE_IRISH_5,  LC_GEN_FNAME_MALE_IRISH_6,
+      LC_GEN_FNAME_MALE_IRISH_7,  LC_GEN_FNAME_MALE_IRISH_8,
+      LC_GEN_FNAME_MALE_IRISH_9,  LC_GEN_FNAME_MALE_IRISH_10,
+      LC_GEN_FNAME_MALE_IRISH_11, LC_GEN_FNAME_MALE_IRISH_12,
+      LC_GEN_FNAME_MALE_IRISH_13, LC_GEN_FNAME_MALE_IRISH_14,
+      LC_GEN_FNAME_MALE_IRISH_15};
 
-  game_over = core_game_check_fuel_gone();
-  if (game_over) return game_over;
+  const char* IRISH_FEMALE_FIRST[] = {
+      LC_GEN_FNAME_FEMALE_IRISH_1,  LC_GEN_FNAME_FEMALE_IRISH_2,
+      LC_GEN_FNAME_FEMALE_IRISH_3,  LC_GEN_FNAME_FEMALE_IRISH_4,
+      LC_GEN_FNAME_FEMALE_IRISH_5,  LC_GEN_FNAME_FEMALE_IRISH_6,
+      LC_GEN_FNAME_FEMALE_IRISH_7,  LC_GEN_FNAME_FEMALE_IRISH_8,
+      LC_GEN_FNAME_FEMALE_IRISH_9,  LC_GEN_FNAME_FEMALE_IRISH_10,
+      LC_GEN_FNAME_FEMALE_IRISH_11, LC_GEN_FNAME_FEMALE_IRISH_12,
+      LC_GEN_FNAME_FEMALE_IRISH_13, LC_GEN_FNAME_FEMALE_IRISH_14,
+      LC_GEN_FNAME_FEMALE_IRISH_15};
 
-  game_over = core_game_check_money_gone();
-  if (game_over) return game_over;
+  const char* IRISH_LAST[] = {
+      LC_GEN_LNAME_IRISH_1,  LC_GEN_LNAME_IRISH_2,  LC_GEN_LNAME_IRISH_3,
+      LC_GEN_LNAME_IRISH_4,  LC_GEN_LNAME_IRISH_5,  LC_GEN_LNAME_IRISH_6,
+      LC_GEN_LNAME_IRISH_7,  LC_GEN_LNAME_IRISH_8,  LC_GEN_LNAME_IRISH_9,
+      LC_GEN_LNAME_IRISH_10, LC_GEN_LNAME_IRISH_11, LC_GEN_LNAME_IRISH_12,
+      LC_GEN_LNAME_IRISH_13, LC_GEN_LNAME_IRISH_14, LC_GEN_LNAME_IRISH_15};
 
-  game_over = core_game_check_win();
-  if (game_over) return game_over;
+  const char* ARAB_MALE_FIRST[] = {
+      LC_GEN_FNAME_MALE_ARAB_1,  LC_GEN_FNAME_MALE_ARAB_2,
+      LC_GEN_FNAME_MALE_ARAB_3,  LC_GEN_FNAME_MALE_ARAB_4,
+      LC_GEN_FNAME_MALE_ARAB_5,  LC_GEN_FNAME_MALE_ARAB_6,
+      LC_GEN_FNAME_MALE_ARAB_7,  LC_GEN_FNAME_MALE_ARAB_8,
+      LC_GEN_FNAME_MALE_ARAB_9,  LC_GEN_FNAME_MALE_ARAB_10,
+      LC_GEN_FNAME_MALE_ARAB_11, LC_GEN_FNAME_MALE_ARAB_12,
+      LC_GEN_FNAME_MALE_ARAB_13, LC_GEN_FNAME_MALE_ARAB_14,
+      LC_GEN_FNAME_MALE_ARAB_15};
 
-  if (!game_over) {
-    system_quests_size = 5;
-    /* System quests generator */
-    for (i = 0; i < system_quests_size; i++) {
-      /*gui_progress_wnd(&map_wnd, "GS-CARD 1.5", "Generating Quests", i,
-       * sol_size);*/
-      core_game_gen_quest(&system_quests[i], gs.reputation,
-                          sol_list[gs.current_system].faction);
-    }
+  const char* ARAB_FEMALE_FIRST[] = {
+      LC_GEN_FNAME_FEMALE_ARAB_1,  LC_GEN_FNAME_FEMALE_ARAB_2,
+      LC_GEN_FNAME_FEMALE_ARAB_3,  LC_GEN_FNAME_FEMALE_ARAB_4,
+      LC_GEN_FNAME_FEMALE_ARAB_5,  LC_GEN_FNAME_FEMALE_ARAB_6,
+      LC_GEN_FNAME_FEMALE_ARAB_7,  LC_GEN_FNAME_FEMALE_ARAB_8,
+      LC_GEN_FNAME_FEMALE_ARAB_9,  LC_GEN_FNAME_FEMALE_ARAB_10,
+      LC_GEN_FNAME_FEMALE_ARAB_11, LC_GEN_FNAME_FEMALE_ARAB_12,
+      LC_GEN_FNAME_FEMALE_ARAB_13, LC_GEN_FNAME_FEMALE_ARAB_14,
+      LC_GEN_FNAME_FEMALE_ARAB_15};
 
-    for (i = 0; i < gs.quests_size; i++) {
-      /*gui_progress_wnd(&map_wnd, "GS-CARD 1.5", "Updating Quests", i,
-       * gs.quests_size);*/
-      gs.quests[i].jumps =
-          core_finder_get_jumps(gs.current_system, gs.quests[i].target_system);
-    }
+  const char* ARAB_LAST[] = {
+      LC_GEN_LNAME_ARAB_1,  LC_GEN_LNAME_ARAB_2,  LC_GEN_LNAME_ARAB_3,
+      LC_GEN_LNAME_ARAB_4,  LC_GEN_LNAME_ARAB_5,  LC_GEN_LNAME_ARAB_6,
+      LC_GEN_LNAME_ARAB_7,  LC_GEN_LNAME_ARAB_8,  LC_GEN_LNAME_ARAB_9,
+      LC_GEN_LNAME_ARAB_10, LC_GEN_LNAME_ARAB_11, LC_GEN_LNAME_ARAB_12,
+      LC_GEN_LNAME_ARAB_13, LC_GEN_LNAME_ARAB_14, LC_GEN_LNAME_ARAB_15};
 
-    /* System upgrades market generator */
-    core_game_gen_upgrades();
-    core_game_gen_shipyard();
+  const char* COMMON_MALE_FIRST[] = {
+      LC_GEN_FNAME_MALE_COMMON_1,  LC_GEN_FNAME_MALE_COMMON_2,
+      LC_GEN_FNAME_MALE_COMMON_3,  LC_GEN_FNAME_MALE_COMMON_4,
+      LC_GEN_FNAME_MALE_COMMON_5,  LC_GEN_FNAME_MALE_COMMON_6,
+      LC_GEN_FNAME_MALE_COMMON_7,  LC_GEN_FNAME_MALE_COMMON_8,
+      LC_GEN_FNAME_MALE_COMMON_9,  LC_GEN_FNAME_MALE_COMMON_10,
+      LC_GEN_FNAME_MALE_COMMON_11, LC_GEN_FNAME_MALE_COMMON_12,
+      LC_GEN_FNAME_MALE_COMMON_13, LC_GEN_FNAME_MALE_COMMON_14,
+      LC_GEN_FNAME_MALE_COMMON_15};
 
-    if (!init_game) {
-      /* Target system changed by black hole */
-      {
-        int nested_over = core_game_event_danger_object();
-        if (gs.current_system != start_system) {
-          game_over = nested_over;
-          return game_over;
-        }
-      }
+  const char* COMMON_FEMALE_FIRST[] = {
+      LC_GEN_FNAME_FEMALE_COMMON_1,  LC_GEN_FNAME_FEMALE_COMMON_2,
+      LC_GEN_FNAME_FEMALE_COMMON_3,  LC_GEN_FNAME_FEMALE_COMMON_4,
+      LC_GEN_FNAME_FEMALE_COMMON_5,  LC_GEN_FNAME_FEMALE_COMMON_6,
+      LC_GEN_FNAME_FEMALE_COMMON_7,  LC_GEN_FNAME_FEMALE_COMMON_8,
+      LC_GEN_FNAME_FEMALE_COMMON_9,  LC_GEN_FNAME_FEMALE_COMMON_10,
+      LC_GEN_FNAME_FEMALE_COMMON_11, LC_GEN_FNAME_FEMALE_COMMON_12,
+      LC_GEN_FNAME_FEMALE_COMMON_13, LC_GEN_FNAME_FEMALE_COMMON_14,
+      LC_GEN_FNAME_FEMALE_COMMON_15};
 
-      /* Random events */
-      if (rand() % 100 < (sol_list[gs.current_system].faction == 1 ? 30 : 10)) {
-        int nested_over = core_game_event_piracy();
-        if (gs.current_system != start_system) {
-          game_over = nested_over;
-          return game_over;
-        }
-      }
+  const char* COMMON_LAST[] = {
+      LC_GEN_LNAME_COMMON_1,  LC_GEN_LNAME_COMMON_2,  LC_GEN_LNAME_COMMON_3,
+      LC_GEN_LNAME_COMMON_4,  LC_GEN_LNAME_COMMON_5,  LC_GEN_LNAME_COMMON_6,
+      LC_GEN_LNAME_COMMON_7,  LC_GEN_LNAME_COMMON_8,  LC_GEN_LNAME_COMMON_9,
+      LC_GEN_LNAME_COMMON_10, LC_GEN_LNAME_COMMON_11, LC_GEN_LNAME_COMMON_12,
+      LC_GEN_LNAME_COMMON_13, LC_GEN_LNAME_COMMON_14, LC_GEN_LNAME_COMMON_15};
 
-      if (rand() % 100 < (sol_list[gs.current_system].faction == 2 ? 70 : 20) &&
-          sol_list[gs.current_system].is_shipyard) {
-        int nested_over = core_game_event_customs();
-        if (gs.current_system != start_system) {
-          game_over = nested_over;
-          return game_over;
-        }
-      }
+  const char GENDER_SYMBOL[] = {'M', 'F'};
 
-      /* Kidnapping: 10% chance if player has at least one type 4 quest */
-      for (i = 0; i < gs.quests_size; i++) {
-        if (gs.quests[i].type == 4) {
-          if (rand() % 100 < 10) {
-            int nested_over = core_game_event_kidnapping(i);
-            if (gs.current_system != start_system) {
-              game_over = nested_over;
-              return game_over;
-            }
-          }
-          break; /* only first type 4 quest triggers kidnapping */
-        }
-      }
+  const char FACTION_SYMBOL[] = {'A', 'R', 'S', 'U'};
 
-      core_game_event_quest_done();
+  int photo_id = 0;
 
-      game_over = core_game_check_win();
-    } else {
-      init_game = 0;
-    }
+  ptr_npc->faction = faction;
+
+  if (gender == RANDOM_GENDER)
+    ptr_npc->gender = rand() % 3 == 2 ? 1 : 0;
+  else
+    ptr_npc->gender = gender;
+
+  if (ptr_npc->gender == 0)
+    photo_id = (rand() % MALE_PORTRAITS_COUNT) + 1;
+  else
+    photo_id = (rand() % FEMALE_PORTRAITS_COUNT) + 1;
+
+  if (npc_type == QUEST_NPC)
+    sprintf(ptr_npc->photo, "NPC/%c%c%d.BMP", FACTION_SYMBOL[ptr_npc->faction],
+            GENDER_SYMBOL[ptr_npc->gender], photo_id);
+  else if (npc_type == GAS_NPC)
+    sprintf(ptr_npc->photo, "NPC/GAS%c.BMP", FACTION_SYMBOL[ptr_npc->faction]);
+
+  switch (faction) {
+    case 0:
+      if (ptr_npc->gender == 0)
+        sprintf(ptr_npc->name, "%s %s", ARAB_MALE_FIRST[rand() % NAMES_COUNT],
+                ARAB_LAST[rand() % NAMES_COUNT]);
+      else
+        sprintf(ptr_npc->name, "%s %s", ARAB_FEMALE_FIRST[rand() % NAMES_COUNT],
+                ARAB_LAST[rand() % NAMES_COUNT]);
+      break;
+
+    case 1:
+      if (ptr_npc->gender == 0)
+        sprintf(ptr_npc->name, "%s %s", IRISH_MALE_FIRST[rand() % NAMES_COUNT],
+                IRISH_LAST[rand() % NAMES_COUNT]);
+      else
+        sprintf(ptr_npc->name, "%s %s",
+                IRISH_FEMALE_FIRST[rand() % NAMES_COUNT],
+                IRISH_LAST[rand() % NAMES_COUNT]);
+      break;
+
+    case 2:
+    case 3:
+      if (ptr_npc->gender == 0)
+        sprintf(ptr_npc->name, "%s %s", COMMON_MALE_FIRST[rand() % NAMES_COUNT],
+                COMMON_LAST[rand() % NAMES_COUNT]);
+      else
+        sprintf(ptr_npc->name, "%s %s",
+                COMMON_FEMALE_FIRST[rand() % NAMES_COUNT],
+                COMMON_LAST[rand() % NAMES_COUNT]);
+      break;
+  }
+}
+
+/* ----------------------------------------------------------------
+ * GENERATE ALL FOR CURRENT SYSTEM
+ * ---------------------------------------------------------------- */
+void core_game_gen_all() {
+  int i;
+  system_quests_size = 5;
+  /* System quests generator */
+  for (i = 0; i < system_quests_size; i++) {
+    core_game_gen_quest(&system_quests[i], gs.reputation,
+                        sol_list[gs.current_system].faction);
   }
 
-  core_game_event_gas_station();
+  for (i = 0; i < gs.quests_size; i++) {
+    gs.quests[i].jumps =
+        core_finder_get_jumps(gs.current_system, gs.quests[i].target_system);
+  }
 
-  game_over = core_game_check_fuel_gone();
-  if (game_over) return game_over;
-
-  game_over = core_game_check_money_gone();
-  if (game_over) return game_over;
-
-  game_over = core_game_check_win();
-  if (game_over) return game_over;
-
-  return game_over;
+  /* System upgrades market generator */
+  core_game_gen_upgrades();
+  core_game_gen_shipyard();
 }
 
 /* ----------------------------------------------------------------
@@ -1218,6 +487,17 @@ int core_game_run_event(int fuel_consume) {
 int core_game_is_visited(int system) {
   if (system < 0 || system >= sol_size || !gs.visited) return 0;
   return (gs.visited[system >> 3] >> (system & 7)) & 1;
+}
+
+/* ----------------------------------------------------------------
+ * MARK SYSTEM AS VISITED
+ * USED IN EVENTS.C
+ * ---------------------------------------------------------------- */
+
+void core_game_mark_visited() {
+  int system = gs.current_system;
+  if (system < 0 || system >= sol_size || !gs.visited) return;
+  gs.visited[system >> 3] |= (1 << (system & 7));
 }
 
 /* ----------------------------------------------------------------
@@ -1256,7 +536,6 @@ int core_game_accept_quest(unsigned int index) {
 void core_game_new_game(char* name) {
   int i;
 
-  init_game = 1;
   strcpy(gs.captain_name, name);
   gs.balance = 500;
   gs.current_system = 85;
@@ -1289,12 +568,11 @@ void core_game_new_game(char* name) {
   system_quests_size = 0;
   system_upgrades_size = 0;
 
-  core_game_run_event(0);
+  core_game_gen_all();
+  core_game_mark_visited(gs.current_system);
   wp.size = 0;
 
   core_game_save("USER.SAV");
-
-  /* Draw new game GUI */
   gui_map_nav_move_screen_to(gs.current_system);
 }
 
@@ -1303,13 +581,13 @@ void core_game_new_game(char* name) {
  * ---------------------------------------------------------------- */
 int core_game_load(char* filename) {
   int result = 0;
-  init_game = 1;
   result = data_reader_load_game_file(&gs, filename);
 
   if (result == 1) {
     gs.prev_system = gs.current_system;
     gui_map_nav_move_screen_to(gs.current_system);
-    core_game_run_event(0);
+    core_game_gen_all();
+    core_game_mark_visited(gs.current_system);
     wp.size = 0;
     /* Draw new game GUI */
     gui_map_nav_move_screen_to(gs.current_system);
