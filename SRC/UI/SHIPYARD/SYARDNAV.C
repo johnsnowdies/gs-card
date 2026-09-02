@@ -8,19 +8,20 @@
 #include "ui/locale.h"
 #include "ui/shipyard/syardnav.h"
 #include "ui/shipyard/syardwnd.h"
+#include "ui/menu/menuwnd.h"
 
 /* ----------------------------------------------------------------
  * EXTERNAL: SCR_SHIPYARD -- SHIPYARD WINDOW KEY HANDLER
  * ---------------------------------------------------------------- */
 int gui_shipyard_wnd_key(int ch, WND* parent) {
   if (TAB == ch) {
-    dispatch_wnd(SCR_MAP, &root_wnd);
+    dispatch_wnd(SCR_MAP);
   }
   if (F1 == ch) {
-    dispatch_wnd(SCR_STATUS, &root_wnd);
+    dispatch_wnd(SCR_STATUS);
   }
   if (F2 == ch) {
-    dispatch_wnd(SCR_UPGRADE, &root_wnd);
+    dispatch_wnd(SCR_UPGRADE);
   }
   if (ENTER == ch) {
     gui_shipyard_deal_wnd();
@@ -38,7 +39,8 @@ int gui_shipyard_wnd_key(int ch, WND* parent) {
     }
   }
   if (ESC == ch) {
-    dispatch_wnd(SCR_GAME_MENU, &root_wnd);
+    game_menu_wnd.ptr_parent = &shipyard_wnd;
+    dispatch_wnd(SCR_GAME_MENU);
   }
   return 0;
 }

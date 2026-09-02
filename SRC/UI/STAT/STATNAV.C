@@ -13,27 +13,29 @@
 #include "ui/stat/statnav.h"
 #include "ui/stat/statwnd.h"
 #include "ui/upgrade/upgrwnd.h"
+#include "ui/menu/menuwnd.h"
 
 /* ----------------------------------------------------------
  * EXTERNAL: SCR_STATUS -- STATUS WINDOW KEY HANDLER
  * ---------------------------------------------------------- */
 int gui_status_wnd_key(int ch, WND* parent) {
   if (TAB == ch) {
-    dispatch_wnd(SCR_MAP, &root_wnd);
+    dispatch_wnd(SCR_MAP);
   }
   if (F2 == ch) {
-    dispatch_wnd(SCR_UPGRADE, &root_wnd);
+    dispatch_wnd(SCR_UPGRADE);
   }
   if (F3 == ch) {
     if (sol_list[gs.current_system].is_shipyard) {
-      dispatch_wnd(SCR_SHIPYARD, &root_wnd);
+      dispatch_wnd(SCR_SHIPYARD);
     } else {
       gui_warning_wnd(&status_wnd, LC_GEN_ERROR_HEAD, LC_SHIPYARD_ERROR,
                       SOUND_ERROR);
     }
   }
   if (ESC == ch) {
-    dispatch_wnd(SCR_GAME_MENU, &root_wnd);
+    game_menu_wnd.ptr_parent = &status_wnd;
+    dispatch_wnd(SCR_GAME_MENU);
   }
   if (UP == ch) {
     if (system_quest_selected > 0) {

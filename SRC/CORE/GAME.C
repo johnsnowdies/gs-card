@@ -478,8 +478,6 @@ static int core_game_check_fuel_gone(void) {
     char lines[9][100];
     int i;
 
-    gui_bars_common_top();
-
     for (i = 0; i < 9; i++) {
       lines[i][0] = '\0';
     }
@@ -508,8 +506,6 @@ static int core_game_check_money_gone(void) {
     char lines[9][100];
     int i;
 
-    gui_bars_common_top();
-
     for (i = 0; i < 9; i++) {
       lines[i][0] = '\0';
     }
@@ -537,9 +533,6 @@ static int core_game_check_win(void) {
   if (gs.balance >= 1000000) {
     char lines[9][100];
     int i;
-
-    gui_bars_common_top();
-    gui_map_wnd_refresh();
 
     for (i = 0; i < 9; i++) {
       lines[i][0] = '\0';
@@ -596,9 +589,6 @@ static int core_game_event_quest_done(void) {
           sprintf(lines[1], LC_QUEST_TYPE_5_DONE_2, gs.quests[i].reward);
           break;
       }
-
-      gui_bars_common_top();
-      gui_map_wnd_refresh();
 
       gui_npc_wnd(&map_wnd, &gs.quests[i].giver, NPC_DIALOG_WND,
                   LC_QUEST_COMPLETE_HEAD, lines, 2, NULL, 0, 1);
@@ -707,14 +697,11 @@ static core_game_event_quest_failed(int index) {
 
   strcpy(header, LC_QUEST_FAILED_HEAD);
 
-  gui_map_wnd_refresh();
   gui_npc_wnd(&map_wnd, &gs.quests[index].giver, NPC_DIALOG_WND, header, lines,
               2, NULL, 0, 1);
-  gui_map_wnd_refresh();
 
   /* Apply penalty */
   gs.balance -= gs.quests[index].penalty;
-
   gui_bars_common_top();
 
   /* Remove quest by shifting array left */
@@ -882,13 +869,12 @@ static int core_game_event_customs(void) {
   if (choice == bribe_idx) {
     /* Pay bribe */
     gs.balance -= bribe;
-    gui_map_wnd_refresh();
+    gui_bars_common_top();
     strcpy(lines[0], LC_EVENT_CUSTOMS_TEXT_3);
     gui_npc_wnd(&map_wnd, &customs_officer, NPC_DIALOG_WND,
                 LC_EVENT_CUSTOMS_HEAD, lines, 1, NULL, 0, 1);
   } else if (choice == allow_idx) {
     /* Allow inspection */
-    gui_map_wnd_refresh();
     if (!has_contraband || gs.upgrade_smuggler_bay) {
       strcpy(lines[0], LC_EVENT_CUSTOMS_TEXT_4);
       gui_npc_wnd(&map_wnd, &customs_officer, NPC_DIALOG_WND,
@@ -972,7 +958,6 @@ static int core_game_event_kidnapping(int quest_index) {
     char single_line[1][100];
 
     sprintf(single_line[0], LC_EVENT_NAP_THANK, half_reward);
-    gui_map_wnd_refresh();
     gui_npc_wnd(&map_wnd, &quest->giver, NPC_DIALOG_WND, LC_EVENT_NAP_HEAD,
                 single_line, 1, NULL, 0, 1);
     gs.balance += half_reward;
@@ -981,7 +966,6 @@ static int core_game_event_kidnapping(int quest_index) {
     char single_line[1][100];
 
     strcpy(single_line[0], LC_EVENT_NAP_FAIL);
-    gui_map_wnd_refresh();
     gui_npc_wnd(&map_wnd, &kidnapper, NPC_DIALOG_WND, LC_EVENT_NAP_HEAD,
                 single_line, 1, NULL, 0, 1);
     core_game_event_quest_failed(quest_index);
@@ -994,7 +978,6 @@ static int core_game_event_kidnapping(int quest_index) {
       long half_reward = quest->reward / 2;
       char single_line[1][100];
       sprintf(single_line[0], LC_EVENT_NAP_THANK, half_reward);
-      gui_map_wnd_refresh();
       gui_npc_wnd(&map_wnd, &quest->giver, NPC_DIALOG_WND, LC_EVENT_NAP_HEAD,
                   single_line, 1, NULL, 0, 1);
       gs.balance += half_reward;
@@ -1031,9 +1014,6 @@ static int core_game_event_danger_object(void) {
       int quest_selected = -1;
       int upgr_selected = -1, print_upgr = 0;
 
-      gui_bars_common_top();
-      gui_map_wnd_refresh();
-
       for (i = 0; i < 8; i++) {
         lines[i][0] = '\0';
       }
@@ -1058,12 +1038,10 @@ static int core_game_event_danger_object(void) {
             gs.quests[quest_selected].reward /= 2;
             sprintf(lines[2], LC_EVENT_DANGER_GAS_TEXT_2,
                     gs.quests[quest_selected].reward);
-            gui_bars_common_top();
             gui_dialog_wnd(&map_wnd, LC_EVENT_DANGER_HEAD, LC_EVENT_DANGER_HEAD,
                            NULL, lines, 3, NULL, 0, SOUND_ERROR, 1);
           } else {
             sprintf(lines[1], LC_EVENT_DANGER_GAS_NO);
-            gui_bars_common_top();
             gui_dialog_wnd(&map_wnd, LC_EVENT_DANGER_HEAD, LC_EVENT_DANGER_HEAD,
                            NULL, lines, 2, NULL, 0, SOUND_ERROR, 1);
           }
@@ -1076,7 +1054,6 @@ static int core_game_event_danger_object(void) {
           gs.current_system = sol_list[cur].threads[selected].value;
           wp.size = 0;
           sprintf(lines[1], LC_EVENT_DANGER_BH_TEXT, gs.current_system);
-          gui_bars_common_top();
           gui_dialog_wnd(&map_wnd, LC_EVENT_DANGER_HEAD, LC_EVENT_DANGER_HEAD,
                          NULL, lines, 2, NULL, 0, SOUND_ERROR, 1);
           return core_game_run_event(0);
@@ -1112,7 +1089,6 @@ static int core_game_event_danger_object(void) {
           else
             sprintf(lines[1], LC_EVENT_DANGER_NEB_NO);
 
-          gui_bars_common_top();
           gui_dialog_wnd(&map_wnd, LC_EVENT_DANGER_HEAD, LC_EVENT_DANGER_HEAD,
                          NULL, lines, 2, NULL, 0, SOUND_ERROR, 1);
 
@@ -1188,8 +1164,6 @@ int core_game_run_event(int fuel_consume) {
           game_over = nested_over;
           return game_over;
         }
-        gui_bars_common_top();
-        gui_map_wnd_refresh();
       }
 
       if (rand() % 100 < (sol_list[gs.current_system].faction == 2 ? 70 : 20) &&
@@ -1199,8 +1173,6 @@ int core_game_run_event(int fuel_consume) {
           game_over = nested_over;
           return game_over;
         }
-        gui_bars_common_top();
-        gui_map_wnd_refresh();
       }
 
       /* Kidnapping: 10% chance if player has at least one type 4 quest */
@@ -1212,8 +1184,6 @@ int core_game_run_event(int fuel_consume) {
               game_over = nested_over;
               return game_over;
             }
-            gui_bars_common_top();
-            gui_map_wnd_refresh();
           }
           break; /* only first type 4 quest triggers kidnapping */
         }
@@ -1326,8 +1296,6 @@ void core_game_new_game(char* name) {
 
   /* Draw new game GUI */
   gui_map_nav_move_screen_to(gs.current_system);
-  gui_bars_map_bottom();
-  gui_bars_common_top();
 }
 
 /* ----------------------------------------------------------------
@@ -1345,8 +1313,6 @@ int core_game_load(char* filename) {
     wp.size = 0;
     /* Draw new game GUI */
     gui_map_nav_move_screen_to(gs.current_system);
-    gui_bars_map_bottom();
-    gui_bars_common_top();
   }
 
   return result;

@@ -189,7 +189,7 @@ int gui_map_wnd_key(int ch, WND* parent) {
   }
 
   if (TAB == ch) {
-    dispatch_wnd(SCR_STATUS, &root_wnd);
+    dispatch_wnd(SCR_STATUS);
   }
   if (ENTER == ch) {
     /* ----------------------------------------------------------------
@@ -210,26 +210,24 @@ int gui_map_wnd_key(int ch, WND* parent) {
         if (wp.size != 2 && gs.upgrade_continuous_jump) {
           for (i = 0; i <= wp.size - 1; i++) wp.way[i] = wp.way[i + 1];
           wp.size--;
-          gui_map_path_wnd();
         } else {
           wp.size = 0;
-          gui_map_wnd_refresh();
         }
+
+        dispatch_wnd(SCR_MAP);
 
         /* Run game new system events */
         game_over = core_game_run_event(1);
         gui_map_nav_move_screen_to(gs.current_system);
 
         if (!game_over) {
-          gui_bars_common_top();
-          gui_map_wnd_refresh();
+          dispatch_wnd(SCR_MAP);
         } else {
-          dispatch_wnd(SCR_MAIN_MENU, &root_wnd);
+          dispatch_wnd(SCR_MAIN_MENU);
         }
       } else {
         wp.size = 0;
-        gui_bars_common_top();
-        gui_map_wnd_refresh();
+        dispatch_wnd(SCR_MAP);
       }
     }
   }
@@ -238,7 +236,8 @@ int gui_map_wnd_key(int ch, WND* parent) {
       wp.size = 0;
       gui_map_wnd_refresh();
     } else {
-      dispatch_wnd(SCR_GAME_MENU, &map_wnd);
+      game_menu_wnd.ptr_parent = &map_wnd;
+      dispatch_wnd(SCR_GAME_MENU);
     }
   }
   return 0;

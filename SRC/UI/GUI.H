@@ -100,6 +100,7 @@ PROGRESS_BAR {
 #define WND struct gui_proto_window
 WND {
   E_GAME_SCREEN id;
+  WND* ptr_parent;
   char* header;
   int x;
   int y;
@@ -132,7 +133,7 @@ extern char* gui_input_wnd(WND* ptr_parent, char* header, char* text,
 extern void gui_progress_wnd(WND* ptr_parent, char* header, char* text,
                              int current, int total);
 
-extern int gui_dialog_wnd(WND* parent, char* header, char* title,
+extern int gui_dialog_wnd(WND* ptr_parent, char* header, char* title,
                           char* photo_file, char lines[][100], int lines_count,
                           char buttons[][100], int buttons_count,
                           int play_sound, int buttons_orient);

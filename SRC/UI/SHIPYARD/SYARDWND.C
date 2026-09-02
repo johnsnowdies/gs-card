@@ -10,6 +10,7 @@
 #include "ui/locale.h"
 #include "ui/npc/npcwnd.h"
 #include "ui/shipyard/syardwnd.h"
+#include "ui/menu/menuwnd.h"
 
 WND shipyard_wnd;
 int ship_selected = 0;
@@ -192,8 +193,8 @@ void gui_shipyard_deal_wnd(void) {
               system_shipyard_size--;
               ship_selected = 0;
             }
+            dispatch_wnd(SCR_SHIPYARD);
 
-            gui_shipyard_wnd();
             sfx_success();
           } else {
             gui_warning_wnd(&shipyard_wnd, LC_GEN_ERROR_HEAD,
@@ -201,10 +202,7 @@ void gui_shipyard_deal_wnd(void) {
           }
         } else {
           sfx_error();
-          gui_shipyard_wnd();
         }
-      } else {
-        gui_shipyard_wnd();
       }
     }
   }
@@ -376,6 +374,7 @@ void gui_shipyard_wnd() {
 }
 
 void gui_shipyard_wnd_dispatch(WND* parent){
+  shipyard_wnd.ptr_parent = &root_wnd;
   gui_shipyard_wnd();
   gui_bars_common_top();
   gui_bars_status_bottom();

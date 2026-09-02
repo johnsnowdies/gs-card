@@ -9,7 +9,7 @@
 #include "ui/locale.h"
 #include "ui/map/mapwnd.h"
 
-WND map_wnd = {SCR_MAP, NULL, 0, 21, 639, 460};
+WND map_wnd;
 int is_coord = 1, is_hyper = 0, mode = 1;
 int path_wnd_index = 0;
 
@@ -730,6 +730,12 @@ void gui_map_wnd_refresh() {
 }
 
 void gui_map_wnd_dispatch(WND* parent){
+  map_wnd.id = SCR_MAP;
+  map_wnd.ptr_parent = &root_wnd;
+  map_wnd.x =  0;
+  map_wnd.y = 21;
+  map_wnd.height = 460;
+
   gui_map_wnd_refresh(); 
   gui_bars_map_bottom();
   gui_bars_common_top();

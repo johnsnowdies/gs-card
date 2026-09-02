@@ -95,11 +95,10 @@ GAME_STATE gs;
 unsigned char SIG_TERM = 0;
 
 /* Root window */
-WND root_wnd = {SCR_MAIN_MENU, NULL, 0, 21, 639, 460};
+WND root_wnd = {SCR_MAIN_MENU, NULL, NULL, 0, 21, 639, 460};
 
 /* Screens */
 E_GAME_SCREEN cur_screen = SCR_MAIN_MENU;
-E_GAME_SCREEN prev_screen = SCR_MAP;
 
 /* ----------------------------------------------------------------
  * HANDLERS TABLE
@@ -124,10 +123,18 @@ wnd_dispatcher wnd_dispatchers[] = {
     gui_shipyard_wnd_dispatch     /* SCR_SHIPYARD */
 };
 
-void dispatch_wnd(E_GAME_SCREEN id, WND* parent) {
-  prev_screen = cur_screen;
+WND* windows[] = {
+    &map_wnd,       /* SCR_MAP */
+    &main_menu_wnd, /* SCR_MAIN_MENU */
+    &game_menu_wnd, /* SCR_GAME_MENU */
+    &status_wnd,    /* SCR_STATUS */
+    &upgrade_wnd,   /* SCR_UPGRADE */
+    &shipyard_wnd   /* SCR_SHIPYARD */
+};
+
+void dispatch_wnd(E_GAME_SCREEN id) {
   cur_screen = id;
-  wnd_dispatchers[id](parent);
+  wnd_dispatchers[id](windows[cur_screen]->ptr_parent);
 }
 
 /* ----------------------------------------------------------------
@@ -152,13 +159,14 @@ int main() {
 
   gui_clrscr();
 
+  main_menu_wnd.ptr_parent = &root_wnd;
   /* Draw Main Menu */
-  dispatch_wnd(SCR_MAIN_MENU, &root_wnd);
+  dispatch_wnd(SCR_MAIN_MENU);
 
   while (!SIG_TERM) {
     c = getch();
     if (cur_screen >= 0 && cur_screen < 6) {
-      key_handlers[cur_screen](c, &root_wnd);
+      key_handlers[cur_screen](c, windows[cur_screen]->ptr_parent);
     }
   }
 

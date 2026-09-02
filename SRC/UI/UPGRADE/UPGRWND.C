@@ -11,6 +11,7 @@
 #include "ui/npc/npcwnd.h"
 #include "ui/stat/statwnd.h"
 #include "ui/upgrade/upgrwnd.h"
+#include "ui/menu/menuwnd.h"
 
 WND upgrade_wnd;
 int upgrade_selected = 0;
@@ -202,17 +203,13 @@ void gui_upgrade_show_info(int selected) {
             system_upgrades_size--;
             upgrade_selected = 0;
           }
+          dispatch_wnd(SCR_UPGRADE, &root_wnd);
 
-          gui_upgrade_wnd();
           sfx_success();
         } else {
           gui_warning_wnd(&upgrade_wnd, LC_GEN_ERROR_HEAD, LC_UPGRADE_NO_MONEY,
                           SOUND_ERROR);
-          getch();
-          gui_upgrade_wnd();
         }
-      } else {
-        gui_upgrade_wnd();
       }
     }
   }
@@ -266,11 +263,13 @@ void gui_upgrade_draw_list(void) {
  * ---------------------------------------------------------------- */
 void gui_upgrade_wnd(void) {
   upgrade_wnd.id = SCR_UPGRADE;
+  upgrade_wnd.ptr_parent = &root_wnd;
   upgrade_wnd.x = UPGRADE_WND_DEFAULT_X;
   upgrade_wnd.y = UPGRADE_WND_DEFAULT_Y;
   upgrade_wnd.width = UPGRADE_WND_DEFAULT_WIDTH;
   upgrade_wnd.height = UPGRADE_WND_DEFAULT_HEIGHT;
   upgrade_wnd.header = NULL;
+
 
   gui_draw_wnd_proto(&upgrade_wnd);
 

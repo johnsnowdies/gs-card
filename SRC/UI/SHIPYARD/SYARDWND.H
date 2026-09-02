@@ -42,6 +42,7 @@
 #define SYARD_WND_DEFAULT_WIDTH 639
 #define SYARD_WND_DEFAULT_HEIGHT 439
 
+extern WND shipyard_wnd;;
 extern int ship_selected;
 
 /* UI/SHIPYARD/SYARDWND API */

@@ -10,20 +10,21 @@
 #include "ui/stat/statwnd.h"
 #include "ui/upgrade/upgrnav.h"
 #include "ui/upgrade/upgrwnd.h"
+#include "ui/menu/menuwnd.h"
 
 /* ----------------------------------------------------------------
  * EXTERNAL: SCR_UPGRADES -- UPGRADE SCREEN KEY HANDLER
  * ---------------------------------------------------------------- */
 int gui_upgrade_wnd_key(int ch, WND* parent) {
   if (TAB == ch) {
-    dispatch_wnd(SCR_MAP, &root_wnd);
+    dispatch_wnd(SCR_MAP);
   }
   if (F1 == ch) {
-    dispatch_wnd(SCR_STATUS, &root_wnd);
+    dispatch_wnd(SCR_STATUS);
   }
   if (F3 == ch) {
     if (sol_list[gs.current_system].is_shipyard) {
-      dispatch_wnd(SCR_SHIPYARD, &root_wnd);
+      dispatch_wnd(SCR_SHIPYARD);
     } else {
       gui_warning_wnd(&upgrade_wnd, LC_GEN_ERROR_HEAD, LC_SHIPYARD_ERROR,
                       SOUND_ERROR);
@@ -47,7 +48,8 @@ int gui_upgrade_wnd_key(int ch, WND* parent) {
     }
   }
   if (ESC == ch) {
-    dispatch_wnd(SCR_GAME_MENU, &root_wnd);
+    game_menu_wnd.ptr_parent = &upgrade_wnd;
+    dispatch_wnd(SCR_GAME_MENU);
   }
   return 0;
 }

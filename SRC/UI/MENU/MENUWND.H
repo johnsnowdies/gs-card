@@ -42,6 +42,9 @@
 #define MAIN_MENU 1
 #define GAME_MENU 2
 
+extern WND main_menu_wnd;
+extern WND game_menu_wnd;
+
 extern int mm_select;
 
 /* UI/MENU/MENUWND API */

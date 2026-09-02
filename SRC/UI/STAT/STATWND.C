@@ -131,13 +131,12 @@ void gui_status_quest_info(int selected) {
   if (result == 0) {
     if (core_game_accept_quest(selected)) {
       system_quest_selected = 0;
-      dispatch_wnd(SCR_STATUS, &root_wnd);
+      dispatch_wnd(SCR_STATUS);
+      sfx_success();
     } else {
       gui_warning_wnd(&status_wnd, LC_GEN_ERROR_HEAD, LC_QUEST_ERROR,
                       SOUND_ERROR);
     }
-  } else {
-    gui_status_wnd();
   }
 }
 
@@ -224,6 +223,7 @@ void gui_status_quest_list(WND* status_wnd) {
  * ---------------------------------------------------------------- */
 void gui_status_wnd() {
   status_wnd.id = SCR_STATUS;
+  status_wnd.ptr_parent = &root_wnd;
   status_wnd.header = NULL;
   status_wnd.x = 0;
   status_wnd.y = 21;

@@ -4,20 +4,18 @@
 #include <string.h>
 
 #include "core/globals.h"
-#include "data/structs.h"
 #include "data/keys.h"
+#include "data/structs.h"
 #include "sound/sound.h"
 #include "ui/gui.h"
 #include "ui/locale.h"
-
 
 /* ----------------------------------------------------------------
  * ELEMENT: BUTTON
  * ---------------------------------------------------------------- */
 
-static void gui_draw_btn(BTN *btn) {
-  if (!btn->visible)
-    return;
+static void gui_draw_btn(BTN* btn) {
+  if (!btn->visible) return;
   setlinestyle(0, 0, 1);
   if (btn->enabled) {
     if (btn->selected) {
@@ -44,21 +42,19 @@ static void gui_draw_btn(BTN *btn) {
   }
 }
 
-static int gui_handle_btn_keys(int num_btns, int *current) {
+static int gui_handle_btn_keys(int num_btns, int* current) {
   int ch, ext;
   ch = getch();
   if (ch == 0) {
     ext = getch();
     if (ext == LFT || ext == UP) {
       (*current)--;
-      if (*current < 0)
-        *current = num_btns - 1;
+      if (*current < 0) *current = num_btns - 1;
       return 0;
     }
     if (ext == RHT || ext == DWN) {
       (*current)++;
-      if (*current >= num_btns)
-        *current = 0;
+      if (*current >= num_btns) *current = 0;
       return 0;
     }
   } else if (ch == ENTER) {
@@ -72,9 +68,8 @@ static int gui_handle_btn_keys(int num_btns, int *current) {
 /* ----------------------------------------------------------------
  * ELEMENT: INPUT FIELD
  * ---------------------------------------------------------------- */
-static void gui_draw_input_field(INPUT_FIELD *field) {
-  if (!field->visible)
-    return;
+static void gui_draw_input_field(INPUT_FIELD* field) {
+  if (!field->visible) return;
 
   setcolor(field->border_color);
   rectangle(field->x, field->y, field->x + field->width,
@@ -91,7 +86,7 @@ static void gui_draw_input_field(INPUT_FIELD *field) {
             field->buffer);
 }
 
-static int gui_handle_input_key(INPUT_FIELD *field, int ch) {
+static int gui_handle_input_key(INPUT_FIELD* field, int ch) {
   int len = strlen(field->buffer);
 
   if (ch == 8) {
@@ -117,7 +112,7 @@ static int gui_handle_input_key(INPUT_FIELD *field, int ch) {
   return 0;
 }
 
-static void gui_run_input_field(INPUT_FIELD *field) {
+static void gui_run_input_field(INPUT_FIELD* field) {
   int done = 0;
   while (!done) {
     gui_draw_input_field(field);
@@ -131,9 +126,9 @@ static void gui_run_input_field(INPUT_FIELD *field) {
 /* ----------------------------------------------------------------
  * ELEMENT: PROGRESS BAR
  * ---------------------------------------------------------------- */
-static void gui_init_progress_bar(PROGRESS_BAR *pb, int x, int y, int width,
-                           int height, int total, int border_color,
-                           int fill_color, int bg_color) {
+static void gui_init_progress_bar(PROGRESS_BAR* pb, int x, int y, int width,
+                                  int height, int total, int border_color,
+                                  int fill_color, int bg_color) {
   pb->x = x;
   pb->y = y;
   pb->width = width;
@@ -146,13 +141,11 @@ static void gui_init_progress_bar(PROGRESS_BAR *pb, int x, int y, int width,
   pb->visible = 1;
 }
 
-static void gui_draw_progress_bar(PROGRESS_BAR *pb) {
+static void gui_draw_progress_bar(PROGRESS_BAR* pb) {
   int fill_width;
 
-  if (!pb->visible)
-    return;
-  if (pb->total <= 0)
-    return;
+  if (!pb->visible) return;
+  if (pb->total <= 0) return;
 
   setcolor(pb->border_color);
   rectangle(pb->x, pb->y, pb->x + pb->width, pb->y + pb->height);
@@ -169,11 +162,9 @@ static void gui_draw_progress_bar(PROGRESS_BAR *pb) {
   }
 }
 
-static void gui_set_progress(PROGRESS_BAR *pb, int current) {
-  if (current < 0)
-    current = 0;
-  if (current > pb->total)
-    current = pb->total;
+static void gui_set_progress(PROGRESS_BAR* pb, int current) {
+  if (current < 0) current = 0;
+  if (current > pb->total) current = pb->total;
   pb->current = current;
 }
 
@@ -186,11 +177,12 @@ static void gui_set_progress(PROGRESS_BAR *pb, int current) {
 /* ----------------------------------------------------------------
  * MODAL: SIMPLE CENTRED WARNING DIALOG
  * ---------------------------------------------------------------- */
-void gui_warning_wnd(WND *ptr_parent, char *header, char *text,
+void gui_warning_wnd(WND* ptr_parent, char* header, char* text,
                      int play_sound) {
   WND warning_wnd;
 
   warning_wnd.header = header;
+  warning_wnd.ptr_parent = ptr_parent;
   /* TODO: remove map dependency!*/
   warning_wnd.x = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
   warning_wnd.y = (ptr_parent->height - WND_MODAL_DEFAULT_HEIGHT) / 2;
@@ -204,29 +196,30 @@ void gui_warning_wnd(WND *ptr_parent, char *header, char *text,
   outtextxy(warning_wnd.x + 2, warning_wnd.y + 20, text);
 
   switch (play_sound) {
-  case NO_SOUND:
-    break;
-  case SOUND_WARNING:
-    sfx_modal();
-    break;
-  case SOUND_ERROR:
-    sfx_error();
-    break;
-  case SOUND_SUCCESS:
-    sfx_success();
-    break;
+    case NO_SOUND:
+      break;
+    case SOUND_WARNING:
+      sfx_modal();
+      break;
+    case SOUND_ERROR:
+      sfx_error();
+      break;
+    case SOUND_SUCCESS:
+      sfx_success();
+      break;
   }
 
   /* REFRESH AFTER MODAL */
   getch();
-  if (ptr_parent->id)
-        dispatch_wnd(ptr_parent->id, &root_wnd);
+  if (ptr_parent != NULL) {
+    dispatch_wnd(ptr_parent->id);
+  }
 }
 
 /* ----------------------------------------------------------------
  * MODAL: YES/NO DIALOG
  * ---------------------------------------------------------------- */
-int gui_confirm_wnd(WND *ptr_parent, char *header, char *text) {
+int gui_confirm_wnd(WND* ptr_parent, char* header, char* text) {
   WND confirm_wnd;
   BTN btn_yes, btn_no;
   int sound_played = 0;
@@ -285,21 +278,21 @@ int gui_confirm_wnd(WND *ptr_parent, char *header, char *text) {
     }
 
     if (gui_handle_btn_keys(2, &selected) == 1) {
-      if (ptr_parent->id)
-        dispatch_wnd(ptr_parent->id, &root_wnd);
+      if (ptr_parent != NULL) {
+        dispatch_wnd(ptr_parent->id);
+      }
       return selected;
     }
   }
 }
-
 /* ----------------------------------------------------------------
  * MODAL: INPUT DIALOG
  * ---------------------------------------------------------------- */
-char *gui_input_wnd(WND *ptr_parent, char *header, char *text,
-                    char *defaultValue) {
+char* gui_input_wnd(WND* ptr_parent, char* header, char* text,
+                    char* defaultValue) {
   WND input_wnd;
   INPUT_FIELD field;
-  char *result;
+  char* result;
 
   input_wnd.header = header;
   input_wnd.x = (ptr_parent->width - WND_MODAL_DEFAULT_WIDTH) / 2;
@@ -335,12 +328,13 @@ char *gui_input_wnd(WND *ptr_parent, char *header, char *text,
 
   sfx_modal();
   gui_run_input_field(&field);
-  result = (char *)malloc(Q_INPUT_LEN);
+  result = (char*)malloc(Q_INPUT_LEN);
 
   strcpy(result, field.buffer);
 
-  if (ptr_parent->id)
-        dispatch_wnd(ptr_parent->id, &root_wnd);
+  if (ptr_parent != NULL) {
+    dispatch_wnd(ptr_parent->id);
+  }
 
   return result;
 }
@@ -349,7 +343,7 @@ char *gui_input_wnd(WND *ptr_parent, char *header, char *text,
  * MODAL: PROGRESS BAR DIALOG
  * ---------------------------------------------------------------- */
 
-void gui_progress_wnd(WND *ptr_parent, char *header, char *text, int current,
+void gui_progress_wnd(WND* ptr_parent, char* header, char* text, int current,
                       int total) {
   WND progress_wnd;
   PROGRESS_BAR pb;
@@ -380,7 +374,7 @@ void gui_progress_wnd(WND *ptr_parent, char *header, char *text, int current,
 
 #define MAX_BTNS 5
 
-int gui_dialog_wnd(WND *parent, char *header, char *title, char *photo_file,
+int gui_dialog_wnd(WND* ptr_parent, char* header, char* title, char* photo_file,
                    char lines[][100], int lines_count, char buttons[][100],
                    int buttons_count, int play_sound, int buttons_orient) {
   WND dialog;
@@ -392,25 +386,20 @@ int gui_dialog_wnd(WND *parent, char *header, char *title, char *photo_file,
   settextstyle(SMALL_FONT, HORIZ_DIR, 4);
   for (i = 0; i < lines_count; i++) {
     int w = textwidth(lines[i]);
-    if (w > max_line_width)
-      max_line_width = w;
+    if (w > max_line_width) max_line_width = w;
   }
 
   settextstyle(SMALL_FONT, HORIZ_DIR, 6);
-  if (textwidth(title) > max_line_width)
-    max_line_width = textwidth(title);
+  if (textwidth(title) > max_line_width) max_line_width = textwidth(title);
 
   /* btn sizes */
   if (buttons_count > 0) {
-    if (buttons_count > MAX_BTNS)
-      buttons_count = MAX_BTNS;
+    if (buttons_count > MAX_BTNS) buttons_count = MAX_BTNS;
     for (i = 0; i < buttons_count; i++) {
       int w = textwidth(buttons[i]);
       int h = textheight(buttons[i]);
-      if (w > btn_width)
-        btn_width = w;
-      if (h > btn_height)
-        btn_height = h;
+      if (w > btn_width) btn_width = w;
+      if (h > btn_height) btn_height = h;
     }
     btn_width += 20;
     btn_height += 10;
@@ -427,8 +416,7 @@ int gui_dialog_wnd(WND *parent, char *header, char *title, char *photo_file,
   }
 
   max_content_width = max_line_width;
-  if (btn_total_width > max_content_width)
-    max_content_width = btn_total_width;
+  if (btn_total_width > max_content_width) max_content_width = btn_total_width;
 
   if (photo_present) {
     dialog.width = 10 + 160 + 10 + max_content_width + 10;
@@ -444,8 +432,8 @@ int gui_dialog_wnd(WND *parent, char *header, char *title, char *photo_file,
                       ? content_height
                       : WND_DIALOG_DEFAULT_HEIGHT;
 
-  dialog.x = parent->x + (parent->width - dialog.width) / 2;
-  dialog.y = parent->y + (parent->height - dialog.height) / 2;
+  dialog.x = ptr_parent->x + (ptr_parent->width - dialog.width) / 2;
+  dialog.y = ptr_parent->y + (ptr_parent->height - dialog.height) / 2;
   dialog.header = header;
 
   gui_draw_wnd_proto(&dialog);
@@ -469,17 +457,17 @@ int gui_dialog_wnd(WND *parent, char *header, char *title, char *photo_file,
   }
 
   switch (play_sound) {
-  case NO_SOUND:
-    break;
-  case SOUND_WARNING:
-    sfx_modal();
-    break;
-  case SOUND_ERROR:
-    sfx_error();
-    break;
-  case SOUND_SUCCESS:
-    sfx_success();
-    break;
+    case NO_SOUND:
+      break;
+    case SOUND_WARNING:
+      sfx_modal();
+      break;
+    case SOUND_ERROR:
+      sfx_error();
+      break;
+    case SOUND_SUCCESS:
+      sfx_success();
+      break;
   }
 
   {
@@ -514,8 +502,7 @@ int gui_dialog_wnd(WND *parent, char *header, char *title, char *photo_file,
       }
     }
 
-    while (kbhit())
-      getch();
+    while (kbhit()) getch();
 
     while (1) {
       for (i = 0; i < buttons_count; i++) {
@@ -523,12 +510,15 @@ int gui_dialog_wnd(WND *parent, char *header, char *title, char *photo_file,
         gui_draw_btn(&btn_list[i]);
       }
       if (gui_handle_btn_keys(buttons_count, &choice) == 1) {
-        if (parent->id)
-          dispatch_wnd(parent->id, &root_wnd);
+        if (ptr_parent != NULL) {
+          dispatch_wnd(ptr_parent->id);
+        }
         return choice;
       }
     }
-    if (parent->id) dispatch_wnd(parent->id, &root_wnd);
+    if (ptr_parent != NULL) {
+      dispatch_wnd(ptr_parent->id);
+    }
   }
 }
 
@@ -567,7 +557,7 @@ void gui_memory_status() {
 /* ----------------------------------------------------------------
  * UNIVERSAL STATUS LINE
  * ---------------------------------------------------------------- */
-void gui_draw_status_line(WND *ptr_wnd, char *keys[], char *items[],
+void gui_draw_status_line(WND* ptr_wnd, char* keys[], char* items[],
                           int highlight) {
   int xpos = ptr_wnd->x + 5;
   int width = ptr_wnd->x + ptr_wnd->width,
@@ -579,7 +569,6 @@ void gui_draw_status_line(WND *ptr_wnd, char *keys[], char *items[],
   bar(ptr_wnd->x, ptr_wnd->y, width, height);
 
   while (keys[i] != NULL && items[i] != NULL) {
-
     if (i != highlight) {
       setcolor(RED);
       outtextxy(xpos, ptr_wnd->y + 2, keys[i]);
@@ -609,7 +598,7 @@ void gui_draw_status_line(WND *ptr_wnd, char *keys[], char *items[],
 /* ----------------------------------------------------------------
  * HORIZONTAL SECTION HEADER
  * ---------------------------------------------------------------- */
-void gui_draw_section_header(int x, int y, int width, char *title) {
+void gui_draw_section_header(int x, int y, int width, char* title) {
   int points[6];
   int tx, ty;
 
@@ -646,7 +635,7 @@ void gui_draw_section_header(int x, int y, int width, char *title) {
  * VERTICAL SECTION HEADER
  * ---------------------------------------------------------------- */
 void gui_draw_section_header_v(int x, int y, int width, int height,
-                               char *title) {
+                               char* title) {
   int points[6];
   int tx, ty;
 
@@ -679,7 +668,6 @@ void gui_draw_section_header_v(int x, int y, int width, int height,
   fillpoly(3, points);
 }
 
-
 /* ----------------------------------------------------------------
  * SOFT CLEAR SCREEN, USE THIS INSTEAD BGI CLRSCR
  * ---------------------------------------------------------------- */
@@ -691,7 +679,7 @@ void gui_clrscr() {
 /* ----------------------------------------------------------------
  * WINDOW PROTOTYPE - SIZE, HEADER
  * ---------------------------------------------------------------- */
-void gui_draw_wnd_proto(WND *ptr_wnd) {
+void gui_draw_wnd_proto(WND* ptr_wnd) {
   int width = ptr_wnd->x + ptr_wnd->width,
       height = ptr_wnd->y + ptr_wnd->height;
 
@@ -722,7 +710,7 @@ void gui_draw_wnd_proto(WND *ptr_wnd) {
  * ---------------------------------------------------------------- */
 void gui_init() {
   int gd = DETECT, gm, result;
-  char *msg;
+  char* msg;
 
   initgraph(&gd, &gm, "BGI");
   result = graphresult();
@@ -732,4 +720,13 @@ void gui_init() {
   }
 
   settextstyle(SMALL_FONT, HORIZ_DIR, 4);
+}
+
+void gui_dbg_out(char line[100]) {
+  setfillstyle(SOLID_FILL, BLACK);
+  bar(0, 0, 640, 20);
+  setcolor(YELLOW);
+  outtextxy(0, 0, line);
+
+  getch();
 }

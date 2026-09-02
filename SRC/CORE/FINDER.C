@@ -307,7 +307,7 @@ void core_finder_calc_hyper_threads() {
       }
     }
     if (i % 10 == 0)
-      gui_progress_wnd(&map_wnd, "GSCARD", "Sorting edges", i, cand_count);
+      gui_progress_wnd(&root_wnd, "GSCARD", "Sorting edges", i, cand_count);
   }
 
   added1 = (int far*)farmalloc(cand_count * sizeof(int));
@@ -325,7 +325,7 @@ void core_finder_calc_hyper_threads() {
   for (i = 0; i < cand_count; i++) {
     intersect = 0;
     if (i % max(1, cand_count / 100) == 0)
-      gui_progress_wnd(&map_wnd, "GSCARD", "Checking intersections", i,
+      gui_progress_wnd(&root_wnd, "GSCARD", "Checking intersections", i,
                        cand_count);
 
     for (j = 0; j < added_count; j++) {
