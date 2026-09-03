@@ -3,6 +3,38 @@
 #define _GUI_LOCALE
 #ifdef LANGUAGE_RU
 
+#define LC_EVENT_NEW_GAME_HEAD "Добро пожаловать в Сафери!"
+
+#define LC_EVENT_NEW_GAME_1 "Самую перспективную галактику gля грузоперевозок!"
+#define LC_EVENT_NEW_GAME_2 "Ваша \"Бетси\" оборуgована GS-CARD, которая позволяет"
+#define LC_EVENT_NEW_GAME_3 "рассчитывать гипер-прыжки."
+#define LC_EVENT_NEW_GAME_4 "ЦЕЛЬ ИГРЫ: накопить 1 000 000 $$ gля покупки варп-gрайва"
+#define LC_EVENT_NEW_GAME_5 "УПРАВЛЕНИЕ:"
+#define LC_EVENT_NEW_GAME_6 "[TAB] - переключение экранов"
+#define LC_EVENT_NEW_GAME_7 "[F7] на карте - расчет прыжка"
+#define LC_EVENT_NEW_GAME_8 "Гипер-прыжки тратят топливо. Ваш Mark I сжигает 10% за прыжок."
+#define LC_EVENT_NEW_GAME_9 "В известных вам системах с инgексом [F] можно заправиться."
+#define LC_EVENT_NEW_GAME_10 "В системах с инgексом [S] можно купить апгрейgы и корабли."
+#define LC_EVENT_NEW_GAME_11 "Уgачи, капитан %s"
+
+#define LC_EVENT_NEW_GAME_BTN "Поехали!"
+
+#define LC_ABOUT_MENU "О проекте"
+#define LC_ABOUT_HEAD "GS-CARD 2.0 - 2018-2026"
+#define LC_ABOUT_1 "Еблан"
+#define LC_ABOUT_2 "Еблан"
+#define LC_ABOUT_3 "Еблан"
+#define LC_ABOUT_4 "Еблан"
+#define LC_ABOUT_5 "Еблан"
+#define LC_ABOUT_6 "Еблан"
+#define LC_ABOUT_7 "Еблан"
+#define LC_ABOUT_8 "Еблан"
+#define LC_ABOUT_9 "Еблан"
+#define LC_ABOUT_10 "Еблан"
+#define LC_ABOUT_11 "Еблан"
+
+
+
 /* ----------------------------------------------------------------
  * AD.c
  * ---------------------------------------------------------------- */

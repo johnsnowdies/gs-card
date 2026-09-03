@@ -46,6 +46,7 @@ extern WND main_menu_wnd;
 extern WND game_menu_wnd;
 
 extern int mm_select;
+extern int ad_rendered;
 
 /* UI/MENU/MENUWND API */
 extern void gui_menu_main_wnd_dispatcher();

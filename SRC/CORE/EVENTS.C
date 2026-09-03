@@ -100,7 +100,6 @@ static int core_events_check_win(void) {
   }
   return 0;
 }
-
 /* ----------------------------------------------------------------
  * CHECK ALL GAME OVER CONDITIONS
  * ---------------------------------------------------------------- */
@@ -665,6 +664,36 @@ static int core_events_danger_object(void) {
  *                      EXTERNAL FUNCTIONS
  *
  * ---------------------------------------------------------------- */
+
+/* ----------------------------------------------------------------
+ * NEW GAME WELCOME WINDOW
+ * ---------------------------------------------------------------- */
+void core_events_new_game(void) {
+  int i;
+  char lines[15][100];
+  char buttons[1][100] = {LC_EVENT_NEW_GAME_BTN};
+  for (i = 0; i < 15; i++) {
+    lines[i][0] = '\0';
+  }
+  sprintf(lines[0], LC_EVENT_NEW_GAME_1);
+  sprintf(lines[1], LC_EVENT_NEW_GAME_2);
+  sprintf(lines[2], LC_EVENT_NEW_GAME_3);
+  sprintf(lines[3], "");
+  sprintf(lines[4], LC_EVENT_NEW_GAME_4);
+  sprintf(lines[5],  "");
+  sprintf(lines[6], LC_EVENT_NEW_GAME_5);
+  sprintf(lines[7], LC_EVENT_NEW_GAME_6);
+  sprintf(lines[8], LC_EVENT_NEW_GAME_7);
+  sprintf(lines[9], "");
+  sprintf(lines[10], LC_EVENT_NEW_GAME_8);
+  sprintf(lines[11], LC_EVENT_NEW_GAME_9);
+  sprintf(lines[12], LC_EVENT_NEW_GAME_10);
+  sprintf(lines[13], "");
+  sprintf(lines[14], LC_EVENT_NEW_GAME_11, gs.captain_name);
+
+  gui_dialog_wnd(&map_wnd, LC_EVENT_NEW_GAME_HEAD, LC_EVENT_NEW_GAME_HEAD, NULL,
+                 lines, 15, buttons, 1, SOUND_SUCCESS, 1);
+}
 
 /* -----------------------------------------------------------------
  * EVENT SYSTEM MAIN FUNCTIONS

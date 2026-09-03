@@ -301,7 +301,7 @@ char* gui_input_wnd(WND* ptr_parent, char* header, char* text,
   char* result;
 
   if (ptr_parent == NULL){
-    return result;
+    return NULL;
   }
 
   input_wnd.header = header;
@@ -748,4 +748,4 @@ void gui_dbg_out(char line[100]) {
   outtextxy(0, 0, line);
 
   getch();
-}
+}

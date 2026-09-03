@@ -150,5 +150,6 @@ extern void gui_draw_section_header_v(int x, int y, int width, int height,
 extern void gui_clrscr(void);
 extern void gui_draw_wnd_proto(WND* ptr_wnd);
 extern void gui_init(void);
+extern void gui_about_wnd(void);
 
 #endif

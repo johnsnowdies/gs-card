@@ -404,7 +404,7 @@ void core_game_gen_npc(NPC* ptr_npc, unsigned int faction,
 
   const char GENDER_SYMBOL[] = {'M', 'F'};
 
-  const char FACTION_SYMBOL[] = {'A', 'R', 'S', 'U'};
+  const char FACTION_SYMBOL[] = {'A', 'R', 'S', 'R'};
 
   int photo_id = 0;
 

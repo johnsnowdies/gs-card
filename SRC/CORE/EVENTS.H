@@ -36,6 +36,7 @@
 #define _CORE_EVENTS
 
 /* CORE/EVENTS API */
+extern void core_events_new_game(void);
 extern int core_events(int fuel_consume);
 
 #endif

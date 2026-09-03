@@ -20,6 +20,7 @@ static void gui_menu_new_game() {
     core_game_new_game(text_input);
     dispatch_wnd(SCR_MAP);
     gui_map_nav_move_screen_to(gs.current_system);
+    core_events_new_game();
 
   } else {
     gui_warning_wnd(&root_wnd, LC_GEN_ERROR_HEAD, LC_GEN_ERROR_INCORRECT_VALUE,
