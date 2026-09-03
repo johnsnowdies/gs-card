@@ -71,8 +71,7 @@ E_GENDER{MALE, FEMALE, RANDOM_GENDER};
 #define SECTORS_COUNT 9
 #define NAMES_COUNT 15
 #define SYSTEM_QUESTS_MAX_COUNT 5
-/* 4 + hyper engine */
-#define SYSTEM_UPGRADES_MAX_COUNT 4
+#define SYSTEM_UPGRADES_MAX_COUNT 5
 #define PLAYER_QUESTS_MAX_COUNT 5
 
 /* ----------------------------------------------------------------

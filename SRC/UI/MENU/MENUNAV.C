@@ -89,12 +89,14 @@ int gui_menu_main_wnd_key(int ch) {
     if (mm_select > 0) {
       mm_select--;
       dispatch_wnd(SCR_MAIN_MENU);
+      sfx_menu_move();
     }
   }
   if (DWN == ch) {
     if (mm_select < 2) {
       mm_select++;
       dispatch_wnd(SCR_MAIN_MENU);
+      sfx_menu_move();
     }
   }
   return 0;
@@ -127,6 +129,7 @@ int gui_menu_game_wnd_key(int ch) {
     if (mm_select > 0) {
       mm_select--;
       dispatch_wnd(SCR_GAME_MENU);
+      sfx_menu_move();
     }
   }
 
@@ -134,6 +137,7 @@ int gui_menu_game_wnd_key(int ch) {
     if (mm_select < 2) {
       mm_select++;
       dispatch_wnd(SCR_GAME_MENU);
+      sfx_menu_move();
     }
   }
   return 0;

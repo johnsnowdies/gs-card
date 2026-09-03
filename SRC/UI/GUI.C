@@ -5,8 +5,10 @@
 
 #include "core/globals.h"
 #include "data/keys.h"
+#include "data/reader.h"
 #include "data/structs.h"
 #include "sound/sound.h"
+#include "ui/ad/ad.h"
 #include "ui/gui.h"
 #include "ui/locale.h"
 
@@ -369,7 +371,7 @@ void gui_progress_wnd(WND* ptr_parent, char* header, char* text, int current,
   progress_wnd.width = WND_MODAL_DEFAULT_WIDTH;
   progress_wnd.height = WND_MODAL_DEFAULT_HEIGHT;
 
-  gui_init_progress_bar(&pb, progress_wnd.x + 20, progress_wnd.y + 50, 260, 18,
+  gui_init_progress_bar(&pb, progress_wnd.x + 20, progress_wnd.y + 50, progress_wnd.width - 40, 18,
                         total, RED, RED, BLACK);
 
   if (current == 0) {
@@ -741,6 +743,32 @@ void gui_init() {
   settextstyle(SMALL_FONT, HORIZ_DIR, 4);
 }
 
+/* ----------------------------------------------------------------
+ * SPLASH SCREEN WITH LOGO
+ * ---------------------------------------------------------------- */
+void gui_splash() {
+  if (!DEBUG) {
+    /* Splash screen */
+    data_reader_draw_bmp("LOGO.BMP", 0, 0);
+  }
+
+  gui_ad_hypersoft();
+
+  settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
+
+  setcolor(WHITE);
+  outtextxy((640/2) - textwidth(LC_PRESS_ANY)/2, 400, LC_PRESS_ANY );
+  settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
+  outtextxy((640/2) - textwidth(LC_ABOUT_HEAD)/2, 450, LC_ABOUT_HEAD );
+
+  getch();
+  gui_clrscr();
+  gui_ad_hypersoft();
+}
+
+/* ----------------------------------------------------------------
+ * DEBUG OUTPUT ANYTHING IN TOP LINE
+ * ---------------------------------------------------------------- */
 void gui_dbg_out(char line[100]) {
   setfillstyle(SOLID_FILL, BLACK);
   bar(0, 0, 640, 20);
@@ -748,4 +776,4 @@ void gui_dbg_out(char line[100]) {
   outtextxy(0, 0, line);
 
   getch();
-}
+}

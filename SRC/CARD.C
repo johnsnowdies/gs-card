@@ -154,11 +154,8 @@ int main() {
 
   gui_init();
 
-  if (!DEBUG) {
-    /* Splash screen */
-    data_reader_draw_bmp("LOGO.BMP", 0, 0);
-  }
-
+  gui_splash();
+  
   core_finder_calc_hyper_threads();
 
   gui_clrscr();

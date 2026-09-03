@@ -187,7 +187,7 @@ static void core_events_gas_station(void) {
       lines[i][0] = '\0';
     }
 
-    percent_price = (rand() % 3) + 1;
+    percent_price = GAS_PERCENT_PRICE;
     amount = 100 - gs.fuel;
     total = amount * percent_price;
     faction = sol_list[gs.current_system].faction;
@@ -299,25 +299,33 @@ static int core_events_piracy(void) {
   /* Ransom amount based on ship type */
   switch (ship_type) {
     case 0:
-      request = 1000 + rand() % 1001;
-      break; /* 1000..2000 */
+      request = EVENT_PIRACY_RANSOM_MIN_TYPE0 +
+                rand() % EVENT_PIRACY_RANSOM_RANGE_TYPE0;
+      break;
     case 1:
-      request = 1000 + rand() % 2001;
-      break; /* 1000..3000 */
+      request = EVENT_PIRACY_RANSOM_MIN_TYPE1 +
+                rand() % EVENT_PIRACY_RANSOM_RANGE_TYPE1;
+      break;
     case 2:
-      request = 1000 + rand() % 4001;
-      break; /* 1000..5000 */
+      request = EVENT_PIRACY_RANSOM_MIN_TYPE2 +
+                rand() % EVENT_PIRACY_RANSOM_RANGE_TYPE2;
+      break;
     case 3:
-      request = 1000 + rand() % 4001;
-      break; /* same as 2 */
+      request = EVENT_PIRACY_RANSOM_MIN_TYPE3 +
+                rand() % EVENT_PIRACY_RANSOM_RANGE_TYPE3;
+      break;
     case 4:
-      request = 1000 + rand() % 9001;
-      break; /* 1000..10000 */
+      request = EVENT_PIRACY_RANSOM_MIN_TYPE4 +
+                rand() % EVENT_PIRACY_RANSOM_RANGE_TYPE4;
+      break;
     case 5:
-      request = 1000 + rand() % 19001;
-      break; /* 1000..20000 */
+      request = EVENT_PIRACY_RANSOM_MIN_TYPE5 +
+                rand() % EVENT_PIRACY_RANSOM_RANGE_TYPE5;
+      break;
     default:
-      request = 1000 + rand() % 1001;
+      request = EVENT_PIRACY_RANSOM_MIN_DEFAULT +
+                rand() % EVENT_PIRACY_RANSOM_RANGE_DEFAULT;
+      break;
   }
 
   for (i = 0; i < gs.quests_size; i++) {
@@ -325,22 +333,20 @@ static int core_events_piracy(void) {
       droppable_cargo += gs.quests[i].cargo;
   }
 
-  /* Generate npc_pirate: 90% Irish */
-  if ((rand() % 100) < 90)
+  /* Generate npc_pirate: 90% Irish (faction 1) */
+  if ((rand() % 100) < EVENT_PIRACY_IRISH_PROB)
     faction = 1;
   else
-    faction = rand() % 4;
+    faction = rand() % EVENT_PIRACY_OTHER_FACTION_MAX;
   core_game_gen_npc(&npc_pirate, faction, RANDOM_GENDER, QUEST_NPC);
 
   strcpy(lines[0], LC_EVENT_PIRACY_TEXT_1);
   sprintf(lines[1], LC_EVENT_PIRACY_TEXT_2, request);
 
   /* Build active buttons */
-  /*if (gs.balance >= request) {*/
   pay_idx = btn_count;
   strcpy(buttons[btn_count], LC_EVENT_PIRACY_PAY_BTN);
   btn_count++;
-  /*}*/
 
   if (droppable_cargo > 0) {
     drop_idx = btn_count;
@@ -403,7 +409,7 @@ static int core_events_customs(void) {
   core_game_gen_npc(&customs_officer, faction, RANDOM_GENDER, QUEST_NPC);
 
   /* Bribe amount 500..2000 */
-  bribe = 500 + rand() % 1501;
+  bribe = EVENT_CUSTOMS_BRIBE;
 
   sprintf(lines[0], LC_EVENT_CUSTOMS_TEXT_1);
   sprintf(lines[1], LC_EVENT_CUSTOMS_TEXT_2, gs.current_system,
@@ -495,10 +501,10 @@ static int core_events_kidnapping(int quest_index) {
   quest = &gs.quests[quest_index];
 
   /* Generate kidnapper: 90% Irish */
-  if ((rand() % 100) < 90)
+  if ((rand() % 100) < EVENT_CUSTOMS_IRISH_PROB)
     faction = 1;
   else
-    faction = rand() % 4;
+    faction = rand() % 4; /* still can be Irish lol */
   core_game_gen_npc(&kidnapper, faction, RANDOM_GENDER, QUEST_NPC);
 
   sprintf(lines[0], LC_EVENT_NAP_TEXT_1, quest->giver.name);
@@ -533,6 +539,7 @@ static int core_events_kidnapping(int quest_index) {
   } else if (choice == give_idx) {
     /* Give NPC, fail quest */
     char single_line[1][100];
+    gs.current_cargo -= quest->cargo;
 
     strcpy(single_line[0], LC_EVENT_NAP_FAIL);
     gui_npc_wnd(&map_wnd, &kidnapper, NPC_DIALOG_WND, LC_EVENT_NAP_HEAD,
@@ -680,7 +687,7 @@ void core_events_new_game(void) {
   sprintf(lines[2], LC_EVENT_NEW_GAME_3);
   sprintf(lines[3], "");
   sprintf(lines[4], LC_EVENT_NEW_GAME_4);
-  sprintf(lines[5],  "");
+  sprintf(lines[5], "");
   sprintf(lines[6], LC_EVENT_NEW_GAME_5);
   sprintf(lines[7], LC_EVENT_NEW_GAME_6);
   sprintf(lines[8], LC_EVENT_NEW_GAME_7);
@@ -720,15 +727,20 @@ int core_events(int fuel_consume) {
   }
 
   /* Piracy Event */
-  if (rand() % 100 < (sol_list[gs.current_system].faction == 1 ? 30 : 10)) {
+  if (rand() % 100 < (sol_list[gs.current_system].faction == 1
+                          ? EVENT_PIRACY_PROB_FACTION_1
+                          : EVENT_PIRACY_PROB_OTHER)) {
     int nested_over = core_events_piracy();
     if (gs.current_system != start_system || nested_over) {
       game_over = nested_over;
       return game_over;
     }
   }
+
   /* Customs Event */
-  if (rand() % 100 < (sol_list[gs.current_system].faction == 2 ? 70 : 20) &&
+  if (rand() % 100 < (sol_list[gs.current_system].faction == 2
+                          ? EVENT_CUSTOMS_PROB_FACTION_2
+                          : EVENT_CUSTOMS_PROB_OTHER) &&
       sol_list[gs.current_system].is_shipyard) {
     int nested_over = core_events_customs();
     if (gs.current_system != start_system || nested_over) {
@@ -740,7 +752,7 @@ int core_events(int fuel_consume) {
   /* Kidnapping Event */
   for (i = 0; i < gs.quests_size; i++) {
     if (gs.quests[i].type == 4) {
-      if (rand() % 100 < 10) {
+      if (rand() % 100 < EVENT_KIDNAPPING_PROB) {
         int nested_over = core_events_kidnapping(i);
         if (gs.current_system != start_system || nested_over) {
           game_over = nested_over;
