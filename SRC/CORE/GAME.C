@@ -18,16 +18,16 @@ const char* data_ship_names[SHIP_COUNT] = {LC_GAME_SHIP_1, LC_GAME_SHIP_2,
                                      LC_GAME_SHIP_3, LC_GAME_SHIP_4,
                                      LC_GAME_SHIP_5, LC_GAME_SHIP_6};
 
-const unsigned int data_ship_engines[SHIP_COUNT] = {0, 0, 1, 1, 3, 2};
-const unsigned char data_ship_smuggler_bay[SHIP_COUNT] = {0, 1, 1, 1, 0, 0};
-const unsigned char data_ship_continuous_jump[SHIP_COUNT] = {0, 0, 1, 1, 1, 1};
-const unsigned char data_ship_emergency_jump[SHIP_COUNT] = {0, 0, 0, 1, 1, 1};
-const unsigned int data_ship_tonnages[SHIP_COUNT] = {50, 80, 100, 150, 200, 400};
+const unsigned int data_ship_engines[SHIP_COUNT] = SHIPS_ENGINES_INSTALLED;
+const unsigned char data_ship_smuggler_bay[SHIP_COUNT] = SHIPS_SMUGGLER_BAY_INSTALLED;
+const unsigned char data_ship_continuous_jump[SHIP_COUNT] = SHIPS_CONT_JUMP_INSTALLED;
+const unsigned char data_ship_emergency_jump[SHIP_COUNT] = SHIPS_EMERG_JUMP_INSTALLED;
+const unsigned int data_ship_tonnages[SHIP_COUNT] = SHIP_TONNAGES;
 
 const char* data_hyper_names[HYPER_COUNT] = {LC_GAME_ENGINE_1, LC_GAME_ENGINE_2,
                                        LC_GAME_ENGINE_3, LC_GAME_ENGINE_4};
 
-const unsigned int data_hyper_fuel[HYPER_COUNT] = {10, 8, 5, 2};
+const unsigned int data_hyper_fuel[HYPER_COUNT] = HYPER_ENGINE_FUEL_CONSUME;
 
 const char* data_factions[FACTIONS_COUNT] = {LC_GAME_FACTION_1, LC_GAME_FACTION_2,
                                        LC_GAME_FACTION_3, LC_GAME_FACTION_4};
@@ -91,12 +91,12 @@ static int pick_target_system_by_jumps(int min_jumps, int max_jumps) {
  * ---------------------------------------------------------------- */
 static int generate_cargo(void) {
   double r = (double)rand() / RAND_MAX;
-  if (r < 0.70) {
-    return 1 + rand() % 50;
-  } else if (r < 0.90) {
-    return 51 + rand() % 100;
+  if (r < QUEST_CARGO_COMMON_PROB) {
+    return QUEST_CARGO_COMMON_MIN + rand() % QUEST_CARGO_COMMON_RANGE;
+  } else if (r < QUEST_CARGO_UNCOMMON_PROB) {
+    return QUEST_CARGO_UNCOMMON_MIN + rand() % QUEST_CARGO_UNCOMMON_RANGE;
   } else {
-    return 151 + rand() % 250;
+    return QUEST_CARGO_RARE_MIN + rand() % QUEST_CARGO_RARE_RANGE;
   }
 }
 
@@ -110,29 +110,29 @@ static long calc_reward(int type, int cargo, int jumps) {
 
   switch (type) {
     case 1:
-      base = 100 + rand() % 201;
+      base = QUEST_TYPE1_BASE_MIN + rand() % QUEST_TYPE1_BASE_RANGE;
       break;
     case 2:
-      base = 250 + rand() % 251;
+      base = QUEST_TYPE2_BASE_MIN + rand() % QUEST_TYPE2_BASE_RANGE;
       break;
     case 3:
-      base = 400 + rand() % 401;
+      base = QUEST_TYPE3_BASE_MIN + rand() % QUEST_TYPE3_BASE_RANGE;
       break;
     case 4:
     case 5:
-      base = 200 + rand() % 251;
+      base = QUEST_TYPE45_BASE_MIN + rand() % QUEST_TYPE45_BASE_RANGE;
       break;
     default:
-      base = 100;
+      base = QUEST_DEFAULT_BASE;
       break;
   }
 
   if (type <= 3) {
-    cargo_factor = 1.0 + (double)cargo / 200.0;
-    jump_factor = 1.0 + (double)jumps / 10.0;
+    cargo_factor = 1.0 + (double)cargo / QUEST_CARGO_DIVISOR;
+    jump_factor = 1.0 + (double)jumps / QUEST_JUMP_DIVISOR;
     return (long)(base * cargo_factor * jump_factor);
   } else {
-    jump_factor = 1.0 + (double)jumps / 10.0;
+    jump_factor = 1.0 + (double)jumps / QUEST_JUMP_DIVISOR;
     return (long)(base * jump_factor);
   }
 }
@@ -150,13 +150,14 @@ static void core_game_gen_quest(QUEST* ptr_quest, int player_rep,
   }
 
   r = rand() % 100;
-  if (r < 50)
+  
+  if (r < QUEST_TYPE_1_CHANCE)
     type = 1;
-  else if (r < 75)
+  else if (r < QUEST_TYPE_2_CHANCE)
     type = 2;
-  else if (r < 90)
+  else if (r < QUEST_TYPE_3_CHANCE)
     type = 3;
-  else if (r < 95)
+  else if (r < QUEST_TYPE_4_CHANCE)
     type = 4;
   else
     type = 5;
@@ -262,7 +263,7 @@ static void core_game_gen_upgrades(void) {
   }
 
   /* hiper drives for sale */
-  if (gs.hyper_class < 3) {
+  if (gs.hyper_class < HYPER_COUNT - 1) {
     system_upgrades[count].name = data_hyper_names[gs.hyper_class + 1];
     system_upgrades[count].base_price = hyper_prices[gs.hyper_class + 1];
     system_upgrades[count].type = 0;
@@ -284,8 +285,8 @@ static void core_game_gen_upgrades(void) {
         &gs.upgrade_emergency_jump, &gs.upgrade_objects_map,
         &gs.upgrade_political_map};
 
-    for (i = 0; i < 5; i++) {
-      if (*(flags[i]) == 0 && (rand() % 100) < 70) {
+    for (i = 0; i < SYSTEM_UPGRADES_MAX_COUNT; i++) {
+      if (*(flags[i]) == 0 && (rand() % 100) < SYSTEM_UPGRADE_AVAIL_CHANCE) {
         /* No smuggler bay in Sentinel system */
         if (sol_list[gs.current_system].faction == 2 && i == 0) continue;
 
@@ -411,7 +412,7 @@ void core_game_gen_npc(NPC* ptr_npc, unsigned int faction,
   ptr_npc->faction = faction;
 
   if (gender == RANDOM_GENDER)
-    ptr_npc->gender = rand() % 3 == 2 ? 1 : 0;
+    ptr_npc->gender = (rand() % 100) < NPC_IS_MALE_CHANCE ? 1 : 0;
   else
     ptr_npc->gender = gender;
 
@@ -464,7 +465,7 @@ void core_game_gen_npc(NPC* ptr_npc, unsigned int faction,
  * ---------------------------------------------------------------- */
 void core_game_gen_all() {
   int i;
-  system_quests_size = 5;
+  system_quests_size = SYSTEM_QUESTS_MAX_COUNT;
   /* System quests generator */
   for (i = 0; i < system_quests_size; i++) {
     core_game_gen_quest(&system_quests[i], gs.reputation,
@@ -508,7 +509,7 @@ void core_game_mark_visited() {
 int core_game_accept_quest(unsigned int index) {
   int i;
 
-  if (gs.quests_size >= 5) {
+  if (gs.quests_size >= PLAYER_QUESTS_MAX_COUNT) {
     return 0;
   }
   if (index >= system_quests_size) {
@@ -559,7 +560,6 @@ void core_game_new_game(char* name) {
   gs.quests_size = 0;
 
   gs.prev_system = gs.current_system;
-
   gs.visited_bytes = (sol_size + 7) / 8;
   gs.visited = (unsigned char*)malloc(gs.visited_bytes);
   if (gs.visited) {
