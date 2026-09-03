@@ -18,8 +18,7 @@ int gui_npc_wnd(WND* ptr_parent, NPC* ptr_npc, int wnd_type, char title[100],
     dispatch_wnd(ptr_parent->id);
   }
   
-
-  return gui_dialog_wnd(ptr_parent, ptr_npc->name, title, photo, lines,
+  gui_dialog_wnd(ptr_parent, ptr_npc->name, title, photo, lines,
                         lines_count, btn_array, btn_count, NO_SOUND,
                         buttons_orient);
 }

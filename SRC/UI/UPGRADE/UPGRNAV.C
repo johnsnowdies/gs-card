@@ -34,12 +34,14 @@ int gui_upgrade_wnd_key(int ch) {
     if (upgrade_selected > 0) {
       upgrade_selected--;
       gui_upgrade_draw_list();
+      sfx_menu_move();
     }
   }
   if (DWN == ch) {
     if (upgrade_selected < system_upgrades_size - 1) {
       upgrade_selected++;
       gui_upgrade_draw_list();
+      sfx_menu_move();
     }
   }
   if (ENTER == ch) {

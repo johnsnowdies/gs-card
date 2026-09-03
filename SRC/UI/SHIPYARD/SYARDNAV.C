@@ -30,12 +30,14 @@ int gui_shipyard_wnd_key(int ch) {
     if (ship_selected > 0) {
       ship_selected--;
       gui_shipyard_draw_list();
+      sfx_menu_move();
     }
   }
   if (DWN == ch) {
     if (ship_selected < system_shipyard_size - 1) {
       ship_selected++;
       gui_shipyard_draw_list();
+      sfx_menu_move();
     }
   }
   if (ESC == ch) {

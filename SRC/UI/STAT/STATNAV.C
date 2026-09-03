@@ -37,12 +37,14 @@ int gui_status_wnd_key(int ch) {
     if (system_quest_selected > 0) {
       system_quest_selected--;
       gui_status_quest_list(&status_wnd);
+      sfx_menu_move();
     }
   }
   if (DWN == ch) {
     if (system_quest_selected < system_quests_size - 1) {
       system_quest_selected++;
       gui_status_quest_list(&status_wnd);
+      sfx_menu_move();
     }
   }
 

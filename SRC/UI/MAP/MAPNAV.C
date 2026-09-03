@@ -211,6 +211,7 @@ int gui_map_wnd_key(int ch) {
       gui_map_nav_move_screen_to(wp.way[path_wnd_index]);
       gui_map_path_wnd();
       gui_map_wnd_refresh();
+      sfx_menu_move();
     }
   }
   if (PDWN == ch) {
@@ -222,6 +223,7 @@ int gui_map_wnd_key(int ch) {
       gui_map_nav_move_screen_to(wp.way[path_wnd_index]);
       gui_map_path_wnd();
       gui_map_wnd_refresh();
+      sfx_menu_move();
     }
   }
 

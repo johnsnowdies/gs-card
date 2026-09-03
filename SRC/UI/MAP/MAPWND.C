@@ -6,6 +6,7 @@
 #include "core/objects.h"
 #include "data/keys.h"
 #include "data/structs.h"
+#include "sound/sound.h"
 #include "ui/locale.h"
 #include "ui/map/mapwnd.h"
 
