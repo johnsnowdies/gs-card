@@ -1,4 +1,5 @@
 /BUILD/
+/builds/*
 /TURBOC/
 last.log
 *.log
