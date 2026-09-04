@@ -106,3 +106,15 @@ release:
 	@echo "  Release complete!"
 	@echo "  Files: bundle-ru.jsdos, bundle-en.jsdos"
 	@echo "========================================"
+
+deploy:
+	@echo "========================================"
+	@echo "  Deploying bundles to server"
+	@echo "========================================"
+	@if [ ! -f "$(SCRIPT_DIR)/latest/bundle-ru.jsdos" ] || [ ! -f "$(SCRIPT_DIR)/latest/bundle-en.jsdos" ]; then \
+		echo "ERROR: Bundles not found in latest/. Run 'make release' first."; \
+		exit 1; \
+	fi
+	@scp "$(SCRIPT_DIR)/latest/bundle-ru.jsdos" "eslider@eslider.me:/var/www/gs.eslider.me/gs-card/web/wrapper/bundles"
+	@scp "$(SCRIPT_DIR)/latest/bundle-en.jsdos" "eslider@eslider.me:/var/www/gs.eslider.me/gs-card/web/wrapper/bundles"
+	@echo "Deployment complete."
