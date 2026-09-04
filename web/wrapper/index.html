@@ -157,9 +157,44 @@
             background: #ff0000;
             color: #000;
         }
+
+        /* ----- Сообщение для мобильных устройств ----- */
+        .mobile-message {
+            display: none; /* по умолчанию скрыто, показываем только на мобильных через JS */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            color: #ff0000;
+            font-family: monospace;
+            font-size: 24px;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 9999;
+            padding: 20px;
+            box-sizing: border-box;
+            flex-direction: column;
+        }
+        .mobile-message.show {
+            display: flex;
+        }
+        .mobile-message .sub {
+            font-size: 16px;
+            margin-top: 20px;
+            color: #ff6666;
+        }
     </style>
 </head>
 <body>
+    <!-- Сообщение для мобильных -->
+    <div class="mobile-message" id="mobileMessage">
+        <div id="mobileTitle"></div>
+        <div class="sub" id="mobileSub"></div>
+    </div>
+
     <div id="dos"></div>
 
     <!-- Чекбоксы -->
@@ -184,14 +219,57 @@
     <button class="btn-fullscreen" id="fullscreenBtn"></button>
 
     <script>
-        // --- 1. Парсим язык ---
+        // --- Определяем мобильное устройство ---
+        function isMobile() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|Tablet|Silk/i.test(navigator.userAgent);
+        }
+
+        // --- Парсим язык ---
         const urlParams = new URLSearchParams(window.location.search);
         let lang = urlParams.get('lang') || 'en';
         if (lang !== 'ru') lang = 'en';
 
+        // --- Локализация ---
+        const translations = {
+            ru: {
+                flicker: "Мерцание",
+                scanlines: "Чрезстрочность",
+                warning: "Внимание! Для сохранения прогресса после сохранения в игре нажмите",
+                saveBtn: "СОХРАНИТЬ ЭМУЛЯТОР",
+                fullscreen: "Полный экран",
+                mobileTitle: "Эмулятор работает только на компьютере",
+                mobileSub: "Пожалуйста, откройте эту страницу с ПК.",
+            },
+            en: {
+                flicker: "Flicker",
+                scanlines: "Scanlines",
+                warning: "Warning! To save progress after saving in the game, click",
+                saveBtn: "SAVE EMULATOR STATE",
+                fullscreen: "Fullscreen",
+                mobileTitle: "Emulator works only on desktop",
+                mobileSub: "Please open this page on a PC.",
+            }
+        };
+        const texts = translations[lang] || translations.en;
+
+        // --- Если мобильное устройство, показываем сообщение и выходим ---
+        if (isMobile()) {
+            const msg = document.getElementById('mobileMessage');
+            msg.classList.add('show');
+            document.getElementById('mobileTitle').innerText = texts.mobileTitle;
+            document.getElementById('mobileSub').innerText = texts.mobileSub;
+            // Скрываем все элементы управления и эмулятор
+            document.getElementById('dos').style.display = 'none';
+            document.querySelector('.controls').style.display = 'none';
+            document.querySelector('.save-area').style.display = 'none';
+            document.getElementById('fullscreenBtn').style.display = 'none';
+            // Досрочно завершаем скрипт, чтобы не грузить эмулятор
+            throw new Error('Mobile device detected – emulator disabled');
+        }
+
+        // --- Если не мобильное, запускаем всё как обычно ---
         const bundlePath = `bundles/bundle-${lang}.jsdos`;
 
-        // --- 2. Запускаем эмулятор и сохраняем экземпляр ---
         const dosElement = document.getElementById('dos');
         const dosInstance = Dos(dosElement, {
             url: bundlePath,
@@ -201,7 +279,6 @@
             kiosk: true,
             autoSave: true,
             imageRendering: "smooth",
-            // Разделяем сохранения по языку, чтобы не пересекались
             fsChanges: {
                 local: true,
                 urlToKey: async (url) => {
@@ -210,25 +287,7 @@
             }
         });
 
-        // --- 3. Локализация ---
-        const translations = {
-            ru: {
-                flicker: "Мерцание",
-                scanlines: "Чрезстрочность",
-                warning: "Внимание! Для сохранения прогресса после сохранения в игре нажмите",
-                saveBtn: "СОХРАНИТЬ ЭМУЛЯТОР",
-                fullscreen: "Полный экран",
-            },
-            en: {
-                flicker: "Flicker",
-                scanlines: "Scanlines",
-                warning: "Warning! To save progress after saving in the game, click",
-                saveBtn: "SAVE EMULATOR STATE",
-                fullscreen: "Fullscreen",
-            }
-        };
-        const texts = translations[lang] || translations.en;
-
+        // Заполняем тексты (для десктопа)
         document.getElementById('labelFlicker').innerText = texts.flicker;
         document.getElementById('labelScanlines').innerText = texts.scanlines;
         document.getElementById('warningText').innerHTML = 
@@ -236,7 +295,7 @@
         document.getElementById('saveEmulatorBtn').innerText = texts.saveBtn;
         document.getElementById('fullscreenBtn').innerText = texts.fullscreen;
 
-        // --- 4. Управление эффектами ---
+        // --- Управление эффектами ---
         const dosEl = document.getElementById('dos');
         const flickerCheck = document.getElementById('toggleFlicker');
         const scanlinesCheck = document.getElementById('toggleScanlines');
@@ -249,20 +308,18 @@
             dosEl.classList.toggle('no-scanlines', !this.checked);
         });
 
-        // --- 5. Кнопка сохранения эмулятора ---
+        // --- Кнопка сохранения эмулятора ---
         document.getElementById('saveEmulatorBtn').addEventListener('click', function() {
             dosInstance.save();
-            // Визуальная обратная связь
-            const saved_en = "DONE";
-            const saved_ru = "СДЕЛАНО"
+            const savedText = lang === 'ru' ? 'СДЕЛАНО' : 'DONE';
             const original = this.innerText;
-            this.innerText = lang == 'ru'?saved_ru:saved_en;
+            this.innerText = savedText;
             setTimeout(() => {
                 this.innerText = original;
             }, 2000);
         });
 
-        // --- 6. Кнопка полного экрана ---
+        // --- Кнопка полного экрана ---
         document.getElementById('fullscreenBtn').addEventListener('click', function() {
             dosInstance.setFullScreen(true);
         });
