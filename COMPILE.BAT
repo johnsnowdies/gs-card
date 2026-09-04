@@ -165,6 +165,7 @@ cd %BLD%
 REM Clean up old files
 if exist GSCARD.EXE del GSCARD.EXE
 if exist GSCARD.MAP del GSCARD.MAP
+if exist *.SAV del *.SAV
 
 tlink @GS-LINK.RSP >> build.log
 if errorlevel 1 goto err
@@ -176,6 +177,7 @@ if not exist BGI mkdir BGI
 copy ..\%ASST%\BGI\*.BGI BGI\ > nul
 copy ..\%ASST%\BGI\*.CHR BGI\ > nul
 copy ..\%ASST%\LOGO.BMP . > nul
+copy ..\%ASST%\RUN.BAT . > nul
 copy ..\%ASST%\SYSTEM.SOL . > nul
 copy ..\%ASST%\OBJECTS.SOL . > nul
 copy ..\%ASST%\BOUNDS.SOL . > nul

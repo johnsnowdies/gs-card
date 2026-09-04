@@ -706,8 +706,7 @@ void core_events_new_game(void) {
  * EVENT SYSTEM MAIN FUNCTIONS
  * ---------------------------------------------------------------- */
 int core_events(int fuel_consume) {
-  int i = 0, game_over = 0;
-  char buf[50];
+  int i = 0, game_over;
   int start_system = gs.current_system;
 
   core_game_mark_visited(gs.current_system);
