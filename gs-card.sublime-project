@@ -1,12 +1,10 @@
 {
-	"folders":
-	[
-		{
-			"path": "."
-		}
-	],
-     "build_systems":
-    [
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "build_systems": [
         {
             "name": "My Make (fix+clean+build)",
             "shell_cmd": "make fix && make clean && make build",
@@ -14,10 +12,16 @@
             "file_regex": "^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$"
         }
     ],
-    "settings":
-    {
+    "settings": {
         "tab_size": 2,
         "translate_tabs_to_spaces": true,
         "detect_indentation": false
+    },
+    "linters": {
+        "cppcheck": {
+            "std": [
+                "c89"
+            ]
+        }
     }
 }

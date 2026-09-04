@@ -255,7 +255,7 @@ static void core_game_gen_shipyard(void) {
  * GENERATE SHIPS'S UPGRADES AVAILABLE ON SHIPYARD
  * ---------------------------------------------------------------- */
 static void core_game_gen_upgrades(void) {
-  int i, count = 0;
+  int count = 0;
 
   if (!sol_list[gs.current_system].is_shipyard) {
     system_upgrades_size = 0;
@@ -276,11 +276,12 @@ static void core_game_gen_upgrades(void) {
 
   /* custom upgrades */
   {
-    static char* names[] = {LC_UPGRADE_SMUGGLER_BAY,
+    int i;
+    const char* names[] = {LC_UPGRADE_SMUGGLER_BAY,
                             LC_UPGRADE_CONTIN_JUMP_SYSTEM,
                             LC_UPGRADE_EMERGENCY_JUMP_SYSTEM,
                             LC_UPGRADE_OBJECTS_MAP, LC_UPGRADE_POLITICAL_MAP};
-    unsigned char* flags[] = {
+    const unsigned char* flags[] = {
         &gs.upgrade_smuggler_bay, &gs.upgrade_continuous_jump,
         &gs.upgrade_emergency_jump, &gs.upgrade_objects_map,
         &gs.upgrade_political_map};

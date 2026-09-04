@@ -428,7 +428,7 @@ int core_finder_get_way(WAYPOINT* wp) {
   char* input;
   int start, end, status;
 
-  start = gs.current_system;
+  start = gs.current_system; 
 
   input = (char*)gui_input_wnd(&map_wnd, LC_GEN_TITLE_GSCARD,
                                LC_FINDER_END_TEXT, NULL);
