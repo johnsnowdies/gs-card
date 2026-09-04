@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GS-CARD 2.0 – Hypersoft ILTD</title>
+    <style>
+        body {
+            background: #000000;
+            color: #FF0000;
+            font-family: 'Fixedsys', 'Courier New', Courier, monospace;
+            font-size: 16px;
+            line-height: 1.5;
+            margin: 20px;
+            padding: 0;
+        }
+        a {
+            color: #FF0000;
+            text-decoration: underline;
+        }
+        a:hover {
+            color: #FF6666;
+        }
+        h1, h2, h3 {
+            color: #FF0000;
+            font-weight: normal;
+        }
+        h1 {
+            font-size: 28px;
+            text-align: center;
+            margin-top: 10px;
+        }
+        h2 {
+            font-size: 22px;
+            border-bottom: 1px solid #FF0000;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .lang-switch {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+        .lang-switch select {
+            background: #000000;
+            color: #FF0000;
+            border: 1px solid #FF0000;
+            font-family: inherit;
+            font-size: 14px;
+            padding: 4px 8px;
+            cursor: pointer;
+        }
+        .logo {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .logo img {
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #FF0000;
+        }
+        .button-group {
+            text-align: center;
+            margin: 40px 0 20px;
+        }
+        .button-group a {
+            display: inline-block;
+            margin: 0 15px;
+            padding: 12px 30px;
+            border: 2px solid #FF0000;
+            background: #000000;
+            color: #FF0000;
+            font-size: 20px;
+            font-family: inherit;
+            text-decoration: none;
+            transition: background 0.2s, color 0.2s;
+        }
+        .button-group a:hover {
+            background: #FF0000;
+            color: #000000;
+        }
+        .footer {
+            margin-top: 50px;
+            font-size: 14px;
+            text-align: center;
+            border-top: 1px solid #FF0000;
+            padding-top: 15px;
+            color: #CC0000;
+        }
+        .footer .small {
+            font-size: 12px;
+            color: #990000;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #FF0000;
+            margin: 20px 0;
+        }
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        ul li::before {
+            content: "> ";
+            color: #FF0000;
+        }
+        .highlight {
+            color: #FF4444;
+        }
+        pre {
+            background: #111111;
+            padding: 10px;
+            border: 1px solid #FF0000;
+            overflow: auto;
+            font-family: inherit;
+            color: #FF6666;
+        }
+        kbd {
+            border: 1px solid #FF0000;
+            padding: 0 6px;
+            font-family: inherit;
+            background: #111111;
+            color: #FF8888;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Language switcher -->
+    <div class="lang-switch">
+        <select onchange="window.location.href=this.value;">
+            <option value="index.html">Русский</option>
+            <option value="en.html" selected>English</option>
+        </select>
+    </div>
+
+    <!-- Logo -->
+    <div class="logo">
+        <img src="logo.png" alt="GS-CARD Logo">
+    </div>
+
+    <!-- Title -->
+    <h1>GS-CARD 2.0</h1>
+    <p style="text-align:center; font-size:14px; margin-top:-10px;">- a logistics strategy for MS-DOS -</p>
+
+    <!-- Play buttons -->
+    <div class="button-group">
+        <a href="/wrapper/?lang=ru">Играть на русском</a>
+        <a href="/wrapper/?lang=en">Play in English</a>
+    </div>
+
+    <!-- Main text -->
+    <h2>What is this?</h2>
+    <p>
+        <span class="highlight">GS-CARD</span> is a logistics strategy set in space.
+        You take on the role of a cargo ship captain travelling through the <strong>Saferi</strong> galaxy,
+        completing delivery contracts, avoiding pirates, customs, and dangerous objects.
+        The entire interface is identical to MS-DOS programs from the 90s.
+    </p>
+    <p>
+        The game was written in <strong>Turbo C 2.0</strong> (1989) strictly following the C89 standard and runs on real DOS or in emulators.
+    </p>
+
+    <h2>How did it come to be?</h2>
+    <p>
+        We used to play a homebrew tabletop RPG with friends. It started as classic fantasy with Irish, Arab, and mermaid characters.
+        Over time, the game evolved into a civilisation‑scale strategy (like Europa Universalis), and eventually went into space (like Stellaris).
+        In a single game session, hundreds of years would pass – civilisations grew, fought, and colonised nearby star systems.
+    </p>
+    <p>
+        This is how the <strong>Saferi</strong> galaxy was populated – just one of five galaxies in our homebrew “multiverse”.
+        At the same time, in another part of the universe (the Milky Way, Terra), an ancient Empire was fading away, which had invented hyperdrives.
+        When Saferi's civilisations reached space, they stumbled upon the ruins of that Empire and gained access to its technology.
+        One such technology was the <strong>GS-Card</strong> – a hardware‑software system for safe hyper‑jump navigation.
+    </p>
+    <p>
+        To capture the spirit of that “ancient empire”, I decided to write a simulator of the GS-Card using real retro software – Turbo C 2.0.
+        The first version appeared in 2018 and only calculated routes.
+        But that wasn’t enough, so I turned it into a full‑fledged game about a space trucker – you can trade, take jobs, buy ships and upgrades.
+        And now, after 8 years, the project is finally released.
+    </p>
+
+    <h2>Controls</h2>
+    <ul>
+        <li><kbd>[TAB]</kbd> – switch between screens (map, status, contracts, upgrades, shipyard)</li>
+        <li><kbd>[F7]</kbd> – calculate route and perform hyper‑jump (on map)</li>
+        <li><kbd>[F6]</kbd> – view all available hyper‑threads (on map)</li>
+        <li><kbd>[F3]</kbd> / <kbd>[F4]</kbd> – zoom in/out on the map</li>
+        <li>On the status screen:</li>
+        <li><kbd>[F1]</kbd> – info about current system and contracts</li>
+        <li><kbd>[F2]</kbd> – upgrade shop (in systems with shipyard)</li>
+        <li><kbd>[F3]</kbd> – shipyard to buy new ships (in systems with shipyard)</li>
+    </ul>
+    <p>
+        Fuel is consumed on every jump. You can refuel at stations marked <strong>[F]</strong> (fuel stations).
+        Upgrades and new ships are sold in systems marked <strong>[S]</strong> (shipyards).
+    </p>
+
+    <h2>Source code</h2>
+    <p>
+        The whole project is open and available on GitHub:<br>
+        <a href="https://github.com/johnsnowdies/gs-card" target="_blank">https://github.com/johnsnowdies/gs-card</a>
+    </p>
+
+    <h2>System Requirements</h2>
+    <ul>
+        <li><strong>CPU:</strong> Pentium I (recommended); on 486, complex mathematical calculations may run with noticeable delays.</li>
+        <li><strong>Memory:</strong> 640 KB.</li>
+        <li><strong>Disk space:</strong> about 1 MB – the entire game fits on a single floppy disk without compression.</li>
+        <li><strong>Sound:</strong> PC Speaker (system buzzer) – for beep effects.</li>
+        <li><strong>OS:</strong> MS-DOS (or an emulator such as DosBox in Pentium III mode).</li>
+    </ul>
+    <p style="font-size:14px; color:#CC0000;">
+        <em>Note:</em> The browser version includes a built‑in emulator, so no extra setup is required – just hit “Play”.
+    </p>
+
+    <!-- Hypersoft ILTD copyright (stylized like in .h headers) -->
+    <div class="footer">
+        <div>
+            (C) COPYRIGHT 19950-34315 HYPERSPORT IMPERIAL LIMITED.<br>
+            ALL RIGHTS RESERVED. UNPUBLISHED RIGHTS RESERVED UNDER IMPERIAL SPACE COPYRIGHT LAWS.
+        </div>
+        <div class="small" style="margin-top:10px;">
+            <strong>WARNING:</strong> This software is provided "AS IS" without warranty of any kind.<br>
+            See the Hypersoft ILTD Software License Agreement for full terms.
+        </div>
+        <div class="small" style="margin-top:10px; color:#880000;">
+            GS-CARD 2.0 - ESLIDER - 2018–2026 TERRA
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
