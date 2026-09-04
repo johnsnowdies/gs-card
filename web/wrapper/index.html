@@ -64,6 +64,7 @@
             background: none;
         }
 
+        /* ----- Блок управления (чекбоксы) ----- */
         .controls {
             position: fixed;
             top: 10px;
@@ -73,7 +74,7 @@
             padding: 8px 12px;
             color: red;
             font-family: monospace;
-            font-size: 14px;
+            font-size: 12px;
             display: flex;
             gap: 16px;
             align-items: center;
@@ -94,11 +95,74 @@
             margin: 0;
             cursor: pointer;
         }
+
+        /* ----- Блок предупреждения и кнопки сохранения (под чекбоксами) ----- */
+        .save-area {
+            position: fixed;
+            top: 58px;        /* отступ под .controls */
+            left: 10px;
+            z-index: 100;
+            background: #000;
+            padding: 10px 14px;
+            color: #ff4444;
+            font-family: monospace;
+            font-size: 13px;
+            max-width: 280px;
+            border-left: 3px solid #ff0000;
+            user-select: none;
+        }
+
+        .save-area .warning {
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+        .save-area .warning strong {
+            color: #ff0000;
+        }
+
+        .btn-save {
+            display: inline-block;
+            padding: 6px 16px;
+            border: 2px solid #ff0000;
+            background: #000;
+            color: #ff0000;
+            font-family: inherit;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            width: 100%;
+            text-align: center;
+        }
+        .btn-save:hover {
+            background: #ff0000;
+            color: #000;
+        }
+
+        /* ----- Кнопка "Полный экран" (правый верхний угол) ----- */
+        .btn-fullscreen {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 200;
+            padding: 6px 14px;
+            border: 2px solid #ff0000;
+            background: #000;
+            color: #ff0000;
+            font-family: monospace;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .btn-fullscreen:hover {
+            background: #ff0000;
+            color: #000;
+        }
     </style>
 </head>
 <body>
     <div id="dos"></div>
 
+    <!-- Чекбоксы -->
     <div class="controls">
         <label>
             <input type="checkbox" id="toggleFlicker" checked>
@@ -110,36 +174,69 @@
         </label>
     </div>
 
+    <!-- Предупреждение + кнопка сохранения -->
+    <div class="save-area">
+        <div class="warning" id="warningText"></div>
+        <button class="btn-save" id="saveEmulatorBtn"></button>
+    </div>
+
+    <!-- Кнопка полного экрана -->
+    <button class="btn-fullscreen" id="fullscreenBtn"></button>
+
     <script>
+        // --- 1. Парсим язык ---
         const urlParams = new URLSearchParams(window.location.search);
         let lang = urlParams.get('lang') || 'en';
         if (lang !== 'ru') lang = 'en';
 
         const bundlePath = `bundles/bundle-${lang}.jsdos`;
 
-        Dos(document.getElementById("dos"), {
+        // --- 2. Запускаем эмулятор и сохраняем экземпляр ---
+        const dosElement = document.getElementById('dos');
+        const dosInstance = Dos(dosElement, {
             url: bundlePath,
             backend: "dosboxX",
             backendLocked: true,
             autoStart: true,
             kiosk: true,
+            autoSave: true,
             imageRendering: "smooth",
+            // Разделяем сохранения по языку, чтобы не пересекались
+            fsChanges: {
+                local: true,
+                urlToKey: async (url) => {
+                    return `gs-card-${lang}`;
+                },
+            }
         });
 
+        // --- 3. Локализация ---
         const translations = {
             ru: {
                 flicker: "Мерцание",
-                scanlines: "Чрезстрочность"
+                scanlines: "Чрезстрочность",
+                warning: "Внимание! Для сохранения прогресса после сохранения в игре нажмите",
+                saveBtn: "СОХРАНИТЬ ЭМУЛЯТОР",
+                fullscreen: "Полный экран",
             },
             en: {
                 flicker: "Flicker",
-                scanlines: "Scanlines"
+                scanlines: "Scanlines",
+                warning: "Warning! To save progress after saving in the game, click",
+                saveBtn: "SAVE EMULATOR STATE",
+                fullscreen: "Fullscreen",
             }
         };
         const texts = translations[lang] || translations.en;
+
         document.getElementById('labelFlicker').innerText = texts.flicker;
         document.getElementById('labelScanlines').innerText = texts.scanlines;
+        document.getElementById('warningText').innerHTML = 
+            `${texts.warning} <strong>${texts.saveBtn}</strong>`;
+        document.getElementById('saveEmulatorBtn').innerText = texts.saveBtn;
+        document.getElementById('fullscreenBtn').innerText = texts.fullscreen;
 
+        // --- 4. Управление эффектами ---
         const dosEl = document.getElementById('dos');
         const flickerCheck = document.getElementById('toggleFlicker');
         const scanlinesCheck = document.getElementById('toggleScanlines');
@@ -150,6 +247,24 @@
 
         scanlinesCheck.addEventListener('change', function() {
             dosEl.classList.toggle('no-scanlines', !this.checked);
+        });
+
+        // --- 5. Кнопка сохранения эмулятора ---
+        document.getElementById('saveEmulatorBtn').addEventListener('click', function() {
+            dosInstance.save();
+            // Визуальная обратная связь
+            const saved_en = "DONE";
+            const saved_ru = "СДЕЛАНО"
+            const original = this.innerText;
+            this.innerText = lang == 'ru'?saved_ru:saved_en;
+            setTimeout(() => {
+                this.innerText = original;
+            }, 2000);
+        });
+
+        // --- 6. Кнопка полного экрана ---
+        document.getElementById('fullscreenBtn').addEventListener('click', function() {
+            dosInstance.setFullScreen(true);
         });
     </script>
 </body>
