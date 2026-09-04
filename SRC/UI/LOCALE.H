@@ -354,7 +354,7 @@
 #define LC_GAME_GAS_STATION_NO_MONEY_TEXT "Итого: %ld $$. Кретиgтов не хватает!"
 
 #define LC_QUEST_TYPE_1_LINE_1 "Нужно gоставить груз в SA.%d в секторе %s."
-#define LC_QUEST_TYPE_1_LINE_2 "Это не gалеко, ничего сложного"
+#define LC_QUEST_TYPE_1_LINE_2 "Это близко, ничего сложного"
 
 #define LC_QUEST_TYPE_2_LINE_1 "Нужно gоставить груз в SA.%d в секторе %s."
 #define LC_QUEST_TYPE_2_LINE_2 "Далековато, планируй маршрут заранее"
