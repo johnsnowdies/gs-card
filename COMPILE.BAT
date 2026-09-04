@@ -17,10 +17,16 @@ set SRC=SRC
 set INC=%TURBOC%\INCLUDE
 set LIB=%TURBOC%\LIBRARY
 set ASST=ASSETS
-set RU=-DLANGUAGE_RU
+
+REM --- Language selection (first argument) ---
+set RU=
+if "%1"=="ru" set RU=-DLANGUAGE_RU
+if "%1"=="en" set RU=
+if "%1"=="" set RU=-DLANGUAGE_RU
 
 REM ensure BUILD directory exists
 if not exist %BLD% mkdir %BLD%
+
 
 echo ======================================== >  %BLD%\build.log
 echo    GS-CARD Compilation                   >> %BLD%\build.log

@@ -1270,7 +1270,7 @@
 #define LC_GAME_SHIP_3_TEXT_6                    "Quite popular in Irish sectors."
 #define LC_GAME_SHIP_6_TEXT_2                    "by the Guardians in the Latria sector, equipped for export without"
 #define LC_GAME_OVER_WIN_TEXT_1                  "You saved up a MILLION credits! At the nearest station"
-#define LC_GAME_SHIP_6_TEXT_3                    "magical gadgets - thermonuclear reactor, computer and GS-CARD support."
+#define LC_GAME_SHIP_6_TEXT_3                    "magical gadgets - thermonuclear reactor, computer and GS-CARD."
 #define LC_UPGRADE_POLITICAL_MAP                 "Sector map"
 #define LC_GAME_OVER_WIN_TEXT_2                  "you bought a warp drive and threw away the damn GS-CARD!"
 #define LC_GAME_SHIP_6_TEXT_4                    "Comfortable cabin with a separate sleeping room, a fridge the size "
@@ -1326,13 +1326,55 @@
 #define LC_EVENT_DANGER_GAS_TEXT_2    "Payment for contract reduced to %ld"
 #define LC_EVENT_DANGER_GAS_NO        "Radiation hit the hull but cargo not damaged!"
 
-#define LC_QUEST_ERROR                "This contract cannot be accepted!"
-
 #define LC_SHIPYARD_NAG_1 "Hypersoft are not responsible"
 #define LC_SHIPYARD_NAG_2 "for this advertisements."
 
 #define LC_PRESS_ANY "PRESS ANY KEY"
 #define LC_ABOUT_HEAD "GS-CARD 2.0 - ESLIDER - 2018-2026 TERRA"
+
+#define LC_GUI_GSCARD_VER "GS-CARD 2.0"
+#define LC_GUI_FINDER_EDGES "Building graph of hyper-threads"
+#define LC_GUI_FINDER_INTER "Checking hyper-thread intersections"
+
+#define LC_EVENT_NEW_GAME_HEAD  "Welcome to Saferi!"
+
+#define LC_EVENT_NEW_GAME_1     "The most promising galaxy for cargo transportation!"
+#define LC_EVENT_NEW_GAME_2     "Your 'Betsy' is equipped with a GS-CARD, which allows"
+#define LC_EVENT_NEW_GAME_3     "you to calculate hyper-jumps."
+#define LC_EVENT_NEW_GAME_4     "GAME OBJECTIVE: accumulate 1,000,000 $$ to purchase a warp-drive"
+#define LC_EVENT_NEW_GAME_5     "CONTROLS:"
+#define LC_EVENT_NEW_GAME_6     "[TAB] - switch screens"
+#define LC_EVENT_NEW_GAME_7     "[F7] on map - calculate jump"
+#define LC_EVENT_NEW_GAME_8     "Hyper-jumps consume fuel. Your Mark I burns 10% per jump."
+#define LC_EVENT_NEW_GAME_9     "In systems marked with [F] you can refuel."
+#define LC_EVENT_NEW_GAME_10    "In systems marked with [S] you can buy upgrades and ships."
+#define LC_EVENT_NEW_GAME_11    "Good luck, captain %s"
+
+#define LC_EVENT_NEW_GAME_BTN   "Let's go!"
+
+/* DYNAMIC AD: ~50 symbols */
+#define LC_AD_DYN_T1_L1 "Arms factory 'Al-Hadid' in system SA.131: use"
+#define LC_AD_DYN_T1_L2 "promo GIVE Œ… TANK for -30% off. Grab it now!"
+
+#define LC_AD_DYN_T2_L1 "Golden Saucer Casino: hiring experienced staff"
+#define LC_AD_DYN_T2_L2 "in the field. GS:873:313:SAUCER"
+
+#define LC_AD_DYN_T3_L1 "IRISH FRONT OF DEMOCRATIC LIBERATION sells"
+#define LC_AD_DYN_T3_L2 "potato tops GS:643:112:NO’€PIRATE"
+
+#define LC_AD_DYN_T4_L1 "TO THE CORPORATION: hiring demonologists,"
+#define LC_AD_DYN_T4_L2 "genetic engineers, info at MagoNet:00003"
+
+#define LC_AD_DYN_T5_L1 "SYMBIOTIC SURGERIES OF ANY COMPLEXITY AT"
+#define LC_AD_DYN_T5_L2 "THE CLINIC 'Without Tail' - SA.412, GS:345:221:NOTAIL"
+
+#define LC_AD_DYN_T6_L1 "KRAKEN TADPOLES cheap, for raising! SA.280"
+#define LC_AD_DYN_T6_L2 "No middlemen! GS:289:112:FISHHOOK"
+
+#define LC_CARD_MENU_LOAD_SUCCESS "Game loaded"
+
+#define LC_STATUS_MINIMAP "MINIMAP"
+
 
 #endif
 

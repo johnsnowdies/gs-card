@@ -1,9 +1,10 @@
 # GS-CARD Makefile — build & run via DOSBox
 #
 # Targets:
-#   make build   — compile inside DOSBox, copy assets, clean intermediates
-#   make run     — launch DOSBox with GSCARD.EXE
-#   make clean   — remove all build artifacts (except .gitkeep)
+#   make build LANG=<ru|en>   — compile inside DOSBox, copy assets, clean intermediates
+#   make run                  — launch DOSBox with GSCARD.EXE
+#   make clean                — remove all build artifacts (except .gitkeep and bundles)
+#   make release              — build both language versions and create .jsdos bundles
 
 SCRIPT_DIR := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 DOSBOX_CONF_TEMPLATE := $(SCRIPT_DIR)/dosbox_gs.conf
@@ -11,15 +12,18 @@ DOSBOX_CONF_RUNTIME := /tmp/gs-card-dosbox-XXXXXX.conf
 
 export SDL_VIDEODRIVER=dummy
 
-.PHONY: build run clean
+# Default language
+LANG ?= ru
+
+.PHONY: build run clean release
 
 build:
 	@echo "========================================"
-	@echo "  GS-CARD Build"
+	@echo "  GS-CARD Build (LANG=$(LANG))"
 	@echo "========================================"
 	@echo ""
 	@command -v dosbox >/dev/null 2>&1 || { echo "ERROR: dosbox not installed. Try: sudo apt install dosbox"; exit 1; }
-	@sed "s|__MOUNT_PATH__|$(SCRIPT_DIR)|g; s|__AUTOEXEC__|COMPILE.BAT|g" \
+	@sed "s|__MOUNT_PATH__|$(SCRIPT_DIR)|g; s|__AUTOEXEC__|COMPILE.BAT $(LANG)|g" \
 		"$(DOSBOX_CONF_TEMPLATE)" > "$(DOSBOX_CONF_RUNTIME)"
 	@echo "Project root: $(SCRIPT_DIR)"
 	@echo "Launching DOSBox for build..."
@@ -56,6 +60,10 @@ clean:
 	@rm -rf "$(SCRIPT_DIR)/BUILD/BGI"
 	@rm -f "$(SCRIPT_DIR)/BUILD/LOGO.BMP"
 	@rm -f "$(SCRIPT_DIR)/BUILD/SYSTEM.SOL"
+	@rm -f "$(SCRIPT_DIR)/BUILD/OBJECTS.SOL"
+	@rm -f "$(SCRIPT_DIR)/BUILD/BOUNDS.SOL"
+	@rm -f "$(SCRIPT_DIR)/BUILD/RUN.BAT"
+	@rm -rf "$(SCRIPT_DIR)/BUILD/.jsdos"   # удаляем временную копию
 	@echo "Done."
 
 fix:
@@ -72,3 +80,29 @@ fix:
 		 fi' \
 		_ {} \;
 	@echo "Done."
+
+release:
+	@echo "========================================"
+	@echo "  Building Russian version"
+	@echo "========================================"
+	$(MAKE) build LANG=ru
+	@echo "Packaging Russian bundle..."
+	@if [ -d "$(SCRIPT_DIR)/ASSETS/.jsdos" ]; then \
+		cp -r "$(SCRIPT_DIR)/ASSETS/.jsdos" "$(SCRIPT_DIR)/BUILD/"; \
+	fi
+	@cd "$(SCRIPT_DIR)/BUILD" && zip -r ../latest/bundle-ru.jsdos .
+	@echo "Cleaning BUILD..."
+	$(MAKE) clean
+	@echo "========================================"
+	@echo "  Building English version"
+	@echo "========================================"
+	$(MAKE) build LANG=en
+	@echo "Packaging English bundle..."
+	@if [ -d "$(SCRIPT_DIR)/ASSETS/.jsdos" ]; then \
+		cp -r "$(SCRIPT_DIR)/ASSETS/.jsdos" "$(SCRIPT_DIR)/BUILD/"; \
+	fi
+	@cd "$(SCRIPT_DIR)/BUILD" && zip -r ../latest/bundle-en.jsdos .
+	@echo "========================================"
+	@echo "  Release complete!"
+	@echo "  Files: bundle-ru.jsdos, bundle-en.jsdos"
+	@echo "========================================"
