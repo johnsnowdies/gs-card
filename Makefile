@@ -1,10 +1,12 @@
-# GS-CARD Makefile — build & run via DOSBox
+# GS-CARD Makefile — build, bundle & deploy via DOSBox
 #
 # Targets:
 #   make build LANG=<ru|en>   — compile inside DOSBox, copy assets, clean intermediates
 #   make run                  — launch DOSBox with GSCARD.EXE
-#   make clean                — remove all build artifacts (except .gitkeep and bundles)
-#   make release              — build both language versions and create .jsdos bundles
+#   make clean                — remove build artifacts (keeps latest/ bundles)
+#   make release              — build both languages, prompt for version, create .jsdos bundles + manifest.json in latest/,
+#                               and create symlinks in web/wrapper/bundles
+#   make deploy               — upload bundles and manifest from latest/ to server via SCP
 
 SCRIPT_DIR := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 DOSBOX_CONF_TEMPLATE := $(SCRIPT_DIR)/dosbox_gs.conf
@@ -15,7 +17,7 @@ export SDL_VIDEODRIVER=dummy
 # Default language
 LANG ?= ru
 
-.PHONY: build run clean release
+.PHONY: build run clean release deploy
 
 build:
 	@echo "========================================"
@@ -63,7 +65,7 @@ clean:
 	@rm -f "$(SCRIPT_DIR)/BUILD/OBJECTS.SOL"
 	@rm -f "$(SCRIPT_DIR)/BUILD/BOUNDS.SOL"
 	@rm -f "$(SCRIPT_DIR)/BUILD/RUN.BAT"
-	@rm -rf "$(SCRIPT_DIR)/BUILD/.jsdos"   # удаляем временную копию
+	@rm -rf "$(SCRIPT_DIR)/BUILD/.jsdos"
 	@echo "Done."
 
 fix:
@@ -83,38 +85,61 @@ fix:
 
 release:
 	@echo "========================================"
-	@echo "  Building Russian version"
+	@echo "  GS-CARD Release"
 	@echo "========================================"
-	$(MAKE) build LANG=ru
-	@echo "Packaging Russian bundle..."
-	@if [ -d "$(SCRIPT_DIR)/ASSETS/.jsdos" ]; then \
+	@read -p "Enter version (e.g., 1.0.0): " VERSION; \
+	if [ -z "$$VERSION" ]; then \
+		echo "ERROR: Version cannot be empty."; \
+		exit 1; \
+	fi; \
+	echo "Version: $$VERSION"; \
+	mkdir -p "$(SCRIPT_DIR)/latest"; \
+	echo "========================================"; \
+	echo "  Building Russian version"; \
+	echo "========================================"; \
+	$(MAKE) build LANG=ru; \
+	echo "Packaging Russian bundle..."; \
+	if [ -d "$(SCRIPT_DIR)/ASSETS/.jsdos" ]; then \
 		cp -r "$(SCRIPT_DIR)/ASSETS/.jsdos" "$(SCRIPT_DIR)/BUILD/"; \
-	fi
-	@cd "$(SCRIPT_DIR)/BUILD" && zip -r ../latest/bundle-ru.jsdos .
-	@echo "Cleaning BUILD..."
-	$(MAKE) clean
-	@echo "========================================"
-	@echo "  Building English version"
-	@echo "========================================"
-	$(MAKE) build LANG=en
-	@echo "Packaging English bundle..."
-	@if [ -d "$(SCRIPT_DIR)/ASSETS/.jsdos" ]; then \
+	fi; \
+	cd "$(SCRIPT_DIR)/BUILD" && zip -r "../latest/bundle-ru-$$VERSION.jsdos" .; \
+	echo "Cleaning BUILD..."; \
+	$(MAKE) clean; \
+	echo "========================================"; \
+	echo "  Building English version"; \
+	echo "========================================"; \
+	$(MAKE) build LANG=en; \
+	echo "Packaging English bundle..."; \
+	if [ -d "$(SCRIPT_DIR)/ASSETS/.jsdos" ]; then \
 		cp -r "$(SCRIPT_DIR)/ASSETS/.jsdos" "$(SCRIPT_DIR)/BUILD/"; \
-	fi
-	@cd "$(SCRIPT_DIR)/BUILD" && zip -r ../latest/bundle-en.jsdos .
-	@echo "========================================"
-	@echo "  Release complete!"
-	@echo "  Files: bundle-ru.jsdos, bundle-en.jsdos"
-	@echo "========================================"
+	fi; \
+	cd "$(SCRIPT_DIR)/BUILD" && zip -r "../latest/bundle-en-$$VERSION.jsdos" .; \
+	echo "Creating manifest.json..."; \
+	echo '{ "ru": "bundle-ru-'"$$VERSION"'.jsdos", "en": "bundle-en-'"$$VERSION"'.jsdos" }' > "$(SCRIPT_DIR)/latest/manifest.json"; \
+	echo "Creating symbolic links in web/wrapper/bundles..."; \
+	mkdir -p "$(SCRIPT_DIR)/web/wrapper/bundles"; \
+	for file in "$(SCRIPT_DIR)/latest/"*.jsdos; do \
+		base=$$(basename "$$file"); \
+		ln -sf "$$file" "$(SCRIPT_DIR)/web/wrapper/bundles/$$base"; \
+	done; \
+	if [ ! -L "$(SCRIPT_DIR)/web/wrapper/bundles/manifest.json" ] && [ ! -f "$(SCRIPT_DIR)/web/wrapper/bundles/manifest.json" ]; then \
+		ln -s "$(SCRIPT_DIR)/latest/manifest.json" "$(SCRIPT_DIR)/web/wrapper/bundles/manifest.json"; \
+	else \
+		echo "manifest.json link already exists, ignoring."; \
+	fi; \
+	echo "========================================"; \
+	echo "  Release complete!"; \
+	echo "  Files: latest/bundle-ru-$$VERSION.jsdos, latest/bundle-en-$$VERSION.jsdos, latest/manifest.json"; \
+	echo "  Symlinks created in web/wrapper/bundles/"; \
+	echo "========================================"
 
 deploy:
 	@echo "========================================"
-	@echo "  Deploying bundles to server"
+	@echo "  Deploying bundles and manifest to server"
 	@echo "========================================"
-	@if [ ! -f "$(SCRIPT_DIR)/latest/bundle-ru.jsdos" ] || [ ! -f "$(SCRIPT_DIR)/latest/bundle-en.jsdos" ]; then \
-		echo "ERROR: Bundles not found in latest/. Run 'make release' first."; \
+	@if [ ! -f "$(SCRIPT_DIR)/latest/manifest.json" ]; then \
+		echo "ERROR: manifest.json not found in latest/. Run 'make release' first."; \
 		exit 1; \
 	fi
-	@scp "$(SCRIPT_DIR)/latest/bundle-ru.jsdos" "eslider@eslider.me:/var/www/gs.eslider.me/gs-card/web/wrapper/bundles"
-	@scp "$(SCRIPT_DIR)/latest/bundle-en.jsdos" "eslider@eslider.me:/var/www/gs.eslider.me/gs-card/web/wrapper/bundles"
+	@scp "$(SCRIPT_DIR)/latest/"bundle-*.jsdos "$(SCRIPT_DIR)/latest/manifest.json" "eslider@eslider.me:/var/www/gs.eslider.me/gs-card/web/wrapper/bundles/"
 	@echo "Deployment complete."

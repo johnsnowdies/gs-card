@@ -47,7 +47,7 @@
                 transparent 2px,
                 transparent 4px
             );
-            box-shadow: inset 0 0 80px rgba(0,0,0,0.7);
+            box-shadow: inset 0 0 80px rgba(0,0,0,0.8);
         }
 
         @keyframes flicker {
@@ -107,8 +107,8 @@
             color: #ff4444;
             font-family: monospace;
             font-size: 13px;
-            max-width: 280px;
-            border-left: 3px solid #ff0000;
+            max-width: 260px;
+            border-right: 3px solid #ff0000;
             user-select: none;
         }
 
@@ -160,7 +160,7 @@
 
         /* ----- Сообщение для мобильных устройств ----- */
         .mobile-message {
-            display: none; /* по умолчанию скрыто, показываем только на мобильных через JS */
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
@@ -258,71 +258,92 @@
             msg.classList.add('show');
             document.getElementById('mobileTitle').innerText = texts.mobileTitle;
             document.getElementById('mobileSub').innerText = texts.mobileSub;
-            // Скрываем все элементы управления и эмулятор
             document.getElementById('dos').style.display = 'none';
             document.querySelector('.controls').style.display = 'none';
             document.querySelector('.save-area').style.display = 'none';
             document.getElementById('fullscreenBtn').style.display = 'none';
-            // Досрочно завершаем скрипт, чтобы не грузить эмулятор
             throw new Error('Mobile device detected – emulator disabled');
         }
 
-        // --- Если не мобильное, запускаем всё как обычно ---
-        const bundlePath = `bundles/bundle-${lang}.jsdos`;
+        // --- Загружаем манифест, чтобы получить имя бандла ---
+        async function initEmulator() {
+            try {
+                const manifestUrl = '/wrapper/bundles/manifest.json';
+                const response = await fetch(manifestUrl, { cache: 'no-store' }); // чтобы всегда получать свежий
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const manifest = await response.json();
+                const bundleFile = manifest[lang];
+                if (!bundleFile) {
+                    throw new Error(`No bundle for language "${lang}" in manifest`);
+                }
+                const bundlePath = `bundles/${bundleFile}`;
 
-        const dosElement = document.getElementById('dos');
-        const dosInstance = Dos(dosElement, {
-            url: bundlePath,
-            backend: "dosboxX",
-            backendLocked: true,
-            autoStart: true,
-            kiosk: true,
-            autoSave: true,
-            imageRendering: "smooth",
-            fsChanges: {
-                local: true,
-                urlToKey: async (url) => {
-                    return `gs-card-${lang}`;
-                },
+                // --- Запускаем эмулятор с полученным путём ---
+                const dosElement = document.getElementById('dos');
+                const dosInstance = Dos(dosElement, {
+                    url: bundlePath,
+                    backend: "dosboxX",
+                    backendLocked: true,
+                    autoStart: true,
+                    kiosk: true,
+                    autoSave: true,
+                    imageRendering: "smooth",
+                    fsChanges: {
+                        local: true,
+                        urlToKey: async (url) => {
+                            return `gs-card-${lang}`;
+                        },
+                    }
+                });
+
+                // Заполняем тексты (для десктопа)
+                document.getElementById('labelFlicker').innerText = texts.flicker;
+                document.getElementById('labelScanlines').innerText = texts.scanlines;
+                document.getElementById('warningText').innerHTML = 
+                    `${texts.warning} <strong>${texts.saveBtn}</strong>`;
+                document.getElementById('saveEmulatorBtn').innerText = texts.saveBtn;
+                document.getElementById('fullscreenBtn').innerText = texts.fullscreen;
+
+                // --- Управление эффектами ---
+                const dosEl = document.getElementById('dos');
+                const flickerCheck = document.getElementById('toggleFlicker');
+                const scanlinesCheck = document.getElementById('toggleScanlines');
+
+                flickerCheck.addEventListener('change', function() {
+                    dosEl.classList.toggle('no-flicker', !this.checked);
+                });
+
+                scanlinesCheck.addEventListener('change', function() {
+                    dosEl.classList.toggle('no-scanlines', !this.checked);
+                });
+
+                // --- Кнопка сохранения эмулятора ---
+                document.getElementById('saveEmulatorBtn').addEventListener('click', function() {
+                    dosInstance.save();
+                    const savedText = lang === 'ru' ? 'СДЕЛАНО' : 'DONE';
+                    const original = this.innerText;
+                    this.innerText = savedText;
+                    setTimeout(() => {
+                        this.innerText = original;
+                    }, 2000);
+                });
+
+                // --- Кнопка полного экрана ---
+                document.getElementById('fullscreenBtn').addEventListener('click', function() {
+                    dosInstance.setFullScreen(true);
+                });
+
+            } catch (error) {
+                console.error('Failed to load manifest or initialize emulator:', error);
+                // Показываем ошибку пользователю
+                alert('Ошибка загрузки конфигурации. Пожалуйста, обновите страницу или попробуйте позже.');
             }
-        });
+        }
 
-        // Заполняем тексты (для десктопа)
-        document.getElementById('labelFlicker').innerText = texts.flicker;
-        document.getElementById('labelScanlines').innerText = texts.scanlines;
-        document.getElementById('warningText').innerHTML = 
-            `${texts.warning} <strong>${texts.saveBtn}</strong>`;
-        document.getElementById('saveEmulatorBtn').innerText = texts.saveBtn;
-        document.getElementById('fullscreenBtn').innerText = texts.fullscreen;
-
-        // --- Управление эффектами ---
-        const dosEl = document.getElementById('dos');
-        const flickerCheck = document.getElementById('toggleFlicker');
-        const scanlinesCheck = document.getElementById('toggleScanlines');
-
-        flickerCheck.addEventListener('change', function() {
-            dosEl.classList.toggle('no-flicker', !this.checked);
-        });
-
-        scanlinesCheck.addEventListener('change', function() {
-            dosEl.classList.toggle('no-scanlines', !this.checked);
-        });
-
-        // --- Кнопка сохранения эмулятора ---
-        document.getElementById('saveEmulatorBtn').addEventListener('click', function() {
-            dosInstance.save();
-            const savedText = lang === 'ru' ? 'СДЕЛАНО' : 'DONE';
-            const original = this.innerText;
-            this.innerText = savedText;
-            setTimeout(() => {
-                this.innerText = original;
-            }, 2000);
-        });
-
-        // --- Кнопка полного экрана ---
-        document.getElementById('fullscreenBtn').addEventListener('click', function() {
-            dosInstance.setFullScreen(true);
-        });
+        // Запускаем инициализацию
+        initEmulator();
     </script>
 </body>
 </html>
