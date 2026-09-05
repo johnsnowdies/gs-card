@@ -93,6 +93,9 @@ release:
 		exit 1; \
 	fi; \
 	echo "Version: $$VERSION"; \
+	cd "$(SCRIPT_DIR)"; \
+	echo "Cleaning BUILD..."; \
+	$(MAKE) clean; \
 	mkdir -p "$(SCRIPT_DIR)/latest"; \
 	echo "========================================"; \
 	echo "  Building Russian version"; \
@@ -103,6 +106,7 @@ release:
 		cp -r "$(SCRIPT_DIR)/ASSETS/.jsdos" "$(SCRIPT_DIR)/BUILD/"; \
 	fi; \
 	cd "$(SCRIPT_DIR)/BUILD" && zip -r "../latest/bundle-ru-$$VERSION.jsdos" .; \
+	cd "$(SCRIPT_DIR)"; \
 	echo "Cleaning BUILD..."; \
 	$(MAKE) clean; \
 	echo "========================================"; \
@@ -114,6 +118,7 @@ release:
 		cp -r "$(SCRIPT_DIR)/ASSETS/.jsdos" "$(SCRIPT_DIR)/BUILD/"; \
 	fi; \
 	cd "$(SCRIPT_DIR)/BUILD" && zip -r "../latest/bundle-en-$$VERSION.jsdos" .; \
+	cd "$(SCRIPT_DIR)"; \
 	echo "Creating manifest.json..."; \
 	echo '{ "ru": "bundle-ru-'"$$VERSION"'.jsdos", "en": "bundle-en-'"$$VERSION"'.jsdos" }' > "$(SCRIPT_DIR)/latest/manifest.json"; \
 	echo "Creating symbolic links in web/wrapper/bundles..."; \

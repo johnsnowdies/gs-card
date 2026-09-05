@@ -180,8 +180,12 @@ REM ---------- copy runtime assets to BUILD ----------
 echo.                                         >> build.log
 echo Copying assets...                        >> build.log
 if not exist BGI mkdir BGI
+if not exist NPC mkdir NPC
+if not exist SHIPS mkdir SHIPS
 copy ..\%ASST%\BGI\*.BGI BGI\ > nul
 copy ..\%ASST%\BGI\*.CHR BGI\ > nul
+copy ..\%ASST%\NPC\*.BMP NPC\ > nul
+copy ..\%ASST%\SHIPS\*.BMP SHIPS\ > nul
 copy ..\%ASST%\LOGO.BMP . > nul
 copy ..\%ASST%\RUN.BAT . > nul
 copy ..\%ASST%\SYSTEM.SOL . > nul
