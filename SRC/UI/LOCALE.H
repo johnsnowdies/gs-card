@@ -20,7 +20,7 @@
 #define LC_EVENT_NEW_GAME_BTN "Поехали!"
 
 #define LC_PRESS_ANY "НАЖМИТЕ ЛЮБУЮ КЛАВИШУ"
-#define LC_ABOUT_HEAD "GS-CARD 2.0 - ESLIDER - 2018-2026 TERRA"
+#define LC_ABOUT_HEAD "GS-CARD 2.0.4-RU-RC1 - ESLIDER - 2018-2026 TERRA"
 
 /* ----------------------------------------------------------------
  * AD.c
@@ -111,7 +111,7 @@
 #define LC_GUI_BOOL_YES "ДА"
 #define LC_GUI_BOOL_NO "НЕТ"
 
-#define LC_GUI_GSCARD_VER "GS-CARD 2.0"
+#define LC_GUI_GSCARD_VER "GS-CARD 2.0.4-RU-RC1"
 #define LC_GUI_FINDER_EDGES "Построение графа гипер-нитей"
 #define LC_GUI_FINDER_INTER "Проверка пересечений гипер-нитей"
 
@@ -1330,9 +1330,9 @@
 #define LC_SHIPYARD_NAG_2 "for this advertisements."
 
 #define LC_PRESS_ANY "PRESS ANY KEY"
-#define LC_ABOUT_HEAD "GS-CARD 2.0 - ESLIDER - 2018-2026 TERRA"
+#define LC_ABOUT_HEAD "GS-CARD 2.0.4-EN-RC1 - ESLIDER - 2018-2026 TERRA"
 
-#define LC_GUI_GSCARD_VER "GS-CARD 2.0"
+#define LC_GUI_GSCARD_VER "GS-CARD 2.0.4-EN-RC1"
 #define LC_GUI_FINDER_EDGES "Building graph of hyper-threads"
 #define LC_GUI_FINDER_INTER "Checking hyper-thread intersections"
 
