@@ -131,7 +131,7 @@ GAME_STATE {
 
   unsigned int reputation;
   unsigned int missions_completed;
-  unsigned int fuel;
+  int fuel;
   unsigned int quests_size;
   QUEST quests[5];
   unsigned char* visited;

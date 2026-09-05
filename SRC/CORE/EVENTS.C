@@ -172,7 +172,8 @@ static int core_events_quest_done(void) {
  * ---------------------------------------------------------------- */
 static void core_events_gas_station(void) {
   if (sol_list[gs.current_system].is_gas_station && gs.fuel < 100) {
-    unsigned long percent_price, amount, total;
+    long percent_price, total;
+    int amount;
 
     int i, j;
     char* text[100];
@@ -710,7 +711,15 @@ int core_events(int fuel_consume) {
   int start_system = gs.current_system;
 
   core_game_mark_visited(gs.current_system);
-  if (fuel_consume) gs.fuel -= data_hyper_fuel[gs.hyper_class];
+  if (fuel_consume) {
+    if (data_hyper_fuel[gs.hyper_class] >= gs.fuel){
+      gs.fuel = 0;
+    }
+    else{
+      gs.fuel -= data_hyper_fuel[gs.hyper_class];
+    }
+
+  }
 
   if (core_events_check_game_over()) return 1;
 
